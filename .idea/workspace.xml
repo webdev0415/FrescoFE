@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="d0235698-fcbf-40bf-a9de-ad7a068db01b" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/src/app/containers/CreateCanvas/Loadable.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/containers/CreateCanvas/index.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/assets/icons/canvas-toolbar-selection.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/styles/overrides/index.less" beforeDir="false" afterPath="$PROJECT_DIR$/src/styles/overrides/index.less" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="TypeScript JSX File" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="1jke92fIyr4H4YyXk5rTC0dqXDo" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/src/app/containers/CreateCanvas" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.stylelint" value="true" />
+    <property name="node.js.detected.package.tslint" value="true" />
+    <property name="node.js.path.for.package.eslint" value="project" />
+    <property name="node.js.path.for.package.stylelint" value="project" />
+    <property name="node.js.path.for.package.tslint" value="project" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.stylelint" value="D:\Usama\Data\htdocs\React\Fresco_FE\node_modules\stylelint" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
+    <property name="nodejs_package_manager_path" value="npm" />
+    <property name="prettierjs.PrettierConfiguration.Package" value="D:\Usama\Data\htdocs\React\Fresco_FE\node_modules\prettier" />
+    <property name="ts.external.directory.path" value="C:\Users\forta\AppData\Local\JetBrains\Toolbox\apps\WebStorm\ch-0\202.7660.23\plugins\JavaScriptLanguage\jsLanguageServicesImpl\external" />
+    <property name="vue.rearranger.settings.migration" value="true" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\Usama\Data\htdocs\React\Fresco_FE\src\app\containers\CreateCanvas" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="start:dev" type="js.build_tools.npm" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="start:dev" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs>
+        <env name="PORT" value="8000" />
+      </envs>
+      <method v="2" />
+    </configuration>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="d0235698-fcbf-40bf-a9de-ad7a068db01b" name="Default Changelist" comment="" />
+      <created>1604352362323</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1604352362323</updated>
+      <workItem from="1604352363346" duration="3086000" />
+    </task>
+    <task id="LOCAL-00001" summary="Layout Added antd Tabs">
+      <created>1604419318843</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1604419318843</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Fix User Modal">
+      <created>1604419613410</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1604419613410</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Add Canvas Button in Layout">
+      <created>1604421065648</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1604421065648</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Add New Canvas Button to Show FOrm">
+      <created>1604421747167</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1604421747167</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Layout Added antd Tabs" />
+    <MESSAGE value="Fix User Modal" />
+    <MESSAGE value="Add Canvas Button in Layout" />
+    <MESSAGE value="Add New Canvas Button to Show FOrm" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add New Canvas Button to Show FOrm" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="254" y="89" width="1092" height="714" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1604355257203">
+      <screen x="0" y="0" width="1600" height="868" />
+    </state>
+    <state x="254" y="89" width="1092" height="714" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1600.868@0.0.1600.868" timestamp="1604355257203" />
+    <state x="2183" y="85" key="CommitChangelistDialog2" timestamp="1604421695104">
+      <screen x="1600" y="0" width="1920" height="1170" />
+    </state>
+    <state x="2183" y="85" key="CommitChangelistDialog2/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604421695104" />
+    <state x="665" y="109" key="EnvironmentVariablesDialog" timestamp="1604355254437">
+      <screen x="0" y="0" width="1600" height="868" />
+    </state>
+    <state x="665" y="109" key="EnvironmentVariablesDialog/0.0.1600.868@0.0.1600.868" timestamp="1604355254437" />
+    <state width="1479" height="317" key="GridCell.Tab.0.bottom" timestamp="1604423053201">
+      <screen x="1600" y="0" width="1920" height="1170" />
+    </state>
+    <state width="1479" height="317" key="GridCell.Tab.0.bottom/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604423053201" />
+    <state width="1185" height="218" key="GridCell.Tab.0.bottom/0.0.1600.868@0.0.1600.868" timestamp="1604355259669" />
+    <state width="1479" height="317" key="GridCell.Tab.0.center" timestamp="1604423053201">
+      <screen x="1600" y="0" width="1920" height="1170" />
+    </state>
+    <state width="1479" height="317" key="GridCell.Tab.0.center/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604423053201" />
+    <state width="1185" height="218" key="GridCell.Tab.0.center/0.0.1600.868@0.0.1600.868" timestamp="1604355259668" />
+    <state width="1479" height="317" key="GridCell.Tab.0.left" timestamp="1604423053201">
+      <screen x="1600" y="0" width="1920" height="1170" />
+    </state>
+    <state width="1479" height="317" key="GridCell.Tab.0.left/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604423053201" />
+    <state width="1185" height="218" key="GridCell.Tab.0.left/0.0.1600.868@0.0.1600.868" timestamp="1604355259668" />
+    <state width="1479" height="317" key="GridCell.Tab.0.right" timestamp="1604423053201">
+      <screen x="1600" y="0" width="1920" height="1170" />
+    </state>
+    <state width="1479" height="317" key="GridCell.Tab.0.right/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604423053201" />
+    <state width="1185" height="218" key="GridCell.Tab.0.right/0.0.1600.868@0.0.1600.868" timestamp="1604355259668" />
+    <state x="2152" y="314" key="Vcs.Push.Dialog.v2" timestamp="1604421795842">
+      <screen x="1600" y="0" width="1920" height="1170" />
+    </state>
+    <state x="2152" y="314" key="Vcs.Push.Dialog.v2/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604421795842" />
+  </component>
+</project>

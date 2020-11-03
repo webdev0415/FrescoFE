@@ -1,0 +1,123 @@
+@import '~antd/lib/style/themes/default.less';
+
+@primary-color: #9646f5; // primary color for all components
+@layout-header-background: #5d2e8c;
+@layout-header-height: 40px;
+@height-base: 40px;
+@heading-3-size: 24px;
+@font-size-base: 16px;
+@text-color: #4E4B5C;
+@input-placeholder-color: #9B9B9B;
+
+.anticon-loading,
+.anticon-plus {
+    transform: translate(0, -3px);
+}
+
+.ant-typography {
+    font-weight: 300;
+}
+
+.ant-tabs-left {
+    left: 0;
+    top: 40px;
+    bottom: 0;
+    z-index: 10;
+    display: inline-flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    width: 100%;
+    transform: translateX(-50px);
+}
+
+
+.ant-tabs-nav-wrap {
+    height: 100vh;
+    background-color: #E9E9E9;
+    width: 56px;
+}
+
+.ant-tabs-tab {
+    padding: 0 !important;
+    height: 56px;
+    width: 100%;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 !important;
+}
+
+.ant-tabs-tab.ant-tabs-tab-active {
+    background-color: white;
+}
+
+
+
+.canvas-view {
+    position: fixed;
+    overflow: hidden;
+    background-color: white;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
+
+    .canvas-editor {
+        position: relative;
+        width: 100%;
+        height: 100vh;
+
+        .canvas-header {
+            width: 100%;
+            height: 60px;
+            display: inline-flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #EEEEEE;
+
+            .canvas-header-left {
+                height: 100%;
+                display: inline-flex;
+                justify-content: flex-start;
+                align-items: center;
+            }
+            .canvas-header-right {
+                display: inline-flex;
+                justify-content: center;
+                align-items: center;
+                height: 100%;
+            }
+        }
+
+        .canvas-toolbar {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transform: translateY(-50%);
+            background: #F5F5F5;
+            gap:2px;
+            padding: 1px;
+
+            .canvas-toolbar-item {
+                width: 48px;
+                height: 48px;
+                display: inline-flex;
+                justify-content: center;
+                align-items: center;
+                cursor: pointer;
+
+                &:hover {
+                    background-color: white;
+                }
+            }
+        }
+    }
+
+
+}
