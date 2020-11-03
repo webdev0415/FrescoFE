@@ -70,7 +70,7 @@
 
         .canvas-header {
             width: 100%;
-            height: 60px;
+            height: 40px;
             display: inline-flex;
             justify-content: space-between;
             align-items: center;
@@ -81,15 +81,123 @@
                 display: inline-flex;
                 justify-content: flex-start;
                 align-items: center;
+
+                .canvas-header-logo {
+                    width: 60px;
+                    height: 100%;
+                    display: inline-flex;
+                    justify-content: center;
+                    align-items: center;
+                }
+
+                .canvas-header-title {
+                    height: 100%;
+                    display: inline-flex;
+                    justify-content: center;
+                    align-items: center;
+                }
+
+                .canvas-header-actions {
+                    display: inline-flex;
+                    justify-content: center;
+                    align-items: center;
+                    height: 100%;
+                    gap: 1px;
+
+                    .canvas-header-action-item {
+                        display: inline-flex;
+                        justify-content: center;
+                        align-items: center;
+                        height: 100%;
+                        width: 40px;
+                        cursor: pointer;
+                    }
+                }
             }
             .canvas-header-right {
                 display: inline-flex;
                 justify-content: center;
                 align-items: center;
                 height: 100%;
+
+                .ant-btn-group.ant-dropdown-button {
+                    height: 30px;
+
+                    .ant-btn.ant-btn-default {
+                        height: 100%;
+                        display: inline;
+                        justify-content: center;
+                        align-items: center;
+                        margin: 0;
+                        padding: 0 5px;
+                        background-color: #9646F5;
+                        border-top-left-radius: 5px;
+                        border-bottom-left-radius: 5px;
+                        color: white;
+                        font-size: 14px;
+                        cursor: pointer;
+                    }
+
+                    .ant-btn.ant-btn-default.ant-btn-icon-only.ant-dropdown-trigger {
+                        position: relative;
+                        background-color: #9646F5;
+                        border-radius: 0 5px 5px 0;
+                        width: 25px;
+                        cursor: pointer;
+
+                        &:after {
+                            position: absolute;
+                            content: '';
+                            border: 5px solid transparent;
+                            border-top-color: black;
+                            top: 50%;
+                            left: 50%;
+                            transform: translate(-50%, -25%);
+
+                        }
+
+                        .anticon.anticon-ellipsis {
+                            display: none;
+                        }
+                    }
+                }
             }
         }
+        .canvas-text-toolbar {
+            position: fixed;
+            top: 400px;
+            left: 300px;
+            height: 40px;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            background: #F5F5F5;
 
+            .canvas-text-toolbar-item {
+                display: inline-flex;
+                justify-content: center;
+                align-items: center;
+                height: 40px;
+
+                .ant-select-selector {
+                    height: 30px;
+                    border: 0;
+                    background-color: transparent;
+                    .ant-select-selection-item {
+                        line-height: 1;
+                        padding-left: 10px;
+                        display: inline-flex;
+                        justify-content: flex-start;
+                        align-items: center;
+                    }
+                }
+
+                &.action-button {
+                    width: 40px;
+                    cursor: pointer;
+                }
+            }
+        }
         .canvas-toolbar {
             position: absolute;
             top: 50%;
@@ -112,8 +220,55 @@
                 align-items: center;
                 cursor: pointer;
 
+                img {
+                    max-height: 24px;
+                    max-width: 24px;
+                }
+
                 &:hover {
                     background-color: white;
+                }
+            }
+        }
+
+        .canvas-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 40px;
+            display: inline-flex;
+            justify-content: flex-end;
+            align-items: center;
+            background: #EEEEEE;
+
+            .canvas-footer-actions {
+                display: inline-flex;
+                justify-content: center;
+                align-items: center;
+                height: 100%;
+
+                .canvas-footer-action-item {
+                    display: inline-flex;
+                    justify-content: center;
+                    align-items: center;
+                    height: 100%;
+                    cursor: pointer;
+                }
+                .canvas-footer-action-slider {
+                    width: 100px;
+
+                    .ant-slider-track {
+                        background-color: #9B9B9B;
+                    }
+
+                    .ant-slider-rail {
+                        background-color: #9B9B9B;
+                    }
+                    .ant-slider-handle {
+                        background-color: #9B9B9B;
+                        border-color: #9B9B9B;
+                    }
                 }
             }
         }

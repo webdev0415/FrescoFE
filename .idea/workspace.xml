@@ -15,6 +15,11 @@
     </option>
   </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="master" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="ProjectId" id="1jke92fIyr4H4YyXk5rTC0dqXDo" />
@@ -27,8 +32,9 @@
   </component>
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/src/app/containers/CreateCanvas" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.stylelint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
@@ -36,11 +42,12 @@
     <property name="node.js.path.for.package.stylelint" value="project" />
     <property name="node.js.path.for.package.tslint" value="project" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
-    <property name="node.js.selected.package.stylelint" value="D:\Usama\Data\htdocs\React\Fresco_FE\node_modules\stylelint" />
+    <property name="node.js.selected.package.stylelint" value="D:\Usama\Data\htdocs\React\FrescoFE\node_modules\stylelint" />
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
     <property name="nodejs_package_manager_path" value="npm" />
-    <property name="prettierjs.PrettierConfiguration.Package" value="D:\Usama\Data\htdocs\React\Fresco_FE\node_modules\prettier" />
-    <property name="ts.external.directory.path" value="C:\Users\forta\AppData\Local\JetBrains\Toolbox\apps\WebStorm\ch-0\202.7660.23\plugins\JavaScriptLanguage\jsLanguageServicesImpl\external" />
+    <property name="prettierjs.PrettierConfiguration.Package" value="D:\Usama\Data\htdocs\React\FrescoFE\node_modules\prettier" />
+    <property name="settings.editor.selected.configurable" value="settings.javascript.prettier" />
+    <property name="ts.external.directory.path" value="D:\Usama\Data\htdocs\React\FrescoFE\node_modules\typescript\lib" />
     <property name="vue.rearranger.settings.migration" value="true" />
   </component>
   <component name="RecentsManager">
@@ -71,6 +78,8 @@
       <option name="presentableId" value="Default" />
       <updated>1604352362323</updated>
       <workItem from="1604352363346" duration="3086000" />
+      <workItem from="1604425544711" duration="7043000" />
+      <workItem from="1604437611990" duration="322000" />
     </task>
     <task id="LOCAL-00001" summary="Layout Added antd Tabs">
       <created>1604419318843</created>
@@ -100,7 +109,35 @@
       <option name="project" value="LOCAL" />
       <updated>1604421747167</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Add Text Toolbar">
+      <created>1604435724293</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1604435724293</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Add Icons to toolbar">
+      <created>1604436351074</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1604436351075</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Add Categories and Onlclick create canvas to route to canvas page">
+      <created>1604436742999</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1604436742999</updated>
+    </task>
+    <task id="LOCAL-00008" summary="User Modal Z Index to high">
+      <created>1604437913869</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1604437913869</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -111,48 +148,69 @@
     <MESSAGE value="Fix User Modal" />
     <MESSAGE value="Add Canvas Button in Layout" />
     <MESSAGE value="Add New Canvas Button to Show FOrm" />
-    <option name="LAST_COMMIT_MESSAGE" value="Add New Canvas Button to Show FOrm" />
+    <MESSAGE value="Canvas Creater View Created" />
+    <MESSAGE value="Add Text Toolbar" />
+    <MESSAGE value="Add Icons to toolbar" />
+    <MESSAGE value="Add Categories and Onlclick create canvas to route to canvas page" />
+    <MESSAGE value="User Modal Z Index to high" />
+    <option name="LAST_COMMIT_MESSAGE" value="User Modal Z Index to high" />
   </component>
   <component name="WindowStateProjectService">
+    <state x="2274" y="461" key="#Stylelint" timestamp="1604430455610">
+      <screen x="1600" y="0" width="1920" height="1170" />
+    </state>
+    <state x="2274" y="461" key="#Stylelint/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604430455610" />
     <state x="254" y="89" width="1092" height="714" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1604355257203">
       <screen x="0" y="0" width="1600" height="868" />
     </state>
     <state x="254" y="89" width="1092" height="714" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1600.868@0.0.1600.868" timestamp="1604355257203" />
-    <state x="2183" y="85" key="CommitChangelistDialog2" timestamp="1604421695104">
+    <state x="2284" y="375" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1604434857800">
       <screen x="1600" y="0" width="1920" height="1170" />
     </state>
-    <state x="2183" y="85" key="CommitChangelistDialog2/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604421695104" />
+    <state x="2284" y="375" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604434857800" />
+    <state x="2183" y="85" key="CommitChangelistDialog2" timestamp="1604437876322">
+      <screen x="1600" y="0" width="1920" height="1170" />
+    </state>
+    <state x="2183" y="85" key="CommitChangelistDialog2/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604437876322" />
     <state x="665" y="109" key="EnvironmentVariablesDialog" timestamp="1604355254437">
       <screen x="0" y="0" width="1600" height="868" />
     </state>
     <state x="665" y="109" key="EnvironmentVariablesDialog/0.0.1600.868@0.0.1600.868" timestamp="1604355254437" />
-    <state width="1479" height="317" key="GridCell.Tab.0.bottom" timestamp="1604423053201">
+    <state x="2339" y="340" key="FileChooserDialogImpl" timestamp="1604430430201">
       <screen x="1600" y="0" width="1920" height="1170" />
     </state>
-    <state width="1479" height="317" key="GridCell.Tab.0.bottom/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604423053201" />
+    <state x="2339" y="340" key="FileChooserDialogImpl/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604430430201" />
+    <state width="1471" height="317" key="GridCell.Tab.0.bottom" timestamp="1604437937107">
+      <screen x="1600" y="0" width="1920" height="1170" />
+    </state>
+    <state width="1471" height="317" key="GridCell.Tab.0.bottom/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604437937107" />
     <state width="1185" height="218" key="GridCell.Tab.0.bottom/0.0.1600.868@0.0.1600.868" timestamp="1604355259669" />
-    <state width="1479" height="317" key="GridCell.Tab.0.center" timestamp="1604423053201">
+    <state width="1471" height="317" key="GridCell.Tab.0.center" timestamp="1604437937107">
       <screen x="1600" y="0" width="1920" height="1170" />
     </state>
-    <state width="1479" height="317" key="GridCell.Tab.0.center/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604423053201" />
+    <state width="1471" height="317" key="GridCell.Tab.0.center/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604437937107" />
     <state width="1185" height="218" key="GridCell.Tab.0.center/0.0.1600.868@0.0.1600.868" timestamp="1604355259668" />
-    <state width="1479" height="317" key="GridCell.Tab.0.left" timestamp="1604423053201">
+    <state width="1471" height="317" key="GridCell.Tab.0.left" timestamp="1604437937106">
       <screen x="1600" y="0" width="1920" height="1170" />
     </state>
-    <state width="1479" height="317" key="GridCell.Tab.0.left/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604423053201" />
+    <state width="1471" height="317" key="GridCell.Tab.0.left/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604437937106" />
     <state width="1185" height="218" key="GridCell.Tab.0.left/0.0.1600.868@0.0.1600.868" timestamp="1604355259668" />
-    <state width="1479" height="317" key="GridCell.Tab.0.right" timestamp="1604423053201">
+    <state width="1471" height="317" key="GridCell.Tab.0.right" timestamp="1604437937107">
       <screen x="1600" y="0" width="1920" height="1170" />
     </state>
-    <state width="1479" height="317" key="GridCell.Tab.0.right/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604423053201" />
+    <state width="1471" height="317" key="GridCell.Tab.0.right/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604437937107" />
     <state width="1185" height="218" key="GridCell.Tab.0.right/0.0.1600.868@0.0.1600.868" timestamp="1604355259668" />
-    <state x="1692" y="92" width="1736" height="986" key="ShowDiffWithBranchDialog" timestamp="1604439747074">
+    <state x="2061" y="230" key="SettingsEditor" timestamp="1604432505423">
       <screen x="1600" y="0" width="1920" height="1170" />
     </state>
-    <state x="1692" y="92" width="1736" height="986" key="ShowDiffWithBranchDialog/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604439747074" />
-    <state x="2152" y="314" key="Vcs.Push.Dialog.v2" timestamp="1604421795842">
+    <state x="2061" y="230" key="SettingsEditor/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604432505423" />
+    <state x="2152" y="314" key="Vcs.Push.Dialog.v2" timestamp="1604437915922">
       <screen x="1600" y="0" width="1920" height="1170" />
     </state>
-    <state x="2152" y="314" key="Vcs.Push.Dialog.v2/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604421795842" />
+    <state x="2152" y="314" key="Vcs.Push.Dialog.v2/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604437915922" />
+    <state x="2268" y="302" width="583" height="566" key="find.popup" timestamp="1604440338420">
+      <screen x="1600" y="0" width="1920" height="1170" />
+    </state>
+    <state x="2268" y="302" width="583" height="566" key="find.popup/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604440338420" />
   </component>
 </project>

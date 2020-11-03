@@ -234,12 +234,22 @@ export const Dashboard = memo((props: Props) => {
                 <Select.Option value="" disabled>
                   Category
                 </Select.Option>
-                <Select.Option value="lucy">Lucy</Select.Option>
+                <Select.Option value="Customer Journey Maps" disabled>
+                  Customer Journey Maps
+                </Select.Option>
+                <Select.Option value=" Innovation" disabled>
+                  Innovation
+                </Select.Option>
+                <Select.Option value=" Business model" disabled>
+                  Business model
+                </Select.Option>
+                <Select.Option value="Product">Product</Select.Option>
+                <Select.Option value="Marketing">Marketing</Select.Option>
               </Select>
               <Button
                 type="primary"
                 icon={<PlusOutlined />}
-                onClick={() => history.push('/board')}
+                onClick={() => history.push('/create-canvas')}
               >
                 Create Canvas
               </Button>

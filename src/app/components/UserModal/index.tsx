@@ -28,6 +28,8 @@ export const UserModal = ({ logOut, showInvite, organization }) => {
           width: '18rem',
           border: '1px solid #333',
           paddingBottom: '10px',
+
+          zIndex: 1000,
         }}
         id="account-modal"
       >
