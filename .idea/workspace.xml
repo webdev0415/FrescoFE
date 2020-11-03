@@ -1,14 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="d0235698-fcbf-40bf-a9de-ad7a068db01b" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/app/containers/CreateCanvas/Loadable.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/app/containers/CreateCanvas/index.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/assets/icons/canvas-toolbar-selection.svg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/styles/overrides/index.less" beforeDir="false" afterPath="$PROJECT_DIR$/src/styles/overrides/index.less" afterDir="false" />
-    </list>
+    <list default="true" id="d0235698-fcbf-40bf-a9de-ad7a068db01b" name="Default Changelist" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -153,6 +146,10 @@
     </state>
     <state width="1479" height="317" key="GridCell.Tab.0.right/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604423053201" />
     <state width="1185" height="218" key="GridCell.Tab.0.right/0.0.1600.868@0.0.1600.868" timestamp="1604355259668" />
+    <state x="1692" y="92" width="1736" height="986" key="ShowDiffWithBranchDialog" timestamp="1604439747074">
+      <screen x="1600" y="0" width="1920" height="1170" />
+    </state>
+    <state x="1692" y="92" width="1736" height="986" key="ShowDiffWithBranchDialog/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604439747074" />
     <state x="2152" y="314" key="Vcs.Push.Dialog.v2" timestamp="1604421795842">
       <screen x="1600" y="0" width="1920" height="1170" />
     </state>
