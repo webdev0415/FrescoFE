@@ -181,8 +181,14 @@
 
                 .ant-select-selector {
                     height: 30px;
+                    border: 0;
+                    background-color: transparent;
                     .ant-select-selection-item {
                         line-height: 1;
+                        padding-left: 10px;
+                        display: inline-flex;
+                        justify-content: flex-start;
+                        align-items: center;
                     }
                 }
 
@@ -213,6 +219,11 @@
                 justify-content: center;
                 align-items: center;
                 cursor: pointer;
+
+                img {
+                    max-height: 24px;
+                    max-width: 24px;
+                }
 
                 &:hover {
                     background-color: white;

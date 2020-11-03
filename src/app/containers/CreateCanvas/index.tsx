@@ -1,5 +1,7 @@
 import React, { memo } from 'react';
 import canvasToolbarSelectionIcon from 'assets/icons/canvas-toolbar-selection.svg';
+import toolbarShapeIcon from 'assets/icons/toolbar-shape.svg';
+import cursorIcon from 'assets/icons/cursor.svg';
 import logoImg from 'assets/icons/logo-color.svg';
 import undoIcon from 'assets/icons/undo.svg';
 import redoIcon from 'assets/icons/redo.svg';
@@ -104,10 +106,10 @@ export const CreateCanvas = memo(() => {
             <img src={canvasToolbarSelectionIcon} alt="selection" />
           </div>
           <div className="canvas-toolbar-item">
-            <img src={canvasToolbarSelectionIcon} alt="selection" />
+            <img src={toolbarShapeIcon} alt="selection" />
           </div>
           <div className="canvas-toolbar-item">
-            <img src={canvasToolbarSelectionIcon} alt="selection" />
+            <img src={cursorIcon} alt="selection" />
           </div>
         </div>
         <div className="canvas-footer">
