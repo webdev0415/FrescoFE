@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useState } from 'react';
 import canvasToolbarSelectionIcon from 'assets/icons/canvas-toolbar-selection.svg';
 import toolbarShapeIcon from 'assets/icons/toolbar-shape.svg';
 import cursorIcon from 'assets/icons/cursor.svg';
@@ -18,10 +18,15 @@ import toolbarMoreIcon from 'assets/icons/toolbar-more.svg';
 
 import { Dropdown, Menu, Select, Slider } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
+import { DrawCanvas } from '../../components/DrawCanvas';
+import { TextIcon } from '../../components/CanvasIcons';
+
 export const CreateCanvas = memo(() => {
+  const [zoom, setZoom] = useState(0);
   return (
     <div className="canvas-view">
       <div className="canvas-editor">
+        <DrawCanvas className="canvas-body" />
         <div className="canvas-header">
           <div className="canvas-header-left">
             <div className="canvas-header-logo">
@@ -58,7 +63,7 @@ export const CreateCanvas = memo(() => {
           </div>
         </div>
 
-        <div className="canvas-text-toolbar">
+        <div className="canvas-text-toolbar" style={{ display: 'none' }}>
           <div className="canvas-text-toolbar-item">
             <Select
               defaultValue="lucy"
@@ -100,7 +105,8 @@ export const CreateCanvas = memo(() => {
 
         <div className="canvas-toolbar">
           <div className="canvas-toolbar-item">
-            <img src={canvasToolbarSelectionIcon} alt="selection" />
+            <TextIcon />
+            {/*<img src={canvasToolbarSelectionIcon} alt="selection" />*/}
           </div>
           <div className="canvas-toolbar-item">
             <img src={canvasToolbarSelectionIcon} alt="selection" />
@@ -114,16 +120,35 @@ export const CreateCanvas = memo(() => {
         </div>
         <div className="canvas-footer">
           <div className="canvas-footer-actions">
-            <div className="canvas-footer-action-item">
-              <img src={zoomInIcon} alt="selection" />
-            </div>
-            <div className="canvas-footer-action-slider">
-              <Slider defaultValue={30} />
-            </div>
-            <div className="canvas-footer-action-item">
+            <div
+              className="canvas-footer-action-item"
+              onClick={() => {
+                if (zoom !== 0) {
+                  setZoom(Math.max(zoom - 25, 0));
+                }
+              }}
+            >
               <img src={zoomOutIcon} alt="selection" />
             </div>
-            <div className="canvas-footer-action-item">100%</div>
+            <div className="canvas-footer-action-slider">
+              <Slider
+                value={zoom}
+                onChange={event => {
+                  setZoom(event);
+                }}
+              />
+            </div>
+            <div
+              className="canvas-footer-action-item"
+              onClick={() => {
+                if (zoom !== 100) {
+                  setZoom(Math.min(zoom + 25, 100));
+                }
+              }}
+            >
+              <img src={zoomInIcon} alt="selection" />
+            </div>
+            <div className="canvas-footer-action-text">{zoom}%</div>
           </div>
         </div>
       </div>
