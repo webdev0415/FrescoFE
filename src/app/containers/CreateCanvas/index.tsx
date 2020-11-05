@@ -22,11 +22,15 @@ import { DrawCanvas } from '../../components/DrawCanvas';
 import { TextIcon } from '../../components/CanvasIcons';
 
 export const CreateCanvas = memo(() => {
-  const [zoom, setZoom] = useState(0);
+  const [zoom, setZoom] = useState<number>(0);
+  const [drawingTool, setDrawingTool] = useState<
+    'Rect' | 'RectRounded' | 'Triangle' | 'Circle' | 'Star' | null
+  >(null);
+  const [showSubTools, setShowSubTools] = useState<string>('');
   return (
     <div className="canvas-view">
       <div className="canvas-editor">
-        <DrawCanvas className="canvas-body" />
+        <DrawCanvas className="canvas-body" drawingTool={drawingTool} />
         <div className="canvas-header">
           <div className="canvas-header-left">
             <div className="canvas-header-logo">
@@ -112,7 +116,66 @@ export const CreateCanvas = memo(() => {
             <img src={canvasToolbarSelectionIcon} alt="selection" />
           </div>
           <div className="canvas-toolbar-item">
-            <img src={toolbarShapeIcon} alt="selection" />
+            <img
+              src={toolbarShapeIcon}
+              alt="selection"
+              onClick={() => {
+                setShowSubTools('shapes');
+              }}
+            />
+            <div
+              className="canvas-sub-toolbar"
+              style={{
+                display: showSubTools === 'shapes' ? 'flex' : 'none',
+              }}
+            >
+              <div
+                className="canvas-sub-toolbar-item"
+                onClick={() => {
+                  setDrawingTool('Rect');
+                  setShowSubTools('');
+                }}
+              >
+                <span className="material-icons">check_box_outline_blank</span>
+              </div>
+              <div
+                className="canvas-sub-toolbar-item"
+                onClick={() => {
+                  setDrawingTool('Circle');
+                  setShowSubTools('');
+                }}
+              >
+                <span className="material-icons">radio_button_unchecked</span>
+              </div>
+              <div
+                className="canvas-sub-toolbar-item"
+                onClick={() => {
+                  setDrawingTool('Triangle');
+                  setShowSubTools('');
+                }}
+              >
+                <span className="material-icons">change_history</span>
+              </div>
+              <div
+                className="canvas-sub-toolbar-item"
+                onClick={() => {
+                  setDrawingTool('RectRounded');
+                  setShowSubTools('');
+                }}
+              >
+                <span className="material-icons">crop_din</span>
+              </div>
+
+              <div
+                className="canvas-sub-toolbar-item"
+                onClick={() => {
+                  setDrawingTool('Star');
+                  setShowSubTools('');
+                }}
+              >
+                <span className="material-icons">star_outline</span>
+              </div>
+            </div>
           </div>
           <div className="canvas-toolbar-item">
             <img src={cursorIcon} alt="selection" />
