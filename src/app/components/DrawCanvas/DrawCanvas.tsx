@@ -147,6 +147,7 @@ class DrawCanvas extends Component<Props, State> {
     }
   };
   handleMouseUp = e => {
+    console.log(e);
     if (this.isDrawing) {
       this.isDrawing = false;
       let shapeObjectType: ShapeObjectType = this.props.drawingTool;
