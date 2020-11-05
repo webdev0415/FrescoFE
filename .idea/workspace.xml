@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="d0235698-fcbf-40bf-a9de-ad7a068db01b" name="Default Changelist" comment="" />
+    <list default="true" id="d0235698-fcbf-40bf-a9de-ad7a068db01b" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/public/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/components/DrawCanvas/DrawCanvas.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/components/DrawCanvas/DrawCanvas.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/containers/CreateCanvas/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/CreateCanvas/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/styles/overrides/index.less" beforeDir="false" afterPath="$PROJECT_DIR$/src/styles/overrides/index.less" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -11,6 +17,7 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="TypeScript JSX File" />
+        <option value="TypeScript File" />
       </list>
     </option>
   </component>
@@ -34,7 +41,7 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/src/app/components/CanvasIcons" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.stylelint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
@@ -51,7 +58,11 @@
     <property name="vue.rearranger.settings.migration" value="true" />
   </component>
   <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\Usama\Data\htdocs\React\FrescoFE\src\app\components\CanvasIcons" />
+    </key>
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\Usama\Data\htdocs\React\FrescoFE\src\app\components\CanvasIcons" />
       <recent name="D:\Usama\Data\htdocs\React\Fresco_FE\src\app\containers\CreateCanvas" />
     </key>
   </component>
@@ -80,6 +91,10 @@
       <workItem from="1604352363346" duration="3086000" />
       <workItem from="1604425544711" duration="7043000" />
       <workItem from="1604437611990" duration="322000" />
+      <workItem from="1604498506628" duration="1042000" />
+      <workItem from="1604501388659" duration="545000" />
+      <workItem from="1604503979309" duration="3496000" />
+      <workItem from="1604508632688" duration="23757000" />
     </task>
     <task id="LOCAL-00001" summary="Layout Added antd Tabs">
       <created>1604419318843</created>
@@ -137,7 +152,14 @@
       <option name="project" value="LOCAL" />
       <updated>1604437913869</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="Add Canvas and Draw Rect is Functional">
+      <created>1604523916182</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1604523916182</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -153,7 +175,8 @@
     <MESSAGE value="Add Icons to toolbar" />
     <MESSAGE value="Add Categories and Onlclick create canvas to route to canvas page" />
     <MESSAGE value="User Modal Z Index to high" />
-    <option name="LAST_COMMIT_MESSAGE" value="User Modal Z Index to high" />
+    <MESSAGE value="Add Canvas and Draw Rect is Functional" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add Canvas and Draw Rect is Functional" />
   </component>
   <component name="WindowStateProjectService">
     <state x="2274" y="461" key="#Stylelint" timestamp="1604430455610">
@@ -168,10 +191,11 @@
       <screen x="1600" y="0" width="1920" height="1170" />
     </state>
     <state x="2284" y="375" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604434857800" />
-    <state x="2183" y="85" key="CommitChangelistDialog2" timestamp="1604437876322">
-      <screen x="1600" y="0" width="1920" height="1170" />
+    <state x="486" y="0" key="CommitChangelistDialog2" timestamp="1604523831228">
+      <screen x="0" y="0" width="1600" height="868" />
     </state>
     <state x="2183" y="85" key="CommitChangelistDialog2/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604437876322" />
+    <state x="486" y="0" key="CommitChangelistDialog2/0.0.1600.868@0.0.1600.868" timestamp="1604523831227" />
     <state x="665" y="109" key="EnvironmentVariablesDialog" timestamp="1604355254437">
       <screen x="0" y="0" width="1600" height="868" />
     </state>
@@ -180,34 +204,35 @@
       <screen x="1600" y="0" width="1920" height="1170" />
     </state>
     <state x="2339" y="340" key="FileChooserDialogImpl/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604430430201" />
-    <state width="1471" height="317" key="GridCell.Tab.0.bottom" timestamp="1604437937107">
-      <screen x="1600" y="0" width="1920" height="1170" />
+    <state width="1195" height="217" key="GridCell.Tab.0.bottom" timestamp="1604534139137">
+      <screen x="0" y="0" width="1600" height="868" />
     </state>
     <state width="1471" height="317" key="GridCell.Tab.0.bottom/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604437937107" />
-    <state width="1185" height="218" key="GridCell.Tab.0.bottom/0.0.1600.868@0.0.1600.868" timestamp="1604355259669" />
-    <state width="1471" height="317" key="GridCell.Tab.0.center" timestamp="1604437937107">
-      <screen x="1600" y="0" width="1920" height="1170" />
+    <state width="1195" height="217" key="GridCell.Tab.0.bottom/0.0.1600.868@0.0.1600.868" timestamp="1604534139137" />
+    <state width="1195" height="217" key="GridCell.Tab.0.center" timestamp="1604534139137">
+      <screen x="0" y="0" width="1600" height="868" />
     </state>
     <state width="1471" height="317" key="GridCell.Tab.0.center/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604437937107" />
-    <state width="1185" height="218" key="GridCell.Tab.0.center/0.0.1600.868@0.0.1600.868" timestamp="1604355259668" />
-    <state width="1471" height="317" key="GridCell.Tab.0.left" timestamp="1604437937106">
-      <screen x="1600" y="0" width="1920" height="1170" />
+    <state width="1195" height="217" key="GridCell.Tab.0.center/0.0.1600.868@0.0.1600.868" timestamp="1604534139137" />
+    <state width="1195" height="217" key="GridCell.Tab.0.left" timestamp="1604534139137">
+      <screen x="0" y="0" width="1600" height="868" />
     </state>
     <state width="1471" height="317" key="GridCell.Tab.0.left/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604437937106" />
-    <state width="1185" height="218" key="GridCell.Tab.0.left/0.0.1600.868@0.0.1600.868" timestamp="1604355259668" />
-    <state width="1471" height="317" key="GridCell.Tab.0.right" timestamp="1604437937107">
-      <screen x="1600" y="0" width="1920" height="1170" />
+    <state width="1195" height="217" key="GridCell.Tab.0.left/0.0.1600.868@0.0.1600.868" timestamp="1604534139137" />
+    <state width="1195" height="217" key="GridCell.Tab.0.right" timestamp="1604534139137">
+      <screen x="0" y="0" width="1600" height="868" />
     </state>
     <state width="1471" height="317" key="GridCell.Tab.0.right/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604437937107" />
-    <state width="1185" height="218" key="GridCell.Tab.0.right/0.0.1600.868@0.0.1600.868" timestamp="1604355259668" />
+    <state width="1195" height="217" key="GridCell.Tab.0.right/0.0.1600.868@0.0.1600.868" timestamp="1604534139137" />
     <state x="2061" y="230" key="SettingsEditor" timestamp="1604432505423">
       <screen x="1600" y="0" width="1920" height="1170" />
     </state>
     <state x="2061" y="230" key="SettingsEditor/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604432505423" />
-    <state x="2152" y="314" key="Vcs.Push.Dialog.v2" timestamp="1604437915922">
-      <screen x="1600" y="0" width="1920" height="1170" />
+    <state x="460" y="233" key="Vcs.Push.Dialog.v2" timestamp="1604524991844">
+      <screen x="0" y="0" width="1600" height="868" />
     </state>
     <state x="2152" y="314" key="Vcs.Push.Dialog.v2/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604437915922" />
+    <state x="460" y="233" key="Vcs.Push.Dialog.v2/0.0.1600.868@0.0.1600.868" timestamp="1604524991844" />
     <state x="2268" y="302" width="583" height="566" key="find.popup" timestamp="1604440338420">
       <screen x="1600" y="0" width="1920" height="1170" />
     </state>
