@@ -26,7 +26,7 @@ export const SelectBoard = memo((props: Props) => {
     <Div
       style={{
         width: '100%',
-        height: '80vh',
+        height: 'auto',
       }}
     >
       <Tabs
@@ -42,7 +42,7 @@ export const SelectBoard = memo((props: Props) => {
             />
           }
           key="1"
-          style={{ width: '100%', height: '80vh', paddingLeft: 0 }}
+          style={{ width: '100%', height: 'auto', paddingLeft: 0 }}
         >
           <Wraper>
             <DivFlexEnd>
@@ -60,7 +60,7 @@ export const SelectBoard = memo((props: Props) => {
           >
             {panes.map((pan, index) => (
               <TabPane tab={pan.tab} key={pan.key}>
-                <div style={{ height: '65vh', overflow: 'scroll' }}>
+                <div>
                   {[1, 2, 3, 4, 5].map(item => (
                     <Row gutter={[16, 16]}>
                       {[1, 2, 3, 4].map(i => (

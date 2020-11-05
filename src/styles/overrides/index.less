@@ -27,12 +27,16 @@
     justify-content: flex-start;
     align-items: flex-start;
     width: 100%;
-    transform: translateX(-50px);
+   
+}
+
+.ant-layout-content{
+    padding:0 !important;
 }
 
 
 .ant-tabs-nav-wrap {
-    height: 100vh;
+    /*height: 100vh;*/
     background-color: #E9E9E9;
     width: 56px;
 }
@@ -51,7 +55,8 @@
     background-color: white;
 }
 
-
+.ant-tabs-nav-list{width:100%;}
+.ant-tabs > .ant-tabs-nav .ant-tabs-nav-list, .ant-tabs > div > .ant-tabs-nav .ant-tabs-nav-list{height: 57px;}
 
 .canvas-view {
     position: fixed;
