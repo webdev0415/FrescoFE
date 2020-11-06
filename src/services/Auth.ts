@@ -11,7 +11,7 @@ class Auth {
   }
 
   isLogged() {
-    return this.token ? true : false;
+    return !!this.token;
   }
 
   setToken(token) {

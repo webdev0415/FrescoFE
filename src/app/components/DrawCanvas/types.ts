@@ -59,9 +59,15 @@ export interface ObjectInterface extends PointsInterface {
 export interface Props {
   className: string;
   drawingTool: ShapeObjectType;
+  zoomLevel: number;
 }
 
 export interface State {
   objects: ObjectInterface[];
   points: PointsInterface;
+}
+
+export interface FontInterface {
+  fontFamily: string;
+  fontName: string;
 }

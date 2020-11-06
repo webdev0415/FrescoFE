@@ -15,25 +15,26 @@ import Konva from 'konva';
 import {
   ShapeObjectType,
   Props,
-  TextProperties,
-  PointsInterface,
   ObjectInterface,
   State,
+  TextProperties,
+  FontInterface,
 } from './types';
-import {
-  defaultPointState,
-  defaultObjectState,
-  defaultTextProperties,
-} from './constants';
+import { defaultPointState, defaultTextProperties } from './constants';
 import { Select } from 'antd';
-import chevronDownIcon from '../../../assets/icons/chevron-down.svg';
-import toolbarMinusIcon from '../../../assets/icons/toolbar-minus.svg';
-import toolbarPlusIcon from '../../../assets/icons/toolbar-plus.svg';
-import toolbarTextAlignmentIcon from '../../../assets/icons/toolbar-text-alignment.svg';
-import toolbarTextBoldIcon from '../../../assets/icons/toolbar-text-bold.svg';
-import toolbarTextUnderlineIcon from '../../../assets/icons/toolbar-text-underline.svg';
-import toolbarVerticalLineIcon from '../../../assets/icons/toolbar-vertical-line.svg';
-import toolbarMoreIcon from '../../../assets/icons/toolbar-more.svg';
+import {
+  ChevronDownIcon,
+  MinusSquareIcon,
+  MoreIcon,
+  TextAlignmentIcon,
+  TextBoldIcon,
+  TextUnderLineIcon,
+  VerticalLineIcon,
+  TextColorIcon,
+  FillColorIcon,
+  BorderStyleIcon,
+  MarkerIcon,
+} from '../CanvasIcons';
 
 class DrawCanvas extends Component<Props, State> {
   state: State = {
@@ -47,6 +48,41 @@ class DrawCanvas extends Component<Props, State> {
   isItemFocused: boolean = false;
   isItemMoving: boolean = false;
   isDrawing: boolean = false;
+
+  fontList: FontInterface[] = [
+    {
+      fontFamily: 'Arial',
+      fontName: 'Arial',
+    },
+    {
+      fontFamily: 'Roboto',
+      fontName: 'Roboto',
+    },
+    {
+      fontFamily: 'Space Grotesk',
+      fontName: 'Space Grotesk',
+    },
+    {
+      fontFamily: 'Poppins',
+      fontName: 'Poppins',
+    },
+    {
+      fontFamily: 'Syne Tactile',
+      fontName: 'Syne Tactile',
+    },
+    {
+      fontFamily: 'Itim',
+      fontName: 'Itim',
+    },
+    {
+      fontFamily: 'Anton',
+      fontName: 'Anton',
+    },
+    {
+      fontFamily: 'Josefin Sans',
+      fontName: 'Josefin Sans',
+    },
+  ];
 
   componentDidMount() {
     document.addEventListener('keydown', event => {
@@ -163,6 +199,7 @@ class DrawCanvas extends Component<Props, State> {
         return {
           ...shapeObject,
           isSelected: shapeObject.id === id,
+          isEditing: false,
         };
       }),
     });
@@ -178,6 +215,9 @@ class DrawCanvas extends Component<Props, State> {
       return {
         ...shapeObject,
         isDragging: shapeObject.id === id,
+        isEditing: false,
+        isSelected: shapeObject.id === id,
+        isFocused: shapeObject.id === id,
       };
     });
 
@@ -193,22 +233,14 @@ class DrawCanvas extends Component<Props, State> {
         x: shapeObject.id === e.target.id() ? e.target.x() : shapeObject.x,
         y: shapeObject.id === e.target.id() ? e.target.y() : shapeObject.y,
         isDragging: false,
+        isEditing: false,
+        isSelected: shapeObject.id === e.target.id(),
+        isFocused: shapeObject.id === e.target.id(),
       };
     });
     this.setState({ objects });
   };
   handleMouseDown = e => {
-    let id = e.target.id();
-    if (id) {
-      id = id.replace(':Rect', '').replace(':Text', '');
-    }
-    this.setState({
-      objects: this.state.objects.map(shapeObject => ({
-        ...shapeObject,
-        isSelected: shapeObject.id === id,
-        isEditing: shapeObject.isEditing && shapeObject.id === id,
-      })),
-    });
     if (this.props.drawingTool) {
       const position = e.target.getStage().getPointerPosition();
       if (this.props.drawingTool === 'Sticky') {
@@ -221,8 +253,8 @@ class DrawCanvas extends Component<Props, State> {
           id: uuidv4(),
           isDragging: false,
           isFocused: false,
-          isSelected: false,
-          isEditing: false,
+          isSelected: true,
+          isEditing: true,
           rotation: 0,
           type: this.props.drawingTool,
           textData: {
@@ -290,7 +322,13 @@ class DrawCanvas extends Component<Props, State> {
   addCanvasShape = (data: ObjectInterface) => {
     this.setState({
       objects: [
-        ...this.state.objects,
+        ...this.state.objects.map(shapeObject => ({
+          ...shapeObject,
+          isDragging: false,
+          isEditing: false,
+          isSelected: false,
+          isFocused: false,
+        })),
         {
           ...data,
         },
@@ -362,6 +400,18 @@ class DrawCanvas extends Component<Props, State> {
       }),
     });
   }
+
+  updateObjectText(id: string, data: TextProperties): void {
+    const object = this.state.objects.find(item => item.id === id);
+    if (object) {
+      this.updateShape({
+        ...object,
+        textData: {
+          ...data,
+        },
+      });
+    }
+  }
   render() {
     return (
       <>
@@ -369,10 +419,12 @@ class DrawCanvas extends Component<Props, State> {
           .filter(
             shapeObject =>
               (shapeObject.type === 'Sticky' || shapeObject.type === 'Text') &&
-              shapeObject.isEditing,
+              shapeObject.isEditing &&
+              !this.isItemMoving,
           )
           .map(shapeObject => (
             <textarea
+              key={shapeObject.id + ':textarea'}
               className="canvas-textarea"
               value={shapeObject.textData?.text}
               style={{
@@ -382,16 +434,13 @@ class DrawCanvas extends Component<Props, State> {
                 width: (shapeObject.width as number) - 40 + 'px',
                 height: (shapeObject.height as number) - 40 + 'px',
                 zIndex: 10000,
-                backgroundColor: 'white',
+                backgroundColor: '#9646f5',
               }}
               onChange={event => {
                 const target = event.target as HTMLTextAreaElement;
-                this.updateShape({
-                  ...shapeObject,
-                  textData: {
-                    ...shapeObject.textData,
-                    text: target.value,
-                  },
+                this.updateObjectText(shapeObject.id, {
+                  ...shapeObject.textData,
+                  text: target.value,
                 });
               }}
             />
@@ -400,42 +449,49 @@ class DrawCanvas extends Component<Props, State> {
           .filter(
             shapeObject =>
               (shapeObject.type === 'Sticky' || shapeObject.type === 'Text') &&
-              (shapeObject.isEditing || shapeObject.isSelected),
+              (shapeObject.isEditing || shapeObject.isSelected) &&
+              !this.isItemMoving,
           )
           .map(shapeObject => (
             <div
+              key={shapeObject.id + ':toolbar'}
               className="canvas-text-toolbar"
               style={{ left: shapeObject.x, top: shapeObject.y }}
             >
               <div className="canvas-text-toolbar-item">
                 <Select
-                  defaultValue="lucy"
+                  defaultValue={shapeObject.textData?.fontFamily}
                   style={{ width: 120, paddingLeft: '10px' }}
+                  suffixIcon={<ChevronDownIcon />}
+                  onChange={value => {
+                    this.updateObjectText(shapeObject.id, {
+                      ...shapeObject.textData,
+                      fontFamily: value,
+                    });
+                  }}
                 >
-                  <Select.Option value="jack">Jack</Select.Option>
-                  <Select.Option value="lucy">Lucy</Select.Option>
-                  <Select.Option value="disabled" disabled>
-                    Disabled
-                  </Select.Option>
+                  {this.fontList.map(font => (
+                    <Select.Option
+                      key={font.fontName}
+                      value={font.fontFamily}
+                      style={{
+                        fontFamily: font.fontFamily,
+                      }}
+                    >
+                      {font.fontName}
+                    </Select.Option>
+                  ))}
                 </Select>
               </div>
               <div className="canvas-text-toolbar-item action-button">
-                <img src={chevronDownIcon} alt="selection" />
-              </div>
-              <div className="canvas-text-toolbar-item action-button">
-                <img
-                  src={toolbarMinusIcon}
-                  alt="selection"
+                <MinusSquareIcon
                   onClick={() => {
-                    this.updateShape({
-                      ...shapeObject,
-                      textData: {
-                        ...shapeObject.textData,
-                        fontSize: Math.max(
-                          10,
-                          (shapeObject.textData?.fontSize as number) - 1,
-                        ),
-                      },
+                    this.updateObjectText(shapeObject.id, {
+                      ...shapeObject.textData,
+                      fontSize: Math.max(
+                        10,
+                        (shapeObject.textData?.fontSize as number) - 1,
+                      ),
                     });
                   }}
                 />
@@ -444,67 +500,70 @@ class DrawCanvas extends Component<Props, State> {
                 {shapeObject.textData?.fontSize}
               </div>
               <div className="canvas-text-toolbar-item action-button">
-                <img
-                  src={toolbarPlusIcon}
-                  alt="selection"
+                <MinusSquareIcon
                   onClick={() => {
-                    this.updateShape({
-                      ...shapeObject,
-                      textData: {
-                        ...shapeObject.textData,
-                        fontSize: Math.min(
-                          30,
-                          (shapeObject.textData?.fontSize as number) + 1,
-                        ),
-                      },
-                    });
-                  }}
-                />
-              </div>
-              <div className="canvas-text-toolbar-item action-button">
-                <img src={toolbarTextAlignmentIcon} alt="selection" />
-              </div>
-              <div className="canvas-text-toolbar-item action-button">
-                <img
-                  src={toolbarTextBoldIcon}
-                  alt="selection"
-                  onClick={() => {
-                    this.updateShape({
-                      ...shapeObject,
-                      textData: {
-                        ...shapeObject.textData,
-                        fontStyle:
-                          shapeObject.textData?.fontStyle === 'bold'
-                            ? 'normal'
-                            : 'bold',
-                      },
-                    });
-                  }}
-                />
-              </div>
-              <div className="canvas-text-toolbar-item action-button">
-                <img
-                  src={toolbarTextUnderlineIcon}
-                  alt="selection"
-                  onClick={() => {
-                    this.updateShape({
-                      ...shapeObject,
-                      textData: {
-                        ...shapeObject.textData,
-                        textDecoration:
-                          shapeObject.textData?.textDecoration === 'underline'
-                            ? ''
-                            : 'underline',
-                      },
+                    this.updateObjectText(shapeObject.id, {
+                      ...shapeObject.textData,
+                      fontSize: Math.min(
+                        30,
+                        (shapeObject.textData?.fontSize as number) + 1,
+                      ),
                     });
                   }}
                 />
               </div>
               <div className="canvas-text-toolbar-item">
-                <img src={toolbarVerticalLineIcon} alt="selection" />
+                <VerticalLineIcon />
               </div>
               <div className="canvas-text-toolbar-item action-button">
-                <img src={toolbarMoreIcon} alt="selection" />
+                <TextAlignmentIcon />
+              </div>
+              <div className="canvas-text-toolbar-item action-button">
+                <TextBoldIcon
+                  onClick={() => {
+                    this.updateObjectText(shapeObject.id, {
+                      ...shapeObject.textData,
+                      fontStyle:
+                        shapeObject.textData?.fontStyle === 'bold'
+                          ? 'normal'
+                          : 'bold',
+                    });
+                  }}
+                />
+              </div>
+              <div className="canvas-text-toolbar-item action-button">
+                <TextUnderLineIcon
+                  onClick={() => {
+                    this.updateObjectText(shapeObject.id, {
+                      ...shapeObject.textData,
+                      textDecoration:
+                        shapeObject.textData?.textDecoration === 'underline'
+                          ? ''
+                          : 'underline',
+                    });
+                  }}
+                />
+              </div>
+              <div className="canvas-text-toolbar-item action-button">
+                <TextColorIcon />
+              </div>
+              <div className="canvas-text-toolbar-item action-button">
+                <MarkerIcon />
+              </div>
+              <div className="canvas-text-toolbar-item">
+                <VerticalLineIcon />
+              </div>
+              <div className="canvas-text-toolbar-item action-button">
+                <BorderStyleIcon />
+              </div>
+              <div className="canvas-text-toolbar-item action-button">
+                <FillColorIcon />
+              </div>
+              <div className="canvas-text-toolbar-item">
+                <VerticalLineIcon />
+              </div>
+              <div className="canvas-text-toolbar-item action-button">
+                <MoreIcon />
               </div>
             </div>
           ))}
@@ -517,16 +576,21 @@ class DrawCanvas extends Component<Props, State> {
           onMouseDown={this.handleMouseDown}
           onMousemove={this.handleMouseMove}
           onMouseup={this.handleMouseUp}
+          scale={{
+            x: this.props.zoomLevel,
+            y: this.props.zoomLevel,
+          }}
         >
           <Layer>
             {this.state.objects.map(shapeObject => {
               const shapeConfig: Konva.ShapeConfig = {
                 fill: '#9646f5',
                 strokeWidth: 2,
+                opacity: 0.8,
                 stroke:
                   shapeObject.isSelected ||
                   (shapeObject.isFocused && this.props.drawingTool === 'Drag')
-                    ? '#7c7c7c'
+                    ? '#000000'
                     : undefined,
                 shadowBlur: 10,
                 shadowOpacity: 0.6,
@@ -648,7 +712,7 @@ class DrawCanvas extends Component<Props, State> {
                 );
               } else if (shapeObject.type === 'Sticky') {
                 return (
-                  <Group key={shapeObject.id} {...shapeConfig} {...nodeConfig}>
+                  <Group key={shapeObject.id} {...nodeConfig}>
                     <Rect
                       key={shapeObject.id + ':Rect'}
                       id={shapeObject.id + ':Rect'}
@@ -659,6 +723,7 @@ class DrawCanvas extends Component<Props, State> {
                       onDblClick={this.handleDblClick}
                       cornerRadius={30}
                       fill="#9646f5"
+                      {...shapeConfig}
                     />
                     <Text
                       key={shapeObject.id + ':Text'}
@@ -684,8 +749,14 @@ class DrawCanvas extends Component<Props, State> {
                 outerRadius={this.state.points.width as number}
                 x={this.state.points.x}
                 y={this.state.points.y}
-                stroke="#9646f5"
+                stroke="#000000"
                 dash={[10, 10]}
+                {...{
+                  shadowBlur: 10,
+                  shadowOpacity: 0.6,
+                  shadowOffsetX: 10,
+                  shadowOffsetY: 10,
+                }}
               />
             )}
             {this.props.drawingTool === 'Triangle' && this.isDrawing && (
@@ -704,8 +775,14 @@ class DrawCanvas extends Component<Props, State> {
                   // (!) Konva specific method, it is very important
                   context.fillStrokeShape(shape);
                 }}
-                stroke="#9646f5"
+                stroke="#000000"
                 dash={[10, 10]}
+                {...{
+                  shadowBlur: 10,
+                  shadowOpacity: 0.6,
+                  shadowOffsetX: 10,
+                  shadowOffsetY: 10,
+                }}
               />
             )}
 
@@ -716,8 +793,14 @@ class DrawCanvas extends Component<Props, State> {
                   x={this.state.points.x}
                   y={this.state.points.y}
                   radius={this.state.points.radius as number}
-                  stroke="#9646f5"
+                  stroke="#000000"
                   dash={[10, 10]}
+                  {...{
+                    shadowBlur: 10,
+                    shadowOpacity: 0.6,
+                    shadowOffsetX: 10,
+                    shadowOffsetY: 10,
+                  }}
                 />
               )}
 
@@ -729,8 +812,14 @@ class DrawCanvas extends Component<Props, State> {
                   y={this.state.points.y}
                   radiusX={this.state.points.ellipseRadius?.x as number}
                   radiusY={this.state.points.ellipseRadius?.y as number}
-                  stroke="#9646f5"
+                  stroke="#000000"
                   dash={[10, 10]}
+                  {...{
+                    shadowBlur: 10,
+                    shadowOpacity: 0.6,
+                    shadowOffsetX: 10,
+                    shadowOffsetY: 10,
+                  }}
                 />
               )}
 
@@ -743,8 +832,14 @@ class DrawCanvas extends Component<Props, State> {
                   width={this.state.points.width}
                   height={this.state.points.height}
                   cornerRadius={this.state.points.radius}
-                  stroke="#9646f5"
+                  stroke="#000000"
                   dash={[10, 10]}
+                  {...{
+                    shadowBlur: 10,
+                    shadowOpacity: 0.6,
+                    shadowOffsetX: 10,
+                    shadowOffsetY: 10,
+                  }}
                 />
               )}
 
@@ -756,8 +851,14 @@ class DrawCanvas extends Component<Props, State> {
                   width={this.state.points.width}
                   height={this.state.points.height}
                   cornerRadius={30}
-                  stroke="#9646f5"
+                  stroke="#000000"
                   dash={[10, 10]}
+                  {...{
+                    shadowBlur: 10,
+                    shadowOpacity: 0.6,
+                    shadowOffsetX: 10,
+                    shadowOffsetY: 10,
+                  }}
                 />
               </>
             )}
