@@ -1,4 +1,4 @@
-import React, { memo, useState } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 import canvasToolbarSelectionIcon from 'assets/icons/canvas-toolbar-selection.svg';
 import toolbarShapeIcon from 'assets/icons/toolbar-shape.svg';
 import cursorIcon from 'assets/icons/cursor.svg';
@@ -20,13 +20,35 @@ import { Dropdown, Menu, Select, Slider } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import { DrawCanvas } from '../../components/DrawCanvas';
 import { TextIcon } from '../../components/CanvasIcons';
+import clsx from 'clsx';
 
 export const CreateCanvas = memo(() => {
   const [zoom, setZoom] = useState<number>(0);
   const [drawingTool, setDrawingTool] = useState<
-    'Rect' | 'RectRounded' | 'Triangle' | 'Circle' | 'Star' | null
+    | 'Rect'
+    | 'RectRounded'
+    | 'Triangle'
+    | 'Circle'
+    | 'Star'
+    | 'Drag'
+    | 'Text'
+    | 'Sticky'
+    | null
   >(null);
   const [showSubTools, setShowSubTools] = useState<string>('');
+  useEffect(() => {
+    document.addEventListener('click', event => {
+      const target = event.target as Node;
+      const toolbar = document.getElementById(
+        'canvas-toolbar',
+      ) as HTMLDivElement;
+      if (toolbar) {
+        if (!toolbar.contains(target)) {
+          setShowSubTools('');
+        }
+      }
+    });
+  }, []);
   return (
     <div className="canvas-view">
       <div className="canvas-editor">
@@ -67,55 +89,44 @@ export const CreateCanvas = memo(() => {
           </div>
         </div>
 
-        <div className="canvas-text-toolbar" style={{ display: 'none' }}>
-          <div className="canvas-text-toolbar-item">
-            <Select
-              defaultValue="lucy"
-              style={{ width: 120, paddingLeft: '10px' }}
-            >
-              <Select.Option value="jack">Jack</Select.Option>
-              <Select.Option value="lucy">Lucy</Select.Option>
-              <Select.Option value="disabled" disabled>
-                Disabled
-              </Select.Option>
-            </Select>
-          </div>
-          <div className="canvas-text-toolbar-item action-button">
-            <img src={chevronDownIcon} alt="selection" />
-          </div>
-          <div className="canvas-text-toolbar-item action-button">
-            <img src={toolbarMinusIcon} alt="selection" />
-          </div>
-          <div className="canvas-text-toolbar-item">12</div>
-          <div className="canvas-text-toolbar-item action-button">
-            <img src={toolbarPlusIcon} alt="selection" />
-          </div>
-          <div className="canvas-text-toolbar-item action-button">
-            <img src={toolbarTextAlignmentIcon} alt="selection" />
-          </div>
-          <div className="canvas-text-toolbar-item action-button">
-            <img src={toolbarTextBoldIcon} alt="selection" />
-          </div>
-          <div className="canvas-text-toolbar-item action-button">
-            <img src={toolbarTextUnderlineIcon} alt="selection" />
-          </div>
-          <div className="canvas-text-toolbar-item">
-            <img src={toolbarVerticalLineIcon} alt="selection" />
-          </div>
-          <div className="canvas-text-toolbar-item action-button">
-            <img src={toolbarMoreIcon} alt="selection" />
-          </div>
-        </div>
-
-        <div className="canvas-toolbar">
-          <div className="canvas-toolbar-item">
-            <TextIcon />
+        <div className="canvas-toolbar" id="canvas-toolbar">
+          <div
+            className={clsx(
+              'canvas-toolbar-item',
+              drawingTool === 'Sticky' && 'active',
+            )}
+          >
+            <TextIcon
+              onClick={() => {
+                setDrawingTool('Sticky');
+                setShowSubTools('');
+              }}
+            />
             {/*<img src={canvasToolbarSelectionIcon} alt="selection" />*/}
           </div>
-          <div className="canvas-toolbar-item">
-            <img src={canvasToolbarSelectionIcon} alt="selection" />
+          <div
+            className={clsx(
+              'canvas-toolbar-item',
+              drawingTool === 'Text' && 'active',
+            )}
+          >
+            <img
+              src={canvasToolbarSelectionIcon}
+              alt="selection"
+              onClick={() => {
+                setDrawingTool('Text');
+                setShowSubTools('');
+              }}
+            />
           </div>
-          <div className="canvas-toolbar-item">
+          <div
+            className={clsx(
+              'canvas-toolbar-item',
+              ['Rect', 'Circle', 'Triangle', 'RectRounded', 'Star'].includes(
+                drawingTool as string,
+              ) && 'active',
+            )}
+          >
             <img
               src={toolbarShapeIcon}
               alt="selection"
@@ -177,8 +188,20 @@ export const CreateCanvas = memo(() => {
               </div>
             </div>
           </div>
-          <div className="canvas-toolbar-item">
-            <img src={cursorIcon} alt="selection" />
+          <div
+            className={clsx(
+              'canvas-toolbar-item',
+              drawingTool === 'Drag' && 'active',
+            )}
+          >
+            <img
+              src={cursorIcon}
+              alt="selection"
+              onClick={() => {
+                setDrawingTool('Drag');
+                setShowSubTools('');
+              }}
+            />
           </div>
         </div>
         <div className="canvas-footer">
