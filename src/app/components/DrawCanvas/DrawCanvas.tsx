@@ -348,6 +348,20 @@ class DrawCanvas extends Component<Props, State> {
       });
     }
   };
+  updateShape(data: ObjectInterface) {
+    this.setState({
+      objects: this.state.objects.map(shapeObject => {
+        if (shapeObject.id === data.id) {
+          return {
+            ...data,
+            id: shapeObject.id,
+          };
+        } else {
+          return data;
+        }
+      }),
+    });
+  }
   render() {
     return (
       <>
@@ -359,16 +373,26 @@ class DrawCanvas extends Component<Props, State> {
           )
           .map(shapeObject => (
             <textarea
-              id="canvas-textarea"
+              className="canvas-textarea"
               value={shapeObject.textData?.text}
               style={{
                 position: 'absolute',
-                left: shapeObject.x,
-                top: shapeObject.y,
-                width: shapeObject.width + 'px',
-                height: shapeObject.height + 'px',
+                left: shapeObject.x + 20,
+                top: shapeObject.y + 20,
+                width: (shapeObject.width as number) - 40 + 'px',
+                height: (shapeObject.height as number) - 40 + 'px',
                 zIndex: 10000,
                 backgroundColor: 'white',
+              }}
+              onChange={event => {
+                const target = event.target as HTMLTextAreaElement;
+                this.updateShape({
+                  ...shapeObject,
+                  textData: {
+                    ...shapeObject.textData,
+                    text: target.value,
+                  },
+                });
               }}
             />
           ))}
@@ -399,20 +423,82 @@ class DrawCanvas extends Component<Props, State> {
                 <img src={chevronDownIcon} alt="selection" />
               </div>
               <div className="canvas-text-toolbar-item action-button">
-                <img src={toolbarMinusIcon} alt="selection" />
+                <img
+                  src={toolbarMinusIcon}
+                  alt="selection"
+                  onClick={() => {
+                    this.updateShape({
+                      ...shapeObject,
+                      textData: {
+                        ...shapeObject.textData,
+                        fontSize: Math.max(
+                          10,
+                          (shapeObject.textData?.fontSize as number) - 1,
+                        ),
+                      },
+                    });
+                  }}
+                />
               </div>
-              <div className="canvas-text-toolbar-item">12</div>
+              <div className="canvas-text-toolbar-item">
+                {shapeObject.textData?.fontSize}
+              </div>
               <div className="canvas-text-toolbar-item action-button">
-                <img src={toolbarPlusIcon} alt="selection" />
+                <img
+                  src={toolbarPlusIcon}
+                  alt="selection"
+                  onClick={() => {
+                    this.updateShape({
+                      ...shapeObject,
+                      textData: {
+                        ...shapeObject.textData,
+                        fontSize: Math.min(
+                          30,
+                          (shapeObject.textData?.fontSize as number) + 1,
+                        ),
+                      },
+                    });
+                  }}
+                />
               </div>
               <div className="canvas-text-toolbar-item action-button">
                 <img src={toolbarTextAlignmentIcon} alt="selection" />
               </div>
               <div className="canvas-text-toolbar-item action-button">
-                <img src={toolbarTextBoldIcon} alt="selection" />
+                <img
+                  src={toolbarTextBoldIcon}
+                  alt="selection"
+                  onClick={() => {
+                    this.updateShape({
+                      ...shapeObject,
+                      textData: {
+                        ...shapeObject.textData,
+                        fontStyle:
+                          shapeObject.textData?.fontStyle === 'bold'
+                            ? 'normal'
+                            : 'bold',
+                      },
+                    });
+                  }}
+                />
               </div>
               <div className="canvas-text-toolbar-item action-button">
-                <img src={toolbarTextUnderlineIcon} alt="selection" />
+                <img
+                  src={toolbarTextUnderlineIcon}
+                  alt="selection"
+                  onClick={() => {
+                    this.updateShape({
+                      ...shapeObject,
+                      textData: {
+                        ...shapeObject.textData,
+                        textDecoration:
+                          shapeObject.textData?.textDecoration === 'underline'
+                            ? ''
+                            : 'underline',
+                      },
+                    });
+                  }}
+                />
               </div>
               <div className="canvas-text-toolbar-item">
                 <img src={toolbarVerticalLineIcon} alt="selection" />
