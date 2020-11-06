@@ -122,21 +122,6 @@ class DrawCanvas extends Component<Props, State> {
     });
   };
 
-  handleDragStart = e => {
-    this.isItemMoving = true;
-    this.handleChangeCursor();
-    const id = e.target.id();
-    this.handleSelectObject(id);
-    const objects = this.state.objects.map(shapeObject => {
-      return {
-        ...shapeObject,
-        isDragging: shapeObject.id === id,
-      };
-    });
-
-    this.setState({ objects });
-  };
-
   onMouseEnterItem = e => {
     let id = e.target.id();
     if (id) {
@@ -184,14 +169,29 @@ class DrawCanvas extends Component<Props, State> {
     this.handleSelectObject(id);
   };
 
+  handleDragStart = e => {
+    this.isItemMoving = true;
+    this.handleChangeCursor();
+    const id = e.target.id();
+    this.handleSelectObject(id);
+    const objects = this.state.objects.map(shapeObject => {
+      return {
+        ...shapeObject,
+        isDragging: shapeObject.id === id,
+      };
+    });
+
+    this.setState({ objects });
+  };
+
   handleDragEnd = e => {
     this.isItemMoving = false;
     this.handleChangeCursor();
     const objects = this.state.objects.map(shapeObject => {
       return {
         ...shapeObject,
-        x: e.target.x(),
-        y: e.target.y(),
+        x: shapeObject.id === e.target.id() ? e.target.x() : shapeObject.x,
+        y: shapeObject.id === e.target.id() ? e.target.y() : shapeObject.y,
         isDragging: false,
       };
     });
@@ -357,7 +357,7 @@ class DrawCanvas extends Component<Props, State> {
             id: shapeObject.id,
           };
         } else {
-          return data;
+          return shapeObject;
         }
       }),
     });
