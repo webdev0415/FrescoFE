@@ -1,3 +1,5 @@
+import Konva from 'konva';
+
 export type ShapeObjectType =
   | 'Rect'
   | 'RectRounded'
@@ -65,9 +67,19 @@ export interface Props {
 export interface State {
   objects: ObjectInterface[];
   points: PointsInterface;
+  history: ObjectInterface[][];
+  historyIndex: number;
 }
 
 export interface FontInterface {
   fontFamily: string;
   fontName: string;
+}
+
+export interface TransformShapeProps {
+  data: ObjectInterface;
+  onChange(data: ObjectInterface): void;
+  onSelect(event: Konva.KonvaEventObject<MouseEvent>): void;
+  onEditText?(event: Konva.KonvaEventObject<MouseEvent>): void;
+  shapeConfig: Konva.ShapeConfig;
 }

@@ -54,7 +54,7 @@ export const CreateCanvas = memo(() => {
         <DrawCanvas
           className="canvas-body"
           drawingTool={drawingTool}
-          zoomLevel={zoom / 10 + 1}
+          zoomLevel={zoom / 100 + 1}
         />
         <div className="canvas-header">
           <div className="canvas-header-left">
@@ -63,10 +63,10 @@ export const CreateCanvas = memo(() => {
             </div>
             <div className="canvas-header-title">My Customer Journey</div>
             <div className="canvas-header-actions">
-              <div className="canvas-header-action-item">
+              <div className="canvas-header-action-item" id="undo-history">
                 <UndoIcon />
               </div>
-              <div className="canvas-header-action-item">
+              <div className="canvas-header-action-item" id="redo-history">
                 <RedoIcon />
               </div>
             </div>
