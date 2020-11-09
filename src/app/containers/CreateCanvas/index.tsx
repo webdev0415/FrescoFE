@@ -1,25 +1,24 @@
 import React, { memo, useEffect, useState } from 'react';
-import canvasToolbarSelectionIcon from 'assets/icons/canvas-toolbar-selection.svg';
-import toolbarShapeIcon from 'assets/icons/toolbar-shape.svg';
-import cursorIcon from 'assets/icons/cursor.svg';
 import logoImg from 'assets/icons/logo-color.svg';
-import undoIcon from 'assets/icons/undo.svg';
-import redoIcon from 'assets/icons/redo.svg';
-import zoomInIcon from 'assets/icons/zoom-in.svg';
-import zoomOutIcon from 'assets/icons/zoom-out.svg';
-import chevronDownIcon from 'assets/icons/chevron-down.svg';
-import toolbarMinusIcon from 'assets/icons/toolbar-minus.svg';
-import toolbarPlusIcon from 'assets/icons/toolbar-plus.svg';
-import toolbarTextAlignmentIcon from 'assets/icons/toolbar-text-alignment.svg';
-import toolbarTextBoldIcon from 'assets/icons/toolbar-text-bold.svg';
-import toolbarTextUnderlineIcon from 'assets/icons/toolbar-text-underline.svg';
-import toolbarVerticalLineIcon from 'assets/icons/toolbar-vertical-line.svg';
-import toolbarMoreIcon from 'assets/icons/toolbar-more.svg';
 
-import { Dropdown, Menu, Select, Slider } from 'antd';
+import { Dropdown, Menu, Slider } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import { DrawCanvas } from '../../components/DrawCanvas';
-import { TextIcon } from '../../components/CanvasIcons';
+import {
+  TextIcon,
+  ZoomInIcon,
+  ZoomOutIcon,
+  RedoIcon,
+  UndoIcon,
+  CursorIcon,
+  ShapesIcon,
+  StickyNoteIcon,
+  StarShapeIcon,
+  RectangleShapeIcon,
+  RoundedRectangleShapeIcon,
+  TriangleShapeIcon,
+  CircleShapeIcon,
+} from '../../components/CanvasIcons';
 import clsx from 'clsx';
 
 export const CreateCanvas = memo(() => {
@@ -52,7 +51,11 @@ export const CreateCanvas = memo(() => {
   return (
     <div className="canvas-view">
       <div className="canvas-editor">
-        <DrawCanvas className="canvas-body" drawingTool={drawingTool} />
+        <DrawCanvas
+          className="canvas-body"
+          drawingTool={drawingTool}
+          zoomLevel={zoom / 100 + 1}
+        />
         <div className="canvas-header">
           <div className="canvas-header-left">
             <div className="canvas-header-logo">
@@ -60,11 +63,11 @@ export const CreateCanvas = memo(() => {
             </div>
             <div className="canvas-header-title">My Customer Journey</div>
             <div className="canvas-header-actions">
-              <div className="canvas-header-action-item">
-                <img src={undoIcon} alt="logo" />
+              <div className="canvas-header-action-item" id="undo-history">
+                <UndoIcon />
               </div>
-              <div className="canvas-header-action-item">
-                <img src={redoIcon} alt="logo" />
+              <div className="canvas-header-action-item" id="redo-history">
+                <RedoIcon />
               </div>
             </div>
           </div>
@@ -96,7 +99,7 @@ export const CreateCanvas = memo(() => {
               drawingTool === 'Sticky' && 'active',
             )}
           >
-            <TextIcon
+            <StickyNoteIcon
               onClick={() => {
                 setDrawingTool('Sticky');
                 setShowSubTools('');
@@ -110,9 +113,7 @@ export const CreateCanvas = memo(() => {
               drawingTool === 'Text' && 'active',
             )}
           >
-            <img
-              src={canvasToolbarSelectionIcon}
-              alt="selection"
+            <TextIcon
               onClick={() => {
                 setDrawingTool('Text');
                 setShowSubTools('');
@@ -127,13 +128,14 @@ export const CreateCanvas = memo(() => {
               ) && 'active',
             )}
           >
-            <img
-              src={toolbarShapeIcon}
-              alt="selection"
+            <span
               onClick={() => {
                 setShowSubTools('shapes');
               }}
-            />
+            >
+              <ShapesIcon />
+            </span>
+
             <div
               className="canvas-sub-toolbar"
               style={{
@@ -147,7 +149,7 @@ export const CreateCanvas = memo(() => {
                   setShowSubTools('');
                 }}
               >
-                <span className="material-icons">check_box_outline_blank</span>
+                <RectangleShapeIcon />
               </div>
               <div
                 className="canvas-sub-toolbar-item"
@@ -156,7 +158,7 @@ export const CreateCanvas = memo(() => {
                   setShowSubTools('');
                 }}
               >
-                <span className="material-icons">radio_button_unchecked</span>
+                <CircleShapeIcon />
               </div>
               <div
                 className="canvas-sub-toolbar-item"
@@ -165,7 +167,7 @@ export const CreateCanvas = memo(() => {
                   setShowSubTools('');
                 }}
               >
-                <span className="material-icons">change_history</span>
+                <TriangleShapeIcon />
               </div>
               <div
                 className="canvas-sub-toolbar-item"
@@ -174,7 +176,7 @@ export const CreateCanvas = memo(() => {
                   setShowSubTools('');
                 }}
               >
-                <span className="material-icons">crop_din</span>
+                <RoundedRectangleShapeIcon />
               </div>
 
               <div
@@ -184,7 +186,7 @@ export const CreateCanvas = memo(() => {
                   setShowSubTools('');
                 }}
               >
-                <span className="material-icons">star_outline</span>
+                <StarShapeIcon />
               </div>
             </div>
           </div>
@@ -194,9 +196,7 @@ export const CreateCanvas = memo(() => {
               drawingTool === 'Drag' && 'active',
             )}
           >
-            <img
-              src={cursorIcon}
-              alt="selection"
+            <CursorIcon
               onClick={() => {
                 setDrawingTool('Drag');
                 setShowSubTools('');
@@ -214,7 +214,7 @@ export const CreateCanvas = memo(() => {
                 }
               }}
             >
-              <img src={zoomOutIcon} alt="selection" />
+              <ZoomOutIcon />
             </div>
             <div className="canvas-footer-action-slider">
               <Slider
@@ -232,7 +232,7 @@ export const CreateCanvas = memo(() => {
                 }
               }}
             >
-              <img src={zoomInIcon} alt="selection" />
+              <ZoomInIcon />
             </div>
             <div className="canvas-footer-action-text">{zoom}%</div>
           </div>

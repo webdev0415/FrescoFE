@@ -1,4 +1,5 @@
 @import '~antd/lib/style/themes/default.less';
+@import '_fonts';
 
 @primary-color: #9646f5; // primary color for all components
 @layout-header-background: #5d2e8c;
@@ -218,6 +219,11 @@
         &.action-button {
           width: 40px;
           cursor: pointer;
+
+          &:hover {
+            background-color: white;
+            color: #9646f5
+          }
         }
       }
     }
