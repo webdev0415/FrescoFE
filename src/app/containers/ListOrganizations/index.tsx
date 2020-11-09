@@ -1,8 +1,7 @@
-import React, { Fragment, memo, useEffect } from 'react';
+import React, { Fragment, useEffect } from 'react';
 import { Col, Row } from 'antd';
-import { Helmet } from 'react-helmet-async';
 import { useDispatch, useSelector } from 'react-redux';
-import { Redirect, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { PlusCircleOutlined } from '@ant-design/icons';
 
 import { useInjectReducer, useInjectSaga } from 'utils/redux-injectors';
