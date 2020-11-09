@@ -468,9 +468,11 @@ class DrawCanvas extends Component<Props, State> {
   };
 
   updateHistory(data: ObjectInterface[]) {
-    console.log(data);
     this.setState({
-      history: [...this.state.history, data],
+      history: [
+        ...this.state.history,
+        data.map(item => ({ ...item, isEditing: false, isDragging: false })),
+      ],
       historyIndex: this.state.historyIndex + 1,
     });
   }
@@ -507,6 +509,7 @@ class DrawCanvas extends Component<Props, State> {
       this.updateShape(
         {
           ...object,
+          isEditing: false,
           textData: {
             ...data,
           },
@@ -517,7 +520,7 @@ class DrawCanvas extends Component<Props, State> {
   }
   render() {
     return (
-      <>
+      <div className={this.props.className}>
         {this.state.objects
           .filter(
             shapeObject =>
@@ -526,73 +529,46 @@ class DrawCanvas extends Component<Props, State> {
               !this.isItemMoving,
           )
           .map(shapeObject => (
-            <>
-              <Modal
-                title="Edit Text"
-                visible={shapeObject.isEditing}
-                // onOk={this.handleOk}
-                // onCancel={this.handleCancel}
-                okText="Save"
-                cancelText="Cancel"
-              >
-                <p className="canvas-text-editor" contentEditable="true">
-                  {shapeObject.textData?.text}
-                </p>
-              </Modal>
-              <textarea
-                key={shapeObject.id + ':textarea'}
-                className="canvas-textarea"
-                defaultValue={shapeObject.textData?.text}
-                style={{
-                  position: 'absolute',
-                  left: Math.round(
-                    (shapeObject.x + 20 + 20 * (this.props.zoomLevel - 1)) *
-                      this.props.zoomLevel,
-                  ),
-                  top: Math.round(
-                    (shapeObject.y + 20 + 20 * (this.props.zoomLevel - 1)) *
-                      this.props.zoomLevel,
-                  ),
-                  width: Math.round((shapeObject.width as number) - 40) + 'px',
-                  height:
-                    Math.round((shapeObject.height as number) - 40) + 'px',
-                  zIndex: 10000,
-                  backgroundColor:
-                    shapeObject.type === 'Sticky' ? '#9646f5' : 'white',
-                  transform: `scale(${this.props.zoomLevel})  translateY(${
-                    40 + 20 * (this.props.zoomLevel - 1)
-                  }px)`,
-
-                  // transform: (() => {
-                  //   const x = (this.props.zoomLevel - 1) * 100;
-                  //   const y = 0;
-                  //   const translateX = `translateX(calc(${x}% - calc( ) ))`;
-                  //   const translateY = `translateY()`;
-                  //   const translate = `translate(calc(${x}% - calc(${
-                  //     40 * (this.props.zoomLevel - 1)
-                  //   }px / ${this.props.zoomLevel})), calc(${
-                  //     40 * this.props.zoomLevel
-                  //   }px * ${this.props.zoomLevel}))`;
-                  //   const scale = `scale(${this.props.zoomLevel})`;
-                  //   console.log(translate);
-                  //   return `${scale} ${translate}`;
-                  // })(),
-                }}
-                onBlur={event => {
-                  const target = event.target as HTMLTextAreaElement;
+            <Modal
+              title="Edit Text"
+              visible={shapeObject.isEditing}
+              onOk={e => {
+                const input = document.getElementById(
+                  'canvas-text-editor',
+                ) as HTMLParagraphElement;
+                if (input) {
                   this.updateObjectText(shapeObject.id, {
                     ...shapeObject.textData,
-                    text: target.value,
+                    text: input.innerText,
                   });
-                }}
-              />
-            </>
+                }
+              }}
+              onCancel={e => {
+                this.updateShape({
+                  ...shapeObject,
+                  isDragging: false,
+                  isSelected: false,
+                  isEditing: false,
+                  isFocused: false,
+                });
+              }}
+              okText="Save"
+              cancelText="Cancel"
+            >
+              <p
+                className="canvas-text-editor"
+                id="canvas-text-editor"
+                contentEditable="true"
+              >
+                {shapeObject.textData?.text}
+              </p>
+            </Modal>
           ))}
         {this.state.objects
           .filter(
             shapeObject =>
               (shapeObject.type === 'Sticky' || shapeObject.type === 'Text') &&
-              (shapeObject.isEditing || shapeObject.isSelected) &&
+              shapeObject.isSelected &&
               !this.isItemMoving,
           )
           .map(shapeObject => (
@@ -715,9 +691,9 @@ class DrawCanvas extends Component<Props, State> {
           ))}
 
         <Stage
-          width={window.innerWidth}
-          height={window.innerHeight - 80}
-          className={this.props.className}
+          width={window.innerWidth * this.props.zoomLevel}
+          height={(window.innerHeight - 80) * this.props.zoomLevel}
+          className="canvas-body-content"
           ref={ref => (this.stageRef = ref)}
           onMouseDown={this.handleMouseDown}
           onMousemove={this.handleMouseMove}
@@ -1038,7 +1014,7 @@ class DrawCanvas extends Component<Props, State> {
             )}
           </Layer>
         </Stage>
-      </>
+      </div>
     );
   }
 }
