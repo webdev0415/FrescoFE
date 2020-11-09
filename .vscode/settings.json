@@ -9,7 +9,7 @@
   "javascript.updateImportsOnFileMove.enabled": "always",
   "vsicons.projectDetection.autoReload": true,
   "[typescriptreact]": {
-    "editor.defaultFormatter": "rvest.vs-code-prettier-eslint"
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[javascript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"

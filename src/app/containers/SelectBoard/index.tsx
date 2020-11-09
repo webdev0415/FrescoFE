@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { Button, Tabs, Row } from 'antd';
+import { Button, Tabs, Row, Typography, Input } from 'antd';
 import styled from 'styled-components/macro';
 import {
   BookOutlined,
@@ -27,13 +27,14 @@ export const SelectBoard = memo((props: Props) => {
       style={{
         width: '100%',
         height: '80vh',
+        background: '#ffffff',
       }}
     >
       <Tabs
         hideAdd
         type={'card'}
         tabPosition={'left'}
-        tabBarStyle={{ height: '80vh', width: 50, backgroundColor: '#B3B6B7' }}
+        tabBarStyle={{ height: '80vh', backgroundColor: '#B3B6B7' }}
       >
         <TabPane
           tab={
@@ -45,13 +46,14 @@ export const SelectBoard = memo((props: Props) => {
           style={{ width: '100%', height: '80vh', paddingLeft: 0 }}
         >
           <Wraper>
-            <DivFlexEnd>
-              <UserOutlined style={{ fontSize: '2rem' }} />
-            </DivFlexEnd>
-
-            <Button icon={<CloseOutlined style={{}} />} style={{ height: 40 }}>
+            <InputWrapper>
+              <Input placeholder="Board Name" />
+            </InputWrapper>
+            <Typography
+              style={{ height: 40, color: '#9646F5', cursor: 'pointer' }}
+            >
               Cancel
-            </Button>
+            </Typography>
           </Wraper>
 
           <Tabs
@@ -88,8 +90,15 @@ export const SelectBoard = memo((props: Props) => {
 
 const Div = styled.div``;
 
+const InputWrapper = styled.div`
+  max-width: 350px;
+  margin-right: 16px;
+`;
+
 const Wraper = styled.div`
-  justify-content: center;
+  display: flex;
+  justify-content: start;
+  align-items: center;
   background-color: white;
   padding-top: 2vh;
   padding-bottom: 2vh;

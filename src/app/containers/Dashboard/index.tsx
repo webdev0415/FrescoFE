@@ -26,6 +26,8 @@ import { UserModal } from '../../components/UserModal';
 import { InviteMemberModal } from '../../components/InviteMemberModal';
 import Axios from 'axios';
 
+import './styles.less';
+
 const { TabPane } = Tabs;
 export const PERMISSION = {
   // ADMIN: 'admin',
@@ -167,7 +169,7 @@ export const Dashboard = memo((props: Props) => {
           showInvite={() => setIsShowInvitationModal(true)}
         />
       )}
-      <Tabs defaultActiveKey="1" tabPosition="left">
+      <Tabs defaultActiveKey="1" tabPosition="left" className="dashboard">
         <TabPane tab={<img src={pageIcon} alt="page" />} key="1">
           <Div>
             <Button
