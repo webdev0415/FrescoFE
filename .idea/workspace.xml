@@ -2,11 +2,20 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d0235698-fcbf-40bf-a9de-ad7a068db01b" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/src/app/components/DrawCanvas/components/RectTransform/RectTransform.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/components/DrawCanvas/components/RectTransform/index.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/components/DrawCanvas/components/StickyTransform/StickyTransform.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/components/DrawCanvas/components/StickyTransform/index.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/components/DrawCanvas/components/TextTransform/TextTransform.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/components/DrawCanvas/components/TextTransform/index.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/components/DrawCanvas/components/TriangleTransform/TriangleTransform.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/components/DrawCanvas/components/TriangleTransform/index.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/components/CanvasIcons/ZoomOutIcon.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/components/CanvasIcons/ZoomOutIcon.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/components/DrawCanvas/DrawCanvas.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/components/DrawCanvas/DrawCanvas.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/containers/CreateCanvas/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/CreateCanvas/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/styles/overrides/index.less" beforeDir="false" afterPath="$PROJECT_DIR$/src/styles/overrides/index.less" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/containers/CreateCanvas/components/RectTransform/RectTransform.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/components/DrawCanvas/components/EllipseTransform/EllipseTransform.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/containers/CreateCanvas/components/RectTransform/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/components/DrawCanvas/components/EllipseTransform/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/containers/CreateCanvas/components/StarTransform/StarTransform.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/components/DrawCanvas/components/StarTransform/StarTransform.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/containers/CreateCanvas/components/StarTransform/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/components/DrawCanvas/components/StarTransform/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/containers/CreateCanvas/components/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/components/DrawCanvas/components/index.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -42,7 +51,7 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/src/app/containers/CreateCanvas/components" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/src/app/components/DrawCanvas/components" />
     <property name="list.type.of.created.stylesheet" value="Less" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.stylelint" value="true" />
@@ -60,14 +69,15 @@
     <property name="vue.rearranger.settings.migration" value="true" />
   </component>
   <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\Usama\Data\htdocs\React\FrescoFE\src\app\components\CanvasIcons" />
+    </key>
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\Usama\Data\htdocs\React\FrescoFE\src\app\components\DrawCanvas\components" />
+      <recent name="D:\Usama\Data\htdocs\React\FrescoFE\src\app\components\DrawCanvas" />
       <recent name="D:\Usama\Data\htdocs\React\FrescoFE\src\app\containers\CreateCanvas\components" />
       <recent name="D:\Usama\Data\htdocs\React\FrescoFE\src\app\components\CanvasIcons" />
       <recent name="D:\Usama\Data\htdocs\React\FrescoFE\src\assets\icons" />
-      <recent name="D:\Usama\Data\htdocs\React\Fresco_FE\src\app\containers\CreateCanvas" />
-    </key>
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="D:\Usama\Data\htdocs\React\FrescoFE\src\app\components\CanvasIcons" />
     </key>
   </component>
   <component name="RunManager">
@@ -104,7 +114,7 @@
       <workItem from="1604603383746" duration="29006000" />
       <workItem from="1604654223009" duration="21000" />
       <workItem from="1604677355798" duration="31127000" />
-      <workItem from="1604937996795" duration="11350000" />
+      <workItem from="1604937996795" duration="12960000" />
     </task>
     <task id="LOCAL-00001" summary="Layout Added antd Tabs">
       <created>1604419318843</created>
@@ -218,7 +228,14 @@
       <option name="project" value="LOCAL" />
       <updated>1604948507703</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="Zoom Level Issue Fixed">
+      <created>1604951435602</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1604951435602</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -276,34 +293,34 @@
       <screen x="1600" y="0" width="1920" height="1170" />
     </state>
     <state x="2339" y="340" key="FileChooserDialogImpl/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604689114206" />
-    <state width="1490" height="216" key="GridCell.Tab.0.bottom" timestamp="1604948920869">
+    <state width="1490" height="216" key="GridCell.Tab.0.bottom" timestamp="1604952181027">
       <screen x="1600" y="0" width="1920" height="1170" />
     </state>
     <state width="1190" height="271" key="GridCell.Tab.0.bottom/0.0.1600.868/1600.0.1920.1170@0.0.1600.868" timestamp="1604591845324" />
     <state width="1494" height="216" key="GridCell.Tab.0.bottom/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604924227273" />
     <state width="1195" height="217" key="GridCell.Tab.0.bottom/0.0.1600.868@0.0.1600.868" timestamp="1604537229547" />
-    <state width="1490" height="216" key="GridCell.Tab.0.bottom/0.0.1600.870/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604948920869" />
-    <state width="1490" height="216" key="GridCell.Tab.0.center" timestamp="1604948920868">
+    <state width="1490" height="216" key="GridCell.Tab.0.bottom/0.0.1600.870/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604952181027" />
+    <state width="1490" height="216" key="GridCell.Tab.0.center" timestamp="1604952181027">
       <screen x="1600" y="0" width="1920" height="1170" />
     </state>
     <state width="1190" height="271" key="GridCell.Tab.0.center/0.0.1600.868/1600.0.1920.1170@0.0.1600.868" timestamp="1604591845323" />
     <state width="1494" height="216" key="GridCell.Tab.0.center/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604924227273" />
     <state width="1195" height="217" key="GridCell.Tab.0.center/0.0.1600.868@0.0.1600.868" timestamp="1604537229547" />
-    <state width="1490" height="216" key="GridCell.Tab.0.center/0.0.1600.870/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604948920868" />
-    <state width="1490" height="216" key="GridCell.Tab.0.left" timestamp="1604948920868">
+    <state width="1490" height="216" key="GridCell.Tab.0.center/0.0.1600.870/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604952181027" />
+    <state width="1490" height="216" key="GridCell.Tab.0.left" timestamp="1604952181027">
       <screen x="1600" y="0" width="1920" height="1170" />
     </state>
     <state width="1190" height="271" key="GridCell.Tab.0.left/0.0.1600.868/1600.0.1920.1170@0.0.1600.868" timestamp="1604591845323" />
     <state width="1494" height="216" key="GridCell.Tab.0.left/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604924227273" />
     <state width="1195" height="217" key="GridCell.Tab.0.left/0.0.1600.868@0.0.1600.868" timestamp="1604537229547" />
-    <state width="1490" height="216" key="GridCell.Tab.0.left/0.0.1600.870/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604948920868" />
-    <state width="1490" height="216" key="GridCell.Tab.0.right" timestamp="1604948920868">
+    <state width="1490" height="216" key="GridCell.Tab.0.left/0.0.1600.870/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604952181027" />
+    <state width="1490" height="216" key="GridCell.Tab.0.right" timestamp="1604952181027">
       <screen x="1600" y="0" width="1920" height="1170" />
     </state>
     <state width="1190" height="271" key="GridCell.Tab.0.right/0.0.1600.868/1600.0.1920.1170@0.0.1600.868" timestamp="1604591845324" />
     <state width="1494" height="216" key="GridCell.Tab.0.right/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604924227273" />
     <state width="1195" height="217" key="GridCell.Tab.0.right/0.0.1600.868@0.0.1600.868" timestamp="1604537229547" />
-    <state width="1490" height="216" key="GridCell.Tab.0.right/0.0.1600.870/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604948920868" />
+    <state width="1490" height="216" key="GridCell.Tab.0.right/0.0.1600.870/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604952181027" />
     <state width="1190" height="271" key="GridCell.Tab.1.bottom" timestamp="1604593485546">
       <screen x="1600" y="0" width="1920" height="1170" />
     </state>
