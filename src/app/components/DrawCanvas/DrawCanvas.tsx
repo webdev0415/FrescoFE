@@ -22,7 +22,15 @@ import {
 } from './types';
 import _ from 'lodash';
 import { defaultPointState, defaultTextProperties } from './constants';
-import { Select, Modal, Button } from 'antd';
+import { Select, Modal } from 'antd';
+import {
+  StarTransform,
+  EllipseTransform,
+  RectTransform,
+  StickyTransform,
+  TextTransform,
+  TriangleTransform,
+} from './components';
 import {
   ChevronDownIcon,
   MinusSquareIcon,
