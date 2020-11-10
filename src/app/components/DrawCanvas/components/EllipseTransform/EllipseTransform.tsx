@@ -1,13 +1,10 @@
 import React, { useCallback, useEffect, useRef } from 'react';
-import { Ellipse, Rect, Transformer } from 'react-konva';
+import { Ellipse, Star, Transformer } from 'react-konva';
 import Konva from 'konva';
 import { TransformShapeProps } from '../../../../components/DrawCanvas/types';
-interface EllipseTransformProps extends TransformShapeProps {
-  radiusX: number;
-  radiusY: number;
-}
-function EllipseTransform(props: EllipseTransformProps): JSX.Element {
-  const { data, shapeConfig, onSelect, onChange, radiusX, radiusY } = props;
+
+function EllipseTransform(props: TransformShapeProps): JSX.Element {
+  const { data, onSelect, onChange } = props;
   const shapeRef = useRef<Konva.Ellipse>(null);
   const trRef = useRef<Konva.Transformer>(null);
 
@@ -25,13 +22,16 @@ function EllipseTransform(props: EllipseTransformProps): JSX.Element {
       const scaleY = node?.scaleY();
       node?.scaleX(1);
       node?.scaleY(1);
+
       onChange({
         ...data,
+        ellipse: {
+          radiusX: Math.max(5, node?.width() * scaleX),
+          radiusY: Math.max(node?.height() * scaleY),
+        },
         x: node?.x(),
         y: node?.y(),
         // set minimal value
-        width: Math.max(5, node?.width() * scaleX),
-        height: Math.max(node?.height() * scaleY),
       });
     },
     [data, onChange],
@@ -49,12 +49,12 @@ function EllipseTransform(props: EllipseTransformProps): JSX.Element {
   );
 
   useEffect(() => {
-    if (data.isEditing) {
+    if (data.isSelected) {
       // we need to attach transformer manually
       trRef.current?.nodes([shapeRef.current as Konva.Ellipse]);
       trRef.current?.getLayer()?.batchDraw();
     }
-  }, [data.isEditing]);
+  }, [data.isSelected]);
 
   return (
     <React.Fragment>
@@ -62,14 +62,16 @@ function EllipseTransform(props: EllipseTransformProps): JSX.Element {
         onClick={onSelect}
         onTap={onSelect}
         ref={shapeRef}
-        radiusX={radiusX}
-        radiusY={radiusY}
-        {...shapeConfig}
+        x={data.x}
+        y={data.y}
+        radiusX={data.ellipse?.radiusX as number}
+        radiusY={data.ellipse?.radiusY as number}
         draggable
         onTransformEnd={onTransformEnd}
         onDragEnd={onDragEnd}
+        {...data.shapeConfig}
       />
-      {data.isEditing && (
+      {data.isSelected && (
         <Transformer ref={trRef} boundBoxFunc={boundBoxFunc} />
       )}
     </React.Fragment>

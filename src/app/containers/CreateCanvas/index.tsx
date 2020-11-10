@@ -27,9 +27,8 @@ export const CreateCanvas = memo(() => {
     | 'Rect'
     | 'RectRounded'
     | 'Triangle'
-    | 'Circle'
+    | 'Ellipse'
     | 'Star'
-    | 'Drag'
     | 'Text'
     | 'Sticky'
     | null
@@ -153,7 +152,7 @@ export const CreateCanvas = memo(() => {
                 className="canvas-sub-toolbar-item"
                 onClick={event => {
                   event.stopPropagation();
-                  setDrawingTool('Circle');
+                  setDrawingTool('Ellipse');
                   setShowSubTools('');
                 }}
               >
@@ -193,12 +192,9 @@ export const CreateCanvas = memo(() => {
             </div>
           </div>
           <div
-            className={clsx(
-              'canvas-toolbar-item',
-              drawingTool === 'Drag' && 'active',
-            )}
+            className={clsx('canvas-toolbar-item', !drawingTool && 'active')}
             onClick={() => {
-              setDrawingTool('Drag');
+              setDrawingTool(null);
               setShowSubTools('');
             }}
           >

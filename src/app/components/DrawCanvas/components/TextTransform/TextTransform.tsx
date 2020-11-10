@@ -1,10 +1,13 @@
 import React, { useCallback, useEffect, useRef } from 'react';
 import { Text, Transformer } from 'react-konva';
 import Konva from 'konva';
-import { TransformShapeProps } from '../../../../components/DrawCanvas/types';
+import {
+  TextProperties,
+  TransformShapeProps,
+} from '../../../../components/DrawCanvas/types';
 
 function TextTransform(props: TransformShapeProps): JSX.Element {
-  const { data, shapeConfig, onSelect, onChange } = props;
+  const { data, onSelect, onChange } = props;
   const shapeRef = useRef<Konva.Text>(null);
   const trRef = useRef<Konva.Transformer>(null);
 
@@ -24,11 +27,14 @@ function TextTransform(props: TransformShapeProps): JSX.Element {
       node?.scaleY(1);
       onChange({
         ...data,
-        x: node?.x(),
-        y: node?.y(),
-        // set minimal value
-        width: Math.max(5, node?.width() * scaleX),
-        height: Math.max(node?.height() * scaleY),
+        x: Math.round(node?.x()),
+        y: Math.round(node?.y()),
+        rotation: Math.round(node.attrs.rotation),
+        textData: {
+          ...(data.textData as TextProperties),
+          width: Math.round(Math.max(5, node?.width() * scaleX)),
+          height: Math.round(Math.max(node?.height() * scaleY)),
+        },
       });
     },
     [data, onChange],
@@ -46,18 +52,20 @@ function TextTransform(props: TransformShapeProps): JSX.Element {
   );
 
   useEffect(() => {
-    if (data.isEditing) {
+    if (data.isSelected) {
       // we need to attach transformer manually
       trRef.current?.nodes([shapeRef.current as Konva.Text]);
       trRef.current?.getLayer()?.batchDraw();
     }
-  }, [data.isEditing]);
+  }, [data.isSelected]);
 
   return (
     <React.Fragment>
       <Text
-        id={shapeConfig.id}
+        id={data.id}
         fill="#000000"
+        x={data.x}
+        y={data.y}
         fillEnabled={true}
         onClick={onSelect}
         onTap={onSelect}
@@ -67,7 +75,7 @@ function TextTransform(props: TransformShapeProps): JSX.Element {
         onTransformEnd={onTransformEnd}
         onDragEnd={onDragEnd}
       />
-      {data.isEditing && (
+      {data.isSelected && (
         <Transformer ref={trRef} boundBoxFunc={boundBoxFunc} />
       )}
     </React.Fragment>

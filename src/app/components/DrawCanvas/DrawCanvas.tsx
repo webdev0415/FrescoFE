@@ -21,7 +21,11 @@ import {
   FontInterface,
 } from './types';
 import _ from 'lodash';
-import { defaultPointState, defaultTextProperties } from './constants';
+import {
+  defaultObjectState,
+  defaultPointState,
+  defaultTextProperties,
+} from './constants';
 import { Select, Modal } from 'antd';
 import {
   StarTransform,
@@ -49,7 +53,7 @@ class DrawCanvas extends Component<Props, State> {
   state: State = {
     objects: [],
     points: {
-      ...defaultPointState,
+      ...defaultObjectState,
     },
     history: [[]],
     historyIndex: 0,
@@ -164,7 +168,7 @@ class DrawCanvas extends Component<Props, State> {
         ].includes(this.props.drawingTool as string)
       ) {
         container.style.cursor = 'crosshair';
-      } else if (this.props.drawingTool === 'Drag') {
+      } else if (!this.props.drawingTool) {
         if (this.isItemFocused) {
           if (this.isItemMoving) {
             container.style.cursor = 'grabbing';
@@ -178,222 +182,129 @@ class DrawCanvas extends Component<Props, State> {
     }
   };
 
-  handleSelectObject = (id: string): void => {
-    const data = this.state.objects.find(
-      item => item.id === id,
-    ) as ObjectInterface;
-    if (data) {
-      this.updateShape({
-        ...data,
-        isDragging: false,
-        isEditing: false,
-        isSelected: true,
-        isFocused: true,
-      });
-    }
-  };
-
-  handleDblClick = e => {
-    let id = e.target.id();
-    if (id) {
-      id = id.replace(':Rect', '').replace(':Text', '');
-    }
-
-    const data = this.state.objects.find(
-      item => item.id === id,
-    ) as ObjectInterface;
-    if (data) {
-      this.updateShape({
-        ...data,
-        isDragging: false,
-        isEditing: true,
-        isSelected: true,
-        isFocused: true,
-      });
-    }
-  };
-
-  onMouseEnterItem = e => {
-    this.isItemFocused = true;
-    let id = e.target.id();
-    if (id) {
-      id = id.replace(':Rect', '').replace(':Text', '');
-    }
-    this.setState({
-      objects: this.state.objects.map(shapeObject => {
-        return {
-          ...shapeObject,
-          isFocused: shapeObject.id === id,
-        };
-      }),
+  handleSelect = (data: ObjectInterface) => {
+    this.updateShape({
+      ...data,
+      isSelected: true,
     });
-    this.handleChangeCursor();
   };
 
-  onMouseLeaveItem = () => {
-    this.isItemFocused = false;
-    this.setState({
-      objects: this.state.objects.map(shapeObject => {
-        return {
-          ...shapeObject,
-          isFocused: false,
-        };
-      }),
-    });
-    this.handleChangeCursor();
-  };
-
-  handleClickShape = e => {
-    let id = e.target.id();
-    if (id) {
-      id = id.replace(':Rect', '').replace(':Text', '');
-    }
-
-    const data = this.state.objects.find(
-      item => item.id === id,
-    ) as ObjectInterface;
-    if (data) {
-      this.updateShape({
-        ...data,
-        isDragging: false,
-        isEditing: false,
-        isSelected: true,
-        isFocused: false,
-      });
-    }
-    this.handleSelectObject(id);
-  };
-
-  handleDragStart = e => {
-    this.isItemMoving = true;
-    this.handleChangeCursor();
-    const id = e.target.id();
-    this.handleSelectObject(id);
-    const data = this.state.objects.find(
-      item => item.id === e.target.id(),
-    ) as ObjectInterface;
-    if (data) {
-      this.updateShape({
-        ...data,
-        x: e.target.x(),
-        y: e.target.y(),
-        isDragging: true,
-        isEditing: false,
-        isSelected: true,
-        isFocused: true,
-      });
-    }
-  };
-
-  handleDragEnd = e => {
-    this.isItemMoving = false;
-    this.handleChangeCursor();
-    const data = this.state.objects.find(
-      item => item.id === e.target.id(),
-    ) as ObjectInterface;
-    if (data) {
-      this.updateShape(
-        {
-          ...data,
-          x: e.target.x(),
-          y: e.target.y(),
-          isDragging: false,
-          isEditing: false,
-          isSelected: true,
-          isFocused: true,
-        },
-        true,
-      );
-    }
-  };
   handleMouseDown = e => {
     if (this.props.drawingTool) {
-      console.log('handleMouseDown', e);
-      console.log('handleMouseDown', this);
       const position = e.target.getStage().getPointerPosition();
+      const data: ObjectInterface = {
+        ...this.state.points,
+        ...defaultObjectState,
+        id: uuidv4(),
+        rotation: 0,
+        x: Math.round(position.x),
+        y: Math.round(position.y),
+        type: this.props.drawingTool,
+      };
       if (
         this.props.drawingTool === 'Sticky' ||
         this.props.drawingTool === 'Text'
       ) {
-        const data: ObjectInterface = {
-          ...this.state.points,
-          x: position.x - 100,
-          y: position.y - 100,
-          width: 200,
-          height: 200,
-          id: uuidv4(),
-          isDragging: false,
-          isFocused: false,
+        Object.assign(data, {
           isSelected: true,
           isEditing: true,
-          rotation: 0,
-          type: this.props.drawingTool,
-          textData: {
-            ...defaultTextProperties,
-          },
-        };
+        });
+        _.set(data, 'textData', {
+          ...defaultTextProperties,
+          padding: 0,
+        });
 
-        if (this.props.drawingTool === 'Text') {
-          data.textData = {
-            ...defaultTextProperties,
-            padding: 0,
-          };
+        if (this.props.drawingTool === 'Sticky') {
+          _.set(data, 'sticky', {
+            width: 200,
+            height: 200,
+            cornerRadius: 30,
+          });
         }
         this.addCanvasShape(data);
       } else {
-        let radius = 0;
         if (this.props.drawingTool === 'RectRounded') {
-          radius = 20;
+          _.set(data, 'rect', {
+            cornerRadius: 20,
+            height: 0,
+            width: 0,
+          });
+        } else if (this.props.drawingTool === 'Rect') {
+          _.set(data, 'rect', {
+            cornerRadius: 0,
+            height: 0,
+            width: 0,
+          });
+        } else if (this.props.drawingTool === 'Star') {
+          _.set(data, 'star', {
+            innerRadius: 0,
+            outerRadius: 0,
+            numPoints: 5,
+          });
+        } else if (this.props.drawingTool === 'Triangle') {
+          _.set(data, 'triangle', {
+            innerRadius: 0,
+            outerRadius: 0,
+            numPoints: 5,
+          });
+        } else if (this.props.drawingTool === 'Ellipse') {
+          _.set(data, 'ellipse', {
+            radiusX: 0,
+            radiusY: 0,
+          });
         }
         this.isDrawing = true;
         this.setState({
-          points: {
-            ...this.state.points,
-            x: position.x,
-            y: position.y,
-            radius: radius,
-            type: this.props.drawingTool,
-          },
+          points: _.cloneDeep(data),
         });
       }
     }
   };
 
   handleMouseMove = e => {
-    if (this.isDrawing && this.props.drawingTool !== 'Drag') {
+    if (this.isDrawing && this.props.drawingTool) {
       const position = e.target.getStage().getPointerPosition();
-      const width = position.x - this.state.points.x;
-      const height = position.y - this.state.points.y;
-      let shapeObjectType: ShapeObjectType = this.props.drawingTool;
-      let radius = 0;
-      let ellipseRadius: any = {
-        x: 0,
-        y: 0,
+      const width = Math.abs(position.x - this.state.points.x);
+      const height = Math.abs(position.y - this.state.points.y);
+
+      const data: ObjectInterface = {
+        ...this.state.points,
       };
 
-      if (this.props.drawingTool === 'Circle') {
-        if (width === height) {
-          shapeObjectType = 'Circle';
-          radius = Math.abs(width);
-        } else {
-          shapeObjectType = 'Ellipse';
-          ellipseRadius = {
-            x: Math.abs(width),
-            y: Math.abs(height),
-          };
-        }
-      } else if (this.props.drawingTool === 'RectRounded') {
-        radius = 20;
+      const dimensions = {
+        height,
+        width,
+      };
+
+      if (this.props.drawingTool === 'RectRounded') {
+        _.set(data, 'rect', {
+          cornerRadius: 20,
+          ...dimensions,
+        });
+      } else if (this.props.drawingTool === 'Rect') {
+        _.set(data, 'rect', {
+          cornerRadius: 0,
+          ...dimensions,
+        });
+      } else if (this.props.drawingTool === 'Star') {
+        _.set(data, 'star', {
+          innerRadius: width / 2,
+          outerRadius: width,
+          numPoints: 5,
+        });
+      } else if (this.props.drawingTool === 'Triangle') {
+        _.set(data, 'triangle', {
+          ...dimensions,
+        });
+      } else if (this.props.drawingTool === 'Ellipse') {
+        _.set(data, 'ellipse', {
+          radiusX: Math.abs(width),
+          radiusY: Math.abs(height),
+        });
       }
+
       this.setState({
-        points: {
-          ...this.state.points,
-          width: width,
-          height: height,
-          radius: radius,
-          ellipseRadius: ellipseRadius,
-          type: shapeObjectType,
-        },
+        points: _.cloneDeep(data),
       });
     }
   };
@@ -407,7 +318,6 @@ class DrawCanvas extends Component<Props, State> {
       objects: [
         ...this.state.objects.map(shapeObject => ({
           ...shapeObject,
-          isDragging: false,
           isEditing: false,
           isSelected: false,
           isFocused: false,
@@ -423,53 +333,50 @@ class DrawCanvas extends Component<Props, State> {
     if (this.isDrawing) {
       this.isDrawing = false;
       const position = e.target.getStage().getPointerPosition();
-      const width = position.x - this.state.points.x;
-      const height = position.y - this.state.points.y;
-      let shapeObjectType: ShapeObjectType = this.props.drawingTool;
-      let radius = 0;
-      let ellipseRadius: any = {
-        x: 0,
-        y: 0,
-      };
-      if (this.props.drawingTool === 'Circle') {
-        if (width === height) {
-          shapeObjectType = 'Circle';
-          radius = Math.abs(width);
-        } else {
-          shapeObjectType = 'Ellipse';
-          ellipseRadius = {
-            x: Math.abs(width),
-            y: Math.abs(height),
-          };
-        }
-      } else if (this.props.drawingTool === 'RectRounded') {
-        radius = 20;
-      }
+      const width = Math.abs(position.x - this.state.points.x);
+      const height = Math.abs(position.y - this.state.points.y);
 
       const data: ObjectInterface = {
         ...this.state.points,
-        width: width,
-        height: height,
-        radius: radius,
-        ellipseRadius: ellipseRadius,
-        id: uuidv4(),
-        isDragging: false,
-        isFocused: false,
-        isSelected: false,
-        isEditing: false,
-        rotation: 0,
-        type: shapeObjectType,
       };
 
-      if (this.props.drawingTool === 'Drag') {
-        this.updateShape(data);
-      } else {
-        this.addCanvasShape(data);
+      const dimensions = {
+        height,
+        width,
+      };
+
+      if (this.props.drawingTool === 'RectRounded') {
+        _.set(data, 'rect', {
+          cornerRadius: 20,
+          ...dimensions,
+        });
+      } else if (this.props.drawingTool === 'Rect') {
+        _.set(data, 'rect', {
+          cornerRadius: 0,
+          ...dimensions,
+        });
+      } else if (this.props.drawingTool === 'Star') {
+        _.set(data, 'star', {
+          innerRadius: width / 2,
+          outerRadius: width,
+          numPoints: 5,
+        });
+      } else if (this.props.drawingTool === 'Triangle') {
+        _.set(data, 'triangle', {
+          ...dimensions,
+        });
+      } else if (this.props.drawingTool === 'Ellipse') {
+        _.set(data, 'ellipse', {
+          radiusX: Math.abs(width),
+          radiusY: Math.abs(height),
+        });
       }
+
+      this.addCanvasShape(data);
 
       this.setState({
         points: {
-          ...defaultPointState,
+          ...defaultObjectState,
         },
       });
     }
@@ -501,7 +408,6 @@ class DrawCanvas extends Component<Props, State> {
         } else {
           return {
             ...shapeObject,
-            isDragging: false,
             isSelected: false,
             isEditing: false,
             isFocused: false,
@@ -554,7 +460,6 @@ class DrawCanvas extends Component<Props, State> {
               onCancel={e => {
                 this.updateShape({
                   ...shapeObject,
-                  isDragging: false,
                   isSelected: false,
                   isEditing: false,
                   isFocused: false,
@@ -713,170 +618,89 @@ class DrawCanvas extends Component<Props, State> {
         >
           <Layer>
             {this.state.objects.map(shapeObject => {
-              const shapeConfig: Konva.ShapeConfig = {
-                fill: '#9646f5',
-                strokeWidth: 2,
-                opacity: 0.8,
-                stroke:
-                  shapeObject.isSelected ||
-                  (shapeObject.isFocused && this.props.drawingTool === 'Drag')
-                    ? '#000000'
-                    : undefined,
-                shadowBlur: 10,
-                shadowOpacity: 0.6,
-                shadowOffsetX: (() => {
-                  let shadowOffset = 5;
-                  if (shapeObject.isDragging) {
-                    shadowOffset = 10;
-                  } else if (
-                    shapeObject.isFocused &&
-                    this.props.drawingTool === 'Drag'
-                  ) {
-                    shadowOffset = 6;
-                  }
-                  return shadowOffset;
-                })(),
-                shadowOffsetY: (() => {
-                  let shadowOffset = 5;
-                  if (shapeObject.isDragging) {
-                    shadowOffset = 10;
-                  } else if (
-                    shapeObject.isFocused &&
-                    this.props.drawingTool === 'Drag'
-                  ) {
-                    shadowOffset = 6;
-                  }
-                  return shadowOffset;
-                })(),
-              };
-
-              const nodeConfig: Konva.NodeConfig = {
-                id: shapeObject.id,
-                name: shapeObject.id,
-                x: shapeObject.x,
-                y: shapeObject.y,
-                width: shapeObject.width,
-                height: shapeObject.height,
-                draggable: this.props.drawingTool === 'Drag',
-                onClick: this.handleClickShape,
-                onDblClick: this.handleDblClick,
-                onDragStart: this.handleDragStart,
-                onDragEnd: this.handleDragEnd,
-                onMouseEnter: this.onMouseEnterItem,
-                onMouseLeave: this.onMouseLeaveItem,
-                scaleX: shapeObject.isDragging ? 1.2 : 1,
-                scaleY: shapeObject.isDragging ? 1.2 : 1,
-              };
-              if (shapeObject.type === 'Rect') {
+              if (
+                shapeObject.type === 'Rect' ||
+                shapeObject.type === 'RectRounded'
+              ) {
                 return (
-                  <Rect
+                  <RectTransform
                     key={shapeObject.id}
-                    cornerRadius={shapeObject.radius}
-                    {...shapeConfig}
-                    {...nodeConfig}
-                  />
-                );
-              } else if (shapeObject.type === 'RectRounded') {
-                return (
-                  <Rect
-                    key={shapeObject.id}
-                    cornerRadius={shapeObject.radius}
-                    {...shapeConfig}
-                    {...nodeConfig}
-                  />
-                );
-              } else if (shapeObject.type === 'Circle') {
-                delete nodeConfig['width'];
-                delete nodeConfig['height'];
-                return (
-                  <Circle
-                    key={shapeObject.id}
-                    radius={shapeObject.radius as number}
-                    {...shapeConfig}
-                    {...nodeConfig}
+                    data={shapeObject}
+                    onChange={data => {
+                      this.updateShape(data);
+                    }}
+                    onSelect={() => {
+                      this.handleSelect(shapeObject);
+                    }}
                   />
                 );
               } else if (shapeObject.type === 'Ellipse') {
-                delete nodeConfig['width'];
-                delete nodeConfig['height'];
                 return (
-                  <Ellipse
-                    key={shapeObject.id}
-                    radiusX={shapeObject.ellipseRadius?.x as number}
-                    radiusY={shapeObject.ellipseRadius?.y as number}
-                    {...shapeConfig}
-                    {...nodeConfig}
-                  />
+                  <>
+                    <EllipseTransform
+                      key={shapeObject.id}
+                      data={shapeObject}
+                      onChange={data => {
+                        this.updateShape(data);
+                      }}
+                      onSelect={() => {
+                        this.handleSelect(shapeObject);
+                      }}
+                    />
+                  </>
                 );
               } else if (shapeObject.type === 'Star') {
                 return (
-                  <Star
-                    key={shapeObject.id}
-                    numPoints={5}
-                    {...shapeConfig}
-                    {...nodeConfig}
-                    innerRadius={(shapeObject.width as number) / 2}
-                    outerRadius={shapeObject.width as number}
-                  />
+                  <>
+                    <StarTransform
+                      key={shapeObject.id}
+                      data={shapeObject}
+                      onChange={data => {
+                        this.updateShape(data);
+                      }}
+                      onSelect={() => {
+                        this.handleSelect(shapeObject);
+                      }}
+                    />
+                  </>
                 );
               } else if (shapeObject.type === 'Triangle') {
                 return (
-                  <Shape
+                  <TriangleTransform
                     key={shapeObject.id}
-                    sceneFunc={(context, shape) => {
-                      context.beginPath();
-
-                      context.moveTo((shapeObject.width as number) / 2, 0);
-                      context.lineTo(0, shapeObject.height as number);
-                      context.lineTo(
-                        shapeObject.width as number,
-                        shapeObject.height as number,
-                      );
-                      context.closePath();
-                      // (!) Konva specific method, it is very important
-                      context.fillStrokeShape(shape);
+                    data={shapeObject}
+                    onChange={data => {
+                      this.updateShape(data);
                     }}
-                    {...shapeConfig}
-                    {...nodeConfig}
+                    onSelect={() => {
+                      this.handleSelect(shapeObject);
+                    }}
                   />
                 );
               } else if (shapeObject.type === 'Sticky') {
                 return (
-                  <Group key={shapeObject.id} {...nodeConfig}>
-                    <Rect
-                      key={shapeObject.id + ':Rect'}
-                      id={shapeObject.id + ':Rect'}
-                      x={0}
-                      y={0}
-                      height={shapeObject.height as number}
-                      width={shapeObject.width as number}
-                      onDblClick={this.handleDblClick}
-                      cornerRadius={30}
-                      fill="#9646f5"
-                      {...shapeConfig}
-                    />
-                    <Text
-                      key={shapeObject.id + ':Text'}
-                      id={shapeObject.id + ':Text'}
-                      x={0}
-                      y={0}
-                      height={shapeObject.height as number}
-                      width={shapeObject.width as number}
-                      padding={20}
-                      fill="#ffffff"
-                      fillEnabled={true}
-                      {...shapeObject.textData}
-                    />
-                  </Group>
+                  <StickyTransform
+                    key={shapeObject.id}
+                    data={shapeObject}
+                    onChange={data => {
+                      this.updateShape(data);
+                    }}
+                    onSelect={() => {
+                      this.handleSelect(shapeObject);
+                    }}
+                  />
                 );
               } else if (shapeObject.type === 'Text') {
                 return (
-                  <Text
-                    key={shapeObject.id + ':Text'}
-                    fill="#000000"
-                    fillEnabled={true}
-                    {...nodeConfig}
-                    {...shapeObject.textData}
+                  <TextTransform
+                    key={shapeObject.id}
+                    data={shapeObject}
+                    onChange={data => {
+                      this.updateShape(data);
+                    }}
+                    onSelect={() => {
+                      this.handleSelect(shapeObject);
+                    }}
                   />
                 );
               }
@@ -884,9 +708,11 @@ class DrawCanvas extends Component<Props, State> {
 
             {this.props.drawingTool === 'Star' && this.isDrawing && (
               <Star
-                numPoints={5}
-                innerRadius={(this.state.points.width as number) / 2}
-                outerRadius={this.state.points.width as number}
+                numPoints={this.state.points.star?.numPoints as number}
+                innerRadius={
+                  (this.state.points.star?.innerRadius as number) / 2
+                }
+                outerRadius={this.state.points.star?.outerRadius as number}
                 x={this.state.points.x}
                 y={this.state.points.y}
                 stroke="#000000"
@@ -905,11 +731,17 @@ class DrawCanvas extends Component<Props, State> {
                 y={this.state.points.y}
                 sceneFunc={(context, shape) => {
                   context.beginPath();
-                  context.moveTo((this.state.points.width as number) / 2, 0);
-                  context.lineTo(0, this.state.points.height as number);
+                  context.moveTo(
+                    (this.state.points.triangle?.width as number) / 2,
+                    0,
+                  );
                   context.lineTo(
-                    this.state.points.width as number,
-                    this.state.points.height as number,
+                    0,
+                    this.state.points.triangle?.height as number,
+                  );
+                  context.lineTo(
+                    this.state.points.triangle?.width as number,
+                    this.state.points.triangle?.height as number,
                   );
                   context.closePath();
                   // (!) Konva specific method, it is very important
@@ -926,42 +758,22 @@ class DrawCanvas extends Component<Props, State> {
               />
             )}
 
-            {this.props.drawingTool === 'Circle' &&
-              this.isDrawing &&
-              this.state.points.type === 'Circle' && (
-                <Circle
-                  x={this.state.points.x}
-                  y={this.state.points.y}
-                  radius={this.state.points.radius as number}
-                  stroke="#000000"
-                  dash={[10, 10]}
-                  {...{
-                    shadowBlur: 10,
-                    shadowOpacity: 0.6,
-                    shadowOffsetX: 10,
-                    shadowOffsetY: 10,
-                  }}
-                />
-              )}
-
-            {this.props.drawingTool === 'Circle' &&
-              this.isDrawing &&
-              this.state.points.type === 'Ellipse' && (
-                <Ellipse
-                  x={this.state.points.x}
-                  y={this.state.points.y}
-                  radiusX={this.state.points.ellipseRadius?.x as number}
-                  radiusY={this.state.points.ellipseRadius?.y as number}
-                  stroke="#000000"
-                  dash={[10, 10]}
-                  {...{
-                    shadowBlur: 10,
-                    shadowOpacity: 0.6,
-                    shadowOffsetX: 10,
-                    shadowOffsetY: 10,
-                  }}
-                />
-              )}
+            {this.props.drawingTool === 'Ellipse' && this.isDrawing && (
+              <Ellipse
+                x={this.state.points.x}
+                y={this.state.points.y}
+                radiusX={this.state.points.ellipse?.radiusX as number}
+                radiusY={this.state.points.ellipse?.radiusY as number}
+                stroke="#000000"
+                dash={[10, 10]}
+                {...{
+                  shadowBlur: 10,
+                  shadowOpacity: 0.6,
+                  shadowOffsetX: 10,
+                  shadowOffsetY: 10,
+                }}
+              />
+            )}
 
             {(this.props.drawingTool === 'Rect' ||
               this.props.drawingTool === 'RectRounded') &&
@@ -969,9 +781,9 @@ class DrawCanvas extends Component<Props, State> {
                 <Rect
                   x={this.state.points.x}
                   y={this.state.points.y}
-                  width={this.state.points.width}
-                  height={this.state.points.height}
-                  cornerRadius={this.state.points.radius}
+                  width={this.state.points.rect?.width as number}
+                  height={this.state.points.rect?.height as number}
+                  cornerRadius={this.state.points.rect?.cornerRadius as number}
                   stroke="#000000"
                   dash={[10, 10]}
                   {...{
@@ -987,9 +799,8 @@ class DrawCanvas extends Component<Props, State> {
               <Rect
                 x={this.state.points.x}
                 y={this.state.points.y}
-                width={this.state.points.width}
-                height={this.state.points.height}
-                cornerRadius={this.state.points.radius}
+                width={this.state.points.sticky?.width}
+                height={this.state.points.sticky?.height}
                 stroke="#000000"
                 dash={[10, 10]}
                 {...{
@@ -1006,9 +817,11 @@ class DrawCanvas extends Component<Props, State> {
                 <Rect
                   x={this.state.points.x}
                   y={this.state.points.y}
-                  width={this.state.points.width}
-                  height={this.state.points.height}
-                  cornerRadius={30}
+                  width={this.state.points.sticky?.width}
+                  height={this.state.points.sticky?.height}
+                  cornerRadius={
+                    this.state.points.sticky?.cornerRadius as number
+                  }
                   stroke="#000000"
                   dash={[10, 10]}
                   {...{

@@ -4,6 +4,15 @@
     <list default="true" id="d0235698-fcbf-40bf-a9de-ad7a068db01b" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/app/components/DrawCanvas/DrawCanvas.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/components/DrawCanvas/DrawCanvas.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/components/DrawCanvas/components/EllipseTransform/EllipseTransform.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/components/DrawCanvas/components/EllipseTransform/EllipseTransform.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/components/DrawCanvas/components/RectTransform/RectTransform.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/components/DrawCanvas/components/RectTransform/RectTransform.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/components/DrawCanvas/components/StarTransform/StarTransform.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/components/DrawCanvas/components/StarTransform/StarTransform.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/components/DrawCanvas/components/StickyTransform/StickyTransform.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/components/DrawCanvas/components/StickyTransform/StickyTransform.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/components/DrawCanvas/components/TextTransform/TextTransform.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/components/DrawCanvas/components/TextTransform/TextTransform.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/components/DrawCanvas/components/TriangleTransform/TriangleTransform.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/components/DrawCanvas/components/TriangleTransform/TriangleTransform.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/components/DrawCanvas/constants.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/components/DrawCanvas/constants.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/components/DrawCanvas/types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/components/DrawCanvas/types.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/containers/CreateCanvas/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/CreateCanvas/index.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -57,15 +66,15 @@
     <property name="vue.rearranger.settings.migration" value="true" />
   </component>
   <component name="RecentsManager">
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="D:\Usama\Data\htdocs\React\FrescoFE\src\app\components\CanvasIcons" />
-    </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="D:\Usama\Data\htdocs\React\FrescoFE\src\app\components\DrawCanvas\components" />
       <recent name="D:\Usama\Data\htdocs\React\FrescoFE\src\app\components\DrawCanvas" />
       <recent name="D:\Usama\Data\htdocs\React\FrescoFE\src\app\containers\CreateCanvas\components" />
       <recent name="D:\Usama\Data\htdocs\React\FrescoFE\src\app\components\CanvasIcons" />
       <recent name="D:\Usama\Data\htdocs\React\FrescoFE\src\assets\icons" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\Usama\Data\htdocs\React\FrescoFE\src\app\components\CanvasIcons" />
     </key>
   </component>
   <component name="RunManager">
@@ -282,34 +291,34 @@
       <screen x="1600" y="0" width="1920" height="1170" />
     </state>
     <state x="2339" y="340" key="FileChooserDialogImpl/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604689114206" />
-    <state width="1490" height="216" key="GridCell.Tab.0.bottom" timestamp="1604953055490">
+    <state width="1490" height="216" key="GridCell.Tab.0.bottom" timestamp="1604964126406">
       <screen x="1600" y="0" width="1920" height="1170" />
     </state>
     <state width="1190" height="271" key="GridCell.Tab.0.bottom/0.0.1600.868/1600.0.1920.1170@0.0.1600.868" timestamp="1604591845324" />
     <state width="1494" height="216" key="GridCell.Tab.0.bottom/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604924227273" />
     <state width="1195" height="217" key="GridCell.Tab.0.bottom/0.0.1600.868@0.0.1600.868" timestamp="1604537229547" />
-    <state width="1490" height="216" key="GridCell.Tab.0.bottom/0.0.1600.870/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604953055490" />
-    <state width="1490" height="216" key="GridCell.Tab.0.center" timestamp="1604953055489">
+    <state width="1490" height="216" key="GridCell.Tab.0.bottom/0.0.1600.870/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604964126406" />
+    <state width="1490" height="216" key="GridCell.Tab.0.center" timestamp="1604964126405">
       <screen x="1600" y="0" width="1920" height="1170" />
     </state>
     <state width="1190" height="271" key="GridCell.Tab.0.center/0.0.1600.868/1600.0.1920.1170@0.0.1600.868" timestamp="1604591845323" />
     <state width="1494" height="216" key="GridCell.Tab.0.center/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604924227273" />
     <state width="1195" height="217" key="GridCell.Tab.0.center/0.0.1600.868@0.0.1600.868" timestamp="1604537229547" />
-    <state width="1490" height="216" key="GridCell.Tab.0.center/0.0.1600.870/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604953055489" />
-    <state width="1490" height="216" key="GridCell.Tab.0.left" timestamp="1604953055489">
+    <state width="1490" height="216" key="GridCell.Tab.0.center/0.0.1600.870/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604964126405" />
+    <state width="1490" height="216" key="GridCell.Tab.0.left" timestamp="1604964126405">
       <screen x="1600" y="0" width="1920" height="1170" />
     </state>
     <state width="1190" height="271" key="GridCell.Tab.0.left/0.0.1600.868/1600.0.1920.1170@0.0.1600.868" timestamp="1604591845323" />
     <state width="1494" height="216" key="GridCell.Tab.0.left/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604924227273" />
     <state width="1195" height="217" key="GridCell.Tab.0.left/0.0.1600.868@0.0.1600.868" timestamp="1604537229547" />
-    <state width="1490" height="216" key="GridCell.Tab.0.left/0.0.1600.870/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604953055489" />
-    <state width="1490" height="216" key="GridCell.Tab.0.right" timestamp="1604953055489">
+    <state width="1490" height="216" key="GridCell.Tab.0.left/0.0.1600.870/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604964126405" />
+    <state width="1490" height="216" key="GridCell.Tab.0.right" timestamp="1604964126406">
       <screen x="1600" y="0" width="1920" height="1170" />
     </state>
     <state width="1190" height="271" key="GridCell.Tab.0.right/0.0.1600.868/1600.0.1920.1170@0.0.1600.868" timestamp="1604591845324" />
     <state width="1494" height="216" key="GridCell.Tab.0.right/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604924227273" />
     <state width="1195" height="217" key="GridCell.Tab.0.right/0.0.1600.868@0.0.1600.868" timestamp="1604537229547" />
-    <state width="1490" height="216" key="GridCell.Tab.0.right/0.0.1600.870/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604953055489" />
+    <state width="1490" height="216" key="GridCell.Tab.0.right/0.0.1600.870/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604964126406" />
     <state width="1190" height="271" key="GridCell.Tab.1.bottom" timestamp="1604593485546">
       <screen x="1600" y="0" width="1920" height="1170" />
     </state>
@@ -374,12 +383,16 @@
       <screen x="1600" y="0" width="1920" height="1170" />
     </state>
     <state x="2061" y="230" key="SettingsEditor/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604432505423" />
-    <state x="2152" y="314" key="Vcs.Push.Dialog.v2" timestamp="1604948511399">
+    <state x="2152" y="314" key="Vcs.Push.Dialog.v2" timestamp="1604954473321">
       <screen x="1600" y="0" width="1920" height="1170" />
     </state>
     <state x="2152" y="314" key="Vcs.Push.Dialog.v2/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604698309261" />
     <state x="460" y="233" key="Vcs.Push.Dialog.v2/0.0.1600.868@0.0.1600.868" timestamp="1604537216075" />
-    <state x="2152" y="314" key="Vcs.Push.Dialog.v2/0.0.1600.870/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604948511399" />
+    <state x="2152" y="314" key="Vcs.Push.Dialog.v2/0.0.1600.870/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604954473321" />
+    <state x="1692" y="92" width="1736" height="986" key="com.intellij.history.integration.ui.views.FileHistoryDialog" timestamp="1604968281412">
+      <screen x="1600" y="0" width="1920" height="1170" />
+    </state>
+    <state x="1692" y="92" width="1736" height="986" key="com.intellij.history.integration.ui.views.FileHistoryDialog/0.0.1600.870/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604968281412" />
     <state x="2268" y="302" width="583" height="566" key="find.popup" timestamp="1604440338420">
       <screen x="1600" y="0" width="1920" height="1170" />
     </state>

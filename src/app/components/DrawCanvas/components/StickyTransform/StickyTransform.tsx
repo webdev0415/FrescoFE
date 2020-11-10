@@ -1,10 +1,13 @@
 import React, { useCallback, useEffect, useRef } from 'react';
-import { Group, Rect, Text, Transformer } from 'react-konva';
+import { Group, Rect, Star, Text, Transformer } from 'react-konva';
 import Konva from 'konva';
-import { TransformShapeProps } from '../../../../components/DrawCanvas/types';
+import {
+  StickyProperty,
+  TransformShapeProps,
+} from '../../../../components/DrawCanvas/types';
 
 function StickyTransform(props: TransformShapeProps): JSX.Element {
-  const { data, shapeConfig, onSelect, onChange } = props;
+  const { data, onSelect, onChange } = props;
   const shapeRef = useRef<Konva.Group>(null);
   const trRef = useRef<Konva.Transformer>(null);
 
@@ -24,11 +27,14 @@ function StickyTransform(props: TransformShapeProps): JSX.Element {
       node?.scaleY(1);
       onChange({
         ...data,
-        x: node?.x(),
-        y: node?.y(),
-        // set minimal value
-        width: Math.max(5, node?.width() * scaleX),
-        height: Math.max(node?.height() * scaleY),
+        x: Math.round(node?.x()),
+        y: Math.round(node?.y()),
+        rotation: Math.round(node?.attrs.rotation as number),
+        sticky: {
+          ...(data.sticky as StickyProperty),
+          width: Math.round(Math.max(5, node?.width() * scaleX)),
+          height: Math.round(Math.max(node?.height() * scaleY)),
+        },
       });
     },
     [data, onChange],
@@ -46,15 +52,15 @@ function StickyTransform(props: TransformShapeProps): JSX.Element {
   );
 
   useEffect(() => {
-    if (data.isEditing) {
+    if (data.isSelected) {
       // we need to attach transformer manually
       trRef.current?.nodes([shapeRef.current as Konva.Group]);
       trRef.current?.getLayer()?.batchDraw();
     }
-  }, [data.isEditing]);
+  }, [data.isSelected]);
 
   return (
-    <React.Fragment>
+    <>
       <Group
         draggable
         onTransformEnd={onTransformEnd}
@@ -62,33 +68,35 @@ function StickyTransform(props: TransformShapeProps): JSX.Element {
         ref={shapeRef}
         onClick={onSelect}
         onTap={onSelect}
+        x={data.x}
+        y={data.y}
+        height={data.sticky?.height as number}
+        width={data.sticky?.width as number}
       >
         <Rect
           id={data.id + ':Rect'}
           x={0}
           y={0}
-          height={data.height as number}
-          width={data.width as number}
+          height={data.sticky?.height as number}
+          width={data.sticky?.width as number}
           cornerRadius={30}
-          fill="#9646f5"
-          {...shapeConfig}
+          {...data.shapeConfig}
         />
         <Text
+          {...data.textData}
+          height={data.sticky?.height as number}
+          width={data.sticky?.width as number}
           id={data.id + ':Text'}
           x={0}
           y={0}
-          height={data.height as number}
-          width={data.width as number}
-          padding={20}
           fill="#ffffff"
           fillEnabled={true}
-          {...data.textData}
         />
       </Group>
-      {data.isEditing && (
+      {data.isSelected && (
         <Transformer ref={trRef} boundBoxFunc={boundBoxFunc} />
       )}
-    </React.Fragment>
+    </>
   );
 }
 

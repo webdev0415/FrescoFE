@@ -4,7 +4,7 @@ import Konva from 'konva';
 import { TransformShapeProps } from '../../../../components/DrawCanvas/types';
 
 function RectTransform(props: TransformShapeProps): JSX.Element {
-  const { data, shapeConfig, onSelect, onChange } = props;
+  const { data, onSelect, onChange } = props;
   const shapeRef = useRef<Konva.Rect>(null);
   const trRef = useRef<Konva.Transformer>(null);
 
@@ -26,9 +26,11 @@ function RectTransform(props: TransformShapeProps): JSX.Element {
         ...data,
         x: node?.x(),
         y: node?.y(),
-        // set minimal value
-        width: Math.max(5, node?.width() * scaleX),
-        height: Math.max(node?.height() * scaleY),
+        rect: {
+          width: Math.max(5, node?.width() * scaleX),
+          height: Math.max(node?.height() * scaleY),
+          cornerRadius: data.rect?.cornerRadius as number,
+        },
       });
     },
     [data, onChange],
@@ -46,25 +48,31 @@ function RectTransform(props: TransformShapeProps): JSX.Element {
   );
 
   useEffect(() => {
-    if (data.isEditing) {
+    if (data.isSelected) {
       // we need to attach transformer manually
       trRef.current?.nodes([shapeRef.current as Konva.Rect]);
       trRef.current?.getLayer()?.batchDraw();
     }
-  }, [data.isEditing]);
+  }, [data.isSelected]);
 
   return (
     <React.Fragment>
       <Rect
+        id={data.id}
         onClick={onSelect}
         onTap={onSelect}
         ref={shapeRef}
-        {...shapeConfig}
+        x={data.x}
+        y={data.y}
+        width={data.rect?.width as number}
+        height={data.rect?.height as number}
         draggable
         onTransformEnd={onTransformEnd}
+        cornerRadius={data.rect?.cornerRadius as number}
         onDragEnd={onDragEnd}
+        {...data.shapeConfig}
       />
-      {data.isEditing && (
+      {data.isSelected && (
         <Transformer ref={trRef} boundBoxFunc={boundBoxFunc} />
       )}
     </React.Fragment>

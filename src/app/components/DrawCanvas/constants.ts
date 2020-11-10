@@ -15,27 +15,34 @@ export const fontNames = [
 export const defaultPointState: PointsInterface = {
   x: 0,
   y: 0,
-  width: 0,
-  height: 0,
-  radius: 0,
-  ellipseRadius: {
-    x: 0,
-    y: 0,
-  },
   type: null,
+};
+
+export const defaultShapeConfig = {
+  fill: '#9646f5',
+  strokeWidth: 2,
+  opacity: 0.8,
+  shadowBlur: 10,
+  shadowOpacity: 0.6,
+  shadowOffsetX: 5,
+  shadowOffsetY: 5,
 };
 
 export const defaultObjectState: ObjectInterface = {
   id: '',
   rotation: 0,
-  isDragging: false,
   isFocused: false,
   isSelected: false,
   isEditing: false,
   ...defaultPointState,
+  shapeConfig: {
+    ...defaultShapeConfig,
+  },
 };
 
 export const defaultTextProperties: TextProperties = {
+  height: 200,
+  width: 200,
   fontFamily: 'Arial',
   fontSize: 12,
   text:
