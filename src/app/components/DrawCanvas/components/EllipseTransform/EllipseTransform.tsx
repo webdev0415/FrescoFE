@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef } from 'react';
-import { Ellipse, Star, Transformer } from 'react-konva';
+import { Ellipse, Rect, Star, Transformer } from 'react-konva';
 import Konva from 'konva';
 import { TransformShapeProps } from '../../../../components/DrawCanvas/types';
 
@@ -70,6 +70,7 @@ function EllipseTransform(props: TransformShapeProps): JSX.Element {
         draggable
         onTransformEnd={onTransformEnd}
         onDragEnd={onDragEnd}
+        rotation={data.rotation}
         {...data.shapeConfig}
       />
       {data.isSelected && (

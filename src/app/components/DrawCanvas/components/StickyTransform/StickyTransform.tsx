@@ -72,6 +72,7 @@ function StickyTransform(props: TransformShapeProps): JSX.Element {
         y={data.y}
         height={data.sticky?.height as number}
         width={data.sticky?.width as number}
+        rotation={data.rotation}
       >
         <Rect
           id={data.id + ':Rect'}

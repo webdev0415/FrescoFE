@@ -10,6 +10,14 @@ export const fontNames = [
   'Times New Roman',
   'Trebuchet MS',
   'Verdana',
+  'Arial',
+  'Roboto',
+  'Space Grotesk',
+  'Poppins',
+  'Syne Tactile',
+  'Itim',
+  'Anton',
+  'Josefin Sans',
 ];
 
 export const defaultPointState: PointsInterface = {

@@ -91,8 +91,8 @@ export interface Props
 export interface State {
   objects: ObjectInterface[];
   points: ObjectInterface;
-  history: ObjectInterface[][];
-  historyIndex: number;
+  prevHistory: ObjectInterface[];
+  nextHistory: ObjectInterface[];
   canvas: {
     name: string;
     orgId: string;

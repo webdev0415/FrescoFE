@@ -91,6 +91,7 @@ function StarTransform(props: TransformShapeProps): JSX.Element {
         onTransformEnd={onTransformEnd}
         onDragStart={onDragStart}
         onDragEnd={onDragEnd}
+        rotation={data.rotation}
         {...data.shapeConfig}
       />
       {data.isSelected && (
