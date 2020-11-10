@@ -47,6 +47,7 @@ import {
   FillColorIcon,
   BorderStyleIcon,
   MarkerIcon,
+  PlusSquareIcon,
 } from '../CanvasIcons';
 
 class DrawCanvas extends Component<Props, State> {
@@ -535,7 +536,7 @@ class DrawCanvas extends Component<Props, State> {
                 {shapeObject.textData?.fontSize}
               </div>
               <div className="canvas-text-toolbar-item action-button">
-                <MinusSquareIcon
+                <PlusSquareIcon
                   onClick={() => {
                     this.updateObjectText(shapeObject.id, {
                       ...shapeObject.textData,
