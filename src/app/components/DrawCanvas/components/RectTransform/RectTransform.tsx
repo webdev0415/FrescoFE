@@ -26,6 +26,7 @@ function RectTransform(props: TransformShapeProps): JSX.Element {
         ...data,
         x: node?.x(),
         y: node?.y(),
+        rotation: Math.round(node?.attrs.rotation as number),
         rect: {
           width: Math.max(5, node?.width() * scaleX),
           height: Math.max(node?.height() * scaleY),

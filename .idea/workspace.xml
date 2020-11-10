@@ -7,12 +7,7 @@
       <change beforePath="$PROJECT_DIR$/src/app/components/DrawCanvas/components/EllipseTransform/EllipseTransform.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/components/DrawCanvas/components/EllipseTransform/EllipseTransform.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/app/components/DrawCanvas/components/RectTransform/RectTransform.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/components/DrawCanvas/components/RectTransform/RectTransform.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/app/components/DrawCanvas/components/StarTransform/StarTransform.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/components/DrawCanvas/components/StarTransform/StarTransform.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/components/DrawCanvas/components/StickyTransform/StickyTransform.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/components/DrawCanvas/components/StickyTransform/StickyTransform.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/components/DrawCanvas/components/TextTransform/TextTransform.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/components/DrawCanvas/components/TextTransform/TextTransform.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/app/components/DrawCanvas/components/TriangleTransform/TriangleTransform.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/components/DrawCanvas/components/TriangleTransform/TriangleTransform.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/components/DrawCanvas/constants.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/components/DrawCanvas/constants.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/components/DrawCanvas/types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/components/DrawCanvas/types.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/containers/CreateCanvas/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/CreateCanvas/index.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -232,7 +227,14 @@
       <option name="project" value="LOCAL" />
       <updated>1604951435602</updated>
     </task>
-    <option name="localTasksCounter" value="18" />
+    <task id="LOCAL-00018" summary="Object Transform Created">
+      <created>1604968856716</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1604968856716</updated>
+    </task>
+    <option name="localTasksCounter" value="19" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -258,7 +260,8 @@
     <MESSAGE value="Fix History Issue" />
     <MESSAGE value="Zoom Level Issue Fixed" />
     <MESSAGE value="Add Components for Transform Objects" />
-    <option name="LAST_COMMIT_MESSAGE" value="Add Components for Transform Objects" />
+    <MESSAGE value="Object Transform Created" />
+    <option name="LAST_COMMIT_MESSAGE" value="Object Transform Created" />
   </component>
   <component name="WindowStateProjectService">
     <state x="2274" y="461" key="#Stylelint" timestamp="1604430455610">
@@ -277,12 +280,12 @@
       <screen x="1600" y="0" width="1920" height="1170" />
     </state>
     <state x="2365" y="301" key="#com.intellij.ide.util.MemberChooser/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604625079251" />
-    <state x="2183" y="85" key="CommitChangelistDialog2" timestamp="1604953493257">
+    <state x="2183" y="85" key="CommitChangelistDialog2" timestamp="1604968769086">
       <screen x="1600" y="0" width="1920" height="1170" />
     </state>
     <state x="2183" y="85" key="CommitChangelistDialog2/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604713868870" />
     <state x="486" y="0" key="CommitChangelistDialog2/0.0.1600.868@0.0.1600.868" timestamp="1604536955419" />
-    <state x="2183" y="85" key="CommitChangelistDialog2/0.0.1600.870/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604953493257" />
+    <state x="2183" y="85" key="CommitChangelistDialog2/0.0.1600.870/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604968769086" />
     <state x="665" y="109" key="EnvironmentVariablesDialog" timestamp="1604355254437">
       <screen x="0" y="0" width="1600" height="868" />
     </state>
@@ -383,12 +386,12 @@
       <screen x="1600" y="0" width="1920" height="1170" />
     </state>
     <state x="2061" y="230" key="SettingsEditor/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604432505423" />
-    <state x="2152" y="314" key="Vcs.Push.Dialog.v2" timestamp="1604954473321">
+    <state x="2152" y="314" key="Vcs.Push.Dialog.v2" timestamp="1604969013683">
       <screen x="1600" y="0" width="1920" height="1170" />
     </state>
     <state x="2152" y="314" key="Vcs.Push.Dialog.v2/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604698309261" />
     <state x="460" y="233" key="Vcs.Push.Dialog.v2/0.0.1600.868@0.0.1600.868" timestamp="1604537216075" />
-    <state x="2152" y="314" key="Vcs.Push.Dialog.v2/0.0.1600.870/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604954473321" />
+    <state x="2152" y="314" key="Vcs.Push.Dialog.v2/0.0.1600.870/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604969013683" />
     <state x="1692" y="92" width="1736" height="986" key="com.intellij.history.integration.ui.views.FileHistoryDialog" timestamp="1604968281412">
       <screen x="1600" y="0" width="1920" height="1170" />
     </state>

@@ -25,10 +25,20 @@ function StarTransform(props: TransformShapeProps): JSX.Element {
       const scaleY = node?.scaleY();
       node?.scaleX(1);
       node?.scaleY(1);
+      const width = Math.round(Math.max(5, node?.width() * scaleX));
+      const height = Math.round(Math.max(node?.height() * scaleY));
+      const radius = Math.min(width, height);
       onChange({
         ...data,
         x: node?.x(),
         y: node?.y(),
+        rotation: Math.round(node?.attrs.rotation as number),
+        star: {
+          ...data.star,
+          numPoints: 5,
+          outerRadius: radius / 2,
+          innerRadius: Math.round(radius / 4),
+        },
       });
     },
     [data, onChange],
@@ -75,7 +85,7 @@ function StarTransform(props: TransformShapeProps): JSX.Element {
         ref={shapeRef}
         x={data.x}
         y={data.y}
-        innerRadius={(data.star?.innerRadius as number) / 2}
+        innerRadius={data.star?.innerRadius as number}
         outerRadius={data.star?.outerRadius as number}
         draggable
         onTransformEnd={onTransformEnd}

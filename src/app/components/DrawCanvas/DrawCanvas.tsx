@@ -709,9 +709,7 @@ class DrawCanvas extends Component<Props, State> {
             {this.props.drawingTool === 'Star' && this.isDrawing && (
               <Star
                 numPoints={this.state.points.star?.numPoints as number}
-                innerRadius={
-                  (this.state.points.star?.innerRadius as number) / 2
-                }
+                innerRadius={this.state.points.star?.innerRadius as number}
                 outerRadius={this.state.points.star?.outerRadius as number}
                 x={this.state.points.x}
                 y={this.state.points.y}

@@ -25,6 +25,7 @@ function EllipseTransform(props: TransformShapeProps): JSX.Element {
 
       onChange({
         ...data,
+        rotation: Math.round(node?.attrs.rotation as number),
         ellipse: {
           radiusX: Math.max(5, node?.width() * scaleX),
           radiusY: Math.max(node?.height() * scaleY),
