@@ -27,9 +27,8 @@ export const CreateCanvas = memo(() => {
     | 'Rect'
     | 'RectRounded'
     | 'Triangle'
-    | 'Circle'
+    | 'Ellipse'
     | 'Star'
-    | 'Drag'
     | 'Text'
     | 'Sticky'
     | null
@@ -98,13 +97,12 @@ export const CreateCanvas = memo(() => {
               'canvas-toolbar-item',
               drawingTool === 'Sticky' && 'active',
             )}
+            onClick={() => {
+              setDrawingTool('Sticky');
+              setShowSubTools('');
+            }}
           >
-            <StickyNoteIcon
-              onClick={() => {
-                setDrawingTool('Sticky');
-                setShowSubTools('');
-              }}
-            />
+            <StickyNoteIcon />
             {/*<img src={canvasToolbarSelectionIcon} alt="selection" />*/}
           </div>
           <div
@@ -112,13 +110,12 @@ export const CreateCanvas = memo(() => {
               'canvas-toolbar-item',
               drawingTool === 'Text' && 'active',
             )}
+            onClick={() => {
+              setDrawingTool('Text');
+              setShowSubTools('');
+            }}
           >
-            <TextIcon
-              onClick={() => {
-                setDrawingTool('Text');
-                setShowSubTools('');
-              }}
-            />
+            <TextIcon />
           </div>
           <div
             className={clsx(
@@ -127,12 +124,11 @@ export const CreateCanvas = memo(() => {
                 drawingTool as string,
               ) && 'active',
             )}
+            onClick={() => {
+              setShowSubTools('shapes');
+            }}
           >
-            <span
-              onClick={() => {
-                setShowSubTools('shapes');
-              }}
-            >
+            <span>
               <ShapesIcon />
             </span>
 
@@ -144,7 +140,8 @@ export const CreateCanvas = memo(() => {
             >
               <div
                 className="canvas-sub-toolbar-item"
-                onClick={() => {
+                onClick={event => {
+                  event.stopPropagation();
                   setDrawingTool('Rect');
                   setShowSubTools('');
                 }}
@@ -153,8 +150,9 @@ export const CreateCanvas = memo(() => {
               </div>
               <div
                 className="canvas-sub-toolbar-item"
-                onClick={() => {
-                  setDrawingTool('Circle');
+                onClick={event => {
+                  event.stopPropagation();
+                  setDrawingTool('Ellipse');
                   setShowSubTools('');
                 }}
               >
@@ -162,7 +160,8 @@ export const CreateCanvas = memo(() => {
               </div>
               <div
                 className="canvas-sub-toolbar-item"
-                onClick={() => {
+                onClick={event => {
+                  event.stopPropagation();
                   setDrawingTool('Triangle');
                   setShowSubTools('');
                 }}
@@ -171,7 +170,8 @@ export const CreateCanvas = memo(() => {
               </div>
               <div
                 className="canvas-sub-toolbar-item"
-                onClick={() => {
+                onClick={event => {
+                  event.stopPropagation();
                   setDrawingTool('RectRounded');
                   setShowSubTools('');
                 }}
@@ -181,7 +181,8 @@ export const CreateCanvas = memo(() => {
 
               <div
                 className="canvas-sub-toolbar-item"
-                onClick={() => {
+                onClick={event => {
+                  event.stopPropagation();
                   setDrawingTool('Star');
                   setShowSubTools('');
                 }}
@@ -191,17 +192,13 @@ export const CreateCanvas = memo(() => {
             </div>
           </div>
           <div
-            className={clsx(
-              'canvas-toolbar-item',
-              drawingTool === 'Drag' && 'active',
-            )}
+            className={clsx('canvas-toolbar-item', !drawingTool && 'active')}
+            onClick={() => {
+              setDrawingTool(null);
+              setShowSubTools('');
+            }}
           >
-            <CursorIcon
-              onClick={() => {
-                setDrawingTool('Drag');
-                setShowSubTools('');
-              }}
-            />
+            <CursorIcon />
           </div>
         </div>
         <div className="canvas-footer">

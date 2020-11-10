@@ -4,10 +4,8 @@ export type ShapeObjectType =
   | 'Rect'
   | 'RectRounded'
   | 'Triangle'
-  | 'Circle'
   | 'Ellipse'
   | 'Star'
-  | 'Drag'
   | 'Text'
   | 'Sticky'
   | null;
@@ -19,7 +17,12 @@ type FontVariantType = 'normal' | 'small-caps';
 type TextDecoration = 'line-through' | 'underline' | '';
 type WrapType = 'word' | 'char' | 'none';
 
-export interface TextProperties {
+export interface ShapeProperty {
+  height: number;
+  width: number;
+}
+
+export interface TextProperties extends Partial<ShapeProperty> {
   text?: string;
   fontFamily?: string;
   fontSize?: number;
@@ -35,24 +38,43 @@ export interface TextProperties {
   ellipsis?: boolean;
 }
 
+export interface StickyProperty extends ShapeProperty {
+  cornerRadius: number;
+}
+
+export interface EllipseProperties {
+  radiusX: number;
+  radiusY: number;
+}
+
+export interface RectangleProperties extends ShapeProperty {
+  cornerRadius: number;
+}
+
+export interface TriangleProperties extends ShapeProperty {}
+
+export interface StarProperties {
+  innerRadius: number;
+  outerRadius: number;
+  numPoints: number;
+}
+
 export interface PointsInterface {
   x: number;
   y: number;
-  width?: number;
-  height?: number;
-  radius?: number;
-  ellipseRadius?: {
-    x: number;
-    y: number;
-  };
+  textData?: TextProperties;
+  sticky?: StickyProperty;
+  rect?: RectangleProperties;
+  star?: StarProperties;
+  ellipse?: EllipseProperties;
+  triangle?: TriangleProperties;
   type: ShapeObjectType;
 }
 
 export interface ObjectInterface extends PointsInterface {
   id: string;
   rotation: number;
-  textData?: TextProperties;
-  isDragging: boolean;
+  shapeConfig?: Konva.ShapeConfig;
   isFocused: boolean;
   isSelected: boolean;
   isEditing: boolean;
@@ -66,7 +88,7 @@ export interface Props {
 
 export interface State {
   objects: ObjectInterface[];
-  points: PointsInterface;
+  points: ObjectInterface;
   history: ObjectInterface[][];
   historyIndex: number;
 }
@@ -80,6 +102,4 @@ export interface TransformShapeProps {
   data: ObjectInterface;
   onChange(data: ObjectInterface): void;
   onSelect(event: Konva.KonvaEventObject<MouseEvent>): void;
-  onEditText?(event: Konva.KonvaEventObject<MouseEvent>): void;
-  shapeConfig: Konva.ShapeConfig;
 }

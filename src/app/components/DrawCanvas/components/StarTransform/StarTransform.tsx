@@ -1,10 +1,13 @@
 import React, { useCallback, useEffect, useRef } from 'react';
 import { Rect, Star, Transformer } from 'react-konva';
 import Konva from 'konva';
-import { TransformShapeProps } from '../../../../components/DrawCanvas/types';
+import {
+  StarProperties,
+  TransformShapeProps,
+} from '../../../../components/DrawCanvas/types';
 
 function StarTransform(props: TransformShapeProps): JSX.Element {
-  const { data, shapeConfig, onSelect, onChange } = props;
+  const { data, onSelect, onChange } = props;
   const shapeRef = useRef<Konva.Star>(null);
   const trRef = useRef<Konva.Transformer>(null);
 
@@ -22,13 +25,20 @@ function StarTransform(props: TransformShapeProps): JSX.Element {
       const scaleY = node?.scaleY();
       node?.scaleX(1);
       node?.scaleY(1);
+      const width = Math.round(Math.max(5, node?.width() * scaleX));
+      const height = Math.round(Math.max(node?.height() * scaleY));
+      const radius = Math.min(width, height);
       onChange({
         ...data,
         x: node?.x(),
         y: node?.y(),
-        // set minimal value
-        width: Math.max(5, node?.width() * scaleX),
-        height: Math.max(node?.height() * scaleY),
+        rotation: Math.round(node?.attrs.rotation as number),
+        star: {
+          ...data.star,
+          numPoints: 5,
+          outerRadius: radius / 2,
+          innerRadius: Math.round(radius / 4),
+        },
       });
     },
     [data, onChange],
@@ -40,7 +50,6 @@ function StarTransform(props: TransformShapeProps): JSX.Element {
         ...data,
         x: e.target.x(),
         y: e.target.y(),
-        isDragging: false,
         isEditing: false,
       });
     },
@@ -53,7 +62,6 @@ function StarTransform(props: TransformShapeProps): JSX.Element {
         ...data,
         x: e.target.x(),
         y: e.target.y(),
-        isDragging: true,
         isEditing: false,
       });
     },
@@ -61,12 +69,12 @@ function StarTransform(props: TransformShapeProps): JSX.Element {
   );
 
   useEffect(() => {
-    if (data.isEditing) {
+    if (data.isSelected) {
       // we need to attach transformer manually
       trRef.current?.nodes([shapeRef.current as Konva.Star]);
       trRef.current?.getLayer()?.batchDraw();
     }
-  }, [data.isEditing]);
+  }, [data.isSelected]);
 
   return (
     <React.Fragment>
@@ -75,15 +83,17 @@ function StarTransform(props: TransformShapeProps): JSX.Element {
         onTap={onSelect}
         numPoints={5}
         ref={shapeRef}
-        innerRadius={(data.width as number) / 2}
-        outerRadius={data.width as number}
+        x={data.x}
+        y={data.y}
+        innerRadius={data.star?.innerRadius as number}
+        outerRadius={data.star?.outerRadius as number}
         draggable
         onTransformEnd={onTransformEnd}
         onDragStart={onDragStart}
         onDragEnd={onDragEnd}
-        {...shapeConfig}
+        {...data.shapeConfig}
       />
-      {data.isEditing && (
+      {data.isSelected && (
         <Transformer
           ref={trRef}
           boundBoxFunc={boundBoxFunc}
