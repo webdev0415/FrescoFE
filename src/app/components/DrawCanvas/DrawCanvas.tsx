@@ -627,7 +627,7 @@ class DrawCanvas extends Component<Props, State> {
                     key={shapeObject.id}
                     data={shapeObject}
                     onChange={data => {
-                      this.updateShape(data);
+                      this.updateShape(data, true);
                     }}
                     onSelect={() => {
                       this.handleSelect(shapeObject);
@@ -641,7 +641,7 @@ class DrawCanvas extends Component<Props, State> {
                       key={shapeObject.id}
                       data={shapeObject}
                       onChange={data => {
-                        this.updateShape(data);
+                        this.updateShape(data, true);
                       }}
                       onSelect={() => {
                         this.handleSelect(shapeObject);
@@ -656,7 +656,7 @@ class DrawCanvas extends Component<Props, State> {
                       key={shapeObject.id}
                       data={shapeObject}
                       onChange={data => {
-                        this.updateShape(data);
+                        this.updateShape(data, true);
                       }}
                       onSelect={() => {
                         this.handleSelect(shapeObject);
@@ -670,7 +670,7 @@ class DrawCanvas extends Component<Props, State> {
                     key={shapeObject.id}
                     data={shapeObject}
                     onChange={data => {
-                      this.updateShape(data);
+                      this.updateShape(data, true);
                     }}
                     onSelect={() => {
                       this.handleSelect(shapeObject);
@@ -683,7 +683,7 @@ class DrawCanvas extends Component<Props, State> {
                     key={shapeObject.id}
                     data={shapeObject}
                     onChange={data => {
-                      this.updateShape(data);
+                      this.updateShape(data, true);
                     }}
                     onSelect={() => {
                       this.handleSelect(shapeObject);
@@ -696,7 +696,7 @@ class DrawCanvas extends Component<Props, State> {
                     key={shapeObject.id}
                     data={shapeObject}
                     onChange={data => {
-                      this.updateShape(data);
+                      this.updateShape(data, true);
                     }}
                     onSelect={() => {
                       this.handleSelect(shapeObject);
