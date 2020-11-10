@@ -8,8 +8,12 @@ import {
   UserOutlined,
 } from '@ant-design/icons';
 import ItemBoard from 'app/components/ItemBoard';
+import { RouteComponentProps } from 'react-router-dom';
+
+import './styles.less';
 
 const { TabPane } = Tabs;
+const { Title } = Typography;
 
 const panes = [
   { tab: 'Customer Journey Maps', key: '1' },
@@ -19,7 +23,7 @@ const panes = [
   { tab: 'Marketing', key: '5' },
 ];
 
-interface Props {}
+interface Props extends RouteComponentProps<any> {}
 
 export const SelectBoard = memo((props: Props) => {
   return (
@@ -29,12 +33,13 @@ export const SelectBoard = memo((props: Props) => {
         height: '80vh',
         background: '#ffffff',
       }}
+      className="select-board"
     >
       <Tabs
         hideAdd
         type={'card'}
         tabPosition={'left'}
-        tabBarStyle={{ height: '80vh', backgroundColor: '#B3B6B7' }}
+        tabBarStyle={{ height: '(80vh)', backgroundColor: '#B3B6B7' }}
       >
         <TabPane
           tab={
@@ -49,11 +54,25 @@ export const SelectBoard = memo((props: Props) => {
             <InputWrapper>
               <Input placeholder="Board Name" />
             </InputWrapper>
-            <Typography
-              style={{ height: 40, color: '#9646F5', cursor: 'pointer' }}
+            <Div
+              onClick={() => {
+                props.history.goBack();
+              }}
             >
-              Cancel
-            </Typography>
+              <Title
+                level={5}
+                style={{
+                  height: 40,
+                  color: '#9646F5',
+                  cursor: 'pointer',
+                  fontWeight: 300,
+                  fontStyle: 'normal',
+                  margin: 0,
+                }}
+              >
+                Cancel
+              </Title>
+            </Div>
           </Wraper>
 
           <Tabs
@@ -62,7 +81,7 @@ export const SelectBoard = memo((props: Props) => {
           >
             {panes.map((pan, index) => (
               <TabPane tab={pan.tab} key={pan.key}>
-                <div style={{ height: '65vh', overflow: 'scroll' }}>
+                <div style={{ height: '65vh', overflowX: 'hidden' }}>
                   {[1, 2, 3, 4, 5].map(item => (
                     <Row gutter={[16, 16]}>
                       {[1, 2, 3, 4].map(i => (

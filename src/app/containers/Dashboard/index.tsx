@@ -179,14 +179,7 @@ export const Dashboard = memo((props: Props) => {
             >
               New Board
             </Button>
-
-            <br />
-            <br />
-            <br />
-
-            <h3 style={{ color: '#4E4B5C' }}> My Boards</h3>
-            <br />
-            <br />
+            <h3 className="dashboard__tab-title">My Boards</h3>
             <Row gutter={20}>
               {new Array(1).fill(0).map((item, index) => (
                 <Col key={index} span={6}>
@@ -257,9 +250,7 @@ export const Dashboard = memo((props: Props) => {
               </Button>
             </div>
 
-            <h3 style={{ color: '#4E4B5C' }}> Custom Canvas</h3>
-            <br />
-            <br />
+            <h3 className="dashboard__tab-title">Custom Canvas</h3>
             <Row gutter={20}>
               {new Array(1).fill(0).map((item, index) => (
                 <Col key={index} span={6}>
@@ -299,5 +290,5 @@ export const Dashboard = memo((props: Props) => {
 });
 
 const Div = styled.div`
-  padding: 100px;
+  padding-top: 24px;
 `;
