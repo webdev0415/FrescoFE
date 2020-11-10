@@ -49,6 +49,7 @@ import {
   MarkerIcon,
   PlusSquareIcon,
 } from '../CanvasIcons';
+import { CanvasApiService } from '../../../services/APIService';
 
 class DrawCanvas extends Component<Props, State> {
   state: State = {
@@ -58,6 +59,10 @@ class DrawCanvas extends Component<Props, State> {
     },
     history: [[]],
     historyIndex: 0,
+    canvas: {
+      name: '',
+      orgId: '',
+    },
   };
   stageRef: Konva.Stage | null = null;
 
@@ -111,13 +116,31 @@ class DrawCanvas extends Component<Props, State> {
       }
     });
 
+    this.redoHistory();
+    this.undoHistory();
+
+    const saveCanvas = document.getElementById('save-canvas') as HTMLDivElement;
+    saveCanvas.addEventListener('click', e => {
+      this.saveCanvas();
+    });
+    this.getCanvasObject();
+  }
+
+  componentDidUpdate(
+    prevProps: Readonly<Props>,
+    prevState: Readonly<State>,
+    snapshot?: any,
+  ) {
+    if (JSON.stringify(this.props) !== JSON.stringify(prevProps)) {
+      this.handleChangeCursor();
+      console.log(this.props.zoomLevel);
+    }
+  }
+
+  undoHistory(): void {
     const undoHistory = document.getElementById(
       'undo-history',
     ) as HTMLDivElement;
-    const redoHistory = document.getElementById(
-      'redo-history',
-    ) as HTMLDivElement;
-
     undoHistory.addEventListener('click', () => {
       const historyLength = this.state.history.length;
       const historyIndex = this.state.historyIndex;
@@ -129,7 +152,12 @@ class DrawCanvas extends Component<Props, State> {
         });
       }
     });
+  }
 
+  redoHistory(): void {
+    const redoHistory = document.getElementById(
+      'redo-history',
+    ) as HTMLDivElement;
     redoHistory.addEventListener('click', e => {
       const historyLength = this.state.history.length;
       const historyIndex = this.state.historyIndex;
@@ -143,15 +171,41 @@ class DrawCanvas extends Component<Props, State> {
     });
   }
 
-  componentDidUpdate(
-    prevProps: Readonly<Props>,
-    prevState: Readonly<State>,
-    snapshot?: any,
-  ) {
-    if (JSON.stringify(this.props) !== JSON.stringify(prevProps)) {
-      this.handleChangeCursor();
-      console.log(this.props.zoomLevel);
-    }
+  saveCanvas(): void {
+    const data = JSON.stringify(this.state.objects);
+    CanvasApiService.updateById(this.props.match?.params.id as string, {
+      ...this.state.canvas,
+      data: data,
+    }).subscribe(
+      response => {
+        console.log(response);
+      },
+      error => {
+        console.error(error);
+      },
+    );
+  }
+
+  getCanvasObject(): void {
+    const canvasTitle = document.getElementById(
+      'canvas-title',
+    ) as HTMLSpanElement;
+    CanvasApiService.getById(this.props.match?.params.id as string).subscribe(
+      canvasData => {
+        console.log(canvasData);
+        canvasTitle.innerText = canvasData.name;
+        const canvasObjects = !!canvasData.data
+          ? JSON.parse(canvasData.data)
+          : [];
+        this.setState({
+          objects: canvasObjects,
+          canvas: { orgId: canvasData.orgId, name: canvasData.name },
+        });
+      },
+      error => {
+        console.error(error);
+      },
+    );
   }
 
   handleChangeCursor = () => {
@@ -445,6 +499,7 @@ class DrawCanvas extends Component<Props, State> {
           )
           .map(shapeObject => (
             <Modal
+              key={shapeObject.id + ':textEditor'}
               title="Edit Text"
               visible={shapeObject.isEditing}
               onOk={e => {

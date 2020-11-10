@@ -4,13 +4,19 @@
  *
  */
 
-import React, { memo, useEffect, useState } from 'react';
+import React, {
+  ChangeEvent,
+  memo,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components/macro';
 import { Button, Card, Col, Row, Tabs, Input, Select } from 'antd';
 import { EllipsisOutlined, PlusOutlined } from '@ant-design/icons';
-import { Redirect, useHistory } from 'react-router-dom';
+import { Link, Redirect, useHistory } from 'react-router-dom';
 
 import { useInjectReducer, useInjectSaga } from 'utils/redux-injectors';
 import { actions, reducer, sliceKey } from './slice';
@@ -25,6 +31,8 @@ import pageIcon from 'assets/icons/page.svg';
 import { UserModal } from '../../components/UserModal';
 import { InviteMemberModal } from '../../components/InviteMemberModal';
 import Axios from 'axios';
+import { CanvasApiService } from 'services/APIService';
+import { CanvasResponseInterface } from '../../../services/APIService/interfaces';
 
 const { TabPane } = Tabs;
 export const PERMISSION = {
@@ -37,6 +45,12 @@ interface Props {
   match?: any;
 }
 
+interface CanvasFormState {
+  name: string;
+  orgId: string;
+  data: string;
+}
+
 export const Dashboard = memo((props: Props) => {
   useInjectReducer({ key: sliceKey, reducer: reducer });
   useInjectSaga({ key: sliceKey, saga: dashboardSaga });
@@ -46,6 +60,8 @@ export const Dashboard = memo((props: Props) => {
   const [isShowInvitationModal, setIsShowInvitationModal] = useState(false);
   const [email, setEmail] = useState('');
   const [permission, setPermission] = useState(PERMISSION.EDITOR);
+  const [canvasName, setCanvasName] = useState('');
+  const [canvasList, setCanvasList] = useState<CanvasResponseInterface[]>([]);
 
   const orgId = props?.match?.params?.id;
 
@@ -82,6 +98,23 @@ export const Dashboard = memo((props: Props) => {
       actions.searchEmailRequest({ data: { email: value, orgId }, token }),
     );
   };
+
+  const createCanvas = useCallback(() => {
+    const data = {
+      name: canvasName,
+      orgId: orgId,
+      data: '',
+    };
+    CanvasApiService.create(data).subscribe(
+      data => {
+        console.log(data);
+        history.push(`/canvas/${data.orgId}/${data.id}`);
+      },
+      error => {
+        console.error(error.response);
+      },
+    );
+  }, [canvasName, history, orgId]);
 
   const _handleSelectEmail = value => {
     setEmail(value);
@@ -142,6 +175,12 @@ export const Dashboard = memo((props: Props) => {
       });
     }
   }, []);
+
+  useEffect(() => {
+    CanvasApiService.getByOrganizationId(orgId).subscribe(data => {
+      setCanvasList(data);
+    });
+  }, [orgId]);
 
   const handleLogOut = () => {
     dispatch(globalActions.removeAuth());
@@ -212,7 +251,10 @@ export const Dashboard = memo((props: Props) => {
               hidden={isShowAddNewCanvas}
               type="primary"
               icon={<PlusOutlined />}
-              onClick={() => setIsShowAddNewCanvas(true)}
+              onClick={() => {
+                setIsShowAddNewCanvas(true);
+                setCanvasName('');
+              }}
             >
               Create Canvas
             </Button>
@@ -225,7 +267,12 @@ export const Dashboard = memo((props: Props) => {
                 gap: '20px',
               }}
             >
-              <Input placeholder="Name" style={{ width: 300, flexShrink: 0 }} />
+              <Input
+                placeholder="Name"
+                name="name"
+                onChange={event => setCanvasName(event.currentTarget.value)}
+                style={{ width: 300, flexShrink: 0 }}
+              />
               <Select
                 defaultValue=""
                 style={{ width: 220, flexShrink: 0 }}
@@ -234,13 +281,11 @@ export const Dashboard = memo((props: Props) => {
                 <Select.Option value="" disabled>
                   Category
                 </Select.Option>
-                <Select.Option value="Customer Journey Maps" disabled>
+                <Select.Option value="Customer Journey Maps">
                   Customer Journey Maps
                 </Select.Option>
-                <Select.Option value=" Innovation" disabled>
-                  Innovation
-                </Select.Option>
-                <Select.Option value=" Business model" disabled>
+                <Select.Option value=" Innovation">Innovation</Select.Option>
+                <Select.Option value=" Business model">
                   Business model
                 </Select.Option>
                 <Select.Option value="Product">Product</Select.Option>
@@ -249,7 +294,7 @@ export const Dashboard = memo((props: Props) => {
               <Button
                 type="primary"
                 icon={<PlusOutlined />}
-                onClick={() => history.push('/create-canvas')}
+                onClick={createCanvas}
               >
                 Create Canvas
               </Button>
@@ -259,7 +304,7 @@ export const Dashboard = memo((props: Props) => {
             <br />
             <br />
             <Row gutter={20}>
-              {new Array(1).fill(0).map((item, index) => (
+              {canvasList.map((data, index) => (
                 <Col key={index} span={6}>
                   <Card
                     style={{ marginTop: 20 }}
@@ -270,7 +315,9 @@ export const Dashboard = memo((props: Props) => {
                       />
                     }
                     actions={[
-                      'Journey Ideas',
+                      <Link to={`/canvas/${data.orgId}/${data.id}`}>
+                        {data.name}
+                      </Link>,
                       <EllipsisOutlined key="ellipsis" />,
                     ]}
                   />
