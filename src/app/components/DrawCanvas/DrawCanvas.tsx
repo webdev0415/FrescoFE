@@ -163,16 +163,19 @@ class DrawCanvas extends Component<Props, State> {
   }
 
   saveCanvas(): void {
-    const data = JSON.stringify(this.state.objects);
+    const data = JSON.stringify(
+      this.state.objects.map(item => ({
+        ...item,
+        isEditing: false,
+        isSelected: false,
+        isFocused: false,
+      })),
+    );
     CanvasApiService.updateById(this.props.match?.params.id as string, {
       ...this.state.canvas,
       data: data,
     }).subscribe(
       response => {
-        notification.success({
-          message: 'Canvas Published',
-          description: 'Canvas saved and published successfully.',
-        });
         console.log(response);
       },
       error => {
@@ -363,19 +366,24 @@ class DrawCanvas extends Component<Props, State> {
     if (saveHistory) {
       this.updateHistory(JSON.parse(JSON.stringify(data)));
     }
-    this.setState({
-      objects: [
-        ...this.state.objects.map(shapeObject => ({
-          ...shapeObject,
-          isEditing: false,
-          isSelected: false,
-          isFocused: false,
-        })),
-        {
-          ..._.cloneDeep(data),
-        },
-      ],
-    });
+    this.setState(
+      {
+        objects: [
+          ...this.state.objects.map(shapeObject => ({
+            ...shapeObject,
+            isEditing: false,
+            isSelected: false,
+            isFocused: false,
+          })),
+          {
+            ..._.cloneDeep(data),
+          },
+        ],
+      },
+      () => {
+        this.saveCanvas();
+      },
+    );
   };
 
   handleMouseUp = e => {
@@ -449,23 +457,28 @@ class DrawCanvas extends Component<Props, State> {
       }
     }
 
-    this.setState({
-      objects: this.state.objects.map(shapeObject => {
-        if (shapeObject.id === data.id) {
-          return {
-            ...data,
-            id: shapeObject.id,
-          };
-        } else {
-          return {
-            ...shapeObject,
-            isSelected: false,
-            isEditing: false,
-            isFocused: false,
-          };
-        }
-      }),
-    });
+    this.setState(
+      {
+        objects: this.state.objects.map(shapeObject => {
+          if (shapeObject.id === data.id) {
+            return {
+              ...data,
+              id: shapeObject.id,
+            };
+          } else {
+            return {
+              ...shapeObject,
+              isSelected: false,
+              isEditing: false,
+              isFocused: false,
+            };
+          }
+        }),
+      },
+      () => {
+        this.saveCanvas();
+      },
+    );
   }
 
   updateObjectText(id: string, data: TextProperties): void {
