@@ -436,6 +436,18 @@ class DrawCanvas extends Component<Props, State> {
           ...defaultObjectState,
         },
       });
+    } else {
+      const clickedOnEmpty = e.target === e.target.getStage();
+      if (clickedOnEmpty) {
+        this.setState({
+          objects: this.state.objects.map(item => ({
+            ...item,
+            isSelected: false,
+            isFocused: false,
+            isEditing: false,
+          })),
+        });
+      }
     }
   };
 
@@ -457,23 +469,19 @@ class DrawCanvas extends Component<Props, State> {
       }
     }
 
+    const item = this.state.objects.find(item => item.id === data.id);
+    const objects = this.state.objects
+      .filter(item => item.id !== data.id)
+      .map(shapeObject => ({
+        ...shapeObject,
+        isSelected: false,
+        isEditing: false,
+        isFocused: false,
+      }));
+
     this.setState(
       {
-        objects: this.state.objects.map(shapeObject => {
-          if (shapeObject.id === data.id) {
-            return {
-              ...data,
-              id: shapeObject.id,
-            };
-          } else {
-            return {
-              ...shapeObject,
-              isSelected: false,
-              isEditing: false,
-              isFocused: false,
-            };
-          }
-        }),
+        objects: [...objects, { ...item, ...data }],
       },
       () => {
         this.saveCanvas();
