@@ -27,6 +27,7 @@ import { InviteMemberModal } from '../../components/InviteMemberModal';
 import Axios from 'axios';
 
 import './styles.less';
+import { BoardList } from '../BoardList';
 
 const { TabPane } = Tabs;
 export const PERMISSION = {
@@ -72,7 +73,7 @@ export const Dashboard = memo((props: Props) => {
     })
       .then(response => {
         setOrganization(response.data);
-        console.log(response);
+        console.log('response.data', response.data);
       })
       .catch(error => {
         console.error(error.response);
@@ -180,25 +181,7 @@ export const Dashboard = memo((props: Props) => {
               New Board
             </Button>
             <h3 className="dashboard__tab-title">My Boards</h3>
-            <Row gutter={20}>
-              {new Array(1).fill(0).map((item, index) => (
-                <Col key={index} span={6}>
-                  <Card
-                    style={{ marginTop: 20 }}
-                    cover={
-                      <img
-                        alt="example"
-                        src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
-                      />
-                    }
-                    actions={[
-                      'Journey Ideas',
-                      <EllipsisOutlined key="ellipsis" />,
-                    ]}
-                  />
-                </Col>
-              ))}
-            </Row>
+            {organization && <BoardList orgId={organization.orgId} />}
           </Div>
         </TabPane>
         <TabPane tab={<img src={dashboardIcon} alt="dashboard" />} key="2">

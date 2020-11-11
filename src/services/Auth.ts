@@ -3,7 +3,6 @@ class Auth {
 
   constructor() {
     const authInfo = localStorage.getItem('authInformation');
-    console.log('authInfo', authInfo);
 
     this.token = authInfo
       ? JSON.parse(authInfo || '{}').token.accessToken
