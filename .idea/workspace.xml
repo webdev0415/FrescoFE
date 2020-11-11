@@ -2,8 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d0235698-fcbf-40bf-a9de-ad7a068db01b" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/src/styles/overrides/_cards.less" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/components/DrawCanvas/DrawCanvas.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/components/DrawCanvas/DrawCanvas.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/containers/Dashboard/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/Dashboard/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/APIService/CanvasApi.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/APIService/CanvasApi.service.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/styles/overrides/_fonts.less" beforeDir="false" afterPath="$PROJECT_DIR$/src/styles/overrides/_fonts.less" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/styles/overrides/index.less" beforeDir="false" afterPath="$PROJECT_DIR$/src/styles/overrides/index.less" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -14,8 +18,8 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="TypeScript JSX File" />
-        <option value="Less File" />
         <option value="TypeScript File" />
+        <option value="Less File" />
       </list>
     </option>
   </component>
@@ -117,7 +121,7 @@
       <workItem from="1604654223009" duration="21000" />
       <workItem from="1604677355798" duration="31127000" />
       <workItem from="1604937996795" duration="13408000" />
-      <workItem from="1605028010939" duration="24744000" />
+      <workItem from="1605028010939" duration="29691000" />
     </task>
     <task id="LOCAL-00001" summary="Layout Added antd Tabs">
       <created>1604419318843</created>
@@ -301,14 +305,20 @@
       <option name="project" value="LOCAL" />
       <updated>1605052217699</updated>
     </task>
-    <option name="localTasksCounter" value="27" />
+    <task id="LOCAL-00027" summary="Change z index Change in canvas Item">
+      <created>1605053257320</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1605053257320</updated>
+    </task>
+    <option name="localTasksCounter" value="28" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Add Canvas Button in Layout" />
     <MESSAGE value="Add New Canvas Button to Show FOrm" />
     <MESSAGE value="Canvas Creater View Created" />
     <MESSAGE value="Add Text Toolbar" />
@@ -333,7 +343,8 @@
     <MESSAGE value="Create Object Based History. Undo Redo, ctrl z ctrl y" />
     <MESSAGE value="Save on Each Change Detected" />
     <MESSAGE value="Deselect on Side Click on Canvas" />
-    <option name="LAST_COMMIT_MESSAGE" value="Deselect on Side Click on Canvas" />
+    <MESSAGE value="Change z index Change in canvas Item" />
+    <option name="LAST_COMMIT_MESSAGE" value="Change z index Change in canvas Item" />
   </component>
   <component name="WindowStateProjectService">
     <state x="2274" y="461" key="#Stylelint" timestamp="1604430455610">
@@ -352,10 +363,10 @@
       <screen x="1600" y="0" width="1920" height="1170" />
     </state>
     <state x="2365" y="301" key="#com.intellij.ide.util.MemberChooser/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604625079251" />
-    <state x="2183" y="85" key="CommitChangelistDialog2" timestamp="1605052089449">
+    <state x="2183" y="85" key="CommitChangelistDialog2" timestamp="1605053195720">
       <screen x="1600" y="0" width="1920" height="1170" />
     </state>
-    <state x="2183" y="85" key="CommitChangelistDialog2/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1605052089449" />
+    <state x="2183" y="85" key="CommitChangelistDialog2/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1605053195720" />
     <state x="486" y="0" key="CommitChangelistDialog2/0.0.1600.868@0.0.1600.868" timestamp="1604536955419" />
     <state x="2183" y="85" key="CommitChangelistDialog2/0.0.1600.870/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604971365936" />
     <state x="665" y="109" key="EnvironmentVariablesDialog" timestamp="1604355254437">
@@ -458,10 +469,10 @@
       <screen x="1600" y="0" width="1920" height="1170" />
     </state>
     <state x="2061" y="230" key="SettingsEditor/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1605047797604" />
-    <state x="2152" y="314" key="Vcs.Push.Dialog.v2" timestamp="1605052397360">
+    <state x="2152" y="314" key="Vcs.Push.Dialog.v2" timestamp="1605053261650">
       <screen x="1600" y="0" width="1920" height="1170" />
     </state>
-    <state x="2152" y="314" key="Vcs.Push.Dialog.v2/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1605052397360" />
+    <state x="2152" y="314" key="Vcs.Push.Dialog.v2/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1605053261650" />
     <state x="460" y="233" key="Vcs.Push.Dialog.v2/0.0.1600.868@0.0.1600.868" timestamp="1604537216075" />
     <state x="2520" y="265" key="Vcs.Push.Dialog.v2/0.0.1600.870/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604971405129" />
     <state x="1692" y="92" width="1736" height="986" key="com.intellij.history.integration.ui.views.FileHistoryDialog" timestamp="1604968281412">

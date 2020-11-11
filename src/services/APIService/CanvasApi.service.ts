@@ -84,12 +84,18 @@ export class CanvasApiService {
     });
   }
 
-  static deleteById(id: string): Observable<CanvasResponseInterface> {
+  static deleteById(
+    id: string,
+    orgId: string,
+  ): Observable<CanvasResponseInterface> {
     return new Observable<CanvasResponseInterface>(subscriber => {
       http
         .request<CanvasResponseInterface>({
           url: 'canvas/'.concat(id),
           method: 'DELETE',
+          data: {
+            orgId,
+          },
         })
         .then(
           response => {

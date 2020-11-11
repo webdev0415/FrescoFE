@@ -4,18 +4,11 @@
  *
  */
 
-import React, {
-  ChangeEvent,
-  memo,
-  useCallback,
-  useEffect,
-  useState,
-} from 'react';
+import React, { memo, useCallback, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useDispatch, useSelector } from 'react-redux';
-import styled from 'styled-components/macro';
-import { Button, Card, Col, Row, Tabs, Input, Select } from 'antd';
-import { EllipsisOutlined, PlusOutlined } from '@ant-design/icons';
+import { Button, Dropdown, Input, Menu, Select, Tabs } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
 import { Link, Redirect, useHistory } from 'react-router-dom';
 
 import { useInjectReducer, useInjectSaga } from 'utils/redux-injectors';
@@ -29,10 +22,10 @@ import pageIcon from 'assets/icons/page.svg';
 
 // Components
 import { UserModal } from '../../components/UserModal';
-import { InviteMemberModal } from '../../components/InviteMemberModal';
 import Axios from 'axios';
 import { CanvasApiService } from 'services/APIService';
 import { CanvasResponseInterface } from '../../../services/APIService/interfaces';
+import { InviteMemberModal } from '../../components/InviteMemberModal';
 
 const { TabPane } = Tabs;
 export const PERMISSION = {
@@ -151,6 +144,18 @@ export const Dashboard = memo((props: Props) => {
     setIsShowInvitationModal(false);
   };
 
+  const handleDeleteCanvas = (id: string) => {
+    CanvasApiService.deleteById(id, orgId).subscribe(
+      data => {
+        console.log(data);
+        setCanvasList(canvasList.filter(item => item.id === id));
+      },
+      error => {
+        console.error(error);
+      },
+    );
+  };
+
   useEffect(() => {
     const profileIcon = document.getElementById(
       'profile-icon',
@@ -208,7 +213,7 @@ export const Dashboard = memo((props: Props) => {
       )}
       <Tabs defaultActiveKey="1" tabPosition="left">
         <TabPane tab={<img src={pageIcon} alt="page" />} key="1">
-          <Div>
+          <div className="card-section">
             <Button
               type="primary"
               icon={<PlusOutlined />}
@@ -217,36 +222,53 @@ export const Dashboard = memo((props: Props) => {
               New Board
             </Button>
 
-            <br />
-            <br />
-            <br />
+            <h3 className="card-section-title">My Boards</h3>
 
-            <h3 style={{ color: '#4E4B5C' }}> My Boards</h3>
-            <br />
-            <br />
-            <Row gutter={20}>
-              {new Array(1).fill(0).map((item, index) => (
-                <Col key={index} span={6}>
-                  <Card
-                    style={{ marginTop: 20 }}
-                    cover={
-                      <img
-                        alt="example"
-                        src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
-                      />
-                    }
-                    actions={[
-                      'Journey Ideas',
-                      <EllipsisOutlined key="ellipsis" />,
-                    ]}
+            <div className="card-grid">
+              {new Array(5).fill(0).map((item, index) => (
+                <div className="cards-board" key={index}>
+                  <img
+                    alt="example"
+                    src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
                   />
-                </Col>
+                  <div className="card-footer">
+                    <div className="card-action">
+                      <Dropdown
+                        overlay={
+                          <Menu>
+                            <Menu.Item key="0">
+                              <a href="http://www.alipay.com/">1st menu item</a>
+                            </Menu.Item>
+                            <Menu.Item key="1">
+                              <a href="http://www.taobao.com/">2nd menu item</a>
+                            </Menu.Item>
+                            <Menu.Divider />
+                            <Menu.Item key="3">3rd menu item</Menu.Item>
+                          </Menu>
+                        }
+                        trigger={['click']}
+                      >
+                        <div className="action-button">
+                          <span className="material-icons">more_vert</span>
+                        </div>
+                      </Dropdown>
+                    </div>
+                    <div className="card-title">QuestionPro Journey Map</div>
+                    <div className="card-timestamp">Opened Oct 12, 2020</div>
+                    <div className="card-users">
+                      <span className="material-icons">group</span>
+                      <span className="user-title">
+                        Anup Surendan, JJ and 5+ collaborating
+                      </span>
+                    </div>
+                  </div>
+                </div>
               ))}
-            </Row>
-          </Div>
+            </div>
+          </div>
         </TabPane>
         <TabPane tab={<img src={dashboardIcon} alt="dashboard" />} key="2">
-          <Div>
+          <div className="card-section">
             <Button
               hidden={isShowAddNewCanvas}
               type="primary"
@@ -258,6 +280,7 @@ export const Dashboard = memo((props: Props) => {
             >
               Create Canvas
             </Button>
+
             <div
               hidden={!isShowAddNewCanvas}
               style={{
@@ -300,31 +323,57 @@ export const Dashboard = memo((props: Props) => {
               </Button>
             </div>
 
-            <h3 style={{ color: '#4E4B5C' }}> Custom Canvas</h3>
-            <br />
-            <br />
-            <Row gutter={20}>
+            <h3 className="card-section-title">Custom Canvas</h3>
+            <div className="card-grid">
               {canvasList.map((data, index) => (
-                <Col key={index} span={6}>
-                  <Card
-                    style={{ marginTop: 20 }}
-                    cover={
-                      <img
-                        alt="example"
-                        src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
-                      />
-                    }
-                    actions={[
-                      <Link to={`/canvas/${data.orgId}/${data.id}`}>
-                        {data.name}
-                      </Link>,
-                      <EllipsisOutlined key="ellipsis" />,
-                    ]}
+                <div className="cards-board" key={index}>
+                  <img
+                    alt="example"
+                    src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
                   />
-                </Col>
+
+                  <div className="card-footer">
+                    <div className="card-action">
+                      <Dropdown
+                        overlay={
+                          <Menu>
+                            <Menu.Item key="0">
+                              <Link to={`/canvas/${data.orgId}/${data.id}`}>
+                                Edit
+                              </Link>
+                            </Menu.Item>
+                            <Menu.Item key="1">
+                              <a href="http://www.taobao.com/">Action</a>
+                            </Menu.Item>
+                            <Menu.Divider />
+                            <Menu.Item
+                              key="3"
+                              onClick={() => handleDeleteCanvas(data.id)}
+                            >
+                              Delete
+                            </Menu.Item>
+                          </Menu>
+                        }
+                        trigger={['click']}
+                      >
+                        <div className="action-button">
+                          <span className="material-icons">more_vert</span>
+                        </div>
+                      </Dropdown>
+                    </div>
+                    <div className="card-title">{data.name}</div>
+                    <div className="card-timestamp">Opened Oct 12, 2020</div>
+                    <div className="card-users">
+                      <span className="material-icons">group</span>
+                      <span className="user-title">
+                        Anup Surendan, JJ and 5+ collaborating
+                      </span>
+                    </div>
+                  </div>
+                </div>
               ))}
-            </Row>
-          </Div>
+            </div>
+          </div>
         </TabPane>
       </Tabs>
 
@@ -342,7 +391,3 @@ export const Dashboard = memo((props: Props) => {
     </>
   );
 });
-
-const Div = styled.div`
-  padding: 100px;
-`;
