@@ -24,9 +24,13 @@ import pageIcon from 'assets/icons/page.svg';
 import { UserModal } from '../../components/UserModal';
 import Axios from 'axios';
 import { CanvasApiService } from 'services/APIService';
-import { CanvasResponseInterface } from '../../../services/APIService/interfaces';
+import {
+  CanvasCategoryInterface,
+  CanvasResponseInterface,
+} from '../../../services/APIService/interfaces';
 import { InviteMemberModal } from '../../components/InviteMemberModal';
 import { CanvasBoardTemplates } from '../../components/CanvasBoardTemplates';
+import { CanvasCategoryService } from '../../../services/APIService/CanvasCategory.service';
 
 const { TabPane } = Tabs;
 export const PERMISSION = {
@@ -55,6 +59,8 @@ export const Dashboard = memo((props: Props) => {
   const [email, setEmail] = useState('');
   const [permission, setPermission] = useState(PERMISSION.EDITOR);
   const [canvasName, setCanvasName] = useState('');
+  const [categories, setCategories] = useState<CanvasCategoryInterface[]>([]);
+  const [categoryId, setCategoryId] = useState('');
   const [canvasList, setCanvasList] = useState<CanvasResponseInterface[]>([]);
   const [showAddNewBoard, setAddNewBoard] = useState(false);
 
@@ -99,6 +105,7 @@ export const Dashboard = memo((props: Props) => {
       name: canvasName,
       orgId: orgId,
       data: '',
+      categoryId: categoryId,
     };
     CanvasApiService.create(data).subscribe(
       data => {
@@ -109,7 +116,7 @@ export const Dashboard = memo((props: Props) => {
         console.error(error.response);
       },
     );
-  }, [canvasName, history, orgId]);
+  }, [canvasName, history, orgId, categoryId]);
 
   const _handleSelectEmail = value => {
     setEmail(value);
@@ -186,6 +193,12 @@ export const Dashboard = memo((props: Props) => {
   useEffect(() => {
     CanvasApiService.getByOrganizationId(orgId).subscribe(data => {
       setCanvasList(data);
+    });
+  }, [orgId]);
+
+  useEffect(() => {
+    CanvasCategoryService.list().subscribe(data => {
+      setCategories(data);
     });
   }, [orgId]);
 
@@ -301,25 +314,23 @@ export const Dashboard = memo((props: Props) => {
               <Select
                 defaultValue=""
                 style={{ width: 220, flexShrink: 0 }}
+                onChange={value => {
+                  setCategoryId(value);
+                }}
                 allowClear
               >
                 <Select.Option value="" disabled>
                   Category
                 </Select.Option>
-                <Select.Option value="Customer Journey Maps">
-                  Customer Journey Maps
-                </Select.Option>
-                <Select.Option value=" Innovation">Innovation</Select.Option>
-                <Select.Option value=" Business model">
-                  Business model
-                </Select.Option>
-                <Select.Option value="Product">Product</Select.Option>
-                <Select.Option value="Marketing">Marketing</Select.Option>
+                {categories.map(item => (
+                  <Select.Option value={item.id}>{item.name}</Select.Option>
+                ))}
               </Select>
               <Button
                 type="primary"
                 icon={<PlusOutlined />}
                 onClick={createCanvas}
+                disabled={!categoryId || !canvasName}
               >
                 Create Canvas
               </Button>

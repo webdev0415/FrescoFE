@@ -3,6 +3,7 @@ import { Ellipse, Layer, Rect, Shape, Stage, Star } from 'react-konva';
 import { v4 as uuidv4 } from 'uuid';
 import Konva from 'konva';
 import { ObjectInterface, Props, State, TextProperties } from './types';
+import socketIOClient from 'socket.io-client';
 import _ from 'lodash';
 import {
   defaultObjectState,
@@ -34,7 +35,21 @@ import {
 } from '../CanvasIcons';
 import { CanvasApiService } from '../../../services/APIService';
 
+enum BoardSocketEventEnum {
+  CREATE = 'create',
+  MOVE = 'move',
+  UPDATE = 'update',
+  DELETE = 'delete',
+  LOCK = 'lock',
+  UNLOCK = 'unlock',
+  JOIN_BOARD = 'joinBoard',
+  LEAVE_BOARD = 'leaveBoard',
+  CONNECT = 'connect',
+  DISCONNECT = 'disconnect',
+}
+
 class DrawCanvas extends Component<Props, State> {
+  socket: SocketIOClient.Socket;
   state: State = {
     objects: [],
     points: {
@@ -45,6 +60,7 @@ class DrawCanvas extends Component<Props, State> {
     canvas: {
       name: '',
       orgId: '',
+      categoryId: '',
     },
   };
   stageRef: Konva.Stage | null = null;
@@ -52,6 +68,14 @@ class DrawCanvas extends Component<Props, State> {
   isItemFocused: boolean = false;
   isItemMoving: boolean = false;
   isDrawing: boolean = false;
+
+  constructor(props) {
+    super(props);
+    const url = new URL(process.env.REACT_APP_BASE_URL as string);
+    url.pathname = 'board';
+    this.socket = socketIOClient(url.href);
+    this.canvasWebSockets();
+  }
 
   componentDidMount() {
     document.addEventListener('keydown', event => {
@@ -94,6 +118,48 @@ class DrawCanvas extends Component<Props, State> {
       this.handleChangeCursor();
       console.log(this.props.zoomLevel);
     }
+  }
+
+  canvasWebSockets(): void {
+    this.socket.on(BoardSocketEventEnum.CONNECT, () => {
+      console.log('Socket ' + BoardSocketEventEnum.CONNECT);
+      this.socket.emit(BoardSocketEventEnum.JOIN_BOARD, {
+        boardId: this.props.match?.params.id,
+      });
+    });
+    this.socket.on(BoardSocketEventEnum.CREATE, data => {
+      console.log('Socket ' + BoardSocketEventEnum.CREATE, data);
+    });
+    this.socket.on(BoardSocketEventEnum.JOIN_BOARD, data => {
+      console.log('Socket ' + BoardSocketEventEnum.JOIN_BOARD, data);
+    });
+    this.socket.on(BoardSocketEventEnum.LEAVE_BOARD, data => {
+      console.log('Socket ' + BoardSocketEventEnum.LEAVE_BOARD, data);
+    });
+    this.socket.on(BoardSocketEventEnum.MOVE, data => {
+      console.log('Socket ' + BoardSocketEventEnum.MOVE, data);
+    });
+    this.socket.on(BoardSocketEventEnum.UPDATE, data => {
+      console.log('Socket ' + BoardSocketEventEnum.UPDATE, data);
+    });
+    this.socket.on(BoardSocketEventEnum.LOCK, data => {
+      console.log('Socket ' + BoardSocketEventEnum.LOCK, data);
+    });
+    this.socket.on(BoardSocketEventEnum.UNLOCK, data => {
+      console.log('Socket ' + BoardSocketEventEnum.UNLOCK, data);
+    });
+    this.socket.on(BoardSocketEventEnum.DELETE, data => {
+      console.log('Socket ' + BoardSocketEventEnum.DELETE, data);
+    });
+    this.socket.on(BoardSocketEventEnum.CREATE, data => {
+      console.log('Socket ' + BoardSocketEventEnum.CREATE, data);
+    });
+    this.socket.on(BoardSocketEventEnum.DISCONNECT, () => {
+      console.log('Socket ' + BoardSocketEventEnum.DISCONNECT);
+      this.socket.emit(BoardSocketEventEnum.LEAVE_BOARD, {
+        boardId: this.props.match?.params.id,
+      });
+    });
   }
 
   undoHistory(): void {
@@ -191,7 +257,11 @@ class DrawCanvas extends Component<Props, State> {
           : [];
         this.setState({
           objects: canvasObjects,
-          canvas: { orgId: canvasData.orgId, name: canvasData.name },
+          canvas: {
+            orgId: canvasData.orgId,
+            name: canvasData.name,
+            categoryId: canvasData.categoryId,
+          },
         });
       },
       error => {
@@ -467,6 +537,17 @@ class DrawCanvas extends Component<Props, State> {
     }
 
     const item = this.state.objects.find(item => item.id === data.id);
+    const socketData = {
+      boardId: this.props.match?.params.id as string,
+      data: JSON.stringify({
+        ...item,
+        ...data,
+        isSelected: false,
+        isEditing: false,
+        isFocused: false,
+      }),
+    };
+    console.log(this.socket.emit(BoardSocketEventEnum.MOVE, socketData));
     const objects = this.state.objects
       .filter(item => item.id !== data.id)
       .map(shapeObject => ({

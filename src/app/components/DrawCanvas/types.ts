@@ -96,6 +96,7 @@ export interface State {
   canvas: {
     name: string;
     orgId: string;
+    categoryId: string;
   };
 }
 
