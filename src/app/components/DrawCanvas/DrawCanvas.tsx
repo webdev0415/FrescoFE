@@ -2,20 +2,14 @@ import React, { Component, memo } from 'react';
 import { Ellipse, Layer, Rect, Shape, Stage, Star } from 'react-konva';
 import { v4 as uuidv4 } from 'uuid';
 import Konva from 'konva';
-import {
-  FontInterface,
-  ObjectInterface,
-  Props,
-  State,
-  TextProperties,
-} from './types';
+import { ObjectInterface, Props, State, TextProperties } from './types';
 import _ from 'lodash';
 import {
   defaultObjectState,
   defaultTextProperties,
   fontNames,
 } from './constants';
-import { Modal, Select, notification } from 'antd';
+import { Modal, Select } from 'antd';
 import {
   EllipseTransform,
   RectTransform,
@@ -453,7 +447,10 @@ class DrawCanvas extends Component<Props, State> {
 
   updateHistory(data: ObjectInterface) {
     this.setState({
-      prevHistory: [...this.state.prevHistory, data],
+      prevHistory: [
+        ...this.state.prevHistory,
+        { ...data, isEditing: false, isSelected: false, isFocused: false },
+      ],
       nextHistory: [],
     });
   }

@@ -117,7 +117,7 @@
       <workItem from="1604654223009" duration="21000" />
       <workItem from="1604677355798" duration="31127000" />
       <workItem from="1604937996795" duration="13408000" />
-      <workItem from="1605028010939" duration="23650000" />
+      <workItem from="1605028010939" duration="24744000" />
     </task>
     <task id="LOCAL-00001" summary="Layout Added antd Tabs">
       <created>1604419318843</created>
@@ -294,14 +294,20 @@
       <option name="project" value="LOCAL" />
       <updated>1605051281886</updated>
     </task>
-    <option name="localTasksCounter" value="26" />
+    <task id="LOCAL-00026" summary="Deselect on Side Click on Canvas">
+      <created>1605052217698</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1605052217699</updated>
+    </task>
+    <option name="localTasksCounter" value="27" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Fix User Modal" />
     <MESSAGE value="Add Canvas Button in Layout" />
     <MESSAGE value="Add New Canvas Button to Show FOrm" />
     <MESSAGE value="Canvas Creater View Created" />
@@ -326,7 +332,8 @@
     <MESSAGE value="Creating And Saving Canvas Ready and Functional" />
     <MESSAGE value="Create Object Based History. Undo Redo, ctrl z ctrl y" />
     <MESSAGE value="Save on Each Change Detected" />
-    <option name="LAST_COMMIT_MESSAGE" value="Save on Each Change Detected" />
+    <MESSAGE value="Deselect on Side Click on Canvas" />
+    <option name="LAST_COMMIT_MESSAGE" value="Deselect on Side Click on Canvas" />
   </component>
   <component name="WindowStateProjectService">
     <state x="2274" y="461" key="#Stylelint" timestamp="1604430455610">
@@ -345,10 +352,10 @@
       <screen x="1600" y="0" width="1920" height="1170" />
     </state>
     <state x="2365" y="301" key="#com.intellij.ide.util.MemberChooser/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604625079251" />
-    <state x="2183" y="85" key="CommitChangelistDialog2" timestamp="1605051193830">
+    <state x="2183" y="85" key="CommitChangelistDialog2" timestamp="1605052089449">
       <screen x="1600" y="0" width="1920" height="1170" />
     </state>
-    <state x="2183" y="85" key="CommitChangelistDialog2/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1605051193830" />
+    <state x="2183" y="85" key="CommitChangelistDialog2/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1605052089449" />
     <state x="486" y="0" key="CommitChangelistDialog2/0.0.1600.868@0.0.1600.868" timestamp="1604536955419" />
     <state x="2183" y="85" key="CommitChangelistDialog2/0.0.1600.870/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604971365936" />
     <state x="665" y="109" key="EnvironmentVariablesDialog" timestamp="1604355254437">
@@ -451,10 +458,10 @@
       <screen x="1600" y="0" width="1920" height="1170" />
     </state>
     <state x="2061" y="230" key="SettingsEditor/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1605047797604" />
-    <state x="2152" y="314" key="Vcs.Push.Dialog.v2" timestamp="1605051285168">
+    <state x="2152" y="314" key="Vcs.Push.Dialog.v2" timestamp="1605052397360">
       <screen x="1600" y="0" width="1920" height="1170" />
     </state>
-    <state x="2152" y="314" key="Vcs.Push.Dialog.v2/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1605051285168" />
+    <state x="2152" y="314" key="Vcs.Push.Dialog.v2/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1605052397360" />
     <state x="460" y="233" key="Vcs.Push.Dialog.v2/0.0.1600.868@0.0.1600.868" timestamp="1604537216075" />
     <state x="2520" y="265" key="Vcs.Push.Dialog.v2/0.0.1600.870/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604971405129" />
     <state x="1692" y="92" width="1736" height="986" key="com.intellij.history.integration.ui.views.FileHistoryDialog" timestamp="1604968281412">
