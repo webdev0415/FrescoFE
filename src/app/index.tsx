@@ -118,20 +118,7 @@ function AppComponent(props) {
               <img src={logoImg} alt="logo" />
             </div>
             {Auth.isLogged() && (
-              <div
-                style={{
-                  width: '24px',
-                  height: '24px',
-                  backgroundColor: '#9646F5',
-                  borderRadius: '50%',
-                  fontSize: '12px',
-                  display: 'inline-flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  color: 'white',
-                }}
-                id="profile-icon"
-              >
+              <div className="user-profile-icon" id="profile-icon">
                 AB
               </div>
             )}

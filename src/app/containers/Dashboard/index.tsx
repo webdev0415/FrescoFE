@@ -26,6 +26,7 @@ import Axios from 'axios';
 import { CanvasApiService } from 'services/APIService';
 import { CanvasResponseInterface } from '../../../services/APIService/interfaces';
 import { InviteMemberModal } from '../../components/InviteMemberModal';
+import { CanvasBoardTemplates } from '../../components/CanvasBoardTemplates';
 
 const { TabPane } = Tabs;
 export const PERMISSION = {
@@ -55,6 +56,7 @@ export const Dashboard = memo((props: Props) => {
   const [permission, setPermission] = useState(PERMISSION.EDITOR);
   const [canvasName, setCanvasName] = useState('');
   const [canvasList, setCanvasList] = useState<CanvasResponseInterface[]>([]);
+  const [showAddNewBoard, setAddNewBoard] = useState(false);
 
   const orgId = props?.match?.params?.id;
 
@@ -211,17 +213,21 @@ export const Dashboard = memo((props: Props) => {
           showInvite={() => setIsShowInvitationModal(true)}
         />
       )}
-      <Tabs defaultActiveKey="1" tabPosition="left">
+
+      <Tabs defaultActiveKey="1" tabPosition="left" className="side-bar-tabs">
         <TabPane tab={<img src={pageIcon} alt="page" />} key="1">
+          {showAddNewBoard && (
+            <CanvasBoardTemplates onClose={() => setAddNewBoard(false)} />
+          )}
+
           <div className="card-section">
             <Button
               type="primary"
               icon={<PlusOutlined />}
-              onClick={() => history.push('/board')}
+              onClick={() => setAddNewBoard(true)}
             >
               New Board
             </Button>
-
             <h3 className="card-section-title">My Boards</h3>
 
             <div className="card-grid">
