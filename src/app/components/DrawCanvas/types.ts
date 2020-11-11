@@ -1,4 +1,5 @@
 import Konva from 'konva';
+import { RouteChildrenProps } from 'react-router';
 
 export type ShapeObjectType =
   | 'Rect'
@@ -80,7 +81,8 @@ export interface ObjectInterface extends PointsInterface {
   isEditing: boolean;
 }
 
-export interface Props {
+export interface Props
+  extends RouteChildrenProps<{ id: string; orgId: string }> {
   className: string;
   drawingTool: ShapeObjectType;
   zoomLevel: number;
@@ -89,8 +91,12 @@ export interface Props {
 export interface State {
   objects: ObjectInterface[];
   points: ObjectInterface;
-  history: ObjectInterface[][];
-  historyIndex: number;
+  prevHistory: ObjectInterface[];
+  nextHistory: ObjectInterface[];
+  canvas: {
+    name: string;
+    orgId: string;
+  };
 }
 
 export interface FontInterface {

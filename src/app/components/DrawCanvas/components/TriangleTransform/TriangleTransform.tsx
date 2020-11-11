@@ -83,6 +83,7 @@ function TriangleTransform(props: TransformShapeProps): JSX.Element {
           context.fillStrokeShape(shape);
         }}
         {...data.shapeConfig}
+        rotation={data.rotation}
       />
       {data.isSelected && (
         <Transformer ref={trRef} boundBoxFunc={boundBoxFunc} />

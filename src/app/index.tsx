@@ -147,7 +147,7 @@ function AppComponent(props) {
             <PrivateRoute exact path="/board" component={SelectBoard} />
             <PrivateRoute
               exact
-              path="/create-canvas"
+              path="/canvas/:orgId/:id"
               component={CreateCanvas}
             />
             <PrivateRoute exact path="/" component={ListOrganizations} />

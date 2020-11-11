@@ -22,6 +22,8 @@ function RectTransform(props: TransformShapeProps): JSX.Element {
       const scaleY = node?.scaleY();
       node?.scaleX(1);
       node?.scaleY(1);
+      console.log(node?.attrs);
+      console.log(node);
       onChange({
         ...data,
         x: node?.x(),
@@ -71,6 +73,7 @@ function RectTransform(props: TransformShapeProps): JSX.Element {
         onTransformEnd={onTransformEnd}
         cornerRadius={data.rect?.cornerRadius as number}
         onDragEnd={onDragEnd}
+        rotation={data.rotation}
         {...data.shapeConfig}
       />
       {data.isSelected && (

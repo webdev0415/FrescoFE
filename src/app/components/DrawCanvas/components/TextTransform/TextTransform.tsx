@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef } from 'react';
-import { Text, Transformer } from 'react-konva';
+import { Rect, Text, Transformer } from 'react-konva';
 import Konva from 'konva';
 import {
   TextProperties,
@@ -74,6 +74,7 @@ function TextTransform(props: TransformShapeProps): JSX.Element {
         draggable
         onTransformEnd={onTransformEnd}
         onDragEnd={onDragEnd}
+        rotation={data.rotation}
       />
       {data.isSelected && (
         <Transformer ref={trRef} boundBoxFunc={boundBoxFunc} />

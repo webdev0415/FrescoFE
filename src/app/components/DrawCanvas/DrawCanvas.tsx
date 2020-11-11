@@ -1,54 +1,38 @@
 import React, { Component, memo } from 'react';
-import {
-  Layer,
-  Stage,
-  Star,
-  Text,
-  Rect,
-  Circle,
-  Ellipse,
-  Shape,
-  Group,
-} from 'react-konva';
+import { Ellipse, Layer, Rect, Shape, Stage, Star } from 'react-konva';
 import { v4 as uuidv4 } from 'uuid';
 import Konva from 'konva';
-import {
-  ShapeObjectType,
-  Props,
-  ObjectInterface,
-  State,
-  TextProperties,
-  FontInterface,
-} from './types';
+import { ObjectInterface, Props, State, TextProperties } from './types';
 import _ from 'lodash';
 import {
   defaultObjectState,
-  defaultPointState,
   defaultTextProperties,
+  fontNames,
 } from './constants';
-import { Select, Modal } from 'antd';
+import { Modal, Select } from 'antd';
 import {
-  StarTransform,
   EllipseTransform,
   RectTransform,
+  StarTransform,
   StickyTransform,
   TextTransform,
   TriangleTransform,
 } from './components';
 import {
+  BorderStyleIcon,
   ChevronDownIcon,
+  FillColorIcon,
+  MarkerIcon,
   MinusSquareIcon,
   MoreIcon,
+  PlusSquareIcon,
   TextAlignmentIcon,
   TextBoldIcon,
+  TextColorIcon,
   TextUnderLineIcon,
   VerticalLineIcon,
-  TextColorIcon,
-  FillColorIcon,
-  BorderStyleIcon,
-  MarkerIcon,
-  PlusSquareIcon,
 } from '../CanvasIcons';
+import { CanvasApiService } from '../../../services/APIService';
 
 class DrawCanvas extends Component<Props, State> {
   state: State = {
@@ -56,49 +40,18 @@ class DrawCanvas extends Component<Props, State> {
     points: {
       ...defaultObjectState,
     },
-    history: [[]],
-    historyIndex: 0,
+    prevHistory: [],
+    nextHistory: [],
+    canvas: {
+      name: '',
+      orgId: '',
+    },
   };
   stageRef: Konva.Stage | null = null;
 
   isItemFocused: boolean = false;
   isItemMoving: boolean = false;
   isDrawing: boolean = false;
-
-  fontList: FontInterface[] = [
-    {
-      fontFamily: 'Arial',
-      fontName: 'Arial',
-    },
-    {
-      fontFamily: 'Roboto',
-      fontName: 'Roboto',
-    },
-    {
-      fontFamily: 'Space Grotesk',
-      fontName: 'Space Grotesk',
-    },
-    {
-      fontFamily: 'Poppins',
-      fontName: 'Poppins',
-    },
-    {
-      fontFamily: 'Syne Tactile',
-      fontName: 'Syne Tactile',
-    },
-    {
-      fontFamily: 'Itim',
-      fontName: 'Itim',
-    },
-    {
-      fontFamily: 'Anton',
-      fontName: 'Anton',
-    },
-    {
-      fontFamily: 'Josefin Sans',
-      fontName: 'Josefin Sans',
-    },
-  ];
 
   componentDidMount() {
     document.addEventListener('keydown', event => {
@@ -108,39 +61,28 @@ class DrawCanvas extends Component<Props, State> {
             shapeObject => !shapeObject.isSelected,
           ),
         });
+      } else if (event.ctrlKey && event.key.toLowerCase() === 'y') {
+        const redoHistory = document.getElementById(
+          'redo-history',
+        ) as HTMLDivElement;
+        redoHistory.click();
+      }
+      if (event.ctrlKey && event.key.toLowerCase() === 'z') {
+        const undoHistory = document.getElementById(
+          'undo-history',
+        ) as HTMLDivElement;
+        undoHistory.click();
       }
     });
 
-    const undoHistory = document.getElementById(
-      'undo-history',
-    ) as HTMLDivElement;
-    const redoHistory = document.getElementById(
-      'redo-history',
-    ) as HTMLDivElement;
+    this.redoHistory();
+    this.undoHistory();
 
-    undoHistory.addEventListener('click', () => {
-      const historyLength = this.state.history.length;
-      const historyIndex = this.state.historyIndex;
-      if (historyIndex => 0 && historyIndex < historyLength) {
-        const newHistoryIndex = Math.max(0, historyIndex - 1);
-        this.setState({
-          objects: _.cloneDeep(this.state.history[newHistoryIndex].slice()),
-          historyIndex: newHistoryIndex,
-        });
-      }
+    const saveCanvas = document.getElementById('save-canvas') as HTMLDivElement;
+    saveCanvas.addEventListener('click', e => {
+      this.saveCanvas();
     });
-
-    redoHistory.addEventListener('click', e => {
-      const historyLength = this.state.history.length;
-      const historyIndex = this.state.historyIndex;
-      if (historyIndex => 0 && historyIndex < historyLength - 1) {
-        const newHistoryIndex = Math.min(historyIndex + 1, historyLength - 1);
-        this.setState({
-          objects: _.cloneDeep(this.state.history[newHistoryIndex].slice()),
-          historyIndex: newHistoryIndex,
-        });
-      }
-    });
+    this.getCanvasObject();
   }
 
   componentDidUpdate(
@@ -152,6 +94,110 @@ class DrawCanvas extends Component<Props, State> {
       this.handleChangeCursor();
       console.log(this.props.zoomLevel);
     }
+  }
+
+  undoHistory(): void {
+    const undoHistory = document.getElementById(
+      'undo-history',
+    ) as HTMLDivElement;
+    undoHistory.addEventListener('click', () => {
+      if (this.state.prevHistory.length) {
+        const nextHistory = JSON.parse(JSON.stringify(this.state.nextHistory));
+        const prevHistory = JSON.parse(JSON.stringify(this.state.prevHistory));
+        const historyItem = prevHistory.pop();
+        if (historyItem) {
+          nextHistory.unshift(historyItem);
+          this.setState({
+            nextHistory,
+            prevHistory,
+            objects: this.state.objects.map(item => {
+              if (item.id === historyItem.id) {
+                return {
+                  ...item,
+                  ...historyItem,
+                };
+              } else {
+                return item;
+              }
+            }),
+          });
+        }
+      }
+    });
+  }
+
+  redoHistory(): void {
+    const redoHistory = document.getElementById(
+      'redo-history',
+    ) as HTMLDivElement;
+    redoHistory.addEventListener('click', e => {
+      if (this.state.nextHistory.length) {
+        const nextHistory = JSON.parse(JSON.stringify(this.state.nextHistory));
+        const prevHistory = JSON.parse(JSON.stringify(this.state.prevHistory));
+        const historyItem = nextHistory.shift();
+        if (historyItem) {
+          prevHistory.push(historyItem);
+          this.setState({
+            nextHistory,
+            prevHistory,
+            objects: this.state.objects.map(item => {
+              if (item.id === historyItem.id) {
+                return {
+                  ...item,
+                  ...historyItem,
+                };
+              } else {
+                return item;
+              }
+            }),
+          });
+        }
+      }
+    });
+  }
+
+  saveCanvas(): void {
+    const data = JSON.stringify(
+      this.state.objects.map(item => ({
+        ...item,
+        isEditing: false,
+        isSelected: false,
+        isFocused: false,
+      })),
+    );
+    CanvasApiService.updateById(this.props.match?.params.id as string, {
+      ...this.state.canvas,
+      data: data,
+    }).subscribe(
+      response => {
+        console.log(response);
+      },
+      error => {
+        console.error(error);
+      },
+    );
+  }
+
+  getCanvasObject(): void {
+    const canvasTitle = document.getElementById(
+      'canvas-title',
+    ) as HTMLSpanElement;
+    CanvasApiService.getById(this.props.match?.params.id as string).subscribe(
+      canvasData => {
+        console.log(canvasData);
+        canvasTitle.innerText = canvasData.name;
+        const canvasObjects = !!canvasData.data
+          ? JSON.parse(canvasData.data)
+          : [];
+        this.setState({
+          objects: canvasObjects,
+          canvas: { orgId: canvasData.orgId, name: canvasData.name },
+        });
+      },
+      error => {
+        console.error(error);
+      },
+    );
   }
 
   handleChangeCursor = () => {
@@ -222,7 +268,7 @@ class DrawCanvas extends Component<Props, State> {
             cornerRadius: 30,
           });
         }
-        this.addCanvasShape(data);
+        this.addCanvasShape(data, true);
       } else {
         if (this.props.drawingTool === 'RectRounded') {
           _.set(data, 'rect', {
@@ -312,22 +358,26 @@ class DrawCanvas extends Component<Props, State> {
 
   addCanvasShape = (data: ObjectInterface, saveHistory: boolean = false) => {
     if (saveHistory) {
-      const history = _.cloneDeep(this.state.objects.slice());
-      this.updateHistory(history);
+      this.updateHistory(JSON.parse(JSON.stringify(data)));
     }
-    this.setState({
-      objects: [
-        ...this.state.objects.map(shapeObject => ({
-          ...shapeObject,
-          isEditing: false,
-          isSelected: false,
-          isFocused: false,
-        })),
-        {
-          ..._.cloneDeep(data),
-        },
-      ],
-    });
+    this.setState(
+      {
+        objects: [
+          ...this.state.objects.map(shapeObject => ({
+            ...shapeObject,
+            isEditing: false,
+            isSelected: false,
+            isFocused: false,
+          })),
+          {
+            ..._.cloneDeep(data),
+          },
+        ],
+      },
+      () => {
+        this.saveCanvas();
+      },
+    );
   };
 
   handleMouseUp = e => {
@@ -373,49 +423,67 @@ class DrawCanvas extends Component<Props, State> {
         });
       }
 
-      this.addCanvasShape(data);
+      this.addCanvasShape(data, true);
 
       this.setState({
         points: {
           ...defaultObjectState,
         },
       });
+    } else {
+      const clickedOnEmpty = e.target === e.target.getStage();
+      if (clickedOnEmpty) {
+        this.setState({
+          objects: this.state.objects.map(item => ({
+            ...item,
+            isSelected: false,
+            isFocused: false,
+            isEditing: false,
+          })),
+        });
+      }
     }
   };
 
-  updateHistory(data: ObjectInterface[]) {
+  updateHistory(data: ObjectInterface) {
     this.setState({
-      history: [
-        ...this.state.history,
-        data.map(item => ({ ...item, isEditing: false, isDragging: false })),
+      prevHistory: [
+        ...this.state.prevHistory,
+        { ...data, isEditing: false, isSelected: false, isFocused: false },
       ],
-      historyIndex: this.state.historyIndex + 1,
+      nextHistory: [],
     });
   }
 
   updateShape(data: ObjectInterface, saveHistory: boolean = false) {
     if (saveHistory) {
-      const history = _.cloneDeep(this.state.objects);
-      this.updateHistory(history);
+      const historyItem = this.state.objects.find(item => item.id === data.id);
+      if (historyItem) {
+        const history = JSON.parse(JSON.stringify(historyItem));
+        this.updateHistory({
+          ...history,
+        });
+      }
     }
 
-    this.setState({
-      objects: this.state.objects.map(shapeObject => {
-        if (shapeObject.id === data.id) {
-          return {
-            ...data,
-            id: shapeObject.id,
-          };
-        } else {
-          return {
-            ...shapeObject,
-            isSelected: false,
-            isEditing: false,
-            isFocused: false,
-          };
-        }
-      }),
-    });
+    const item = this.state.objects.find(item => item.id === data.id);
+    const objects = this.state.objects
+      .filter(item => item.id !== data.id)
+      .map(shapeObject => ({
+        ...shapeObject,
+        isSelected: false,
+        isEditing: false,
+        isFocused: false,
+      }));
+
+    this.setState(
+      {
+        objects: [...objects, { ...item, ...data }],
+      },
+      () => {
+        this.saveCanvas();
+      },
+    );
   }
 
   updateObjectText(id: string, data: TextProperties): void {
@@ -445,6 +513,7 @@ class DrawCanvas extends Component<Props, State> {
           )
           .map(shapeObject => (
             <Modal
+              key={shapeObject.id + ':textEditor'}
               title="Edit Text"
               visible={shapeObject.isEditing}
               onOk={e => {
@@ -506,15 +575,15 @@ class DrawCanvas extends Component<Props, State> {
                     });
                   }}
                 >
-                  {this.fontList.map(font => (
+                  {fontNames.map(font => (
                     <Select.Option
-                      key={font.fontName}
-                      value={font.fontFamily}
+                      key={font}
+                      value={font}
                       style={{
-                        fontFamily: font.fontFamily,
+                        fontFamily: font,
                       }}
                     >
-                      {font.fontName}
+                      {font}
                     </Select.Option>
                   ))}
                 </Select>
