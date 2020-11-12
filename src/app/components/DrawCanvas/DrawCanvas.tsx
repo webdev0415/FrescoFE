@@ -751,7 +751,10 @@ class DrawCanvas extends Component<Props, State> {
   handleChangeStart = (data: ObjectInterface) => {
     this.emitSocketEvent(BoardSocketEventEnum.LOCK, {
       ...data,
+      isSelected: false,
       isLocked: true,
+      isEditing: false,
+      isFocused: false,
     });
   };
 
