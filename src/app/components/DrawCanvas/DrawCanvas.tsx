@@ -2,7 +2,15 @@ import React, { Component, memo } from 'react';
 import { Ellipse, Layer, Rect, Shape, Stage, Star } from 'react-konva';
 import { v4 as uuidv4 } from 'uuid';
 import Konva from 'konva';
-import { ObjectInterface, Props, State, TextProperties } from './types';
+import {
+  BoardEventInterface,
+  ObjectInterface,
+  ObjectSocketInterface,
+  Props,
+  State,
+  TextProperties,
+} from './types';
+import socketIOClient from 'socket.io-client';
 import _ from 'lodash';
 import {
   defaultObjectState,
@@ -34,8 +42,23 @@ import {
 } from '../CanvasIcons';
 import { CanvasApiService } from '../../../services/APIService';
 
+export enum BoardSocketEventEnum {
+  CREATE = 'create',
+  MOVE = 'move',
+  UPDATE = 'update',
+  DELETE = 'delete',
+  LOCK = 'lock',
+  UNLOCK = 'unlock',
+  JOIN_BOARD = 'joinBoard',
+  LEAVE_BOARD = 'leaveBoard',
+  CONNECT = 'connect',
+  DISCONNECT = 'disconnect',
+}
+
 class DrawCanvas extends Component<Props, State> {
+  socket: SocketIOClient.Socket;
   state: State = {
+    id: uuidv4(),
     objects: [],
     points: {
       ...defaultObjectState,
@@ -45,6 +68,7 @@ class DrawCanvas extends Component<Props, State> {
     canvas: {
       name: '',
       orgId: '',
+      categoryId: '',
     },
   };
   stageRef: Konva.Stage | null = null;
@@ -53,14 +77,31 @@ class DrawCanvas extends Component<Props, State> {
   isItemMoving: boolean = false;
   isDrawing: boolean = false;
 
+  constructor(props) {
+    super(props);
+    const url = new URL(process.env.REACT_APP_BASE_URL as string);
+    url.pathname = 'board';
+    this.socket = socketIOClient(url.href, {
+      transports: ['websocket'],
+    });
+  }
+
   componentDidMount() {
     document.addEventListener('keydown', event => {
       if (event.key === 'Delete') {
-        this.setState({
-          objects: this.state.objects.filter(
-            shapeObject => !shapeObject.isSelected,
-          ),
-        });
+        const currentObject = this.state.objects.find(
+          shapeObject => shapeObject.isSelected,
+        );
+        if (currentObject) {
+          this.deleteObject(
+            { id: this.state.id, data: currentObject },
+            {
+              emitEvent: true,
+              saveHistory: true,
+              saveCanvas: true,
+            },
+          );
+        }
       } else if (event.ctrlKey && event.key.toLowerCase() === 'y') {
         const redoHistory = document.getElementById(
           'redo-history',
@@ -83,6 +124,7 @@ class DrawCanvas extends Component<Props, State> {
       this.saveCanvas();
     });
     this.getCanvasObject();
+    this.canvasWebSockets();
   }
 
   componentDidUpdate(
@@ -92,8 +134,165 @@ class DrawCanvas extends Component<Props, State> {
   ) {
     if (JSON.stringify(this.props) !== JSON.stringify(prevProps)) {
       this.handleChangeCursor();
-      console.log(this.props.zoomLevel);
     }
+  }
+
+  canvasWebSockets(): void {
+    this.socket.on(BoardSocketEventEnum.CONNECT, () => {
+      console.log('Socket ' + BoardSocketEventEnum.CONNECT);
+      this.socket.emit(
+        BoardSocketEventEnum.JOIN_BOARD,
+        this.props.match?.params.id,
+      );
+    });
+    this.socket.on(
+      BoardSocketEventEnum.CREATE,
+      (event: BoardEventInterface) => {
+        this.createObject(JSON.parse(event.data.data));
+      },
+    );
+    this.socket.on(
+      BoardSocketEventEnum.JOIN_BOARD,
+      (data: BoardEventInterface) => {
+        console.log('Socket ' + BoardSocketEventEnum.JOIN_BOARD, data);
+      },
+    );
+    this.socket.on(
+      BoardSocketEventEnum.LEAVE_BOARD,
+      (data: BoardEventInterface) => {
+        console.log('Socket ' + BoardSocketEventEnum.LEAVE_BOARD, data);
+      },
+    );
+    this.socket.on(
+      BoardSocketEventEnum.UPDATE,
+      (event: BoardEventInterface) => {
+        this.updateObject(JSON.parse(event.data.data));
+      },
+    );
+    this.socket.on(BoardSocketEventEnum.MOVE, (event: BoardEventInterface) => {
+      console.log(BoardSocketEventEnum.MOVE, event);
+      // this.moveObject(JSON.parse(event.data.data));
+    });
+    this.socket.on(BoardSocketEventEnum.LOCK, (event: BoardEventInterface) => {
+      console.log('Socket ' + BoardSocketEventEnum.LOCK, event.data);
+      this.lockObject(JSON.parse(event.data.data));
+    });
+    this.socket.on(
+      BoardSocketEventEnum.UNLOCK,
+      (event: BoardEventInterface) => {
+        console.log('Socket ' + BoardSocketEventEnum.UNLOCK, event.data);
+      },
+    );
+    this.socket.on(
+      BoardSocketEventEnum.DELETE,
+      (event: BoardEventInterface) => {
+        console.log('Socket ' + BoardSocketEventEnum.DELETE, event.data);
+        this.deleteObject(JSON.parse(event.data.data), { saveHistory: true });
+      },
+    );
+    this.socket.on(
+      BoardSocketEventEnum.CREATE,
+      (event: BoardEventInterface) => {
+        console.log('Socket ' + BoardSocketEventEnum.CREATE, event.data);
+      },
+    );
+    this.socket.on(BoardSocketEventEnum.DISCONNECT, () => {
+      console.log('Socket ' + BoardSocketEventEnum.DISCONNECT);
+      this.socket.emit(
+        BoardSocketEventEnum.LEAVE_BOARD,
+        this.props.match?.params.id,
+      );
+    });
+  }
+
+  moveObject(objectData: ObjectSocketInterface): void {
+    this.setState({
+      objects: this.state.objects.map(item => {
+        if (item.id === objectData.data.id) {
+          return {
+            ...item,
+            ...objectData.data,
+          };
+        } else {
+          return item;
+        }
+      }),
+    });
+    if (objectData.id !== this.state.id) {
+      this.updateShape(objectData.data, { saveHistory: true });
+    }
+  }
+
+  lockObject(objectData: ObjectSocketInterface): void {
+    if (objectData.id !== this.state.id) {
+      this.setState({
+        objects: this.state.objects.map(item => {
+          if (item.id === objectData.data.id) {
+            return {
+              ...item,
+              ...objectData.data,
+            };
+          } else {
+            return item;
+          }
+        }),
+      });
+    }
+  }
+
+  updateObject(objectData: ObjectSocketInterface): void {
+    if (objectData.id !== this.state.id) {
+      this.updateShape(objectData.data, { saveHistory: true });
+    }
+  }
+
+  createObject(objectData: ObjectSocketInterface): void {
+    if (objectData.id !== this.state.id) {
+      this.addCanvasShape(objectData.data, { saveHistory: true });
+    }
+  }
+
+  deleteObject(
+    objectData: ObjectSocketInterface,
+    options: {
+      saveHistory?: boolean;
+      emitEvent?: boolean;
+      saveCanvas?: boolean;
+    } = {
+      saveHistory: false,
+      emitEvent: false,
+      saveCanvas: false,
+    },
+  ): void {
+    if (options.emitEvent) {
+      this.emitSocketEvent(BoardSocketEventEnum.DELETE, objectData.data);
+    }
+    this.setState(
+      {
+        objects: this.state.objects.filter(
+          shapeObject => shapeObject.id !== objectData.data.id,
+        ),
+      },
+      () => {
+        if (options.saveCanvas) {
+          this.saveCanvas();
+        }
+      },
+    );
+  }
+
+  emitSocketEvent(
+    eventType: BoardSocketEventEnum,
+    data: ObjectInterface,
+  ): void {
+    const socketData = {
+      boardId: this.props.match?.params.id as string,
+      data: JSON.stringify({
+        id: this.state.id,
+        data: data,
+      }),
+    };
+    this.socket.emit(eventType, socketData);
   }
 
   undoHistory(): void {
@@ -163,6 +362,7 @@ class DrawCanvas extends Component<Props, State> {
         isEditing: false,
         isSelected: false,
         isFocused: false,
+        isLocked: false,
       })),
     );
     CanvasApiService.updateById(this.props.match?.params.id as string, {
@@ -170,7 +370,7 @@ class DrawCanvas extends Component<Props, State> {
       data: data,
     }).subscribe(
       response => {
-        console.log(response);
+        // console.log(response);
       },
       error => {
         console.error(error);
@@ -184,14 +384,17 @@ class DrawCanvas extends Component<Props, State> {
     ) as HTMLSpanElement;
     CanvasApiService.getById(this.props.match?.params.id as string).subscribe(
       canvasData => {
-        console.log(canvasData);
         canvasTitle.innerText = canvasData.name;
         const canvasObjects = !!canvasData.data
           ? JSON.parse(canvasData.data)
           : [];
         this.setState({
           objects: canvasObjects,
-          canvas: { orgId: canvasData.orgId, name: canvasData.name },
+          canvas: {
+            orgId: canvasData.orgId,
+            name: canvasData.name,
+            categoryId: canvasData.categoryId,
+          },
         });
       },
       error => {
@@ -268,7 +471,10 @@ class DrawCanvas extends Component<Props, State> {
             cornerRadius: 30,
           });
         }
-        this.addCanvasShape(data, true);
+        this.addCanvasShape(data, {
+          saveHistory: true,
+          emitEvent: true,
+        });
       } else {
         if (this.props.drawingTool === 'RectRounded') {
           _.set(data, 'rect', {
@@ -356,9 +562,24 @@ class DrawCanvas extends Component<Props, State> {
     }
   };
 
-  addCanvasShape = (data: ObjectInterface, saveHistory: boolean = false) => {
-    if (saveHistory) {
+  addCanvasShape = (
+    data: ObjectInterface,
+    options: { saveHistory?: boolean; emitEvent?: boolean } = {
+      saveHistory: false,
+      emitEvent: false,
+    },
+  ) => {
+    if (options.saveHistory) {
       this.updateHistory(JSON.parse(JSON.stringify(data)));
+    }
+    if (options.emitEvent) {
+      this.emitSocketEvent(BoardSocketEventEnum.CREATE, {
+        ...data,
+        isEditing: false,
+        isSelected: false,
+        isFocused: false,
+        isLocked: false,
+      });
     }
     this.setState(
       {
@@ -390,12 +611,10 @@ class DrawCanvas extends Component<Props, State> {
       const data: ObjectInterface = {
         ...this.state.points,
       };
-
       const dimensions = {
         height,
         width,
       };
-
       if (this.props.drawingTool === 'RectRounded') {
         _.set(data, 'rect', {
           cornerRadius: 20,
@@ -423,7 +642,10 @@ class DrawCanvas extends Component<Props, State> {
         });
       }
 
-      this.addCanvasShape(data, true);
+      this.addCanvasShape(data, {
+        saveHistory: true,
+        emitEvent: true,
+      });
 
       this.setState({
         points: {
@@ -455,8 +677,14 @@ class DrawCanvas extends Component<Props, State> {
     });
   }
 
-  updateShape(data: ObjectInterface, saveHistory: boolean = false) {
-    if (saveHistory) {
+  updateShape(
+    data: ObjectInterface,
+    options: { saveHistory?: boolean; emitEvent?: boolean } = {
+      saveHistory: false,
+      emitEvent: false,
+    },
+  ) {
+    if (options.saveHistory) {
       const historyItem = this.state.objects.find(item => item.id === data.id);
       if (historyItem) {
         const history = JSON.parse(JSON.stringify(historyItem));
@@ -467,6 +695,16 @@ class DrawCanvas extends Component<Props, State> {
     }
 
     const item = this.state.objects.find(item => item.id === data.id);
+    if (options.emitEvent) {
+      this.emitSocketEvent(BoardSocketEventEnum.UPDATE, {
+        ...item,
+        ...data,
+        isSelected: false,
+        isEditing: false,
+        isFocused: false,
+        isLocked: false,
+      });
+    }
     const objects = this.state.objects
       .filter(item => item.id !== data.id)
       .map(shapeObject => ({
@@ -474,6 +712,7 @@ class DrawCanvas extends Component<Props, State> {
         isSelected: false,
         isEditing: false,
         isFocused: false,
+        isLocked: false,
       }));
 
     this.setState(
@@ -497,10 +736,28 @@ class DrawCanvas extends Component<Props, State> {
             ...data,
           },
         },
-        true,
+        {
+          saveHistory: true,
+          emitEvent: true,
+        },
       );
     }
   }
+
+  handleChanging = (data: ObjectInterface) => {
+    this.emitSocketEvent(BoardSocketEventEnum.MOVE, data);
+  };
+
+  handleChangeStart = (data: ObjectInterface) => {
+    this.emitSocketEvent(BoardSocketEventEnum.LOCK, {
+      ...data,
+      isSelected: false,
+      isLocked: true,
+      isEditing: false,
+      isFocused: false,
+    });
+  };
+
   render() {
     return (
       <div className={this.props.className}>
@@ -696,8 +953,13 @@ class DrawCanvas extends Component<Props, State> {
                   <RectTransform
                     key={shapeObject.id}
                     data={shapeObject}
+                    onChangeStart={this.handleChangeStart}
+                    onChanging={this.handleChanging}
                     onChange={data => {
-                      this.updateShape(data, true);
+                      this.updateShape(data, {
+                        saveHistory: true,
+                        emitEvent: true,
+                      });
                     }}
                     onSelect={() => {
                       this.handleSelect(shapeObject);
@@ -710,8 +972,13 @@ class DrawCanvas extends Component<Props, State> {
                     <EllipseTransform
                       key={shapeObject.id}
                       data={shapeObject}
+                      onChangeStart={this.handleChangeStart}
+                      onChanging={this.handleChanging}
                       onChange={data => {
-                        this.updateShape(data, true);
+                        this.updateShape(data, {
+                          saveHistory: true,
+                          emitEvent: true,
+                        });
                       }}
                       onSelect={() => {
                         this.handleSelect(shapeObject);
@@ -725,8 +992,13 @@ class DrawCanvas extends Component<Props, State> {
                     <StarTransform
                       key={shapeObject.id}
                       data={shapeObject}
+                      onChangeStart={this.handleChangeStart}
+                      onChanging={this.handleChanging}
                       onChange={data => {
-                        this.updateShape(data, true);
+                        this.updateShape(data, {
+                          saveHistory: true,
+                          emitEvent: true,
+                        });
                       }}
                       onSelect={() => {
                         this.handleSelect(shapeObject);
@@ -739,8 +1011,13 @@ class DrawCanvas extends Component<Props, State> {
                   <TriangleTransform
                     key={shapeObject.id}
                     data={shapeObject}
+                    onChangeStart={this.handleChangeStart}
+                    onChanging={this.handleChanging}
                     onChange={data => {
-                      this.updateShape(data, true);
+                      this.updateShape(data, {
+                        saveHistory: true,
+                        emitEvent: true,
+                      });
                     }}
                     onSelect={() => {
                       this.handleSelect(shapeObject);
@@ -752,8 +1029,13 @@ class DrawCanvas extends Component<Props, State> {
                   <StickyTransform
                     key={shapeObject.id}
                     data={shapeObject}
+                    onChangeStart={this.handleChangeStart}
+                    onChanging={this.handleChanging}
                     onChange={data => {
-                      this.updateShape(data, true);
+                      this.updateShape(data, {
+                        saveHistory: true,
+                        emitEvent: true,
+                      });
                     }}
                     onSelect={() => {
                       this.handleSelect(shapeObject);
@@ -765,8 +1047,13 @@ class DrawCanvas extends Component<Props, State> {
                   <TextTransform
                     key={shapeObject.id}
                     data={shapeObject}
+                    onChangeStart={this.handleChangeStart}
+                    onChanging={this.handleChanging}
                     onChange={data => {
-                      this.updateShape(data, true);
+                      this.updateShape(data, {
+                        saveHistory: true,
+                        emitEvent: true,
+                      });
                     }}
                     onSelect={() => {
                       this.handleSelect(shapeObject);

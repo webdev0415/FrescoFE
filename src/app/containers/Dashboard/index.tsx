@@ -24,8 +24,13 @@ import pageIcon from 'assets/icons/page.svg';
 import { UserModal } from '../../components/UserModal';
 import Axios from 'axios';
 import { CanvasApiService } from 'services/APIService';
-import { CanvasResponseInterface } from '../../../services/APIService/interfaces';
+import {
+  CanvasCategoryInterface,
+  CanvasResponseInterface,
+} from '../../../services/APIService/interfaces';
 import { InviteMemberModal } from '../../components/InviteMemberModal';
+import { CanvasBoardTemplates } from '../../components/CanvasBoardTemplates';
+import { CanvasCategoryService } from '../../../services/APIService/CanvasCategory.service';
 
 const { TabPane } = Tabs;
 export const PERMISSION = {
@@ -54,7 +59,10 @@ export const Dashboard = memo((props: Props) => {
   const [email, setEmail] = useState('');
   const [permission, setPermission] = useState(PERMISSION.EDITOR);
   const [canvasName, setCanvasName] = useState('');
+  const [categories, setCategories] = useState<CanvasCategoryInterface[]>([]);
+  const [categoryId, setCategoryId] = useState('');
   const [canvasList, setCanvasList] = useState<CanvasResponseInterface[]>([]);
+  const [showAddNewBoard, setAddNewBoard] = useState(false);
 
   const orgId = props?.match?.params?.id;
 
@@ -97,6 +105,7 @@ export const Dashboard = memo((props: Props) => {
       name: canvasName,
       orgId: orgId,
       data: '',
+      categoryId: categoryId,
     };
     CanvasApiService.create(data).subscribe(
       data => {
@@ -107,7 +116,7 @@ export const Dashboard = memo((props: Props) => {
         console.error(error.response);
       },
     );
-  }, [canvasName, history, orgId]);
+  }, [canvasName, history, orgId, categoryId]);
 
   const _handleSelectEmail = value => {
     setEmail(value);
@@ -187,6 +196,12 @@ export const Dashboard = memo((props: Props) => {
     });
   }, [orgId]);
 
+  useEffect(() => {
+    CanvasCategoryService.list().subscribe(data => {
+      setCategories(data);
+    });
+  }, [orgId]);
+
   const handleLogOut = () => {
     dispatch(globalActions.removeAuth());
     localStorage.clear();
@@ -211,17 +226,21 @@ export const Dashboard = memo((props: Props) => {
           showInvite={() => setIsShowInvitationModal(true)}
         />
       )}
-      <Tabs defaultActiveKey="1" tabPosition="left">
+
+      <Tabs defaultActiveKey="1" tabPosition="left" className="side-bar-tabs">
         <TabPane tab={<img src={pageIcon} alt="page" />} key="1">
+          {showAddNewBoard && (
+            <CanvasBoardTemplates onClose={() => setAddNewBoard(false)} />
+          )}
+
           <div className="card-section">
             <Button
               type="primary"
               icon={<PlusOutlined />}
-              onClick={() => history.push('/board')}
+              onClick={() => setAddNewBoard(true)}
             >
               New Board
             </Button>
-
             <h3 className="card-section-title">My Boards</h3>
 
             <div className="card-grid">
@@ -236,12 +255,8 @@ export const Dashboard = memo((props: Props) => {
                       <Dropdown
                         overlay={
                           <Menu>
-                            <Menu.Item key="0">
-                              <a href="http://www.alipay.com/">1st menu item</a>
-                            </Menu.Item>
-                            <Menu.Item key="1">
-                              <a href="http://www.taobao.com/">2nd menu item</a>
-                            </Menu.Item>
+                            <Menu.Item key="0">3rd menu item</Menu.Item>
+                            <Menu.Item key="1">3rd menu item</Menu.Item>
                             <Menu.Divider />
                             <Menu.Item key="3">3rd menu item</Menu.Item>
                           </Menu>
@@ -299,25 +314,23 @@ export const Dashboard = memo((props: Props) => {
               <Select
                 defaultValue=""
                 style={{ width: 220, flexShrink: 0 }}
+                onChange={value => {
+                  setCategoryId(value);
+                }}
                 allowClear
               >
                 <Select.Option value="" disabled>
                   Category
                 </Select.Option>
-                <Select.Option value="Customer Journey Maps">
-                  Customer Journey Maps
-                </Select.Option>
-                <Select.Option value=" Innovation">Innovation</Select.Option>
-                <Select.Option value=" Business model">
-                  Business model
-                </Select.Option>
-                <Select.Option value="Product">Product</Select.Option>
-                <Select.Option value="Marketing">Marketing</Select.Option>
+                {categories.map(item => (
+                  <Select.Option value={item.id}>{item.name}</Select.Option>
+                ))}
               </Select>
               <Button
                 type="primary"
                 icon={<PlusOutlined />}
                 onClick={createCanvas}
+                disabled={!categoryId || !canvasName}
               >
                 Create Canvas
               </Button>

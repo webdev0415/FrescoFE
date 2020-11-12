@@ -7,7 +7,7 @@ import {
 } from '../../../../components/DrawCanvas/types';
 
 function TextTransform(props: TransformShapeProps): JSX.Element {
-  const { data, onSelect, onChange } = props;
+  const { data, onSelect, onChange, onChanging, onChangeStart } = props;
   const shapeRef = useRef<Konva.Text>(null);
   const trRef = useRef<Konva.Transformer>(null);
 
@@ -38,6 +38,40 @@ function TextTransform(props: TransformShapeProps): JSX.Element {
       });
     },
     [data, onChange],
+  );
+
+  const onTransform = useCallback(
+    (e: Konva.KonvaEventObject<Event>) => {
+      const node = shapeRef.current as Konva.Text;
+      const scaleX = node?.scaleX();
+      const scaleY = node?.scaleY();
+      node?.scaleX(1);
+      node?.scaleY(1);
+      onChanging({
+        ...data,
+        x: node?.x(),
+        y: node?.y(),
+        rotation: Math.round(node?.attrs.rotation as number),
+        rect: {
+          width: Math.max(5, node?.width() * scaleX),
+          height: Math.max(node?.height() * scaleY),
+          cornerRadius: data.rect?.cornerRadius as number,
+        },
+      });
+    },
+    [data, onChanging],
+  );
+
+  const onDragMove = useCallback(
+    e => {
+      onChanging({
+        ...data,
+        x: e.target.x(),
+        y: e.target.y(),
+        isLocked: true,
+      });
+    },
+    [data, onChanging],
   );
 
   const onDragEnd = useCallback(
@@ -71,10 +105,15 @@ function TextTransform(props: TransformShapeProps): JSX.Element {
         onTap={onSelect}
         ref={shapeRef}
         {...data.textData}
-        draggable
+        draggable={!data.isLocked}
+        onTransformStart={() => onChangeStart(data)}
+        onTransform={onTransform}
         onTransformEnd={onTransformEnd}
+        onDragStart={() => onChangeStart(data)}
+        onDragMove={onDragMove}
         onDragEnd={onDragEnd}
         rotation={data.rotation}
+        opacity={data.isLocked ? 0.5 : 0.8}
       />
       {data.isSelected && (
         <Transformer ref={trRef} boundBoxFunc={boundBoxFunc} />

@@ -2,6 +2,7 @@ export interface CanvasInterface {
   name: string;
   orgId: string;
   data: string;
+  categoryId: string;
 }
 
 export interface CanvasResponseInterface extends CanvasInterface {

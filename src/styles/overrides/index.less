@@ -1,6 +1,7 @@
 @import '~antd/lib/style/themes/default.less';
 @import '_fonts';
 @import "_cards";
+@import "./_create-board";
 
 @primary-color: #9646f5; // primary color for all components
 @layout-header-background: #5d2e8c;
@@ -20,7 +21,8 @@
   font-weight: 300;
 }
 
-.ant-tabs-left {
+
+.side-bar-tabs {
   left: 0;
   top: 40px;
   bottom: 0;
@@ -28,28 +30,61 @@
   display: inline-flex;
   justify-content: flex-start;
   align-items: flex-start;
-  width: 100%;
+  width: calc(100% + 80px);
   transform: translateX(-50px);
+
+  .ant-tabs-nav-wrap {
+    height: 100vh;
+    background-color: #e9e9e9;
+    width: 56px;
+  }
+
+  .ant-tabs-tab {
+    padding: 0 !important;
+    height: 56px;
+    width: 100%;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 !important;
+  }
+
+  .ant-tabs-tab.ant-tabs-tab-active {
+    background-color: white;
+  }
 }
 
-.ant-tabs-nav-wrap {
-  height: 100vh;
-  background-color: #e9e9e9;
-  width: 56px;
+.canvas-board-template {
+  .ant-tabs-nav-wrap {
+    height: auto;
+    width: auto;
+  }
+
+  .ant-tabs-nav-wrap {
+    .ant-tabs-nav-list {
+      width: 100%;
+    }
+  }
+
 }
 
-.ant-tabs-tab {
-  padding: 0 !important;
-  height: 56px;
-  width: 100%;
+
+
+.user-profile-icon {
+  width: 24px;
+  height: 24px;
+  background-color: #9646F5;
+  border-radius: 50%;
+  font-size: 12px;
   display: inline-flex;
   justify-content: center;
   align-items: center;
-  margin: 0 !important;
-}
+  color: white;
+  cursor: pointer;
 
-.ant-tabs-tab.ant-tabs-tab-active {
-  background-color: white;
+  &:hover {
+    background-color: #6a10d4;
+  }
 }
 
 

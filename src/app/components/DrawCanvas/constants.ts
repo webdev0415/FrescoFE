@@ -42,6 +42,7 @@ export const defaultObjectState: ObjectInterface = {
   isFocused: false,
   isSelected: false,
   isEditing: false,
+  isLocked: false,
   ...defaultPointState,
   shapeConfig: {
     ...defaultShapeConfig,

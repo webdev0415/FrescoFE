@@ -1,5 +1,6 @@
 import Konva from 'konva';
 import { RouteChildrenProps } from 'react-router';
+import { CanvasResponseInterface } from '../../../services/APIService/interfaces';
 
 export type ShapeObjectType =
   | 'Rect'
@@ -79,6 +80,7 @@ export interface ObjectInterface extends PointsInterface {
   isFocused: boolean;
   isSelected: boolean;
   isEditing: boolean;
+  isLocked: boolean;
 }
 
 export interface Props
@@ -89,6 +91,7 @@ export interface Props
 }
 
 export interface State {
+  id: string;
   objects: ObjectInterface[];
   points: ObjectInterface;
   prevHistory: ObjectInterface[];
@@ -96,6 +99,7 @@ export interface State {
   canvas: {
     name: string;
     orgId: string;
+    categoryId: string;
   };
 }
 
@@ -107,5 +111,17 @@ export interface FontInterface {
 export interface TransformShapeProps {
   data: ObjectInterface;
   onChange(data: ObjectInterface): void;
+  onChanging(data: ObjectInterface): void;
+  onChangeStart(data: ObjectInterface): void;
   onSelect(event: Konva.KonvaEventObject<MouseEvent>): void;
+}
+
+export interface BoardEventInterface {
+  boardId: string;
+  data: CanvasResponseInterface;
+}
+
+export interface ObjectSocketInterface {
+  id: string;
+  data: ObjectInterface;
 }
