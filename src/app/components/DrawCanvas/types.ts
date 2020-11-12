@@ -1,5 +1,6 @@
 import Konva from 'konva';
 import { RouteChildrenProps } from 'react-router';
+import { CanvasInterface } from '../../../services/APIService/interfaces';
 
 export type ShapeObjectType =
   | 'Rect'
@@ -109,4 +110,9 @@ export interface TransformShapeProps {
   data: ObjectInterface;
   onChange(data: ObjectInterface): void;
   onSelect(event: Konva.KonvaEventObject<MouseEvent>): void;
+}
+
+export interface BoardEventInterface {
+  boardId: string;
+  data: CanvasInterface;
 }
