@@ -9,6 +9,7 @@ const img2 = require('../../../assets/images/img-default-2.png');
 
 const ItemBoard = props => {
   const [isShown, setIsShown] = useState(false);
+  console.log('props', props);
   return (
     <Col
       className="gutter-row"
@@ -29,7 +30,7 @@ const ItemBoard = props => {
         onMouseEnter={() => setIsShown(true)}
         onMouseLeave={() => setIsShown(false)}
       >
-        <Meta title={`CJM ${props.item}.${props.i}`} />
+        <Meta title={props.item.name} />
         {isShown && (
           <Div>
             <div>

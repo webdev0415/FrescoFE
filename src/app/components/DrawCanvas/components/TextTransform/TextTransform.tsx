@@ -1,11 +1,14 @@
 import React, { useCallback, useEffect, useRef } from 'react';
-import { Rect, Transformer } from 'react-konva';
+import { Rect, Text, Transformer } from 'react-konva';
 import Konva from 'konva';
-import { TransformShapeProps } from '../../../../components/DrawCanvas/types';
+import {
+  TextProperties,
+  TransformShapeProps,
+} from '../../../../components/DrawCanvas/types';
 
-function RectTransform(props: TransformShapeProps): JSX.Element {
-  const { data, shapeConfig, onSelect, onChange } = props;
-  const shapeRef = useRef<Konva.Rect>(null);
+function TextTransform(props: TransformShapeProps): JSX.Element {
+  const { data, onSelect, onChange } = props;
+  const shapeRef = useRef<Konva.Text>(null);
   const trRef = useRef<Konva.Transformer>(null);
 
   const boundBoxFunc = useCallback((oldBox, newBox) => {
@@ -17,18 +20,21 @@ function RectTransform(props: TransformShapeProps): JSX.Element {
 
   const onTransformEnd = useCallback(
     (e: Konva.KonvaEventObject<Event>) => {
-      const node = shapeRef.current as Konva.Rect;
+      const node = shapeRef.current as Konva.Text;
       const scaleX = node?.scaleX();
       const scaleY = node?.scaleY();
       node?.scaleX(1);
       node?.scaleY(1);
       onChange({
         ...data,
-        x: node?.x(),
-        y: node?.y(),
-        // set minimal value
-        width: Math.max(5, node?.width() * scaleX),
-        height: Math.max(node?.height() * scaleY),
+        x: Math.round(node?.x()),
+        y: Math.round(node?.y()),
+        rotation: Math.round(node.attrs.rotation),
+        textData: {
+          ...(data.textData as TextProperties),
+          width: Math.round(Math.max(5, node?.width() * scaleX)),
+          height: Math.round(Math.max(node?.height() * scaleY)),
+        },
       });
     },
     [data, onChange],
@@ -46,29 +52,35 @@ function RectTransform(props: TransformShapeProps): JSX.Element {
   );
 
   useEffect(() => {
-    if (data.isEditing) {
+    if (data.isSelected) {
       // we need to attach transformer manually
-      trRef.current?.nodes([shapeRef.current as Konva.Rect]);
+      trRef.current?.nodes([shapeRef.current as Konva.Text]);
       trRef.current?.getLayer()?.batchDraw();
     }
-  }, [data.isEditing]);
+  }, [data.isSelected]);
 
   return (
     <React.Fragment>
-      <Rect
+      <Text
+        id={data.id}
+        fill="#000000"
+        x={data.x}
+        y={data.y}
+        fillEnabled={true}
         onClick={onSelect}
         onTap={onSelect}
         ref={shapeRef}
-        {...shapeConfig}
+        {...data.textData}
         draggable
         onTransformEnd={onTransformEnd}
         onDragEnd={onDragEnd}
+        rotation={data.rotation}
       />
-      {data.isEditing && (
+      {data.isSelected && (
         <Transformer ref={trRef} boundBoxFunc={boundBoxFunc} />
       )}
     </React.Fragment>
   );
 }
 
-export default RectTransform;
+export default TextTransform;

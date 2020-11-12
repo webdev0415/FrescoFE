@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { Button, Tabs, Row, Typography, Input } from 'antd';
+import { Tabs, Row, Typography, Input, Spin, Col } from 'antd';
 import styled from 'styled-components/macro';
 import {
   BookOutlined,
@@ -8,9 +8,14 @@ import {
   UserOutlined,
 } from '@ant-design/icons';
 import ItemBoard from 'app/components/ItemBoard';
-import { RouteComponentProps } from 'react-router-dom';
+import { RouteComponentProps, useHistory } from 'react-router-dom';
 
 import './styles.less';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectBoard } from './selectors';
+import { useInjectReducer, useInjectSaga } from 'utils/redux-injectors';
+import { actions, reducer, sliceKey } from './slice';
+import { selectBoardsSaga } from './saga';
 
 const { TabPane } = Tabs;
 const { Title } = Typography;
@@ -26,6 +31,20 @@ const panes = [
 interface Props extends RouteComponentProps<any> {}
 
 export const SelectBoard = memo((props: Props) => {
+  useInjectReducer({ key: sliceKey, reducer: reducer });
+  useInjectSaga({ key: sliceKey, saga: selectBoardsSaga });
+
+  const board = useSelector(selectBoard);
+  console.log('board', board);
+  const dispatch = useDispatch();
+
+  const getCanvases = React.useCallback(() => {
+    dispatch(actions.selectBoardRequest(props.match.params.id));
+  }, [dispatch, props.match.params.id]);
+
+  React.useEffect(() => {
+    getCanvases();
+  }, [getCanvases]);
   return (
     <Div
       style={{
@@ -39,7 +58,10 @@ export const SelectBoard = memo((props: Props) => {
         hideAdd
         type={'card'}
         tabPosition={'left'}
-        tabBarStyle={{ height: '(80vh)', backgroundColor: '#B3B6B7' }}
+        tabBarStyle={{
+          height: 'calc(100vh - 80px)',
+          backgroundColor: '#B3B6B7',
+        }}
       >
         <TabPane
           tab={
@@ -79,19 +101,27 @@ export const SelectBoard = memo((props: Props) => {
             defaultActiveKey={'1'}
             style={{ paddingLeft: '24px', paddingRight: '24px' }}
           >
-            {panes.map((pan, index) => (
-              <TabPane tab={pan.tab} key={pan.key}>
-                <div style={{ height: '65vh', overflowX: 'hidden' }}>
-                  {[1, 2, 3, 4, 5].map(item => (
-                    <Row gutter={[16, 16]}>
-                      {[1, 2, 3, 4].map(i => (
-                        <ItemBoard item={item} key={i} i={i} index={index} />
-                      ))}
-                    </Row>
-                  ))}
-                </div>
-              </TabPane>
-            ))}
+            {board.loading ? (
+              <SpinnerDiv>
+                <Spin />
+              </SpinnerDiv>
+            ) : (
+              panes.map((pan, index) => (
+                <TabPane tab={pan.tab} key={pan.key}>
+                  <div style={{ height: '65vh', overflowX: 'hidden' }}>
+                    {board.canvases.length ? (
+                      <Row gutter={[16, 16]}>
+                        {board.canvases.map(item => (
+                          <ItemBoard item={item} key={item.id} />
+                        ))}
+                      </Row>
+                    ) : (
+                      'No Canvases'
+                    )}
+                  </div>
+                </TabPane>
+              ))
+            )}
           </Tabs>
         </TabPane>
 
@@ -124,9 +154,11 @@ const Wraper = styled.div`
   padding-left: 24px;
 `;
 
-const DivFlexEnd = styled.div`
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-  margin-right: 20px;
+const SpinnerDiv = styled.div`
+  text-align: center;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  padding: 30px 50px;
+  margin: 20px 0;
+  width: 100%;
 `;

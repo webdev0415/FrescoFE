@@ -5,19 +5,21 @@ import { ContainerState } from './types';
 // The initial state of the SelectBoard container
 export const initialState: ContainerState = {
   loading: false,
+  canvases: [],
 };
 
 const selectBoardSlice = createSlice({
   name: 'selectBoard',
   initialState,
   reducers: {
-    selectBoardRequest(state) {
+    selectBoardRequest(state, action) {
       state.loading = true;
     },
 
     // TODO: define Payload type and use here
-    selectBoardRequestSuccess(state) {
+    selectBoardRequestSuccess(state, action) {
       state.loading = false;
+      state.canvases = action.payload;
     },
 
     selectBoardRequestError(state) {

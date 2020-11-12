@@ -9,9 +9,9 @@ describe('main file slice slice', () => {
   });
 
   it('should handle selectBoardRequest', () => {
-    expect(slice.reducer(state, slice.actions.selectBoardRequest())).toEqual<
-      ContainerState
-    >({
+    expect(
+      slice.reducer(state, slice.actions.selectBoardRequest('orgId')),
+    ).toEqual<ContainerState>({
       ...slice.initialState,
       loading: true,
     });
@@ -19,7 +19,7 @@ describe('main file slice slice', () => {
 
   it('should handle selectBoardRequestSuccess', () => {
     expect(
-      slice.reducer(state, slice.actions.selectBoardRequestSuccess()),
+      slice.reducer(state, slice.actions.selectBoardRequestSuccess({})),
     ).toEqual<ContainerState>({
       ...slice.initialState,
       loading: false,

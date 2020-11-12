@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useRef } from 'react';
-import { Rect, Star, Transformer } from 'react-konva';
+import { Ellipse, Rect, Star, Transformer } from 'react-konva';
 import Konva from 'konva';
 import { TransformShapeProps } from '../../../../components/DrawCanvas/types';
 
-function StarTransform(props: TransformShapeProps): JSX.Element {
-  const { data, shapeConfig, onSelect, onChange } = props;
-  const shapeRef = useRef<Konva.Star>(null);
+function EllipseTransform(props: TransformShapeProps): JSX.Element {
+  const { data, onSelect, onChange } = props;
+  const shapeRef = useRef<Konva.Ellipse>(null);
   const trRef = useRef<Konva.Transformer>(null);
 
   const boundBoxFunc = useCallback((oldBox, newBox) => {
@@ -17,81 +17,67 @@ function StarTransform(props: TransformShapeProps): JSX.Element {
 
   const onTransformEnd = useCallback(
     (e: Konva.KonvaEventObject<Event>) => {
-      const node = shapeRef.current as Konva.Star;
+      const node = shapeRef.current as Konva.Ellipse;
       const scaleX = node?.scaleX();
       const scaleY = node?.scaleY();
       node?.scaleX(1);
       node?.scaleY(1);
+
       onChange({
         ...data,
+        rotation: Math.round(node?.attrs.rotation as number),
+        ellipse: {
+          radiusX: Math.max(5, node?.width() * scaleX) / 2,
+          radiusY: Math.max(node?.height() * scaleY) / 2,
+        },
         x: node?.x(),
         y: node?.y(),
         // set minimal value
-        width: Math.max(5, node?.width() * scaleX),
-        height: Math.max(node?.height() * scaleY),
       });
     },
     [data, onChange],
   );
 
   const onDragEnd = useCallback(
-    (e: Konva.KonvaEventObject<Event>) => {
+    e => {
       onChange({
         ...data,
         x: e.target.x(),
         y: e.target.y(),
-        isDragging: false,
-        isEditing: false,
-      });
-    },
-    [data, onChange],
-  );
-
-  const onDragStart = useCallback(
-    (e: Konva.KonvaEventObject<Event>) => {
-      onChange({
-        ...data,
-        x: e.target.x(),
-        y: e.target.y(),
-        isDragging: true,
-        isEditing: false,
       });
     },
     [data, onChange],
   );
 
   useEffect(() => {
-    if (data.isEditing) {
+    if (data.isSelected) {
       // we need to attach transformer manually
-      trRef.current?.nodes([shapeRef.current as Konva.Star]);
+      trRef.current?.nodes([shapeRef.current as Konva.Ellipse]);
       trRef.current?.getLayer()?.batchDraw();
     }
-  }, [data.isEditing]);
+  }, [data.isSelected]);
 
   return (
     <React.Fragment>
-      <Star
+      <Ellipse
         onClick={onSelect}
         onTap={onSelect}
-        numPoints={5}
         ref={shapeRef}
-        innerRadius={(data.width as number) / 2}
-        outerRadius={data.width as number}
+        x={data.x}
+        y={data.y}
+        radiusX={data.ellipse?.radiusX as number}
+        radiusY={data.ellipse?.radiusY as number}
         draggable
         onTransformEnd={onTransformEnd}
-        onDragStart={onDragStart}
         onDragEnd={onDragEnd}
-        {...shapeConfig}
+        rotation={data.rotation}
+        {...data.shapeConfig}
       />
-      {data.isEditing && (
-        <Transformer
-          ref={trRef}
-          boundBoxFunc={boundBoxFunc}
-          onTransformEnd={() => {}}
-        />
+      {data.isSelected && (
+        <Transformer ref={trRef} boundBoxFunc={boundBoxFunc} />
       )}
     </React.Fragment>
   );
 }
 
-export default StarTransform;
+export default EllipseTransform;

@@ -12,7 +12,7 @@ import { Switch, Route } from 'react-router-dom';
 import { withRouter } from 'react-router';
 import { useInjectReducer } from 'utils/redux-injectors';
 import { GlobalStyle } from 'styles/global-styles';
-import { Layout, Typography } from 'antd';
+import { Layout } from 'antd';
 import { useDispatch } from 'react-redux';
 
 import { reducer, sliceKey } from './slice';
@@ -26,7 +26,6 @@ import { WelcomePage } from './containers/WelcomePage';
 import { SelectOrganizationPage } from './containers/SelectOrganizationPage';
 import { SelectBoard } from './containers/SelectBoard';
 import { actions } from './slice';
-import Auth from '../services/Auth';
 
 // Containers
 import { ListOrganizations } from './containers/ListOrganizations';
@@ -36,13 +35,11 @@ import { VerifyInvitation } from './containers/VerifyInvitation';
 import { PrivateRoute } from '../services/PrivateRouter';
 import { SignupForInvitation } from './containers/SignupForInvitation/Loadable';
 import { CreateCanvas } from './containers/CreateCanvas';
-import logoImg from 'assets/icons/logo.svg';
 import { GuestRoute } from 'services/GuestRoute';
 
 function AppComponent(props) {
   useInjectReducer({ key: sliceKey, reducer });
-  const { Header, Content, Footer } = Layout;
-  const { Title } = Typography;
+  const { Footer } = Layout;
 
   const dispatch = useDispatch();
 
@@ -80,8 +77,13 @@ function AppComponent(props) {
         <GuestRoute exact path="/auth/welcome-page" component={WelcomePage} />
 
         <PrivateRoute exact path="/organization/:id" component={Dashboard} />
-        <PrivateRoute exact path="/board" component={SelectBoard} />
+        <PrivateRoute exact path="/board/:id" component={SelectBoard} />
         <PrivateRoute exact path="/create-canvas" component={CreateCanvas} />
+        <PrivateRoute
+          exact
+          path="/canvas/:orgId/:id"
+          component={CreateCanvas}
+        />
         <PrivateRoute exact path="/" component={ListOrganizations} />
         <Route exact path="/invite/:token" component={VerifyInvitation} />
         <PrivateRoute
