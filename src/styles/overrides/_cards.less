@@ -20,10 +20,15 @@
     gap: 20px;
 
     .cards-board {
+      position: relative;
       width: 274px;
       border-radius: 5px;
       overflow: hidden;
       flex-shrink: 0;
+
+      &.card-board-select {
+        height: 229px;
+      }
 
       img {
         width: 100%;
@@ -44,6 +49,29 @@
         justify-content: center;
         padding: 10px;
         gap: 5px;
+
+        &.card-board-footer {
+          position: absolute;
+          height: auto;
+          bottom: 0;
+
+          &:not(:hover) {
+            .card-board-action {
+              display: none;
+            }
+
+            .card-description {
+              display: none;
+            }
+          }
+
+          .card-board-action {
+            display: inline-flex;
+            justify-content: flex-end;
+            align-items: center;
+          }
+
+        }
 
         .card-action {
           position: absolute;

@@ -162,6 +162,17 @@ class DrawCanvas extends Component<Props, State> {
     });
   }
 
+  emitSocketEvent(
+    eventType: BoardSocketEventEnum,
+    data: ObjectInterface,
+  ): void {
+    const socketData = {
+      boardId: this.props.match?.params.id as string,
+      data: JSON.stringify(data),
+    };
+    console.log(this.socket.emit(eventType, socketData));
+  }
+
   undoHistory(): void {
     const undoHistory = document.getElementById(
       'undo-history',
@@ -430,6 +441,12 @@ class DrawCanvas extends Component<Props, State> {
     if (saveHistory) {
       this.updateHistory(JSON.parse(JSON.stringify(data)));
     }
+    this.emitSocketEvent(BoardSocketEventEnum.CREATE, {
+      ...data,
+      isEditing: false,
+      isSelected: false,
+      isFocused: false,
+    });
     this.setState(
       {
         objects: [
@@ -460,12 +477,10 @@ class DrawCanvas extends Component<Props, State> {
       const data: ObjectInterface = {
         ...this.state.points,
       };
-
       const dimensions = {
         height,
         width,
       };
-
       if (this.props.drawingTool === 'RectRounded') {
         _.set(data, 'rect', {
           cornerRadius: 20,
@@ -537,17 +552,13 @@ class DrawCanvas extends Component<Props, State> {
     }
 
     const item = this.state.objects.find(item => item.id === data.id);
-    const socketData = {
-      boardId: this.props.match?.params.id as string,
-      data: JSON.stringify({
-        ...item,
-        ...data,
-        isSelected: false,
-        isEditing: false,
-        isFocused: false,
-      }),
-    };
-    console.log(this.socket.emit(BoardSocketEventEnum.MOVE, socketData));
+    this.emitSocketEvent(BoardSocketEventEnum.MOVE, {
+      ...item,
+      ...data,
+      isSelected: false,
+      isEditing: false,
+      isFocused: false,
+    });
     const objects = this.state.objects
       .filter(item => item.id !== data.id)
       .map(shapeObject => ({

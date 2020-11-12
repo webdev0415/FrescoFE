@@ -16,41 +16,24 @@ export const CanvasBoardTemplates = memo((props: Props) => {
           Cancel
         </Button>
       </div>
-      <Tabs defaultActiveKey="1" className="canvas-board-template">
-        <TabPane tab="Tab 1" key="1">
+      <Tabs className="canvas-board-template">
+        <TabPane tab="Business model" key="1">
           <div className="card-section">
             <div className="card-grid">
               {new Array(5).fill(0).map((item, index) => (
-                <div className="cards-board" key={index}>
+                <div className="cards-board card-board-select" key={index}>
                   <img
                     alt="example"
                     src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
                   />
-                  <div className="card-footer">
-                    <div className="card-action">
-                      <Dropdown
-                        overlay={
-                          <Menu>
-                            <Menu.Item key="0">3rd menu item</Menu.Item>
-                            <Menu.Item key="1">3rd menu item</Menu.Item>
-                            <Menu.Divider />
-                            <Menu.Item key="3">3rd menu item</Menu.Item>
-                          </Menu>
-                        }
-                        trigger={['click']}
-                      >
-                        <div className="action-button">
-                          <span className="material-icons">more_vert</span>
-                        </div>
-                      </Dropdown>
+                  <div className="card-footer card-board-footer">
+                    <div className="card-title">Business Model</div>
+                    <div className="card-description">
+                      Use this template to create a shared understanding of
+                      customer aspirations and priorities{' '}
                     </div>
-                    <div className="card-title">QuestionPro Journey Map</div>
-                    <div className="card-timestamp">Opened Oct 12, 2020</div>
-                    <div className="card-users">
-                      <span className="material-icons">group</span>
-                      <span className="user-title">
-                        Anup Surendan, JJ and 5+ collaborating
-                      </span>
+                    <div className="card-board-action">
+                      <Button type="primary">Select</Button>
                     </div>
                   </div>
                 </div>
@@ -58,40 +41,23 @@ export const CanvasBoardTemplates = memo((props: Props) => {
             </div>
           </div>
         </TabPane>
-        <TabPane tab="Tab 2" key="2">
+        <TabPane tab="Marketing" key="2">
           <div className="card-section">
             <div className="card-grid">
               {new Array(5).fill(0).map((item, index) => (
-                <div className="cards-board" key={index}>
+                <div className="cards-board card-board-select" key={index}>
                   <img
                     alt="example"
                     src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
                   />
-                  <div className="card-footer">
-                    <div className="card-action">
-                      <Dropdown
-                        overlay={
-                          <Menu>
-                            <Menu.Item key="0">3rd menu item</Menu.Item>
-                            <Menu.Item key="1">3rd menu item</Menu.Item>
-                            <Menu.Divider />
-                            <Menu.Item key="3">3rd menu item</Menu.Item>
-                          </Menu>
-                        }
-                        trigger={['click']}
-                      >
-                        <div className="action-button">
-                          <span className="material-icons">more_vert</span>
-                        </div>
-                      </Dropdown>
+                  <div className="card-footer card-board-footer">
+                    <div className="card-title">Marketing</div>
+                    <div className="card-description">
+                      Use this template to create a shared understanding of
+                      customer aspirations and priorities{' '}
                     </div>
-                    <div className="card-title">QuestionPro Journey Map</div>
-                    <div className="card-timestamp">Opened Oct 12, 2020</div>
-                    <div className="card-users">
-                      <span className="material-icons">group</span>
-                      <span className="user-title">
-                        Anup Surendan, JJ and 5+ collaborating
-                      </span>
+                    <div className="card-board-action">
+                      <Button type="primary">Select</Button>
                     </div>
                   </div>
                 </div>
@@ -99,40 +65,23 @@ export const CanvasBoardTemplates = memo((props: Props) => {
             </div>
           </div>
         </TabPane>
-        <TabPane tab="Tab 3" key="3">
+        <TabPane tab="Innovation" key="3">
           <div className="card-section">
             <div className="card-grid">
               {new Array(5).fill(0).map((item, index) => (
-                <div className="cards-board" key={index}>
+                <div className="cards-board card-board-select" key={index}>
                   <img
                     alt="example"
                     src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
                   />
-                  <div className="card-footer">
-                    <div className="card-action">
-                      <Dropdown
-                        overlay={
-                          <Menu>
-                            <Menu.Item key="0">3rd menu item</Menu.Item>
-                            <Menu.Item key="1">3rd menu item</Menu.Item>
-                            <Menu.Divider />
-                            <Menu.Item key="3">3rd menu item</Menu.Item>
-                          </Menu>
-                        }
-                        trigger={['click']}
-                      >
-                        <div className="action-button">
-                          <span className="material-icons">more_vert</span>
-                        </div>
-                      </Dropdown>
+                  <div className="card-footer card-board-footer">
+                    <div className="card-title">Innovation</div>
+                    <div className="card-description">
+                      Use this template to create a shared understanding of
+                      customer aspirations and priorities{' '}
                     </div>
-                    <div className="card-title">QuestionPro Journey Map</div>
-                    <div className="card-timestamp">Opened Oct 12, 2020</div>
-                    <div className="card-users">
-                      <span className="material-icons">group</span>
-                      <span className="user-title">
-                        Anup Surendan, JJ and 5+ collaborating
-                      </span>
+                    <div className="card-board-action">
+                      <Button type="primary">Select</Button>
                     </div>
                   </div>
                 </div>
