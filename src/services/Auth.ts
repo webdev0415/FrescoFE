@@ -1,5 +1,6 @@
 class Auth {
   public token;
+  public user;
 
   constructor() {
     const authInfo = localStorage.getItem('authInformation');
@@ -7,6 +8,7 @@ class Auth {
     this.token = authInfo
       ? JSON.parse(authInfo || '{}').token.accessToken
       : null;
+    this.user = authInfo ? JSON.parse(authInfo || '{}').user : null;
   }
 
   isLogged() {
@@ -19,6 +21,9 @@ class Auth {
 
   getToken() {
     return this.token;
+  }
+  getUser() {
+    return this.user;
   }
 
   clearToken() {

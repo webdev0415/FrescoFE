@@ -36,6 +36,7 @@ import { PrivateRoute } from '../services/PrivateRouter';
 import { SignupForInvitation } from './containers/SignupForInvitation/Loadable';
 import { CreateCanvas } from './containers/CreateCanvas';
 import { GuestRoute } from 'services/GuestRoute';
+import { CreateBoard } from './containers/CreateBoard';
 
 function AppComponent(props) {
   useInjectReducer({ key: sliceKey, reducer });
@@ -85,6 +86,12 @@ function AppComponent(props) {
           component={CreateCanvas}
         />
         <PrivateRoute exact path="/" component={ListOrganizations} />
+        <PrivateRoute
+          exact
+          path="/create-board/:orgId/:id"
+          component={CreateBoard}
+        />
+
         <Route exact path="/invite/:token" component={VerifyInvitation} />
         <PrivateRoute
           exact

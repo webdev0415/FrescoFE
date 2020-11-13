@@ -1,12 +1,7 @@
 import React, { memo } from 'react';
-import { Tabs, Row, Typography, Input, Spin, Col } from 'antd';
+import { Tabs, Row, Typography, Input, Spin, Col, Button, Form } from 'antd';
 import styled from 'styled-components/macro';
-import {
-  BookOutlined,
-  AppstoreOutlined,
-  CloseOutlined,
-  UserOutlined,
-} from '@ant-design/icons';
+
 import ItemBoard from 'app/components/ItemBoard';
 import { RouteComponentProps, useHistory } from 'react-router-dom';
 
@@ -16,9 +11,17 @@ import { selectBoard } from './selectors';
 import { useInjectReducer, useInjectSaga } from 'utils/redux-injectors';
 import { actions, reducer, sliceKey } from './slice';
 import { selectBoardsSaga } from './saga';
+import pageIcon from 'assets/icons/page.svg';
+import { PlusOutlined } from '@ant-design/icons';
+import { BarChartOutlined } from '@ant-design/icons';
+
+import dashboardIcon from 'assets/icons/dashboard.svg';
+import CanvasesList from 'app/components/CanvasesList';
+import { BoardApiService } from 'services/APIService/BoardsApi.service';
+import Auth from 'services/Auth';
+import { Categories } from '../Categories';
 
 const { TabPane } = Tabs;
-const { Title } = Typography;
 
 const panes = [
   { tab: 'Customer Journey Maps', key: '1' },
@@ -34,13 +37,40 @@ export const SelectBoard = memo((props: Props) => {
   useInjectReducer({ key: sliceKey, reducer: reducer });
   useInjectSaga({ key: sliceKey, saga: selectBoardsSaga });
 
+  const [isModalOpen, setModalOpen] = React.useState(false);
+  const [form] = Form.useForm();
+
+  const history = useHistory();
+
   const board = useSelector(selectBoard);
-  console.log('board', board);
   const dispatch = useDispatch();
 
   const getCanvases = React.useCallback(() => {
     dispatch(actions.selectBoardRequest(props.match.params.id));
   }, [dispatch, props.match.params.id]);
+
+  const handleCreateBoard = React.useCallback(
+    (canvasData, canvasId) => {
+      form
+        .validateFields()
+        .then(values => {
+          form.resetFields();
+          const data = {
+            orgId: props.match.params.id,
+            data: canvasData,
+            name: values.name,
+            createdUserId: Auth.getUser().id,
+          };
+          BoardApiService.create(data).subscribe(res => {
+            history.push(`/create-board/${res.orgId}/${res.id}`);
+          });
+        })
+        .catch(info => {
+          console.log('Validate Failed:', info);
+        });
+    },
+    [props.match.params.id, history, form],
+  );
 
   React.useEffect(() => {
     getCanvases();
@@ -49,52 +79,44 @@ export const SelectBoard = memo((props: Props) => {
     <Div
       style={{
         width: '100%',
-        height: '80vh',
+        // height: '80vh',
         background: '#ffffff',
       }}
       className="select-board"
     >
-      <Tabs
-        hideAdd
-        type={'card'}
-        tabPosition={'left'}
-        tabBarStyle={{
-          height: 'calc(100vh - 80px)',
-          backgroundColor: '#B3B6B7',
-        }}
-      >
-        <TabPane
-          tab={
-            <BookOutlined
-              style={{ height: 40, fontSize: '1rem', textAlign: 'center' }}
-            />
-          }
-          key="1"
-          style={{ width: '100%', height: '80vh', paddingLeft: 0 }}
-        >
+      <Tabs defaultActiveKey="1" tabPosition="left" className="left-sidebar">
+        <TabPane tab={<img src={pageIcon} alt="page" />} key="1">
           <Wraper>
             <InputWrapper>
-              <Input placeholder="Board Name" />
-            </InputWrapper>
-            <Div
-              onClick={() => {
-                props.history.goBack();
-              }}
-            >
-              <Title
-                level={5}
-                style={{
-                  height: 40,
-                  color: '#9646F5',
-                  cursor: 'pointer',
-                  fontWeight: 300,
-                  fontStyle: 'normal',
-                  margin: 0,
-                }}
+              <Form
+                form={form}
+                layout="vertical"
+                name="form_in_modal"
+                initialValues={{ modifier: 'public' }}
+                style={{ display: 'flex' }}
               >
-                Cancel
-              </Title>
-            </Div>
+                <Form.Item
+                  name="name"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please input the board name!',
+                    },
+                  ]}
+                >
+                  <Input placeholder="Board name" />
+                </Form.Item>
+
+                <Button
+                  onClick={() => {
+                    props.history.goBack();
+                  }}
+                  style={{ marginLeft: 8 }}
+                >
+                  Cancel
+                </Button>
+              </Form>
+            </InputWrapper>
           </Wraper>
 
           <Tabs
@@ -112,7 +134,11 @@ export const SelectBoard = memo((props: Props) => {
                     {board.canvases.length ? (
                       <Row gutter={[16, 16]}>
                         {board.canvases.map(item => (
-                          <ItemBoard item={item} key={item.id} />
+                          <ItemBoard
+                            onCreateBoard={handleCreateBoard}
+                            item={item}
+                            key={item.id}
+                          />
                         ))}
                       </Row>
                     ) : (
@@ -125,13 +151,31 @@ export const SelectBoard = memo((props: Props) => {
           </Tabs>
         </TabPane>
 
-        <TabPane
-          tab={<AppstoreOutlined style={{ height: 40 }} />}
-          key="2"
-          style={{ width: '100%', height: '80vh', backgroundColor: 'none' }}
-        >
-          Tab 2
+        <TabPane tab={<img src={dashboardIcon} alt="dashboard" />} key="2">
+          <CanvasesList orgId={props.match.params.id} />
         </TabPane>
+        {Auth.getUser().role === 'ADMIN' && (
+          <TabPane tab={<BarChartOutlined />} key="3">
+            <div className="card-section">
+              <Button
+                type="primary"
+                icon={<PlusOutlined />}
+                onClick={() => {
+                  setModalOpen(true);
+                }}
+              >
+                New Category
+              </Button>
+              <h3 className="categories__tab-title">Categories</h3>
+              <Categories
+                visible={isModalOpen}
+                onCancel={() => {
+                  setModalOpen(false);
+                }}
+              />
+            </div>
+          </TabPane>
+        )}
       </Tabs>
     </Div>
   );

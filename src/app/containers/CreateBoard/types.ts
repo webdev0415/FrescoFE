@@ -80,6 +80,10 @@ export interface ObjectInterface extends PointsInterface {
   isSelected: boolean;
   isEditing: boolean;
 }
+export interface SelectedStickyInterface extends PointsInterface {
+  id: string;
+  shapeConfig?: Konva.ShapeConfig;
+}
 
 export interface Props
   extends RouteChildrenProps<{ id: string; orgId: string }> {
@@ -97,6 +101,7 @@ export interface State {
     name: string;
     orgId: string;
   };
+  selectedStickyData: SelectedStickyInterface | null;
 }
 
 export interface FontInterface {
@@ -108,5 +113,4 @@ export interface TransformShapeProps {
   data: ObjectInterface;
   onChange(data: ObjectInterface): void;
   onSelect(event: Konva.KonvaEventObject<MouseEvent>): void;
-  draggable?: boolean;
 }

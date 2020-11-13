@@ -4,7 +4,7 @@ import Konva from 'konva';
 import { TransformShapeProps } from '../../../../components/DrawCanvas/types';
 
 function TriangleTransform(props: TransformShapeProps): JSX.Element {
-  const { data, onSelect, onChange } = props;
+  const { data, onSelect, onChange, draggable = true } = props;
   const shapeRef = useRef<Konva.Ellipse>(null);
   const trRef = useRef<Konva.Transformer>(null);
 
@@ -66,7 +66,7 @@ function TriangleTransform(props: TransformShapeProps): JSX.Element {
         y={data.y}
         width={data.triangle?.width}
         height={data.triangle?.height}
-        draggable
+        draggable={draggable}
         onTransformEnd={onTransformEnd}
         onDragEnd={onDragEnd}
         sceneFunc={(context, shape) => {

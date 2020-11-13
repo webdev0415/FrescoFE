@@ -3,6 +3,8 @@ import { Layout } from 'antd';
 import Header from 'app/components/Header';
 import Auth from 'services/Auth';
 
+import './styles.less';
+
 interface AuthLayoutProps {
   children: React.ReactNode;
 }

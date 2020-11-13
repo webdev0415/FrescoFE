@@ -2,12 +2,14 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d0235698-fcbf-40bf-a9de-ad7a068db01b" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/styles/overrides/_cards.less" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/containers/BoardList/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/BoardList/index.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/app/containers/Dashboard/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/Dashboard/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/services/APIService/CanvasApi.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/APIService/CanvasApi.service.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/styles/overrides/_fonts.less" beforeDir="false" afterPath="$PROJECT_DIR$/src/styles/overrides/_fonts.less" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/styles/overrides/index.less" beforeDir="false" afterPath="$PROJECT_DIR$/src/styles/overrides/index.less" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/containers/SelectBoard/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/SelectBoard/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/containers/SelectBoard/styles.less" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/SelectBoard/styles.less" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/layouts/AuthLayout/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/layouts/AuthLayout/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/layouts/AuthLayout/styles.less" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/layouts/AuthLayout/styles.less" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/styles/overrides/_cards.less" beforeDir="false" afterPath="$PROJECT_DIR$/src/styles/overrides/_cards.less" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -54,7 +56,7 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/src/app/components/DrawCanvas/components" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="list.type.of.created.stylesheet" value="Less" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.standard" value="true" />
@@ -66,24 +68,24 @@
     <property name="node.js.path.for.package.tslint" value="project" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="node.js.selected.package.standard" value="" />
-    <property name="node.js.selected.package.stylelint" value="D:\Usama\Data\htdocs\React\FrescoFE\node_modules\stylelint" />
+    <property name="node.js.selected.package.stylelint" value="D:/Usama/Data/htdocs/React/FrescoFE/node_modules/stylelint" />
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
     <property name="nodejs_package_manager_path" value="npm" />
     <property name="prettierjs.PrettierConfiguration.Package" value="D:\Usama\Data\htdocs\React\FrescoFE\node_modules\prettier" />
-    <property name="settings.editor.selected.configurable" value="preferences.keymap" />
-    <property name="ts.external.directory.path" value="D:\Usama\Data\htdocs\React\FrescoFE\node_modules\typescript\lib" />
+    <property name="settings.editor.selected.configurable" value="editor.preferences.fonts.default" />
+    <property name="ts.external.directory.path" value="$PROJECT_DIR$/node_modules/typescript/lib" />
     <property name="vue.rearranger.settings.migration" value="true" />
   </component>
   <component name="RecentsManager">
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="D:\Usama\Data\htdocs\React\FrescoFE\src\app\components\CanvasIcons" />
-    </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="D:\Usama\Data\htdocs\React\FrescoFE\src\app\components\DrawCanvas\components" />
       <recent name="D:\Usama\Data\htdocs\React\FrescoFE\src\app\components\DrawCanvas" />
       <recent name="D:\Usama\Data\htdocs\React\FrescoFE\src\app\containers\CreateCanvas\components" />
       <recent name="D:\Usama\Data\htdocs\React\FrescoFE\src\app\components\CanvasIcons" />
       <recent name="D:\Usama\Data\htdocs\React\FrescoFE\src\assets\icons" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\Usama\Data\htdocs\React\FrescoFE\src\app\components\CanvasIcons" />
     </key>
   </component>
   <component name="RunManager">
@@ -122,6 +124,10 @@
       <workItem from="1604677355798" duration="31127000" />
       <workItem from="1604937996795" duration="13408000" />
       <workItem from="1605028010939" duration="29691000" />
+      <workItem from="1605177933485" duration="206000" />
+      <workItem from="1605178160846" duration="66000" />
+      <workItem from="1605178248140" duration="651000" />
+      <workItem from="1605178920163" duration="600000" />
     </task>
     <task id="LOCAL-00001" summary="Layout Added antd Tabs">
       <created>1604419318843</created>
@@ -347,10 +353,15 @@
     <option name="LAST_COMMIT_MESSAGE" value="Change z index Change in canvas Item" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="2274" y="461" key="#Stylelint" timestamp="1604430455610">
-      <screen x="1600" y="0" width="1920" height="1170" />
+    <state x="443" y="361" width="770" height="547" key="#ESLint" timestamp="1605178892497">
+      <screen x="63" y="27" width="1857" height="1053" />
+    </state>
+    <state x="443" y="361" width="770" height="547" key="#ESLint/63.27.1857.1053/1920.0.1366.768@63.27.1857.1053" timestamp="1605178892497" />
+    <state x="715" y="442" width="662" height="217" key="#Stylelint" timestamp="1605178202325">
+      <screen x="63" y="27" width="1857" height="1053" />
     </state>
     <state x="2274" y="461" key="#Stylelint/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604430455610" />
+    <state x="715" y="442" width="662" height="217" key="#Stylelint/63.27.1857.1053/1920.0.1366.768@63.27.1857.1053" timestamp="1605178202325" />
     <state x="254" y="89" width="1092" height="714" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1604355257203">
       <screen x="0" y="0" width="1600" height="868" />
     </state>
@@ -373,10 +384,11 @@
       <screen x="0" y="0" width="1600" height="868" />
     </state>
     <state x="665" y="109" key="EnvironmentVariablesDialog/0.0.1600.868@0.0.1600.868" timestamp="1604355254437" />
-    <state x="2339" y="340" key="FileChooserDialogImpl" timestamp="1604689114206">
-      <screen x="1600" y="0" width="1920" height="1170" />
+    <state x="778" y="333" width="424" height="485" key="FileChooserDialogImpl" timestamp="1605178195120">
+      <screen x="63" y="27" width="1857" height="1053" />
     </state>
     <state x="2339" y="340" key="FileChooserDialogImpl/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604689114206" />
+    <state x="778" y="333" width="424" height="485" key="FileChooserDialogImpl/63.27.1857.1053/1920.0.1366.768@63.27.1857.1053" timestamp="1605178195120" />
     <state width="1486" height="216" key="GridCell.Tab.0.bottom" timestamp="1605029744875">
       <screen x="1600" y="0" width="1920" height="1170" />
     </state>
@@ -465,10 +477,11 @@
     </state>
     <state width="1190" height="271" key="GridCell.Tab.3.right/0.0.1600.868/1600.0.1920.1170@0.0.1600.868" timestamp="1604591845327" />
     <state width="1190" height="271" key="GridCell.Tab.3.right/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604593485546" />
-    <state x="2061" y="230" key="SettingsEditor" timestamp="1605047797604">
-      <screen x="1600" y="0" width="1920" height="1170" />
+    <state x="509" y="234" width="1007" height="731" key="SettingsEditor" timestamp="1605178223768">
+      <screen x="63" y="27" width="1857" height="1053" />
     </state>
     <state x="2061" y="230" key="SettingsEditor/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1605047797604" />
+    <state x="509" y="234" width="1007" height="731" key="SettingsEditor/63.27.1857.1053/1920.0.1366.768@63.27.1857.1053" timestamp="1605178223768" />
     <state x="2152" y="314" key="Vcs.Push.Dialog.v2" timestamp="1605053261650">
       <screen x="1600" y="0" width="1920" height="1170" />
     </state>

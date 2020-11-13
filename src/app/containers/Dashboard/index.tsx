@@ -4,12 +4,12 @@
  *
  */
 
-import React, { memo, useCallback, useEffect, useState } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useDispatch, useSelector } from 'react-redux';
-import { Button, Dropdown, Input, Menu, Select, Tabs } from 'antd';
+import { Button, Input, Tabs } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
-import { Link, Redirect, useHistory } from 'react-router-dom';
+import { Redirect, useHistory } from 'react-router-dom';
 
 import { useInjectReducer, useInjectSaga } from 'utils/redux-injectors';
 import { actions, reducer, sliceKey } from './slice';
@@ -19,17 +19,19 @@ import { dashboardSaga } from './saga';
 import { actions as globalActions } from '../../slice';
 import dashboardIcon from 'assets/icons/dashboard.svg';
 import pageIcon from 'assets/icons/page.svg';
+import { BarChartOutlined } from '@ant-design/icons';
 
 // Components
 import { UserModal } from '../../components/UserModal';
 import Axios from 'axios';
-import { CanvasApiService } from 'services/APIService';
-import { CanvasResponseInterface } from '../../../services/APIService/interfaces';
 import { InviteMemberModal } from '../../components/InviteMemberModal';
 
 import './styles.less';
 import { BoardList } from '../BoardList';
 import styled from 'styled-components';
+import CanvasesList from 'app/components/CanvasesList';
+import { Categories } from '../Categories';
+import Auth from 'services/Auth';
 
 const { TabPane } = Tabs;
 export const PERMISSION = {
@@ -53,12 +55,10 @@ export const Dashboard = memo((props: Props) => {
   useInjectSaga({ key: sliceKey, saga: dashboardSaga });
   const [organization, setOrganization] = useState<any>(null);
   const [isShowUserModal, setIsShowUserModal] = useState(false);
-  const [isShowAddNewCanvas, setIsShowAddNewCanvas] = useState(false);
   const [isShowInvitationModal, setIsShowInvitationModal] = useState(false);
   const [email, setEmail] = useState('');
   const [permission, setPermission] = useState(PERMISSION.EDITOR);
-  const [canvasName, setCanvasName] = useState('');
-  const [canvasList, setCanvasList] = useState<CanvasResponseInterface[]>([]);
+  const [isModalOpen, setModalOpen] = useState(false);
 
   const orgId = props?.match?.params?.id;
 
@@ -96,23 +96,6 @@ export const Dashboard = memo((props: Props) => {
     );
   };
 
-  const createCanvas = useCallback(() => {
-    const data = {
-      name: canvasName,
-      orgId: orgId,
-      data: '',
-    };
-    CanvasApiService.create(data).subscribe(
-      data => {
-        console.log(data);
-        history.push(`/canvas/${data.orgId}/${data.id}`);
-      },
-      error => {
-        console.error(error.response);
-      },
-    );
-  }, [canvasName, history, orgId]);
-
   const _handleSelectEmail = value => {
     setEmail(value);
   };
@@ -148,18 +131,6 @@ export const Dashboard = memo((props: Props) => {
     setIsShowInvitationModal(false);
   };
 
-  const handleDeleteCanvas = (id: string) => {
-    CanvasApiService.deleteById(id, orgId).subscribe(
-      data => {
-        console.log(data);
-        setCanvasList(canvasList.filter(item => item.id === id));
-      },
-      error => {
-        console.error(error);
-      },
-    );
-  };
-
   useEffect(() => {
     const profileIcon = document.getElementById(
       'profile-icon',
@@ -185,12 +156,6 @@ export const Dashboard = memo((props: Props) => {
     }
   }, []);
 
-  useEffect(() => {
-    CanvasApiService.getByOrganizationId(orgId).subscribe(data => {
-      setCanvasList(data);
-    });
-  }, [orgId]);
-
   const handleLogOut = () => {
     dispatch(globalActions.removeAuth());
     localStorage.clear();
@@ -200,7 +165,6 @@ export const Dashboard = memo((props: Props) => {
   if (!token) {
     return <Redirect to="/auth/login" />;
   }
-
   return (
     <>
       <Helmet>
@@ -230,113 +194,30 @@ export const Dashboard = memo((props: Props) => {
           </div>
         </TabPane>
         <TabPane tab={<img src={dashboardIcon} alt="dashboard" />} key="2">
-          <div className="card-section">
-            <Button
-              hidden={isShowAddNewCanvas}
-              type="primary"
-              icon={<PlusOutlined />}
-              onClick={() => {
-                setIsShowAddNewCanvas(true);
-                setCanvasName('');
-              }}
-            >
-              Create Canvas
-            </Button>
-
-            <div
-              hidden={!isShowAddNewCanvas}
-              style={{
-                display: 'inline-flex',
-                justifyContent: 'flex-start',
-                alignItems: 'flex-start',
-                gap: '20px',
-              }}
-            >
-              <Input
-                placeholder="Name"
-                name="name"
-                onChange={event => setCanvasName(event.currentTarget.value)}
-                style={{ width: 300, flexShrink: 0 }}
-              />
-              <Select
-                defaultValue=""
-                style={{ width: 220, flexShrink: 0 }}
-                allowClear
-              >
-                <Select.Option value="" disabled>
-                  Category
-                </Select.Option>
-                <Select.Option value="Customer Journey Maps">
-                  Customer Journey Maps
-                </Select.Option>
-                <Select.Option value=" Innovation">Innovation</Select.Option>
-                <Select.Option value=" Business model">
-                  Business model
-                </Select.Option>
-                <Select.Option value="Product">Product</Select.Option>
-                <Select.Option value="Marketing">Marketing</Select.Option>
-              </Select>
+          <CanvasesList orgId={orgId} />
+        </TabPane>
+        {Auth.getUser().role === 'ADMIN' && (
+          <TabPane tab={<BarChartOutlined />} key="3">
+            <div className="card-section">
               <Button
                 type="primary"
                 icon={<PlusOutlined />}
-                onClick={createCanvas}
+                onClick={() => {
+                  setModalOpen(true);
+                }}
               >
-                Create Canvas
+                New Category
               </Button>
+              <h3 className="dashboard__tab-title">Categories</h3>
+              <Categories
+                visible={isModalOpen}
+                onCancel={() => {
+                  setModalOpen(false);
+                }}
+              />
             </div>
-
-            <h3 className="card-section-title">Custom Canvas</h3>
-            <div className="card-grid">
-              {canvasList.map((data, index) => (
-                <div className="cards-board" key={index}>
-                  <img
-                    alt="example"
-                    src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
-                  />
-
-                  <div className="card-footer">
-                    <div className="card-action">
-                      <Dropdown
-                        overlay={
-                          <Menu>
-                            <Menu.Item key="0">
-                              <Link to={`/canvas/${data.orgId}/${data.id}`}>
-                                Edit
-                              </Link>
-                            </Menu.Item>
-                            <Menu.Item key="1">
-                              <a href="http://www.taobao.com/">Action</a>
-                            </Menu.Item>
-                            <Menu.Divider />
-                            <Menu.Item
-                              key="3"
-                              onClick={() => handleDeleteCanvas(data.id)}
-                            >
-                              Delete
-                            </Menu.Item>
-                          </Menu>
-                        }
-                        trigger={['click']}
-                      >
-                        <div className="action-button">
-                          <span className="material-icons">more_vert</span>
-                        </div>
-                      </Dropdown>
-                    </div>
-                    <div className="card-title">{data.name}</div>
-                    <div className="card-timestamp">Opened Oct 12, 2020</div>
-                    <div className="card-users">
-                      <span className="material-icons">group</span>
-                      <span className="user-title">
-                        Anup Surendan, JJ and 5+ collaborating
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </TabPane>
+          </TabPane>
+        )}
       </Tabs>
 
       {isShowInvitationModal && (

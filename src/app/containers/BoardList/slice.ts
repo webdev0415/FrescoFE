@@ -23,6 +23,13 @@ const boardListSlice = createSlice({
       state.boardList = action.payload;
       state.loading = false;
     },
+    deleteBoard(state, action) {
+      console.log('action', action);
+      console.log('state.boardList', state.boardList);
+      state.boardList = state.boardList.filter(
+        board => board.id !== action.payload,
+      );
+    },
   },
 });
 

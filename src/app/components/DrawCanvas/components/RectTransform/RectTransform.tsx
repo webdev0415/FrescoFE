@@ -4,7 +4,7 @@ import Konva from 'konva';
 import { TransformShapeProps } from '../../../../components/DrawCanvas/types';
 
 function RectTransform(props: TransformShapeProps): JSX.Element {
-  const { data, onSelect, onChange } = props;
+  const { data, onSelect, onChange, draggable = true } = props;
   const shapeRef = useRef<Konva.Rect>(null);
   const trRef = useRef<Konva.Transformer>(null);
 
@@ -69,7 +69,7 @@ function RectTransform(props: TransformShapeProps): JSX.Element {
         y={data.y}
         width={data.rect?.width as number}
         height={data.rect?.height as number}
-        draggable
+        draggable={draggable}
         onTransformEnd={onTransformEnd}
         cornerRadius={data.rect?.cornerRadius as number}
         onDragEnd={onDragEnd}

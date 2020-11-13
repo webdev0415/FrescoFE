@@ -9,7 +9,6 @@ const img2 = require('../../../assets/images/img-default-2.png');
 
 const ItemBoard = props => {
   const [isShown, setIsShown] = useState(false);
-  console.log('props', props);
   return (
     <Col
       className="gutter-row"
@@ -41,7 +40,13 @@ const ItemBoard = props => {
               </Text>
             </div>
             <DivFlexEnd>
-              <Button>Select</Button>
+              <Button
+                onClick={() => {
+                  props.onCreateBoard(props.item.data, props.item.id);
+                }}
+              >
+                Select
+              </Button>
             </DivFlexEnd>
           </Div>
         )}

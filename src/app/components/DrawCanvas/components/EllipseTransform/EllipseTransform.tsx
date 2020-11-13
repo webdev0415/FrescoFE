@@ -4,7 +4,7 @@ import Konva from 'konva';
 import { TransformShapeProps } from '../../../../components/DrawCanvas/types';
 
 function EllipseTransform(props: TransformShapeProps): JSX.Element {
-  const { data, onSelect, onChange } = props;
+  const { data, onSelect, onChange, draggable = true } = props;
   const shapeRef = useRef<Konva.Ellipse>(null);
   const trRef = useRef<Konva.Transformer>(null);
 
@@ -67,7 +67,7 @@ function EllipseTransform(props: TransformShapeProps): JSX.Element {
         y={data.y}
         radiusX={data.ellipse?.radiusX as number}
         radiusY={data.ellipse?.radiusY as number}
-        draggable
+        draggable={draggable}
         onTransformEnd={onTransformEnd}
         onDragEnd={onDragEnd}
         rotation={data.rotation}

@@ -7,7 +7,7 @@ import {
 } from '../../../../components/DrawCanvas/types';
 
 function StickyTransform(props: TransformShapeProps): JSX.Element {
-  const { data, onSelect, onChange } = props;
+  const { data, onSelect, onChange, draggable = true } = props;
   const shapeRef = useRef<Konva.Group>(null);
   const trRef = useRef<Konva.Transformer>(null);
 
@@ -62,7 +62,7 @@ function StickyTransform(props: TransformShapeProps): JSX.Element {
   return (
     <>
       <Group
-        draggable
+        draggable={draggable}
         onTransformEnd={onTransformEnd}
         onDragEnd={onDragEnd}
         ref={shapeRef}
