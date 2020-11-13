@@ -231,7 +231,10 @@ export const Dashboard = memo((props: Props) => {
       <Tabs defaultActiveKey="1" tabPosition="left" className="side-bar-tabs">
         <TabPane tab={<img src={pageIcon} alt="page" />} key="1">
           {showAddNewBoard && (
-            <CanvasBoardTemplates onClose={() => setAddNewBoard(false)} />
+            <CanvasBoardTemplates
+              orgId={orgId}
+              onClose={() => setAddNewBoard(false)}
+            />
           )}
 
           <div className="card-section">
