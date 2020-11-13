@@ -23,8 +23,9 @@ import pageIcon from 'assets/icons/page.svg';
 // Components
 import { UserModal } from '../../components/UserModal';
 import Axios from 'axios';
-import { CanvasApiService } from 'services/APIService';
+import { BoardApiService, CanvasApiService } from 'services/APIService';
 import {
+  BoardInterface,
   CanvasCategoryInterface,
   CanvasResponseInterface,
 } from '../../../services/APIService/interfaces';
@@ -62,6 +63,7 @@ export const Dashboard = memo((props: Props) => {
   const [categories, setCategories] = useState<CanvasCategoryInterface[]>([]);
   const [categoryId, setCategoryId] = useState('');
   const [canvasList, setCanvasList] = useState<CanvasResponseInterface[]>([]);
+  const [boardsList, setBoardsList] = useState<BoardInterface[]>([]);
   const [showAddNewBoard, setAddNewBoard] = useState(false);
 
   const orgId = props?.match?.params?.id;
@@ -166,6 +168,22 @@ export const Dashboard = memo((props: Props) => {
     );
   };
 
+  const handleDeleteBoard = (id: string, userId: string) => {
+    BoardApiService.deleteById(id, {
+      orgId: orgId as string,
+      boardId: id,
+      userId: userId,
+    }).subscribe(
+      data => {
+        console.log(data);
+        setBoardsList(boardsList.filter(item => item.id === id));
+      },
+      error => {
+        console.error(error);
+      },
+    );
+  };
+
   useEffect(() => {
     const profileIcon = document.getElementById(
       'profile-icon',
@@ -201,7 +219,13 @@ export const Dashboard = memo((props: Props) => {
     CanvasCategoryService.list().subscribe(data => {
       setCategories(data);
     });
-  }, [orgId]);
+  }, [orgId, showAddNewBoard]);
+
+  useEffect(() => {
+    BoardApiService.getByOrganizationId(orgId).subscribe(data => {
+      setBoardsList(data);
+    });
+  }, [orgId, showAddNewBoard]);
 
   const handleLogOut = () => {
     dispatch(globalActions.removeAuth());
@@ -248,21 +272,33 @@ export const Dashboard = memo((props: Props) => {
             <h3 className="card-section-title">My Boards</h3>
 
             <div className="card-grid">
-              {new Array(5).fill(0).map((item, index) => (
+              {boardsList.map((data, index) => (
                 <div className="cards-board" key={index}>
                   <img
                     alt="example"
                     src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
                   />
+
                   <div className="card-footer">
                     <div className="card-action">
                       <Dropdown
                         overlay={
                           <Menu>
-                            <Menu.Item key="0">3rd menu item</Menu.Item>
-                            <Menu.Item key="1">3rd menu item</Menu.Item>
+                            <Menu.Item key="0">
+                              <Link to={`/canvas/${data.id}/board`}>Edit</Link>
+                            </Menu.Item>
+                            <Menu.Item key="1">
+                              <a href="http://www.taobao.com/">Action</a>
+                            </Menu.Item>
                             <Menu.Divider />
-                            <Menu.Item key="3">3rd menu item</Menu.Item>
+                            <Menu.Item
+                              key="3"
+                              onClick={() =>
+                                handleDeleteBoard(data.id, data.createdUserId)
+                              }
+                            >
+                              Delete
+                            </Menu.Item>
                           </Menu>
                         }
                         trigger={['click']}
@@ -272,7 +308,7 @@ export const Dashboard = memo((props: Props) => {
                         </div>
                       </Dropdown>
                     </div>
-                    <div className="card-title">QuestionPro Journey Map</div>
+                    <div className="card-title">{data.name}</div>
                     <div className="card-timestamp">Opened Oct 12, 2020</div>
                     <div className="card-users">
                       <span className="material-icons">group</span>
@@ -355,9 +391,7 @@ export const Dashboard = memo((props: Props) => {
                         overlay={
                           <Menu>
                             <Menu.Item key="0">
-                              <Link to={`/canvas/${data.orgId}/${data.id}`}>
-                                Edit
-                              </Link>
+                              <Link to={`/canvas/${data.id}/canvas`}>Edit</Link>
                             </Menu.Item>
                             <Menu.Item key="1">
                               <a href="http://www.taobao.com/">Action</a>

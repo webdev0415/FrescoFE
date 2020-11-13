@@ -3,16 +3,20 @@ import { Button, Tabs, Input } from 'antd';
 import { CloseOutlined } from '@ant-design/icons';
 import { CanvasCategoryService } from '../../../services/APIService/CanvasCategory.service';
 import { zip } from 'rxjs';
-import { CanvasApiService } from '../../../services/APIService';
+import {
+  CanvasApiService,
+  BoardApiService,
+} from '../../../services/APIService';
 import {
   CanvasCategoryInterface,
   CanvasResponseInterface,
 } from '../../../services/APIService/interfaces';
+import { useHistory } from 'react-router-dom';
 const { TabPane } = Tabs;
 
 interface Props {
   orgId: string;
-  onClose(event: MouseEvent);
+  onClose();
 }
 
 interface State {
@@ -22,13 +26,28 @@ interface State {
 }
 
 export const CanvasBoardTemplates = memo((props: Props) => {
+  const [boardName, setBoardName] = useState('');
   const [state, setState] = useState<State>({
     boards: [],
     categories: [],
     loading: false,
   });
 
-  const [images, setImages] = useState<Record<string, string>>({});
+  const history = useHistory();
+
+  const handleCreateBoard = (id: string) => {
+    CanvasApiService.getById(id).subscribe(canvas => {
+      BoardApiService.create({
+        data: canvas.data,
+        name: boardName,
+        orgId: props.orgId,
+      }).subscribe(board => {
+        props.onClose();
+        history.push(`/canvas/${board.id}/board`);
+        console.log(board);
+      });
+    });
+  };
 
   useEffect(() => {
     setState({
@@ -59,7 +78,10 @@ export const CanvasBoardTemplates = memo((props: Props) => {
   return (
     <div className="create-board-view">
       <div className="form-view">
-        <Input placeholder="Board Name" />
+        <Input
+          placeholder="Board Name"
+          onChange={event => setBoardName(event.target.value)}
+        />
         <Button type="default" icon={<CloseOutlined />} onClick={props.onClose}>
           Cancel
         </Button>
@@ -71,23 +93,29 @@ export const CanvasBoardTemplates = memo((props: Props) => {
               <div className="card-grid">
                 {state.boards
                   .filter(board => board.categoryId === category.id)
-                  .map(boards => (
+                  .map(board => (
                     <div
                       className="cards-board card-board-select"
-                      key={boards.id}
+                      key={board.id}
                     >
                       <img
                         alt="example"
                         src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
                       />
                       <div className="card-footer card-board-footer">
-                        <div className="card-title">{boards.name}</div>
+                        <div className="card-title">{board.name}</div>
                         <div className="card-description">
                           Use this template to create a shared understanding of
                           customer aspirations and priorities
                         </div>
                         <div className="card-board-action">
-                          <Button type="primary">Select</Button>
+                          <Button
+                            type="primary"
+                            disabled={!boardName}
+                            onClick={() => handleCreateBoard(board.id)}
+                          >
+                            Select
+                          </Button>
                         </div>
                       </div>
                     </div>

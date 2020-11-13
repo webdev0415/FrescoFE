@@ -23,7 +23,7 @@ import {
 import clsx from 'clsx';
 
 export const CreateCanvas = memo(
-  (props: RouteChildrenProps<{ id: string; orgId: string }>) => {
+  (props: RouteChildrenProps<{ id: string; type: string }>) => {
     const [zoom, setZoom] = useState<number>(0);
     const [drawingTool, setDrawingTool] = useState<
       | 'Rect'
