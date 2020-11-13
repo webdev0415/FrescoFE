@@ -4,9 +4,9 @@
  *
  */
 
-import React, { memo } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { Form, Input, Button, Card, Typography } from 'antd';
+import { Form, Input, Button, Card, Typography, Modal, message } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 // import styled from 'styled-components/macro';
@@ -15,6 +15,7 @@ import { useInjectReducer, useInjectSaga } from 'utils/redux-injectors';
 import { reducer, sliceKey, actions } from './slice';
 import { selectSignup } from './selectors';
 import { signupSaga } from './saga';
+import { resendConfirmationEmail } from '../../../services/AuthAPI';
 
 interface Props {}
 
@@ -24,14 +25,82 @@ const layout = {
 };
 const { Title } = Typography;
 
+interface ConfirmationState {
+  loading: boolean;
+  success: string;
+  error: string;
+}
+
 export const Signup = memo((props: Props) => {
   useInjectReducer({ key: sliceKey, reducer: reducer });
   useInjectSaga({ key: sliceKey, saga: signupSaga });
+  const [email, setEmail] = useState('');
+  const [confirmation, setConfirmation] = useState<ConfirmationState>({
+    error: '',
+    success: '',
+    loading: false,
+  });
   const history = useHistory();
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { loading } = useSelector(selectSignup);
+  const { loading, errorCode } = useSelector(selectSignup);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
+  const handleResendEmail = () => {
+    setConfirmation({
+      ...confirmation,
+      loading: true,
+    });
+    resendConfirmationEmail(email)
+      .then(response => {
+        setConfirmation({
+          ...confirmation,
+          loading: false,
+          success: 'Invitation Link has been sent',
+        });
+        message.success('Invitation Link has been sent');
+      })
+      .catch(error => {
+        setConfirmation({
+          ...confirmation,
+          loading: false,
+          error: 'Invitation Failed to Send',
+        });
+        console.log(error.response);
+        message.error(error.message);
+      });
+  };
+
+  useEffect(() => {
+    if (errorCode === 409) {
+      Modal.confirm({
+        content: (
+          <div>
+            <p>
+              {!!confirmation.success
+                ? 'Invitation Link has been sent'
+                : 'User already exists with this email, please try again with different email address.'}
+            </p>
+            <div className="clearfix">
+              <Button
+                type="link"
+                style={{ float: 'right' }}
+                onClick={handleResendEmail}
+              >
+                Resend Confirmation Email
+              </Button>
+            </div>
+          </div>
+        ),
+        onCancel: () => {
+          dispatch(actions.signUpErrorReset());
+        },
+        onOk: () => {
+          dispatch(actions.signUpErrorReset());
+        },
+      });
+    }
+  }, [confirmation.success, dispatch, errorCode, handleResendEmail]);
   const dispatch = useDispatch();
   const onFinish = values => {
     console.log('Success:', values);
@@ -88,7 +157,11 @@ export const Signup = memo((props: Props) => {
             ]}
             hasFeedback
           >
-            <Input />
+            <Input
+              onChange={event => {
+                setEmail(event.target.value);
+              }}
+            />
           </Form.Item>
 
           <Form.Item

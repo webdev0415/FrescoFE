@@ -14,27 +14,28 @@ const dashboardSlice = createSlice({
   initialState,
   reducers: {
     searchEmailRequest(state, action: PayloadAction<any>) {
-      state.loading = true;
+      state.linkInvitation = '';
+      // state.loading = true;
     },
 
     // TODO: define Payload type and use here
     searchEmailSuccess(state, action: PayloadAction<any>) {
       // console.log(action.payload);
       state.listEmail = action.payload;
-      state.loading = false;
+      // state.loading = false;
     },
 
     searchEmailError(state, action: PayloadAction<any>) {
-      state.loading = false;
+      // state.loading = false;
     },
 
     invitationRequest(state, action: PayloadAction<any>) {
+      state.linkInvitation = '';
       state.loading = true;
     },
 
     // TODO: define Payload type and use here
     invitationSuccess(state, action: PayloadAction<any>) {
-      // console.log(action.payload);
       state.linkInvitation = action.payload;
       state.loading = false;
     },

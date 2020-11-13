@@ -37,7 +37,7 @@ export const SignupForInvitation = memo((props: Props) => {
   const history = useHistory();
   const location = useLocation();
   const data = (location.state as IState).data;
-
+  console.log('SignupForInvitation', data);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { loading } = useSelector(selectSignupForInvitation);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -87,11 +87,12 @@ export const SignupForInvitation = memo((props: Props) => {
           <Form.Item
             label="Work Email"
             name="email"
+            initialValue={data.toEmail}
             rules={[
               { required: true, message: 'Please input your email address!' },
             ]}
           >
-            <Input />
+            <Input disabled={!!data.toEmail} />
           </Form.Item>
 
           <Form.Item

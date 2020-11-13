@@ -6,6 +6,7 @@ import { ContainerState } from './types';
 export const initialState: ContainerState = {
   token: null,
   loading: false,
+  errorCode: null,
 };
 
 const signupSlice = createSlice({
@@ -13,6 +14,7 @@ const signupSlice = createSlice({
   initialState,
   reducers: {
     signUpRequest(state, action: PayloadAction<any>) {
+      state.errorCode = null;
       state.loading = true;
     },
 
@@ -21,7 +23,13 @@ const signupSlice = createSlice({
       state.loading = false;
     },
 
-    signUpError(state) {
+    signUpError(state, action: PayloadAction<any>) {
+      state.errorCode = action.payload.status;
+      state.loading = false;
+    },
+
+    signUpErrorReset(state) {
+      state.errorCode = null;
       state.loading = false;
     },
   },

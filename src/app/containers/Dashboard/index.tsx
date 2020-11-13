@@ -76,7 +76,13 @@ export const Dashboard = memo((props: Props) => {
 
   const token = useSelector(selectToken);
   // const user = useSelector(selectUser);
-
+  useEffect(() => {
+    console.log(dashboard);
+    if (!!dashboard.linkInvitation) {
+      setEmail('');
+      setIsShowInvitationModal(false);
+    }
+  }, [dashboard]);
   useEffect(() => {
     Axios.request({
       method: 'GET',
@@ -149,8 +155,6 @@ export const Dashboard = memo((props: Props) => {
         }),
       );
     }
-    setEmail('');
-    setIsShowInvitationModal(false);
   };
 
   const handleDeleteCanvas = (id: string) => {
@@ -396,6 +400,7 @@ export const Dashboard = memo((props: Props) => {
           handleInvitation={_handleInvitation}
           listEmail={dashboard.listEmail}
           email={email}
+          loading={dashboard.loading}
           handleSearch={handleSearch}
           handleSelectEmail={_handleSelectEmail}
           handleChangePermission={_handleChangePermission}

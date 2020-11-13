@@ -13,17 +13,13 @@ export function* signUp(action) {
     message.success(`You're registered successfully.`);
     history.push('/auth/check-email');
   } catch (error) {
-    if (error.response.status === 409) {
-      Modal.confirm({
-        content:
-          'User already exists with this email, please try again with different email address.',
-      });
-    } else {
+    if (error.response.status !== 409) {
       message.error(error.message);
     }
-    yield put(actions.signUpError());
+    yield put(actions.signUpError(error.response));
   }
 }
+
 export function* signupSaga() {
   yield all([takeLatest(actions.signUpRequest.type, signUp)]);
 }

@@ -44,7 +44,9 @@ describe('SignUp-> Saga-> signUp', () => {
     const postDescriptorSignUpError = signUpSagaIterator.throw({
       response: { status: 409 },
     }).value;
-    expect(postDescriptorSignUpError).toEqual(put(actions.signUpError()));
+    expect(postDescriptorSignUpError).toEqual(
+      put(actions.signUpError({ status: 409 })),
+    );
 
     const iteration = signUpSagaIterator.next();
     expect(iteration.done).toBe(true);
@@ -53,7 +55,9 @@ describe('SignUp-> Saga-> signUp', () => {
     const postDescriptorSignUpError = signUpSagaIterator.throw({
       response: { status: 500 },
     }).value;
-    expect(postDescriptorSignUpError).toEqual(put(actions.signUpError()));
+    expect(postDescriptorSignUpError).toEqual(
+      put(actions.signUpError({ status: 500 })),
+    );
 
     const iteration = signUpSagaIterator.next();
     expect(iteration.done).toBe(true);
