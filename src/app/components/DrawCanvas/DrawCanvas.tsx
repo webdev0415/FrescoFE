@@ -40,9 +40,11 @@ import {
   VerticalLineIcon,
 } from '../CanvasIcons';
 import {
+  BoardApiService,
   CanvasApiService,
   ImageUploadingService,
 } from '../../../services/APIService';
+import { ImageUploadResponseInterface } from '../../../services/APIService/interfaces';
 
 export enum BoardSocketEventEnum {
   CREATE = 'create',
@@ -121,9 +123,9 @@ class DrawCanvas extends Component<Props, State> {
 
     const saveCanvas = document.getElementById('save-canvas') as HTMLDivElement;
     saveCanvas.addEventListener('click', e => {
-      this.saveCanvas();
+      this.save();
     });
-    this.getCanvasObject();
+    this.getData();
     this.canvasWebSockets();
   }
 
@@ -254,7 +256,7 @@ class DrawCanvas extends Component<Props, State> {
       },
       () => {
         if (options.saveCanvas) {
-          this.saveCanvas();
+          this.save();
         }
       },
     );
@@ -334,14 +336,12 @@ class DrawCanvas extends Component<Props, State> {
     });
   }
 
-  saveCanvas(): void {
-    console.log(this.stageRef?.toDataURL({ pixelRatio: 3 }));
+  save(): void {
     ImageUploadingService.imageUploadFromDataUrl(
-      this.stageRef?.toDataURL({ pixelRatio: 3 }) as string,
-      'canvas',
+      this.stageRef?.toDataURL({ pixelRatio: 1 }) as string,
+      this.props.match?.params.type as string,
     ).subscribe(
       image => {
-        console.log(image);
         const data = JSON.stringify(
           this.state.objects.map(item => ({
             ...item,
@@ -351,21 +351,76 @@ class DrawCanvas extends Component<Props, State> {
             isLocked: false,
           })),
         );
-        CanvasApiService.updateById(this.props.match?.params.id as string, {
-          ...this.state.canvas,
-          data: data,
-          imageId: image.id,
-        }).subscribe(
-          response => {
-            console.log(response);
-          },
-          error => {
-            console.error(error.response);
-          },
-        );
+        if (this.props.match?.params.type === 'canvas') {
+          this.saveCanvas(data, image);
+        } else if (this.props.match?.params.type === 'board') {
+          this.saveBoard(data, image);
+        }
       },
       error => {
         console.error(error.response);
+      },
+    );
+  }
+
+  saveBoard(data: string, image: ImageUploadResponseInterface): void {
+    BoardApiService.updateById(this.props.match?.params.id as string, {
+      ...this.state.canvas,
+      data: data,
+    }).subscribe(
+      response => {
+        console.log(response);
+      },
+      error => {
+        console.error(error.response);
+      },
+    );
+  }
+
+  saveCanvas(data: string, image: ImageUploadResponseInterface): void {
+    CanvasApiService.updateById(this.props.match?.params.id as string, {
+      ...this.state.canvas,
+      data: data,
+      imageId: image.id,
+    }).subscribe(
+      response => {
+        console.log(response);
+      },
+      error => {
+        console.error(error.response);
+      },
+    );
+  }
+
+  getData(): void {
+    if (this.props.match?.params.type === 'canvas') {
+      this.getCanvasObject();
+    } else if (this.props.match?.params.type === 'board') {
+      this.getBoardObject();
+    }
+  }
+
+  getBoardObject(): void {
+    const canvasTitle = document.getElementById(
+      'canvas-title',
+    ) as HTMLSpanElement;
+    BoardApiService.getById(this.props.match?.params.id as string).subscribe(
+      boardData => {
+        canvasTitle.innerText = boardData.name;
+        const canvasObjects = !!boardData.data
+          ? JSON.parse(boardData.data)
+          : [];
+        this.setState({
+          objects: canvasObjects,
+          canvas: {
+            orgId: boardData.orgId,
+            name: boardData.name,
+            categoryId: boardData.categoryId,
+          },
+        });
+      },
+      error => {
+        console.error(error);
       },
     );
   }
@@ -588,7 +643,7 @@ class DrawCanvas extends Component<Props, State> {
         ],
       },
       () => {
-        this.saveCanvas();
+        this.save();
       },
     );
   };
@@ -712,7 +767,7 @@ class DrawCanvas extends Component<Props, State> {
         objects: [...objects, { ...item, ...data }],
       },
       () => {
-        this.saveCanvas();
+        this.save();
       },
     );
   }

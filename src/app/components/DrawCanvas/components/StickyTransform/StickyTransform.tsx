@@ -98,10 +98,10 @@ function StickyTransform(props: TransformShapeProps): JSX.Element {
       <Group
         draggable={!data.isLocked}
         onTransformStart={() => onChangeStart(data)}
-        onTransform={onTransform}
+        // onTransform={onTransform}
         onTransformEnd={onTransformEnd}
         onDragStart={() => onChangeStart(data)}
-        onDragMove={onDragMove}
+        // onDragMove={onDragMove}
         onDragEnd={onDragEnd}
         ref={shapeRef}
         onClick={onSelect}

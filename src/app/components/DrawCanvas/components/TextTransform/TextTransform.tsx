@@ -107,10 +107,10 @@ function TextTransform(props: TransformShapeProps): JSX.Element {
         {...data.textData}
         draggable={!data.isLocked}
         onTransformStart={() => onChangeStart(data)}
-        onTransform={onTransform}
+        // onTransform={onTransform}
         onTransformEnd={onTransformEnd}
         onDragStart={() => onChangeStart(data)}
-        onDragMove={onDragMove}
+        // onDragMove={onDragMove}
         onDragEnd={onDragEnd}
         rotation={data.rotation}
         opacity={data.isLocked ? 0.5 : 0.8}

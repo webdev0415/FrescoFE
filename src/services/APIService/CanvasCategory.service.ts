@@ -15,11 +15,7 @@ export class CanvasCategoryService {
           observer.complete();
         })
         .catch(error => {
-          if (error.response) {
-            observer.error(error.response);
-          } else {
-            observer.error(new Error('Network Error'));
-          }
+          observer.error(error.response);
         });
     });
   }

@@ -84,7 +84,7 @@ export interface ObjectInterface extends PointsInterface {
 }
 
 export interface Props
-  extends RouteChildrenProps<{ id: string; orgId: string }> {
+  extends RouteChildrenProps<{ id: string; type: string }> {
   className: string;
   drawingTool: ShapeObjectType;
   zoomLevel: number;

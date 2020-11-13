@@ -23,8 +23,9 @@ import pageIcon from 'assets/icons/page.svg';
 // Components
 import { UserModal } from '../../components/UserModal';
 import Axios from 'axios';
-import { CanvasApiService } from 'services/APIService';
+import { BoardApiService, CanvasApiService } from 'services/APIService';
 import {
+  BoardInterface,
   CanvasCategoryInterface,
   CanvasResponseInterface,
 } from '../../../services/APIService/interfaces';
@@ -62,6 +63,7 @@ export const Dashboard = memo((props: Props) => {
   const [categories, setCategories] = useState<CanvasCategoryInterface[]>([]);
   const [categoryId, setCategoryId] = useState('');
   const [canvasList, setCanvasList] = useState<CanvasResponseInterface[]>([]);
+  const [boardsList, setBoardsList] = useState<BoardInterface[]>([]);
   const [showAddNewBoard, setAddNewBoard] = useState(false);
 
   const orgId = props?.match?.params?.id;
@@ -111,7 +113,7 @@ export const Dashboard = memo((props: Props) => {
     CanvasApiService.create(data).subscribe(
       data => {
         console.log(data);
-        history.push(`/canvas/${data.orgId}/${data.id}`);
+        history.push(`/canvas/${data.id}/canvas`);
       },
       error => {
         console.error(error.response);
@@ -158,7 +160,23 @@ export const Dashboard = memo((props: Props) => {
     CanvasApiService.deleteById(id, orgId).subscribe(
       data => {
         console.log(data);
-        setCanvasList(canvasList.filter(item => item.id === id));
+        setCanvasList(canvasList.filter(item => item.id !== id));
+      },
+      error => {
+        console.error(error);
+      },
+    );
+  };
+
+  const handleDeleteBoard = (id: string, userId: string) => {
+    BoardApiService.deleteById(id, {
+      orgId: orgId as string,
+      boardId: id,
+      userId: userId,
+    }).subscribe(
+      data => {
+        console.log(data);
+        setBoardsList(boardsList.filter(item => item.id !== id));
       },
       error => {
         console.error(error);
@@ -191,17 +209,35 @@ export const Dashboard = memo((props: Props) => {
     }
   }, []);
 
-  useEffect(() => {
+  const getCanvasList = useCallback(() => {
     CanvasApiService.getByOrganizationId(orgId).subscribe(data => {
       setCanvasList(data);
     });
   }, [orgId]);
 
-  useEffect(() => {
+  const getCategoriesList = () => {
     CanvasCategoryService.list().subscribe(data => {
       setCategories(data);
     });
+  };
+
+  const getBoardsList = useCallback(() => {
+    BoardApiService.getByOrganizationId(orgId).subscribe(data => {
+      setBoardsList(data);
+    });
   }, [orgId]);
+
+  useEffect(() => {
+    getCanvasList();
+  }, [getCanvasList, orgId]);
+
+  useEffect(() => {
+    getCategoriesList();
+  }, [orgId, showAddNewBoard]);
+
+  useEffect(() => {
+    getBoardsList();
+  }, [getBoardsList, orgId, showAddNewBoard]);
 
   const handleLogOut = () => {
     dispatch(globalActions.removeAuth());
@@ -228,10 +264,22 @@ export const Dashboard = memo((props: Props) => {
         />
       )}
 
-      <Tabs defaultActiveKey="1" tabPosition="left" className="side-bar-tabs">
+      <Tabs
+        defaultActiveKey="1"
+        tabPosition="left"
+        className="side-bar-tabs"
+        onChange={() => {
+          getBoardsList();
+          getCanvasList();
+          getCategoriesList();
+        }}
+      >
         <TabPane tab={<img src={pageIcon} alt="page" />} key="1">
           {showAddNewBoard && (
-            <CanvasBoardTemplates onClose={() => setAddNewBoard(false)} />
+            <CanvasBoardTemplates
+              orgId={orgId}
+              onClose={() => setAddNewBoard(false)}
+            />
           )}
 
           <div className="card-section">
@@ -245,21 +293,33 @@ export const Dashboard = memo((props: Props) => {
             <h3 className="card-section-title">My Boards</h3>
 
             <div className="card-grid">
-              {new Array(5).fill(0).map((item, index) => (
+              {boardsList.map((data, index) => (
                 <div className="cards-board" key={index}>
                   <img
                     alt="example"
                     src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
                   />
+
                   <div className="card-footer">
                     <div className="card-action">
                       <Dropdown
                         overlay={
                           <Menu>
-                            <Menu.Item key="0">3rd menu item</Menu.Item>
-                            <Menu.Item key="1">3rd menu item</Menu.Item>
+                            <Menu.Item key="0">
+                              <Link to={`/canvas/${data.id}/board`}>Edit</Link>
+                            </Menu.Item>
+                            <Menu.Item key="1">
+                              <a href="http://www.taobao.com/">Action</a>
+                            </Menu.Item>
                             <Menu.Divider />
-                            <Menu.Item key="3">3rd menu item</Menu.Item>
+                            <Menu.Item
+                              key="3"
+                              onClick={() =>
+                                handleDeleteBoard(data.id, data.createdUserId)
+                              }
+                            >
+                              Delete
+                            </Menu.Item>
                           </Menu>
                         }
                         trigger={['click']}
@@ -269,7 +329,7 @@ export const Dashboard = memo((props: Props) => {
                         </div>
                       </Dropdown>
                     </div>
-                    <div className="card-title">QuestionPro Journey Map</div>
+                    <div className="card-title">{data.name}</div>
                     <div className="card-timestamp">Opened Oct 12, 2020</div>
                     <div className="card-users">
                       <span className="material-icons">group</span>
@@ -352,9 +412,7 @@ export const Dashboard = memo((props: Props) => {
                         overlay={
                           <Menu>
                             <Menu.Item key="0">
-                              <Link to={`/canvas/${data.orgId}/${data.id}`}>
-                                Edit
-                              </Link>
+                              <Link to={`/canvas/${data.id}/canvas`}>Edit</Link>
                             </Menu.Item>
                             <Menu.Item key="1">
                               <a href="http://www.taobao.com/">Action</a>

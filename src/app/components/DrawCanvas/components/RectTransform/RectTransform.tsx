@@ -104,10 +104,10 @@ function RectTransform(props: TransformShapeProps): JSX.Element {
         cornerRadius={data.rect?.cornerRadius as number}
         draggable={!data.isLocked}
         onTransformStart={() => onChangeStart(data)}
-        onTransform={onTransform}
+        // onTransform={onTransform}
         onTransformEnd={onTransformEnd}
         onDragStart={() => onChangeStart(data)}
-        onDragMove={onDragMove}
+        // onDragMove={onDragMove}
         onDragEnd={onDragEnd}
         rotation={data.rotation}
         {...data.shapeConfig}
