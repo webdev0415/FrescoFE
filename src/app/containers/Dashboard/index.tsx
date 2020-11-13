@@ -213,7 +213,7 @@ export const Dashboard = memo((props: Props) => {
     CanvasApiService.getByOrganizationId(orgId).subscribe(data => {
       setCanvasList(data);
     });
-  });
+  }, [orgId]);
 
   const getCategoriesList = () => {
     CanvasCategoryService.list().subscribe(data => {
@@ -225,7 +225,7 @@ export const Dashboard = memo((props: Props) => {
     BoardApiService.getByOrganizationId(orgId).subscribe(data => {
       setBoardsList(data);
     });
-  });
+  }, [orgId]);
 
   useEffect(() => {
     getCanvasList();
