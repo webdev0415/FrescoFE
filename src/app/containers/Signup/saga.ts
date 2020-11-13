@@ -3,7 +3,9 @@ import { message, Modal } from 'antd';
 import axios from 'axios';
 
 import { actions } from './slice';
-
+function sleep(sec) {
+  return new Promise(resolve => setTimeout(resolve, sec * 1000));
+}
 export function* signUp(action) {
   try {
     const { payload } = action;
@@ -17,6 +19,8 @@ export function* signUp(action) {
       message.error(error.message);
     }
     yield put(actions.signUpError(error.response));
+    yield sleep(2);
+    yield put(actions.signUpErrorReset());
   }
 }
 

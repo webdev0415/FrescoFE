@@ -56,30 +56,32 @@ export const Signup = memo((props: Props) => {
         setConfirmation({
           ...confirmation,
           loading: false,
-          success: 'Invitation Link has been sent',
+          success: 'Confirmation Link has been sent',
         });
-        message.success('Invitation Link has been sent');
+        Modal.destroyAll();
+        message.success('Confirmation Link has been sent');
       })
       .catch(error => {
         setConfirmation({
           ...confirmation,
           loading: false,
-          error: 'Invitation Failed to Send',
+          error: 'Confirmation Failed to Send',
         });
         console.log(error.response);
         message.error(error.message);
       });
   };
 
+  const dispatch = useDispatch();
   useEffect(() => {
     if (errorCode === 409) {
+      Modal.destroyAll();
       Modal.confirm({
         content: (
           <div>
             <p>
-              {!!confirmation.success
-                ? 'Invitation Link has been sent'
-                : 'User already exists with this email, please try again with different email address.'}
+              User already exists with this email, please try again with
+              different email address.
             </p>
             <div className="clearfix">
               <Button
@@ -101,7 +103,6 @@ export const Signup = memo((props: Props) => {
       });
     }
   }, [confirmation.success, dispatch, errorCode, handleResendEmail]);
-  const dispatch = useDispatch();
   const onFinish = values => {
     console.log('Success:', values);
     dispatch(actions.signUpRequest({ data: values, history }));
