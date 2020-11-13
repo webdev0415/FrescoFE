@@ -31,7 +31,7 @@ import {
 import { InviteMemberModal } from '../../components/InviteMemberModal';
 import { CanvasBoardTemplates } from '../../components/CanvasBoardTemplates';
 import { CanvasCategoryService } from '../../../services/APIService/CanvasCategory.service';
-
+import { v4 as uuidv4 } from 'uuid';
 const { TabPane } = Tabs;
 export const PERMISSION = {
   // ADMIN: 'admin',
@@ -106,6 +106,7 @@ export const Dashboard = memo((props: Props) => {
       orgId: orgId,
       data: '',
       categoryId: categoryId,
+      imageId: uuidv4(),
     };
     CanvasApiService.create(data).subscribe(
       data => {
