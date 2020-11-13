@@ -118,7 +118,7 @@ export interface TransformShapeProps {
 
 export interface BoardEventInterface {
   boardId: string;
-  data: CanvasResponseInterface;
+  data: string;
 }
 
 export interface ObjectSocketInterface {

@@ -3,7 +3,6 @@ import { Ellipse, Layer, Rect, Shape, Stage, Star } from 'react-konva';
 import { v4 as uuidv4 } from 'uuid';
 import Konva from 'konva';
 import {
-  BoardEventInterface,
   ObjectInterface,
   ObjectSocketInterface,
   Props,
@@ -40,7 +39,10 @@ import {
   TextUnderLineIcon,
   VerticalLineIcon,
 } from '../CanvasIcons';
-import { CanvasApiService } from '../../../services/APIService';
+import {
+  CanvasApiService,
+  ImageUploadingService,
+} from '../../../services/APIService';
 
 export enum BoardSocketEventEnum {
   CREATE = 'create',
@@ -81,9 +83,7 @@ class DrawCanvas extends Component<Props, State> {
     super(props);
     const url = new URL(process.env.REACT_APP_BASE_URL as string);
     url.pathname = 'board';
-    this.socket = socketIOClient(url.href, {
-      transports: ['websocket'],
-    });
+    this.socket = socketIOClient(url.href);
   }
 
   componentDidMount() {
@@ -145,57 +145,36 @@ class DrawCanvas extends Component<Props, State> {
         this.props.match?.params.id,
       );
     });
-    this.socket.on(
-      BoardSocketEventEnum.CREATE,
-      (event: BoardEventInterface) => {
-        this.createObject(JSON.parse(event.data.data));
-      },
-    );
-    this.socket.on(
-      BoardSocketEventEnum.JOIN_BOARD,
-      (data: BoardEventInterface) => {
-        console.log('Socket ' + BoardSocketEventEnum.JOIN_BOARD, data);
-      },
-    );
-    this.socket.on(
-      BoardSocketEventEnum.LEAVE_BOARD,
-      (data: BoardEventInterface) => {
-        console.log('Socket ' + BoardSocketEventEnum.LEAVE_BOARD, data);
-      },
-    );
-    this.socket.on(
-      BoardSocketEventEnum.UPDATE,
-      (event: BoardEventInterface) => {
-        this.updateObject(JSON.parse(event.data.data));
-      },
-    );
-    this.socket.on(BoardSocketEventEnum.MOVE, (event: BoardEventInterface) => {
+    this.socket.on(BoardSocketEventEnum.CREATE, (event: string) => {
+      this.createObject(JSON.parse(event));
+    });
+    this.socket.on(BoardSocketEventEnum.JOIN_BOARD, (data: string) => {
+      console.log('Socket ' + BoardSocketEventEnum.JOIN_BOARD, data);
+    });
+    this.socket.on(BoardSocketEventEnum.LEAVE_BOARD, (data: string) => {
+      console.log('Socket ' + BoardSocketEventEnum.LEAVE_BOARD, data);
+    });
+    this.socket.on(BoardSocketEventEnum.UPDATE, (event: string) => {
+      this.updateObject(JSON.parse(event));
+    });
+    this.socket.on(BoardSocketEventEnum.MOVE, (event: string) => {
       console.log(BoardSocketEventEnum.MOVE, event);
-      // this.moveObject(JSON.parse(event.data.data));
+      this.moveObject(JSON.parse(event));
     });
-    this.socket.on(BoardSocketEventEnum.LOCK, (event: BoardEventInterface) => {
-      console.log('Socket ' + BoardSocketEventEnum.LOCK, event.data);
-      this.lockObject(JSON.parse(event.data.data));
+    this.socket.on(BoardSocketEventEnum.LOCK, (event: string) => {
+      console.log('Socket ' + BoardSocketEventEnum.LOCK, event);
+      this.lockObject(JSON.parse(event));
     });
-    this.socket.on(
-      BoardSocketEventEnum.UNLOCK,
-      (event: BoardEventInterface) => {
-        console.log('Socket ' + BoardSocketEventEnum.UNLOCK, event.data);
-      },
-    );
-    this.socket.on(
-      BoardSocketEventEnum.DELETE,
-      (event: BoardEventInterface) => {
-        console.log('Socket ' + BoardSocketEventEnum.DELETE, event.data);
-        this.deleteObject(JSON.parse(event.data.data), { saveHistory: true });
-      },
-    );
-    this.socket.on(
-      BoardSocketEventEnum.CREATE,
-      (event: BoardEventInterface) => {
-        console.log('Socket ' + BoardSocketEventEnum.CREATE, event.data);
-      },
-    );
+    this.socket.on(BoardSocketEventEnum.UNLOCK, (event: string) => {
+      console.log('Socket ' + BoardSocketEventEnum.UNLOCK, event);
+    });
+    this.socket.on(BoardSocketEventEnum.DELETE, (event: string) => {
+      console.log('Socket ' + BoardSocketEventEnum.DELETE, event);
+      this.deleteObject(JSON.parse(event), { saveHistory: true });
+    });
+    this.socket.on(BoardSocketEventEnum.CREATE, (event: string) => {
+      console.log('Socket ' + BoardSocketEventEnum.CREATE, event);
+    });
     this.socket.on(BoardSocketEventEnum.DISCONNECT, () => {
       console.log('Socket ' + BoardSocketEventEnum.DISCONNECT);
       this.socket.emit(
@@ -356,24 +335,37 @@ class DrawCanvas extends Component<Props, State> {
   }
 
   saveCanvas(): void {
-    const data = JSON.stringify(
-      this.state.objects.map(item => ({
-        ...item,
-        isEditing: false,
-        isSelected: false,
-        isFocused: false,
-        isLocked: false,
-      })),
-    );
-    CanvasApiService.updateById(this.props.match?.params.id as string, {
-      ...this.state.canvas,
-      data: data,
-    }).subscribe(
-      response => {
-        // console.log(response);
+    console.log(this.stageRef?.toDataURL({ pixelRatio: 3 }));
+    ImageUploadingService.imageUploadFromDataUrl(
+      this.stageRef?.toDataURL({ pixelRatio: 3 }) as string,
+      'canvas',
+    ).subscribe(
+      image => {
+        console.log(image);
+        const data = JSON.stringify(
+          this.state.objects.map(item => ({
+            ...item,
+            isEditing: false,
+            isSelected: false,
+            isFocused: false,
+            isLocked: false,
+          })),
+        );
+        CanvasApiService.updateById(this.props.match?.params.id as string, {
+          ...this.state.canvas,
+          data: data,
+          imageId: image.id,
+        }).subscribe(
+          response => {
+            console.log(response);
+          },
+          error => {
+            console.error(error.response);
+          },
+        );
       },
       error => {
-        console.error(error);
+        console.error(error.response);
       },
     );
   }
@@ -745,10 +737,11 @@ class DrawCanvas extends Component<Props, State> {
   }
 
   handleChanging = (data: ObjectInterface) => {
-    this.emitSocketEvent(BoardSocketEventEnum.MOVE, data);
+    // this.emitSocketEvent(BoardSocketEventEnum.MOVE, data);
   };
 
   handleChangeStart = (data: ObjectInterface) => {
+    console.log(data);
     this.emitSocketEvent(BoardSocketEventEnum.LOCK, {
       ...data,
       isSelected: false,
