@@ -102,10 +102,10 @@ function TriangleTransform(props: TransformShapeProps): JSX.Element {
         height={data.triangle?.height}
         draggable={!data.isLocked}
         onTransformStart={() => onChangeStart(data)}
-        onTransform={onTransform}
+        // onTransform={onTransform}
         onTransformEnd={onTransformEnd}
         onDragStart={() => onChangeStart(data)}
-        onDragMove={onDragMove}
+        // onDragMove={onDragMove}
         onDragEnd={onDragEnd}
         sceneFunc={(context, shape) => {
           context.beginPath();

@@ -113,7 +113,7 @@ export const Dashboard = memo((props: Props) => {
     CanvasApiService.create(data).subscribe(
       data => {
         console.log(data);
-        history.push(`/canvas/${data.orgId}/${data.id}`);
+        history.push(`/canvas/${data.id}/canvas`);
       },
       error => {
         console.error(error.response);
@@ -160,7 +160,7 @@ export const Dashboard = memo((props: Props) => {
     CanvasApiService.deleteById(id, orgId).subscribe(
       data => {
         console.log(data);
-        setCanvasList(canvasList.filter(item => item.id === id));
+        setCanvasList(canvasList.filter(item => item.id !== id));
       },
       error => {
         console.error(error);
@@ -176,7 +176,7 @@ export const Dashboard = memo((props: Props) => {
     }).subscribe(
       data => {
         console.log(data);
-        setBoardsList(boardsList.filter(item => item.id === id));
+        setBoardsList(boardsList.filter(item => item.id !== id));
       },
       error => {
         console.error(error);
@@ -209,23 +209,35 @@ export const Dashboard = memo((props: Props) => {
     }
   }, []);
 
-  useEffect(() => {
+  const getCanvasList = useCallback(() => {
     CanvasApiService.getByOrganizationId(orgId).subscribe(data => {
       setCanvasList(data);
     });
-  }, [orgId]);
+  });
 
-  useEffect(() => {
+  const getCategoriesList = () => {
     CanvasCategoryService.list().subscribe(data => {
       setCategories(data);
     });
-  }, [orgId, showAddNewBoard]);
+  };
 
-  useEffect(() => {
+  const getBoardsList = useCallback(() => {
     BoardApiService.getByOrganizationId(orgId).subscribe(data => {
       setBoardsList(data);
     });
+  });
+
+  useEffect(() => {
+    getCanvasList();
+  }, [getCanvasList, orgId]);
+
+  useEffect(() => {
+    getCategoriesList();
   }, [orgId, showAddNewBoard]);
+
+  useEffect(() => {
+    getBoardsList();
+  }, [getBoardsList, orgId, showAddNewBoard]);
 
   const handleLogOut = () => {
     dispatch(globalActions.removeAuth());
@@ -252,7 +264,16 @@ export const Dashboard = memo((props: Props) => {
         />
       )}
 
-      <Tabs defaultActiveKey="1" tabPosition="left" className="side-bar-tabs">
+      <Tabs
+        defaultActiveKey="1"
+        tabPosition="left"
+        className="side-bar-tabs"
+        onChange={() => {
+          getBoardsList();
+          getCanvasList();
+          getCategoriesList();
+        }}
+      >
         <TabPane tab={<img src={pageIcon} alt="page" />} key="1">
           {showAddNewBoard && (
             <CanvasBoardTemplates

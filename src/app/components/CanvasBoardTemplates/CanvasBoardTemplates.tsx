@@ -127,7 +127,9 @@ export const CanvasBoardTemplates = memo((props: Props) => {
                       src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
                     />
                     <div className="card-footer card-board-footer">
-                      <div className="card-title">Business Model</div>
+                      <div className="card-title">
+                        {category.name} Placeholder
+                      </div>
                       <div className="card-description">
                         Use this template to create a shared understanding of
                         customer aspirations and priorities{' '}
