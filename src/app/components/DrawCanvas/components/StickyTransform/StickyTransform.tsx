@@ -2,12 +2,17 @@ import React, { useCallback, useEffect, useRef } from 'react';
 import { Group, Rect, Text, Transformer } from 'react-konva';
 import Konva from 'konva';
 import {
+  ObjectInterface,
   StickyProperty,
   TransformShapeProps,
 } from '../../../../components/DrawCanvas/types';
 
-function StickyTransform(props: TransformShapeProps): JSX.Element {
-  const { data, onSelect, onChange, onChanging, onChangeStart } = props;
+interface Props extends TransformShapeProps {
+  onEdit(data: ObjectInterface): void;
+}
+
+function StickyTransform(props: Props): JSX.Element {
+  const { data, onSelect, onChange, onChanging, onChangeStart, onEdit } = props;
   const shapeRef = useRef<Konva.Group>(null);
   const trRef = useRef<Konva.Transformer>(null);
 
@@ -105,6 +110,13 @@ function StickyTransform(props: TransformShapeProps): JSX.Element {
         draggable={!data.isLocked}
         onTransformStart={() => onChangeStart(data)}
         // onTransform={onTransform}
+        onDblClick={() =>
+          onEdit({
+            ...data,
+            isEditing: true,
+            isSelected: true,
+          })
+        }
         onTransformEnd={onTransformEnd}
         onDragStart={() => onChangeStart(data)}
         // onDragMove={onDragMove}

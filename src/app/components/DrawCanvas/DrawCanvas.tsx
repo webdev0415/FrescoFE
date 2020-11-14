@@ -708,7 +708,7 @@ class DrawCanvas extends Component<Props, State> {
                 ) as HTMLParagraphElement;
                 if (input) {
                   this.updateObjectText(shapeObject.id, {
-                    ...shapeObject.textData,
+                    ...shapeObject.sticky,
                     text: input.innerText,
                   });
                 }
@@ -729,7 +729,7 @@ class DrawCanvas extends Component<Props, State> {
                 id="canvas-text-editor"
                 contentEditable="true"
               >
-                {shapeObject.textData?.text}
+                {shapeObject.sticky?.text}
               </p>
             </Modal>
           ))}
@@ -751,7 +751,7 @@ class DrawCanvas extends Component<Props, State> {
             >
               <div className="canvas-text-toolbar-item">
                 <Select
-                  defaultValue={shapeObject.textData?.fontFamily}
+                  defaultValue={shapeObject.sticky?.fontFamily}
                   style={{ width: 120, paddingLeft: '10px' }}
                   suffixIcon={<ChevronDownIcon />}
                   onChange={value => {
@@ -788,7 +788,7 @@ class DrawCanvas extends Component<Props, State> {
                 />
               </div>
               <div className="canvas-text-toolbar-item">
-                {shapeObject.textData?.fontSize}
+                {shapeObject.sticky?.fontSize}
               </div>
               <div className="canvas-text-toolbar-item action-button">
                 <PlusSquareIcon
@@ -1008,6 +1008,9 @@ class DrawCanvas extends Component<Props, State> {
                     data={shapeObject}
                     onChangeStart={this.handleChangeStart}
                     onChanging={this.handleChanging}
+                    onEdit={data => {
+                      this.updateShape(data);
+                    }}
                     onChange={data => {
                       this.updateShape(data, {
                         saveHistory: true,
