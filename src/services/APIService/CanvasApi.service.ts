@@ -93,9 +93,7 @@ export class CanvasApiService {
         .request<CanvasResponseInterface>({
           url: 'canvas/'.concat(id),
           method: 'DELETE',
-          data: {
-            orgId,
-          },
+          data: { orgId },
         })
         .then(
           response => {
