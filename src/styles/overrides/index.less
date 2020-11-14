@@ -60,6 +60,59 @@
   }
 }
 
+.canvas-dropdown {
+  width: 300px;
+  padding: 5px;
+
+  .dropdown-item {
+    width: 100%;
+    height: 50px;
+    display: inline-flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 10px;
+    font-size: 15px;
+    padding-left: 20px;
+    cursor: pointer;
+
+    &:hover {
+      background-color: rgba(0,0,0,0.1);
+    }
+  }
+
+  .switch-item {
+    width: 100%;
+    height: auto;
+    display: inline-flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 10px;
+    padding: 5px 20px;
+  }
+
+  .input-item {
+    width: 100%;
+    height: auto;
+    padding: 10px 5px;
+
+    .ant-input-group {
+      border: 1px solid gray;
+
+      .ant-input,
+      .ant-input-group-addon {
+        background: transparent;
+        border: 0;
+
+        &:focus {
+          outline: 0;
+          border: 0;
+          box-shadow: none;
+        }
+      }
+    }
+  }
+}
+
 .canvas-board-template {
   .ant-tabs-nav-wrap {
     height: auto;

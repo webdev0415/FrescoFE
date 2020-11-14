@@ -9,6 +9,7 @@ export type ShapeObjectType =
   | 'Ellipse'
   | 'Star'
   | 'Text'
+  | 'Line'
   | 'Sticky'
   | null;
 
@@ -24,10 +25,13 @@ export interface ShapeProperty {
   width: number;
 }
 
-export interface TextProperties extends Partial<ShapeProperty> {
+export interface StickyProperty extends Partial<ShapeProperty> {
   text?: string;
   fontFamily?: string;
   fontSize?: number;
+  fontColor?: string;
+  backgroundColor?: string;
+  stroke?: string;
   fontStyle?: FontStyleType;
   fontVariant?: FontVariantType;
   align?: TextAlignType;
@@ -38,10 +42,6 @@ export interface TextProperties extends Partial<ShapeProperty> {
   textDecoration?: TextDecoration;
   wrap?: WrapType;
   ellipsis?: boolean;
-}
-
-export interface StickyProperty extends ShapeProperty {
-  cornerRadius: number;
 }
 
 export interface EllipseProperties {
@@ -64,7 +64,7 @@ export interface StarProperties {
 export interface PointsInterface {
   x: number;
   y: number;
-  textData?: TextProperties;
+  textData?: StickyProperty;
   sticky?: StickyProperty;
   rect?: RectangleProperties;
   star?: StarProperties;

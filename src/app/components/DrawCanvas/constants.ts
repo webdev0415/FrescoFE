@@ -1,4 +1,4 @@
-import { ObjectInterface, PointsInterface, TextProperties } from './types';
+import { ObjectInterface, PointsInterface, StickyProperty } from './types';
 
 export const fontNames = [
   'Comic Sans MS',
@@ -49,7 +49,7 @@ export const defaultObjectState: ObjectInterface = {
   },
 };
 
-export const defaultTextProperties: TextProperties = {
+export const defaultTextProperties: StickyProperty = {
   height: 200,
   width: 200,
   fontFamily: 'Arial',
@@ -59,5 +59,8 @@ export const defaultTextProperties: TextProperties = {
   ellipsis: true,
   padding: 20,
   align: 'center',
+  fontColor: '#000000',
+  backgroundColor: undefined,
+  stroke: undefined,
   verticalAlign: 'middle',
 };

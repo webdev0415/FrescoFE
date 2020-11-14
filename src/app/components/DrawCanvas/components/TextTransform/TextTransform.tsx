@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useRef } from 'react';
-import { Rect, Text, Transformer } from 'react-konva';
+import { Text, Transformer } from 'react-konva';
 import Konva from 'konva';
 import {
-  TextProperties,
+  StickyProperty,
   TransformShapeProps,
 } from '../../../../components/DrawCanvas/types';
 
@@ -31,7 +31,7 @@ function TextTransform(props: TransformShapeProps): JSX.Element {
         y: Math.round(node?.y()),
         rotation: Math.round(node.attrs.rotation),
         textData: {
-          ...(data.textData as TextProperties),
+          ...(data.textData as StickyProperty),
           width: Math.round(Math.max(5, node?.width() * scaleX)),
           height: Math.round(Math.max(node?.height() * scaleY)),
         },
