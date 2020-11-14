@@ -6,6 +6,10 @@ stats.json
 .pnp
 .pnp.js
 
+#IDE Confidurations
+.idea/
+.vscode/
+
 # misc
 .DS_Store
 npm-debug.log*

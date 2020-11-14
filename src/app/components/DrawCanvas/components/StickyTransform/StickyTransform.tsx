@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef } from 'react';
-import { Group, Rect, Star, Text, Transformer } from 'react-konva';
+import { Group, Rect, Text, Transformer } from 'react-konva';
 import Konva from 'konva';
 import {
   StickyProperty,
@@ -34,6 +34,11 @@ function StickyTransform(props: TransformShapeProps): JSX.Element {
           ...(data.sticky as StickyProperty),
           width: Math.round(Math.max(5, node?.width() * scaleX)),
           height: Math.round(Math.max(node?.height() * scaleY)),
+        },
+        rect: {
+          width: Math.max(5, node?.width() * scaleX),
+          height: Math.max(node?.height() * scaleY),
+          cornerRadius: 0,
         },
       });
     },
@@ -96,6 +101,7 @@ function StickyTransform(props: TransformShapeProps): JSX.Element {
   return (
     <>
       <Group
+        id={data.id}
         draggable={!data.isLocked}
         onTransformStart={() => onChangeStart(data)}
         // onTransform={onTransform}
@@ -108,28 +114,31 @@ function StickyTransform(props: TransformShapeProps): JSX.Element {
         onTap={onSelect}
         x={data.x}
         y={data.y}
-        height={data.sticky?.height as number}
-        width={data.sticky?.width as number}
+        height={data.rect?.height as number}
+        width={data.rect?.width as number}
         rotation={data.rotation}
       >
         <Rect
           id={data.id + ':Rect'}
           x={0}
           y={0}
-          height={data.sticky?.height as number}
-          width={data.sticky?.width as number}
-          cornerRadius={30}
-          {...data.shapeConfig}
+          height={data.rect?.height as number}
+          width={data.rect?.width as number}
+          fill={data.sticky?.backgroundColor}
           opacity={data.isLocked ? 0.5 : 0.8}
+          stroke={data.sticky?.stroke}
         />
+
         <Text
-          {...data.textData}
-          height={data.sticky?.height as number}
-          width={data.sticky?.width as number}
+          {...data.sticky}
+          stroke={undefined}
+          fill={data.sticky?.fontColor}
+          height={data.rect?.height as number}
+          width={data.rect?.width as number}
           id={data.id + ':Text'}
           x={0}
           y={0}
-          fill="#ffffff"
+          text={data.sticky?.text ? data.sticky?.text : 'Type Something Here'}
           fillEnabled={true}
         />
       </Group>

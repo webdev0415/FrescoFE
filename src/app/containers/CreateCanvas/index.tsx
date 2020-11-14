@@ -19,6 +19,7 @@ import {
   RoundedRectangleShapeIcon,
   TriangleShapeIcon,
   CircleShapeIcon,
+  VerticalLineIcon,
 } from '../../components/CanvasIcons';
 import clsx from 'clsx';
 
@@ -33,6 +34,7 @@ export const CreateCanvas = memo(
       | 'Star'
       | 'Text'
       | 'Sticky'
+      | 'Line'
       | null
     >(null);
     const [showSubTools, setShowSubTools] = useState<string>('');
@@ -193,6 +195,17 @@ export const CreateCanvas = memo(
                   }}
                 >
                   <StarShapeIcon />
+                </div>
+
+                <div
+                  className="canvas-sub-toolbar-item"
+                  onClick={event => {
+                    event.stopPropagation();
+                    setDrawingTool('Line');
+                    setShowSubTools('');
+                  }}
+                >
+                  <VerticalLineIcon />
                 </div>
               </div>
             </div>

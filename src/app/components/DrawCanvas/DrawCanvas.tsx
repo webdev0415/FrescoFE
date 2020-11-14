@@ -1,5 +1,14 @@
 import React, { Component, memo } from 'react';
-import { Ellipse, Layer, Rect, Shape, Stage, Star } from 'react-konva';
+import {
+  Ellipse,
+  Group,
+  Layer,
+  Rect,
+  Shape,
+  Stage,
+  Star,
+  Text,
+} from 'react-konva';
 import { v4 as uuidv4 } from 'uuid';
 import Konva from 'konva';
 import {
@@ -7,22 +16,17 @@ import {
   ObjectSocketInterface,
   Props,
   State,
-  TextProperties,
+  StickyProperty,
 } from './types';
 import socketIOClient from 'socket.io-client';
 import _ from 'lodash';
-import {
-  defaultObjectState,
-  defaultTextProperties,
-  fontNames,
-} from './constants';
+import { defaultObjectState, fontNames } from './constants';
 import { Modal, Select } from 'antd';
 import {
   EllipseTransform,
   RectTransform,
   StarTransform,
   StickyTransform,
-  TextTransform,
   TriangleTransform,
 } from './components';
 import {
@@ -45,6 +49,7 @@ import {
   ImageUploadingService,
 } from '../../../services/APIService';
 import { ImageUploadResponseInterface } from '../../../services/APIService/interfaces';
+import { onMouseDown, onMouseMove, onMouseUp } from './utility';
 
 export enum BoardSocketEventEnum {
   CREATE = 'create',
@@ -489,123 +494,65 @@ class DrawCanvas extends Component<Props, State> {
   handleMouseDown = e => {
     if (this.props.drawingTool) {
       const position = e.target.getStage().getPointerPosition();
-      const data: ObjectInterface = {
-        ...this.state.points,
-        ...defaultObjectState,
-        id: uuidv4(),
-        rotation: 0,
-        x: Math.round(position.x),
-        y: Math.round(position.y),
-        type: this.props.drawingTool,
-      };
-      if (
-        this.props.drawingTool === 'Sticky' ||
-        this.props.drawingTool === 'Text'
-      ) {
-        Object.assign(data, {
-          isSelected: true,
-          isEditing: true,
-        });
-        _.set(data, 'textData', {
-          ...defaultTextProperties,
-          padding: 0,
-        });
+      const data: ObjectInterface = onMouseDown(
+        { ...this.state.points },
+        this.props.drawingTool,
+        position,
+      );
 
-        if (this.props.drawingTool === 'Sticky') {
-          _.set(data, 'sticky', {
-            width: 200,
-            height: 200,
-            cornerRadius: 30,
-          });
-        }
-        this.addCanvasShape(data, {
-          saveHistory: true,
-          emitEvent: true,
-        });
-      } else {
-        if (this.props.drawingTool === 'RectRounded') {
-          _.set(data, 'rect', {
-            cornerRadius: 20,
-            height: 0,
-            width: 0,
-          });
-        } else if (this.props.drawingTool === 'Rect') {
-          _.set(data, 'rect', {
-            cornerRadius: 0,
-            height: 0,
-            width: 0,
-          });
-        } else if (this.props.drawingTool === 'Star') {
-          _.set(data, 'star', {
-            innerRadius: 0,
-            outerRadius: 0,
-            numPoints: 5,
-          });
-        } else if (this.props.drawingTool === 'Triangle') {
-          _.set(data, 'triangle', {
-            innerRadius: 0,
-            outerRadius: 0,
-            numPoints: 5,
-          });
-        } else if (this.props.drawingTool === 'Ellipse') {
-          _.set(data, 'ellipse', {
-            radiusX: 0,
-            radiusY: 0,
-          });
-        }
-        this.isDrawing = true;
-        this.setState({
-          points: _.cloneDeep(data),
-        });
-      }
+      this.isDrawing = true;
+      this.setState({
+        points: _.cloneDeep(data),
+      });
     }
   };
 
   handleMouseMove = e => {
     if (this.isDrawing && this.props.drawingTool) {
       const position = e.target.getStage().getPointerPosition();
-      const width = Math.abs(position.x - this.state.points.x);
-      const height = Math.abs(position.y - this.state.points.y);
-
-      const data: ObjectInterface = {
-        ...this.state.points,
-      };
-
-      const dimensions = {
-        height,
-        width,
-      };
-
-      if (this.props.drawingTool === 'RectRounded') {
-        _.set(data, 'rect', {
-          cornerRadius: 20,
-          ...dimensions,
-        });
-      } else if (this.props.drawingTool === 'Rect') {
-        _.set(data, 'rect', {
-          cornerRadius: 0,
-          ...dimensions,
-        });
-      } else if (this.props.drawingTool === 'Star') {
-        _.set(data, 'star', {
-          innerRadius: width / 2,
-          outerRadius: width,
-          numPoints: 5,
-        });
-      } else if (this.props.drawingTool === 'Triangle') {
-        _.set(data, 'triangle', {
-          ...dimensions,
-        });
-      } else if (this.props.drawingTool === 'Ellipse') {
-        _.set(data, 'ellipse', {
-          radiusX: Math.abs(width),
-          radiusY: Math.abs(height),
-        });
-      }
+      const data: ObjectInterface = onMouseMove(
+        { ...this.state.points },
+        this.props.drawingTool,
+        position,
+      );
 
       this.setState({
         points: _.cloneDeep(data),
       });
+    }
+  };
+
+  handleMouseUp = e => {
+    if (this.isDrawing) {
+      this.isDrawing = false;
+      const position = e.target.getStage().getPointerPosition();
+      const data = onMouseUp(
+        { ...this.state.points },
+        this.props.drawingTool,
+        position,
+      );
+      this.addCanvasShape(data, {
+        saveHistory: true,
+        emitEvent: true,
+      });
+
+      this.setState({
+        points: {
+          ...defaultObjectState,
+        },
+      });
+    } else {
+      const clickedOnEmpty = e.target === e.target.getStage();
+      if (clickedOnEmpty) {
+        this.setState({
+          objects: this.state.objects.map(item => ({
+            ...item,
+            isSelected: false,
+            isFocused: false,
+            isEditing: false,
+          })),
+        });
+      }
     }
   };
 
@@ -646,72 +593,6 @@ class DrawCanvas extends Component<Props, State> {
         this.save();
       },
     );
-  };
-
-  handleMouseUp = e => {
-    if (this.isDrawing) {
-      this.isDrawing = false;
-      const position = e.target.getStage().getPointerPosition();
-      const width = Math.abs(position.x - this.state.points.x);
-      const height = Math.abs(position.y - this.state.points.y);
-
-      const data: ObjectInterface = {
-        ...this.state.points,
-      };
-      const dimensions = {
-        height,
-        width,
-      };
-      if (this.props.drawingTool === 'RectRounded') {
-        _.set(data, 'rect', {
-          cornerRadius: 20,
-          ...dimensions,
-        });
-      } else if (this.props.drawingTool === 'Rect') {
-        _.set(data, 'rect', {
-          cornerRadius: 0,
-          ...dimensions,
-        });
-      } else if (this.props.drawingTool === 'Star') {
-        _.set(data, 'star', {
-          innerRadius: width / 2,
-          outerRadius: width,
-          numPoints: 5,
-        });
-      } else if (this.props.drawingTool === 'Triangle') {
-        _.set(data, 'triangle', {
-          ...dimensions,
-        });
-      } else if (this.props.drawingTool === 'Ellipse') {
-        _.set(data, 'ellipse', {
-          radiusX: Math.abs(width),
-          radiusY: Math.abs(height),
-        });
-      }
-
-      this.addCanvasShape(data, {
-        saveHistory: true,
-        emitEvent: true,
-      });
-
-      this.setState({
-        points: {
-          ...defaultObjectState,
-        },
-      });
-    } else {
-      const clickedOnEmpty = e.target === e.target.getStage();
-      if (clickedOnEmpty) {
-        this.setState({
-          objects: this.state.objects.map(item => ({
-            ...item,
-            isSelected: false,
-            isFocused: false,
-            isEditing: false,
-          })),
-        });
-      }
-    }
   };
 
   updateHistory(data: ObjectInterface) {
@@ -772,14 +653,14 @@ class DrawCanvas extends Component<Props, State> {
     );
   }
 
-  updateObjectText(id: string, data: TextProperties): void {
+  updateObjectText(id: string, data: StickyProperty): void {
     const object = this.state.objects.find(item => item.id === id);
     if (object) {
       this.updateShape(
         {
           ...object,
           isEditing: false,
-          textData: {
+          sticky: {
             ...data,
           },
         },
@@ -875,7 +756,7 @@ class DrawCanvas extends Component<Props, State> {
                   suffixIcon={<ChevronDownIcon />}
                   onChange={value => {
                     this.updateObjectText(shapeObject.id, {
-                      ...shapeObject.textData,
+                      ...shapeObject.sticky,
                       fontFamily: value,
                     });
                   }}
@@ -897,10 +778,10 @@ class DrawCanvas extends Component<Props, State> {
                 <MinusSquareIcon
                   onClick={() => {
                     this.updateObjectText(shapeObject.id, {
-                      ...shapeObject.textData,
+                      ...shapeObject.sticky,
                       fontSize: Math.max(
                         10,
-                        (shapeObject.textData?.fontSize as number) - 1,
+                        (shapeObject.sticky?.fontSize as number) - 1,
                       ),
                     });
                   }}
@@ -913,10 +794,10 @@ class DrawCanvas extends Component<Props, State> {
                 <PlusSquareIcon
                   onClick={() => {
                     this.updateObjectText(shapeObject.id, {
-                      ...shapeObject.textData,
+                      ...shapeObject.sticky,
                       fontSize: Math.min(
                         30,
-                        (shapeObject.textData?.fontSize as number) + 1,
+                        (shapeObject.sticky?.fontSize as number) + 1,
                       ),
                     });
                   }}
@@ -932,9 +813,9 @@ class DrawCanvas extends Component<Props, State> {
                 <TextBoldIcon
                   onClick={() => {
                     this.updateObjectText(shapeObject.id, {
-                      ...shapeObject.textData,
+                      ...shapeObject.sticky,
                       fontStyle:
-                        shapeObject.textData?.fontStyle === 'bold'
+                        shapeObject.sticky?.fontStyle === 'bold'
                           ? 'normal'
                           : 'bold',
                     });
@@ -945,30 +826,75 @@ class DrawCanvas extends Component<Props, State> {
                 <TextUnderLineIcon
                   onClick={() => {
                     this.updateObjectText(shapeObject.id, {
-                      ...shapeObject.textData,
+                      ...shapeObject.sticky,
                       textDecoration:
-                        shapeObject.textData?.textDecoration === 'underline'
+                        shapeObject.sticky?.textDecoration === 'underline'
                           ? ''
                           : 'underline',
                     });
                   }}
                 />
               </div>
-              <div className="canvas-text-toolbar-item action-button">
-                <TextColorIcon />
-              </div>
+              <label className="canvas-text-toolbar-item action-button">
+                <TextColorIcon
+                  style={{
+                    color: shapeObject.sticky?.fontColor,
+                  }}
+                />
+                <input
+                  type="color"
+                  hidden={true}
+                  onChange={event => {
+                    this.updateObjectText(shapeObject.id, {
+                      ...shapeObject.sticky,
+                      fontColor: event.target.value,
+                    });
+                  }}
+                  value={shapeObject.sticky?.fontColor}
+                />
+              </label>
               <div className="canvas-text-toolbar-item action-button">
                 <MarkerIcon />
               </div>
               <div className="canvas-text-toolbar-item">
                 <VerticalLineIcon />
               </div>
-              <div className="canvas-text-toolbar-item action-button">
-                <BorderStyleIcon />
-              </div>
-              <div className="canvas-text-toolbar-item action-button">
-                <FillColorIcon />
-              </div>
+              <label className="canvas-text-toolbar-item action-button">
+                <BorderStyleIcon
+                  style={{
+                    color: shapeObject.sticky?.stroke,
+                  }}
+                />
+                <input
+                  type="color"
+                  hidden={true}
+                  onChange={event => {
+                    this.updateObjectText(shapeObject.id, {
+                      ...shapeObject.sticky,
+                      stroke: event.target.value,
+                    });
+                  }}
+                  value={shapeObject.sticky?.stroke}
+                />
+              </label>
+              <label className="canvas-text-toolbar-item action-button">
+                <FillColorIcon
+                  style={{
+                    color: shapeObject.sticky?.backgroundColor,
+                  }}
+                />
+                <input
+                  type="color"
+                  hidden={true}
+                  onChange={event => {
+                    this.updateObjectText(shapeObject.id, {
+                      ...shapeObject.sticky,
+                      backgroundColor: event.target.value,
+                    });
+                  }}
+                  value={shapeObject.sticky?.backgroundColor}
+                />
+              </label>
               <div className="canvas-text-toolbar-item">
                 <VerticalLineIcon />
               </div>
@@ -1072,7 +998,10 @@ class DrawCanvas extends Component<Props, State> {
                     }}
                   />
                 );
-              } else if (shapeObject.type === 'Sticky') {
+              } else if (
+                shapeObject.type === 'Text' ||
+                shapeObject.type === 'Sticky'
+              ) {
                 return (
                   <StickyTransform
                     key={shapeObject.id}
@@ -1090,26 +1019,49 @@ class DrawCanvas extends Component<Props, State> {
                     }}
                   />
                 );
-              } else if (shapeObject.type === 'Text') {
-                return (
-                  <TextTransform
-                    key={shapeObject.id}
-                    data={shapeObject}
-                    onChangeStart={this.handleChangeStart}
-                    onChanging={this.handleChanging}
-                    onChange={data => {
-                      this.updateShape(data, {
-                        saveHistory: true,
-                        emitEvent: true,
-                      });
-                    }}
-                    onSelect={() => {
-                      this.handleSelect(shapeObject);
-                    }}
-                  />
-                );
               }
             })}
+
+            {(this.props.drawingTool === 'Text' ||
+              this.props.drawingTool === 'Sticky') &&
+              this.isDrawing && (
+                <Group
+                  x={this.state.points.x}
+                  y={this.state.points.y}
+                  width={this.state.points.rect?.width as number}
+                  height={this.state.points.rect?.height as number}
+                >
+                  <Rect
+                    x={0}
+                    y={0}
+                    width={this.state.points.rect?.width as number}
+                    height={this.state.points.rect?.height as number}
+                    stroke="#000000"
+                    dash={[10, 10]}
+                    fill={
+                      this.props.drawingTool === 'Sticky'
+                        ? '#f5ecfd'
+                        : undefined
+                    }
+                  />
+                  <Text
+                    x={0}
+                    y={0}
+                    width={this.state.points.rect?.width as number}
+                    height={this.state.points.rect?.height as number}
+                    align="center"
+                    verticalAlign="middle"
+                    fill={
+                      this.props.drawingTool === 'Text' ? '#bebebe' : '#000000'
+                    }
+                    text={
+                      this.props.drawingTool === 'Text'
+                        ? 'Type something'
+                        : 'Sticky notes area'
+                    }
+                  />
+                </Group>
+              )}
 
             {this.props.drawingTool === 'Star' && this.isDrawing && (
               <Star
@@ -1215,16 +1167,13 @@ class DrawCanvas extends Component<Props, State> {
               />
             )}
 
-            {this.props.drawingTool === 'Sticky' && (
+            {this.props.drawingTool === 'Sticky' && this.isDrawing && (
               <>
                 <Rect
                   x={this.state.points.x}
                   y={this.state.points.y}
                   width={this.state.points.sticky?.width}
                   height={this.state.points.sticky?.height}
-                  cornerRadius={
-                    this.state.points.sticky?.cornerRadius as number
-                  }
                   stroke="#000000"
                   dash={[10, 10]}
                   {...{
