@@ -6,6 +6,9 @@ export const http = Axios.create({
 });
 
 http.interceptors.request.use((config: AxiosRequestConfig) => {
-  config.headers.Authorization = `Bearer ${Auth.getToken()}`;
+  if (Auth.getToken()) {
+    config.headers.Authorization = `Bearer ${Auth.getToken()}`;
+  }
+
   return config;
 });

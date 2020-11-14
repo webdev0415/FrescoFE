@@ -3,7 +3,9 @@ import { message, Modal } from 'antd';
 import axios from 'axios';
 
 import { actions } from './slice';
-
+function sleep(sec) {
+  return new Promise(resolve => setTimeout(resolve, sec * 1000));
+}
 export function* signUp(action) {
   try {
     const { payload } = action;
@@ -13,17 +15,15 @@ export function* signUp(action) {
     message.success(`You're registered successfully.`);
     history.push('/auth/check-email');
   } catch (error) {
-    if (error.response.status === 409) {
-      Modal.confirm({
-        content:
-          'User already exists with this email, please try again with different email address.',
-      });
-    } else {
+    if (error.response.status !== 409) {
       message.error(error.message);
     }
-    yield put(actions.signUpError());
+    yield put(actions.signUpError(error.response));
+    yield sleep(2);
+    yield put(actions.signUpErrorReset());
   }
 }
+
 export function* signupSaga() {
   yield all([takeLatest(actions.signUpRequest.type, signUp)]);
 }
