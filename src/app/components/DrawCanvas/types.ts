@@ -100,6 +100,7 @@ export interface State {
     name: string;
     orgId: string;
     categoryId: string;
+    imageId: string;
   };
 }
 

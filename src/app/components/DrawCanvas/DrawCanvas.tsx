@@ -78,6 +78,7 @@ class DrawCanvas extends Component<Props, State> {
       name: '',
       orgId: '',
       categoryId: '',
+      imageId: '',
     },
   };
   stageRef: Konva.Stage | null = null;
@@ -343,36 +344,68 @@ class DrawCanvas extends Component<Props, State> {
     });
   }
 
-  save(): void {
+  uploadImage(): void {
     ImageUploadingService.imageUploadFromDataUrl(
       this.stageRef?.toDataURL({ pixelRatio: 1 }) as string,
       this.props.match?.params.type as string,
-    ).subscribe(
-      image => {
-        const data = JSON.stringify(
-          this.state.objects.map(item => ({
-            ...item,
-            isEditing: false,
-            isSelected: false,
-            isFocused: false,
-            isLocked: false,
-          })),
-        );
-        if (this.props.match?.params.type === 'canvas') {
-          this.saveCanvas(data, image);
-        } else if (this.props.match?.params.type === 'board') {
-          this.saveBoard(data, image);
-        }
-      },
-      error => {
-        console.error(error.response);
-      },
-    );
+    ).subscribe(image => {
+      this.setState({
+        canvas: {
+          ...this.state.canvas,
+          imageId: image.id,
+        },
+      });
+    });
   }
 
-  saveBoard(data: string, image: ImageUploadResponseInterface): void {
+  updateImage(): void {
+    ImageUploadingService.imageUpdateFromDataUrl(
+      this.stageRef?.toDataURL({ pixelRatio: 1 }) as string,
+      this.props.match?.params.type as string,
+      this.props.match?.params.id as string,
+    ).subscribe(image => {
+      this.setState({
+        canvas: {
+          ...this.state.canvas,
+          imageId: image.id,
+        },
+      });
+    });
+  }
+
+  saveImage(): void {
+    if (!!this.state.canvas.imageId) {
+      this.updateImage();
+    } else {
+      this.uploadImage();
+    }
+  }
+
+  save(): void {
+    this.saveImage();
+    const data = JSON.stringify(
+      this.state.objects.map(item => ({
+        ...item,
+        isEditing: false,
+        isSelected: false,
+        isFocused: false,
+        isLocked: false,
+      })),
+    );
+    if (this.props.match?.params.type === 'canvas') {
+      this.saveCanvas(data);
+    } else if (this.props.match?.params.type === 'board') {
+      this.saveBoard(data);
+    }
+  }
+
+  saveBoard(data: string): void {
+    const canvas = { ...this.state.canvas };
+    if (!canvas.imageId) {
+      delete canvas.imageId;
+    }
     BoardApiService.updateById(this.props.match?.params.id as string, {
-      ...this.state.canvas,
+      ...canvas,
       data: data,
     }).subscribe(
       response => {
@@ -384,11 +417,14 @@ class DrawCanvas extends Component<Props, State> {
     );
   }
 
-  saveCanvas(data: string, image: ImageUploadResponseInterface): void {
+  saveCanvas(data: string): void {
+    const canvas = { ...this.state.canvas };
+    if (!canvas.imageId) {
+      delete canvas.imageId;
+    }
     CanvasApiService.updateById(this.props.match?.params.id as string, {
-      ...this.state.canvas,
+      ...canvas,
       data: data,
-      imageId: image.id,
     }).subscribe(
       response => {
         console.log(response);
@@ -423,9 +459,11 @@ class DrawCanvas extends Component<Props, State> {
             orgId: boardData.orgId,
             name: boardData.name,
             categoryId: boardData.categoryId,
+            imageId: boardData.imageId,
           },
         });
       },
+
       error => {
         console.error(error);
       },
@@ -448,6 +486,7 @@ class DrawCanvas extends Component<Props, State> {
             orgId: canvasData.orgId,
             name: canvasData.name,
             categoryId: canvasData.categoryId,
+            imageId: canvasData.imageId as string,
           },
         });
       },

@@ -110,7 +110,14 @@ export const CanvasBoardTemplates = memo((props: Props) => {
                     >
                       <img
                         alt="example"
-                        src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
+                        style={{
+                          border: '1px solid #f0f2f5',
+                          backgroundColor: 'white',
+                        }}
+                        src={
+                          board.path ||
+                          'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png'
+                        }
                       />
                       <div className="card-footer card-board-footer">
                         <div className="card-title">{board.name}</div>

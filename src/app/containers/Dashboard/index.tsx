@@ -110,7 +110,6 @@ export const Dashboard = memo((props: Props) => {
       orgId: orgId,
       data: '',
       categoryId: categoryId,
-      imageId: '',
     };
 
     CanvasApiService.create(data).subscribe(
@@ -214,6 +213,7 @@ export const Dashboard = memo((props: Props) => {
 
   const getCanvasList = useCallback(() => {
     CanvasApiService.getByOrganizationId(orgId).subscribe(data => {
+      console.log('getByOrganizationId', data);
       setCanvasList(data);
     });
   }, [orgId]);
@@ -226,6 +226,7 @@ export const Dashboard = memo((props: Props) => {
 
   const getBoardsList = useCallback(() => {
     BoardApiService.getByOrganizationId(orgId).subscribe(data => {
+      console.log('getBoardsList => getByOrganizationId', data);
       setBoardsList(data);
     });
   }, [orgId]);
@@ -300,7 +301,14 @@ export const Dashboard = memo((props: Props) => {
                 <div className="cards-board" key={index}>
                   <img
                     alt="example"
-                    src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
+                    style={{
+                      border: '1px solid #f0f2f5',
+                      backgroundColor: 'white',
+                    }}
+                    src={
+                      data.path ||
+                      'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png'
+                    }
                   />
 
                   <div className="card-footer">
@@ -407,7 +415,14 @@ export const Dashboard = memo((props: Props) => {
                 <div className="cards-board" key={index}>
                   <img
                     alt="example"
-                    src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
+                    style={{
+                      border: '1px solid #f0f2f5',
+                      backgroundColor: 'white',
+                    }}
+                    src={
+                      data.path ||
+                      'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png'
+                    }
                   />
 
                   <div className="card-footer">

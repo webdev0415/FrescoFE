@@ -26,7 +26,36 @@ export class ImageUploadingService {
           observer.complete();
         })
         .catch(error => {
-          observer.error(error);
+          observer.error(error.response);
+        });
+    });
+  }
+
+  static imageUpdateFromDataUrl(
+    dataURI: string,
+    type: string,
+    id: string,
+  ): Observable<ImageUploadResponseInterface> {
+    return new Observable<ImageUploadResponseInterface>(observer => {
+      const imageFile = ImageUploadingService.dataURItoBlob(dataURI);
+      const image = new File([imageFile], 'image.png', {
+        lastModified: new Date().getTime(),
+        type: imageFile.type,
+      });
+      const formData = new FormData();
+      formData.append('file', image);
+      http
+        .request<ImageUploadResponseInterface>({
+          method: 'PUT',
+          data: formData,
+          url: `/upload/image/${type}/${id}`,
+        })
+        .then(response => {
+          observer.next(response.data);
+          observer.complete();
+        })
+        .catch(error => {
+          observer.error(error.response);
         });
     });
   }
