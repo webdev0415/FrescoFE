@@ -1,6 +1,6 @@
 import React, { memo, useEffect, useState } from 'react';
 import { Button, Input, Tabs } from 'antd';
-import { CloseOutlined } from '@ant-design/icons';
+import { CloseOutlined, PlusOutlined } from '@ant-design/icons';
 import { CanvasCategoryService } from '../../../services/APIService/CanvasCategory.service';
 import { zip } from 'rxjs';
 import {
@@ -122,6 +122,7 @@ export const CanvasBoardTemplates = memo((props: Props) => {
                           <Button
                             type="primary"
                             disabled={!boardName}
+                            icon={<PlusOutlined />}
                             loading={loadingCreateBoard === board.id}
                             onClick={() => handleCreateBoard(board.id)}
                           >

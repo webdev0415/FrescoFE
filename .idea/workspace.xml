@@ -4,7 +4,6 @@
     <list default="true" id="d0235698-fcbf-40bf-a9de-ad7a068db01b" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/app/components/CanvasBoardTemplates/CanvasBoardTemplates.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/components/CanvasBoardTemplates/CanvasBoardTemplates.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/index.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -401,14 +400,20 @@
       <option name="project" value="LOCAL" />
       <updated>1605486010113</updated>
     </task>
-    <option name="localTasksCounter" value="40" />
+    <task id="LOCAL-00040" summary="Canvas Board Loading Fix">
+      <created>1605486221550</created>
+      <option name="number" value="00040" />
+      <option name="presentableId" value="LOCAL-00040" />
+      <option name="project" value="LOCAL" />
+      <updated>1605486221550</updated>
+    </task>
+    <option name="localTasksCounter" value="41" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Fix History Issue" />
     <MESSAGE value="Zoom Level Issue Fixed" />
     <MESSAGE value="Add Components for Transform Objects" />
     <MESSAGE value="Object Transform Created" />
@@ -433,7 +438,8 @@
     <MESSAGE value="Fix Canvas and Board API Issues" />
     <MESSAGE value="Add Text And Sticky Notes Color Change Option" />
     <MESSAGE value="Add DropDown" />
-    <option name="LAST_COMMIT_MESSAGE" value="Add DropDown" />
+    <MESSAGE value="Canvas Board Loading Fix" />
+    <option name="LAST_COMMIT_MESSAGE" value="Canvas Board Loading Fix" />
   </component>
   <component name="WindowStateProjectService">
     <state x="546" y="254" key="#Notifications" timestamp="1605325547689">
@@ -460,11 +466,11 @@
       <screen x="0" y="0" width="1600" height="868" />
     </state>
     <state x="530" y="181" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.0.1600.868@0.0.1600.868" timestamp="1605205638209" />
-    <state x="486" y="0" key="CommitChangelistDialog2" timestamp="1605486007470">
+    <state x="486" y="0" key="CommitChangelistDialog2" timestamp="1605486218790">
       <screen x="0" y="0" width="1600" height="868" />
     </state>
     <state x="2183" y="85" key="CommitChangelistDialog2/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1605058265766" />
-    <state x="486" y="0" key="CommitChangelistDialog2/0.0.1600.868@0.0.1600.868" timestamp="1605486007470" />
+    <state x="486" y="0" key="CommitChangelistDialog2/0.0.1600.868@0.0.1600.868" timestamp="1605486218790" />
     <state x="2183" y="85" key="CommitChangelistDialog2/0.0.1600.870/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604971365936" />
     <state x="665" y="109" key="EnvironmentVariablesDialog" timestamp="1604355254437">
       <screen x="0" y="0" width="1600" height="868" />
@@ -567,11 +573,11 @@
       <screen x="1600" y="0" width="1920" height="1170" />
     </state>
     <state x="2061" y="230" key="SettingsEditor/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1605047797604" />
-    <state x="460" y="233" key="Vcs.Push.Dialog.v2" timestamp="1605486013359">
+    <state x="460" y="233" key="Vcs.Push.Dialog.v2" timestamp="1605486223175">
       <screen x="0" y="0" width="1600" height="868" />
     </state>
     <state x="2152" y="314" key="Vcs.Push.Dialog.v2/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1605058346657" />
-    <state x="460" y="233" key="Vcs.Push.Dialog.v2/0.0.1600.868@0.0.1600.868" timestamp="1605486013359" />
+    <state x="460" y="233" key="Vcs.Push.Dialog.v2/0.0.1600.868@0.0.1600.868" timestamp="1605486223175" />
     <state x="2520" y="265" key="Vcs.Push.Dialog.v2/0.0.1600.870/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604971405129" />
     <state x="1692" y="92" width="1736" height="986" key="com.intellij.history.integration.ui.views.FileHistoryDialog" timestamp="1604968281412">
       <screen x="1600" y="0" width="1920" height="1170" />
