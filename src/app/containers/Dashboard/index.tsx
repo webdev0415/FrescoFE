@@ -395,7 +395,9 @@ export const Dashboard = memo((props: Props) => {
                   Category
                 </Select.Option>
                 {categories.map(item => (
-                  <Select.Option value={item.id}>{item.name}</Select.Option>
+                  <Select.Option key={item.id} value={item.id}>
+                    {item.name}
+                  </Select.Option>
                 ))}
               </Select>
               <Button

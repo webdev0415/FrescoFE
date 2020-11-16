@@ -459,7 +459,7 @@ class DrawCanvas extends Component<Props, State> {
             orgId: boardData.orgId,
             name: boardData.name,
             categoryId: boardData.categoryId,
-            imageId: boardData.imageId,
+            imageId: boardData.imageId as string,
           },
         });
       },

@@ -2,136 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d0235698-fcbf-40bf-a9de-ad7a068db01b" name="Default Changelist" comment="Snapshot Fix Canvas and Boards">
-      <change beforePath="$PROJECT_DIR$/.babel-plugin-macrosrc.js" beforeDir="false" afterPath="$PROJECT_DIR$/.babel-plugin-macrosrc.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.eslintrc.js" beforeDir="false" afterPath="$PROJECT_DIR$/.eslintrc.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/jest/setupJest.ts" beforeDir="false" afterPath="$PROJECT_DIR$/config/jest/setupJest.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/jest/typescriptTransform.js" beforeDir="false" afterPath="$PROJECT_DIR$/config/jest/typescriptTransform.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/craco.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/craco.config.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internals/generators/component/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/internals/generators/component/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internals/generators/container/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/internals/generators/container/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internals/generators/plopfile.ts" beforeDir="false" afterPath="$PROJECT_DIR$/internals/generators/plopfile.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internals/generators/utils/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/internals/generators/utils/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internals/testing/test-generators.ts" beforeDir="false" afterPath="$PROJECT_DIR$/internals/testing/test-generators.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/jest.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/jest.config.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/localStorageMock.js" beforeDir="false" afterPath="$PROJECT_DIR$/localStorageMock.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/public/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/__tests__/slice.text.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/__tests__/slice.text.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/components/CanvasBoardTemplates/CanvasBoardTemplates.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/components/CanvasBoardTemplates/CanvasBoardTemplates.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/components/CanvasBoardTemplates/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/components/CanvasBoardTemplates/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/components/CanvasIcons/TextAlignmentIcon.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/components/CanvasIcons/TextAlignmentIcon.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/components/CanvasIcons/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/components/CanvasIcons/index.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/app/components/DrawCanvas/DrawCanvas.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/components/DrawCanvas/DrawCanvas.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/components/DrawCanvas/components/EllipseTransform/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/components/DrawCanvas/components/EllipseTransform/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/components/DrawCanvas/components/RectTransform/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/components/DrawCanvas/components/RectTransform/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/components/DrawCanvas/components/StarTransform/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/components/DrawCanvas/components/StarTransform/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/components/DrawCanvas/components/StickyTransform/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/components/DrawCanvas/components/StickyTransform/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/components/DrawCanvas/components/TextTransform/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/components/DrawCanvas/components/TextTransform/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/components/DrawCanvas/components/TriangleTransform/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/components/DrawCanvas/components/TriangleTransform/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/components/DrawCanvas/components/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/components/DrawCanvas/components/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/components/DrawCanvas/constants.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/components/DrawCanvas/constants.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/components/DrawCanvas/fontList.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/components/DrawCanvas/fontList.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/components/DrawCanvas/types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/components/DrawCanvas/types.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/components/DrawCanvas/utility/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/components/DrawCanvas/utility/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/components/DrawCanvas/utility/onMouseDown.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/components/DrawCanvas/utility/onMouseDown.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/components/DrawCanvas/utility/onMouseMove.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/components/DrawCanvas/utility/onMouseMove.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/components/DrawCanvas/utility/onMouseUp.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/components/DrawCanvas/utility/onMouseUp.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/components/NotFoundPage/P.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/components/NotFoundPage/P.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/containers/CheckEmailView/Loadable.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/CheckEmailView/Loadable.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/containers/CheckEmailView/saga.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/CheckEmailView/saga.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/containers/CheckEmailView/selectors.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/CheckEmailView/selectors.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/containers/CheckEmailView/slice.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/CheckEmailView/slice.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/containers/CheckEmailView/types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/CheckEmailView/types.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/containers/CreateCanvas/Loadable.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/CreateCanvas/Loadable.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/containers/Dashboard/Loadable.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/Dashboard/Loadable.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/containers/CreateCanvas/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/CreateCanvas/index.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/app/containers/Dashboard/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/Dashboard/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/containers/Dashboard/saga.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/Dashboard/saga.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/containers/Dashboard/selectors.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/Dashboard/selectors.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/containers/Dashboard/slice.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/Dashboard/slice.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/containers/Dashboard/types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/Dashboard/types.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/containers/EmailConfirmation/Loadable.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/EmailConfirmation/Loadable.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/containers/EmailConfirmation/__tests__/saga.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/EmailConfirmation/__tests__/saga.test.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/containers/EmailConfirmation/__tests__/slice.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/EmailConfirmation/__tests__/slice.test.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/containers/EmailConfirmation/saga.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/EmailConfirmation/saga.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/containers/EmailConfirmation/selectors.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/EmailConfirmation/selectors.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/containers/EmailConfirmation/slice.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/EmailConfirmation/slice.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/containers/EmailConfirmation/types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/EmailConfirmation/types.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/containers/ListOrganizations/Loadable.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/ListOrganizations/Loadable.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/containers/ListOrganizations/saga.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/ListOrganizations/saga.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/containers/ListOrganizations/selectors.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/ListOrganizations/selectors.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/containers/ListOrganizations/slice.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/ListOrganizations/slice.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/containers/ListOrganizations/types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/ListOrganizations/types.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/containers/SelectBoard/Loadable.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/SelectBoard/Loadable.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/containers/SelectBoard/__tests__/slice.text.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/SelectBoard/__tests__/slice.text.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/containers/SelectBoard/saga.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/SelectBoard/saga.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/containers/SelectBoard/selectors.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/SelectBoard/selectors.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/containers/SelectBoard/slice.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/SelectBoard/slice.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/containers/SelectBoard/types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/SelectBoard/types.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/containers/SelectOrganizationPage/Loadable.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/SelectOrganizationPage/Loadable.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/containers/SelectOrganizationPage/saga.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/SelectOrganizationPage/saga.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/containers/SelectOrganizationPage/selectors.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/SelectOrganizationPage/selectors.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/containers/SelectOrganizationPage/slice.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/SelectOrganizationPage/slice.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/containers/SelectOrganizationPage/types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/SelectOrganizationPage/types.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/containers/SignIn/Loadable.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/SignIn/Loadable.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/containers/SignIn/__tests__/saga.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/SignIn/__tests__/saga.test.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/containers/SignIn/__tests__/slice.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/SignIn/__tests__/slice.test.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/containers/SignIn/selectors.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/SignIn/selectors.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/containers/SignIn/slice.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/SignIn/slice.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/containers/SignIn/types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/SignIn/types.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/containers/Signup/Loadable.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/Signup/Loadable.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/containers/Signup/__tests__/saga.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/Signup/__tests__/saga.test.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/containers/Signup/__tests__/slice.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/Signup/__tests__/slice.test.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/containers/Signup/saga.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/Signup/saga.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/containers/Signup/selectors.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/Signup/selectors.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/containers/Signup/slice.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/Signup/slice.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/containers/Signup/types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/Signup/types.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/containers/SignupForInvitation/Loadable.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/SignupForInvitation/Loadable.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/containers/SignupForInvitation/saga.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/SignupForInvitation/saga.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/containers/SignupForInvitation/selectors.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/SignupForInvitation/selectors.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/containers/SignupForInvitation/slice.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/SignupForInvitation/slice.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/containers/SignupForInvitation/types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/SignupForInvitation/types.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/containers/VerifyInvitation/Loadable.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/VerifyInvitation/Loadable.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/containers/VerifyInvitation/saga.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/VerifyInvitation/saga.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/containers/VerifyInvitation/selectors.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/VerifyInvitation/selectors.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/containers/VerifyInvitation/slice.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/VerifyInvitation/slice.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/containers/VerifyInvitation/types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/VerifyInvitation/types.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/containers/WelcomePage/Loadable.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/WelcomePage/Loadable.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/containers/WelcomePage/__tests__/saga.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/WelcomePage/__tests__/saga.test.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/containers/WelcomePage/__tests__/slice.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/WelcomePage/__tests__/slice.test.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/containers/WelcomePage/saga.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/WelcomePage/saga.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/containers/WelcomePage/selectors.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/WelcomePage/selectors.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/containers/WelcomePage/slice.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/WelcomePage/slice.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/containers/WelcomePage/types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/WelcomePage/types.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/selectors.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/selectors.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/slice.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/slice.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/types.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/react-app-env.d.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/react-app-env.d.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/serviceWorker.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/serviceWorker.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/services/APIService/BoardApi.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/APIService/BoardApi.service.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/services/APIService/CanvasApi.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/APIService/CanvasApi.service.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/services/APIService/CanvasCategory.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/APIService/CanvasCategory.service.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/services/APIService/ImageUploading.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/APIService/ImageUploading.service.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/services/APIService/http-instance.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/APIService/http-instance.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/services/APIService/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/APIService/index.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/services/APIService/interfaces/Board.interface.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/APIService/interfaces/Board.interface.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/services/APIService/interfaces/canvas-category.interface.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/APIService/interfaces/canvas-category.interface.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/services/APIService/interfaces/canvas.interface.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/APIService/interfaces/canvas.interface.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/services/APIService/interfaces/image.interface.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/APIService/interfaces/image.interface.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/services/APIService/interfaces/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/APIService/interfaces/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/services/Api.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/Api.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/services/Auth.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/Auth.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/services/AuthAPI.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/AuthAPI.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/services/History.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/History.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/setupTests.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/setupTests.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/store/__tests__/configureStore.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/store/__tests__/configureStore.test.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/store/__tests__/reducer.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/store/__tests__/reducer.test.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/store/configureStore.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/store/configureStore.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/store/reducers.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/store/reducers.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/styles/global-styles.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/styles/global-styles.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/types/RootState.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/types/RootState.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/types/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/types/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/redux-injectors.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/redux-injectors.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/types/injector-typings.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/types/injector-typings.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -535,14 +411,20 @@
       <option name="project" value="LOCAL" />
       <updated>1605486221550</updated>
     </task>
-    <option name="localTasksCounter" value="41" />
+    <task id="LOCAL-00041" summary="Snapshot Fix Canvas and Boards">
+      <created>1605558541195</created>
+      <option name="number" value="00041" />
+      <option name="presentableId" value="LOCAL-00041" />
+      <option name="project" value="LOCAL" />
+      <updated>1605558541195</updated>
+    </task>
+    <option name="localTasksCounter" value="42" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Zoom Level Issue Fixed" />
     <MESSAGE value="Add Components for Transform Objects" />
     <MESSAGE value="Object Transform Created" />
     <MESSAGE value="Fix Star Rotate Issue" />
@@ -567,7 +449,8 @@
     <MESSAGE value="Add Text And Sticky Notes Color Change Option" />
     <MESSAGE value="Add DropDown" />
     <MESSAGE value="Canvas Board Loading Fix" />
-    <option name="LAST_COMMIT_MESSAGE" value="Canvas Board Loading Fix" />
+    <MESSAGE value="Snapshot Fix Canvas and Boards" />
+    <option name="LAST_COMMIT_MESSAGE" value="Snapshot Fix Canvas and Boards" />
   </component>
   <component name="WindowStateProjectService">
     <state x="546" y="254" key="#Notifications" timestamp="1605325547689">
@@ -594,11 +477,11 @@
       <screen x="0" y="0" width="1600" height="868" />
     </state>
     <state x="530" y="181" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.0.1600.868@0.0.1600.868" timestamp="1605205638209" />
-    <state x="486" y="0" key="CommitChangelistDialog2" timestamp="1605558084502">
+    <state x="486" y="0" key="CommitChangelistDialog2" timestamp="1605558818130">
       <screen x="0" y="0" width="1600" height="868" />
     </state>
     <state x="2183" y="85" key="CommitChangelistDialog2/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1605058265766" />
-    <state x="486" y="0" key="CommitChangelistDialog2/0.0.1600.868@0.0.1600.868" timestamp="1605558084502" />
+    <state x="486" y="0" key="CommitChangelistDialog2/0.0.1600.868@0.0.1600.868" timestamp="1605558818130" />
     <state x="2183" y="85" key="CommitChangelistDialog2/0.0.1600.870/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604971365936" />
     <state x="665" y="109" key="EnvironmentVariablesDialog" timestamp="1604355254437">
       <screen x="0" y="0" width="1600" height="868" />
@@ -609,33 +492,33 @@
     </state>
     <state x="2339" y="340" key="FileChooserDialogImpl/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604689114206" />
     <state x="616" y="252" key="FileChooserDialogImpl/0.0.1600.868@0.0.1600.868" timestamp="1605221593094" />
-    <state width="578" height="224" key="GridCell.Tab.0.bottom" timestamp="1605557636968">
+    <state width="1160" height="224" key="GridCell.Tab.0.bottom" timestamp="1605559155154">
       <screen x="0" y="0" width="1600" height="868" />
     </state>
     <state width="1190" height="271" key="GridCell.Tab.0.bottom/0.0.1600.868/1600.0.1920.1170@0.0.1600.868" timestamp="1604591845324" />
     <state width="1486" height="216" key="GridCell.Tab.0.bottom/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1605058499074" />
-    <state width="578" height="224" key="GridCell.Tab.0.bottom/0.0.1600.868@0.0.1600.868" timestamp="1605557636968" />
+    <state width="1160" height="224" key="GridCell.Tab.0.bottom/0.0.1600.868@0.0.1600.868" timestamp="1605559155154" />
     <state width="1490" height="216" key="GridCell.Tab.0.bottom/0.0.1600.870/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604971621169" />
-    <state width="578" height="224" key="GridCell.Tab.0.center" timestamp="1605557636968">
+    <state width="1160" height="224" key="GridCell.Tab.0.center" timestamp="1605559155154">
       <screen x="0" y="0" width="1600" height="868" />
     </state>
     <state width="1190" height="271" key="GridCell.Tab.0.center/0.0.1600.868/1600.0.1920.1170@0.0.1600.868" timestamp="1604591845323" />
     <state width="1486" height="216" key="GridCell.Tab.0.center/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1605058499073" />
-    <state width="578" height="224" key="GridCell.Tab.0.center/0.0.1600.868@0.0.1600.868" timestamp="1605557636968" />
+    <state width="1160" height="224" key="GridCell.Tab.0.center/0.0.1600.868@0.0.1600.868" timestamp="1605559155154" />
     <state width="1490" height="216" key="GridCell.Tab.0.center/0.0.1600.870/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604971621168" />
-    <state width="578" height="224" key="GridCell.Tab.0.left" timestamp="1605557636968">
+    <state width="1160" height="224" key="GridCell.Tab.0.left" timestamp="1605559155154">
       <screen x="0" y="0" width="1600" height="868" />
     </state>
     <state width="1190" height="271" key="GridCell.Tab.0.left/0.0.1600.868/1600.0.1920.1170@0.0.1600.868" timestamp="1604591845323" />
     <state width="1486" height="216" key="GridCell.Tab.0.left/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1605058499072" />
-    <state width="578" height="224" key="GridCell.Tab.0.left/0.0.1600.868@0.0.1600.868" timestamp="1605557636968" />
+    <state width="1160" height="224" key="GridCell.Tab.0.left/0.0.1600.868@0.0.1600.868" timestamp="1605559155154" />
     <state width="1490" height="216" key="GridCell.Tab.0.left/0.0.1600.870/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604971621168" />
-    <state width="578" height="224" key="GridCell.Tab.0.right" timestamp="1605557636968">
+    <state width="1160" height="224" key="GridCell.Tab.0.right" timestamp="1605559155154">
       <screen x="0" y="0" width="1600" height="868" />
     </state>
     <state width="1190" height="271" key="GridCell.Tab.0.right/0.0.1600.868/1600.0.1920.1170@0.0.1600.868" timestamp="1604591845324" />
     <state width="1486" height="216" key="GridCell.Tab.0.right/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1605058499073" />
-    <state width="578" height="224" key="GridCell.Tab.0.right/0.0.1600.868@0.0.1600.868" timestamp="1605557636968" />
+    <state width="1160" height="224" key="GridCell.Tab.0.right/0.0.1600.868@0.0.1600.868" timestamp="1605559155154" />
     <state width="1490" height="216" key="GridCell.Tab.0.right/0.0.1600.870/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604971621169" />
     <state width="1190" height="271" key="GridCell.Tab.1.bottom" timestamp="1604593485546">
       <screen x="1600" y="0" width="1920" height="1170" />
@@ -701,11 +584,11 @@
       <screen x="1600" y="0" width="1920" height="1170" />
     </state>
     <state x="2061" y="230" key="SettingsEditor/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1605047797604" />
-    <state x="460" y="233" key="Vcs.Push.Dialog.v2" timestamp="1605486223175">
+    <state x="460" y="233" key="Vcs.Push.Dialog.v2" timestamp="1605558545540">
       <screen x="0" y="0" width="1600" height="868" />
     </state>
     <state x="2152" y="314" key="Vcs.Push.Dialog.v2/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1605058346657" />
-    <state x="460" y="233" key="Vcs.Push.Dialog.v2/0.0.1600.868@0.0.1600.868" timestamp="1605486223175" />
+    <state x="460" y="233" key="Vcs.Push.Dialog.v2/0.0.1600.868@0.0.1600.868" timestamp="1605558545540" />
     <state x="2520" y="265" key="Vcs.Push.Dialog.v2/0.0.1600.870/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604971405129" />
     <state x="1692" y="92" width="1736" height="986" key="com.intellij.history.integration.ui.views.FileHistoryDialog" timestamp="1604968281412">
       <screen x="1600" y="0" width="1920" height="1170" />

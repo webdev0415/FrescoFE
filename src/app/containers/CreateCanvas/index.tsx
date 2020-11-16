@@ -6,20 +6,20 @@ import { Dropdown, Input, Menu, Slider, Switch } from 'antd';
 import { CheckOutlined, CopyOutlined } from '@ant-design/icons';
 import { DrawCanvas } from '../../components/DrawCanvas';
 import {
+  CircleShapeIcon,
+  CursorIcon,
+  RectangleShapeIcon,
+  RedoIcon,
+  RoundedRectangleShapeIcon,
+  ShapesIcon,
+  StarShapeIcon,
+  StickyNoteIcon,
   TextIcon,
+  TriangleShapeIcon,
+  UndoIcon,
+  VerticalLineIcon,
   ZoomInIcon,
   ZoomOutIcon,
-  RedoIcon,
-  UndoIcon,
-  CursorIcon,
-  ShapesIcon,
-  StickyNoteIcon,
-  StarShapeIcon,
-  RectangleShapeIcon,
-  RoundedRectangleShapeIcon,
-  TriangleShapeIcon,
-  CircleShapeIcon,
-  VerticalLineIcon,
 } from '../../components/CanvasIcons';
 import clsx from 'clsx';
 import pageIcon from '../../../assets/icons/page.svg';
