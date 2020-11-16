@@ -30,6 +30,7 @@ interface State {
 export const CanvasBoardTemplates = memo((props: Props) => {
   const [boardName, setBoardName] = useState('');
   const [loadingCreateBoard, setLoadingCreateBoard] = useState('');
+  const [activeKey, setActiveKey] = useState('');
   const [state, setState] = useState<State>({
     boards: [],
     categories: [],
@@ -45,6 +46,7 @@ export const CanvasBoardTemplates = memo((props: Props) => {
         data: canvas.data,
         name: boardName,
         orgId: props.orgId,
+        categoryId: activeKey,
       }).subscribe(
         board => {
           setLoadingCreateBoard('');
@@ -69,7 +71,9 @@ export const CanvasBoardTemplates = memo((props: Props) => {
       CanvasApiService.getByOrganizationId(props.orgId),
     ).subscribe(
       ([categories, boards]) => {
-        console.log(categories, boards);
+        if (categories.length) {
+          setActiveKey(categories[0].id);
+        }
         setState({
           categories,
           boards,
@@ -96,7 +100,13 @@ export const CanvasBoardTemplates = memo((props: Props) => {
           Cancel
         </Button>
       </div>
-      <Tabs className="canvas-board-template">
+      <Tabs
+        className="canvas-board-template"
+        defaultActiveKey={activeKey}
+        onChange={key => {
+          setActiveKey(key);
+        }}
+      >
         {state.categories.map(category => (
           <TabPane tab={category.name} key={category.id}>
             <div className="card-section">

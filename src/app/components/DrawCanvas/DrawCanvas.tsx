@@ -50,7 +50,6 @@ import {
   CanvasApiService,
   ImageUploadingService,
 } from '../../../services/APIService';
-import { ImageUploadResponseInterface } from '../../../services/APIService/interfaces';
 import { onMouseDown, onMouseMove, onMouseUp } from './utility';
 
 export enum BoardSocketEventEnum {
@@ -460,7 +459,7 @@ class DrawCanvas extends Component<Props, State> {
           canvas: {
             orgId: boardData.orgId,
             name: boardData.name,
-            categoryId: boardData.categoryId,
+            categoryId: boardData.categoryId as string,
             imageId: boardData.imageId as string,
           },
         });
