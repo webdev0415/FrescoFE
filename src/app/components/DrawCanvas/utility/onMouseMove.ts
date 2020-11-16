@@ -49,6 +49,17 @@ export function onMouseMove(
       cornerRadius: 0,
       ...dimensions,
     });
+  } else if (drawingTool === 'Line') {
+    _.set(data, 'line', [
+      {
+        x: 0,
+        y: 0,
+      },
+      {
+        x: position.x - state.x,
+        y: position.y - state.y,
+      },
+    ]);
   }
 
   return data;

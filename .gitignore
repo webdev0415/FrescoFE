@@ -7,8 +7,8 @@ stats.json
 .pnp.js
 
 #IDE Confidurations
-.idea/
-.vscode/
+.idea
+.vscode
 
 # misc
 .DS_Store

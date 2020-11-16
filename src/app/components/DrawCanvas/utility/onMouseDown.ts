@@ -54,6 +54,13 @@ export function onMouseDown(
       height: 0,
       width: 0,
     });
+  } else if (drawingTool === 'Line') {
+    _.set(data, 'line', [
+      {
+        x: 0,
+        y: 0,
+      },
+    ]);
   }
 
   return data;
