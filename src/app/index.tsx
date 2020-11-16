@@ -52,7 +52,10 @@ function AppComponent(props) {
       );
       if (authInfo) {
         dispatch(actions.setAuthInformation(authInfo));
-        if (props.location.pathname !== '/auth/welcome-page') {
+        if (
+          props.location.pathname.includes('auth') &&
+          props.location.pathname !== '/auth/welcome-page'
+        ) {
           history.push('/');
         }
       }
