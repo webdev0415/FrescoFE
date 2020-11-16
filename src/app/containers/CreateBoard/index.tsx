@@ -17,8 +17,8 @@ import {
   StarTransform,
   TextTransform,
   TriangleTransform,
-} from 'app/components/DrawCanvas/components';
-import { StickyTransform } from './components/StickyTransform';
+  StickyTransform,
+} from './components';
 import { BoardApiService } from 'services/APIService/BoardsApi.service';
 import Auth from 'services/Auth';
 

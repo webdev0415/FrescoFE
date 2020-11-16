@@ -1,14 +1,14 @@
 import React, { useCallback, useEffect, useRef } from 'react';
-import { Group, Rect, Star, Text, Transformer } from 'react-konva';
+import { Rect, Text, Transformer } from 'react-konva';
 import Konva from 'konva';
 import {
-  StickyProperty,
+  TextProperties,
   TransformShapeProps,
 } from '../../../../components/DrawCanvas/types';
 
-function StickyTransform(props: TransformShapeProps): JSX.Element {
+function TextTransform(props: TransformShapeProps): JSX.Element {
   const { data, onSelect, onChange, draggable = true } = props;
-  const shapeRef = useRef<Konva.Group>(null);
+  const shapeRef = useRef<Konva.Text>(null);
   const trRef = useRef<Konva.Transformer>(null);
 
   const boundBoxFunc = useCallback((oldBox, newBox) => {
@@ -20,7 +20,7 @@ function StickyTransform(props: TransformShapeProps): JSX.Element {
 
   const onTransformEnd = useCallback(
     (e: Konva.KonvaEventObject<Event>) => {
-      const node = shapeRef.current as Konva.Group;
+      const node = shapeRef.current as Konva.Text;
       const scaleX = node?.scaleX();
       const scaleY = node?.scaleY();
       node?.scaleX(1);
@@ -29,9 +29,9 @@ function StickyTransform(props: TransformShapeProps): JSX.Element {
         ...data,
         x: Math.round(node?.x()),
         y: Math.round(node?.y()),
-        rotation: Math.round(node?.attrs.rotation as number),
-        sticky: {
-          ...(data.sticky as StickyProperty),
+        rotation: Math.round(node.attrs.rotation),
+        textData: {
+          ...(data.textData as TextProperties),
           width: Math.round(Math.max(5, node?.width() * scaleX)),
           height: Math.round(Math.max(node?.height() * scaleY)),
         },
@@ -54,51 +54,33 @@ function StickyTransform(props: TransformShapeProps): JSX.Element {
   useEffect(() => {
     if (data.isSelected) {
       // we need to attach transformer manually
-      trRef.current?.nodes([shapeRef.current as Konva.Group]);
+      trRef.current?.nodes([shapeRef.current as Konva.Text]);
       trRef.current?.getLayer()?.batchDraw();
     }
   }, [data.isSelected]);
 
   return (
-    <>
-      <Group
+    <React.Fragment>
+      <Text
+        id={data.id}
+        fill="#000000"
+        x={data.x}
+        y={data.y}
+        fillEnabled={true}
+        onClick={onSelect}
+        onTap={onSelect}
+        ref={shapeRef}
+        {...data.textData}
         draggable={draggable}
         onTransformEnd={onTransformEnd}
         onDragEnd={onDragEnd}
-        ref={shapeRef}
-        onClick={onSelect}
-        onTap={onSelect}
-        x={data.x}
-        y={data.y}
-        height={data.sticky?.height as number}
-        width={data.sticky?.width as number}
         rotation={data.rotation}
-      >
-        <Rect
-          id={data.id + ':Rect'}
-          x={0}
-          y={0}
-          height={data.sticky?.height as number}
-          width={data.sticky?.width as number}
-          cornerRadius={30}
-          {...data.shapeConfig}
-        />
-        <Text
-          {...data.textData}
-          height={data.sticky?.height as number}
-          width={data.sticky?.width as number}
-          id={data.id + ':Text'}
-          x={0}
-          y={0}
-          fill="#ffffff"
-          fillEnabled={true}
-        />
-      </Group>
+      />
       {data.isSelected && (
         <Transformer ref={trRef} boundBoxFunc={boundBoxFunc} />
       )}
-    </>
+    </React.Fragment>
   );
 }
 
-export default StickyTransform;
+export default TextTransform;
