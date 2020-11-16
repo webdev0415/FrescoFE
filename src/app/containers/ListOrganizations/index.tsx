@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { Col, Row } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
@@ -9,8 +9,11 @@ import { actions, reducer, sliceKey } from './slice';
 import { listOrganizationsSaga } from './saga';
 import { selectToken } from 'app/selectors';
 import { selectListOrganizations } from './selectors';
+import { UserInfoModal } from '../../components/UserInfoModal';
+import { actions as globalActions } from '../../slice';
 
 export const ListOrganizations = () => {
+  const [isShowUserModal, setIsShowUserModal] = useState(false);
   useInjectReducer({ key: sliceKey, reducer: reducer });
   useInjectSaga({ key: sliceKey, saga: listOrganizationsSaga });
 
@@ -31,6 +34,31 @@ export const ListOrganizations = () => {
     }
   }, [dispatch, history, token]);
 
+  useEffect(() => {
+    const profileIcon = document.getElementById(
+      'profile-icon',
+    ) as HTMLDivElement;
+    if (profileIcon) {
+      profileIcon.addEventListener('click', () => {
+        setIsShowUserModal(true);
+      });
+
+      document.addEventListener('click', event => {
+        const accountModal = document.getElementById('account-modal');
+        if (accountModal) {
+          if (
+            !(
+              accountModal.contains(event.target as Node) ||
+              profileIcon.contains(event.target as Node)
+            )
+          ) {
+            setIsShowUserModal(false);
+          }
+        }
+      });
+    }
+  }, []);
+
   const gotoOrgDetail = id => {
     history.push(`/organization/${id}`);
   };
@@ -38,9 +66,15 @@ export const ListOrganizations = () => {
   const gotoCreateOrgs = () => {
     history.push(`/create-org`);
   };
+  const handleLogOut = () => {
+    dispatch(globalActions.removeAuth());
+    localStorage.clear();
+    history.push('/auth/login');
+  };
 
   return (
     <Fragment>
+      {isShowUserModal && <UserInfoModal logOut={() => handleLogOut()} />}
       <div
         style={{
           width: '80%',

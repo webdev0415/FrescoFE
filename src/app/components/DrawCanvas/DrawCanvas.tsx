@@ -90,7 +90,9 @@ class DrawCanvas extends Component<Props, State> {
     super(props);
     const url = new URL(process.env.REACT_APP_BASE_URL as string);
     url.pathname = 'board';
-    this.socket = socketIOClient(url.href);
+    this.socket = socketIOClient(url.href, {
+      transports: ['websocket'],
+    });
   }
 
   componentDidMount() {
@@ -127,7 +129,7 @@ class DrawCanvas extends Component<Props, State> {
     this.undoHistory();
 
     const saveCanvas = document.getElementById('save-canvas') as HTMLDivElement;
-    saveCanvas.addEventListener('click', e => {
+    saveCanvas.addEventListener('click', () => {
       this.save();
     });
     this.getData();
@@ -315,7 +317,7 @@ class DrawCanvas extends Component<Props, State> {
     const redoHistory = document.getElementById(
       'redo-history',
     ) as HTMLDivElement;
-    redoHistory.addEventListener('click', e => {
+    redoHistory.addEventListener('click', () => {
       if (this.state.nextHistory.length) {
         const nextHistory = JSON.parse(JSON.stringify(this.state.nextHistory));
         const prevHistory = JSON.parse(JSON.stringify(this.state.prevHistory));
@@ -1022,6 +1024,8 @@ class DrawCanvas extends Component<Props, State> {
                     }}
                   />
                 );
+              } else {
+                return <></>;
               }
             })}
 
