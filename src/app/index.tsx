@@ -8,7 +8,7 @@
 
 import React, { useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { Switch, Route } from 'react-router-dom';
+import { Switch, Route, useHistory } from 'react-router-dom';
 import { withRouter } from 'react-router';
 import { useInjectReducer } from 'utils/redux-injectors';
 import { GlobalStyle } from 'styles/global-styles';
@@ -40,8 +40,8 @@ import logoImg from 'assets/icons/logo.svg';
 
 function AppComponent(props) {
   useInjectReducer({ key: sliceKey, reducer });
-  const { Header, Content, Footer } = Layout;
-  const { Title } = Typography;
+  const { Content, Footer } = Layout;
+  const history = useHistory();
 
   const dispatch = useDispatch();
 
@@ -52,9 +52,12 @@ function AppComponent(props) {
       );
       if (authInfo) {
         dispatch(actions.setAuthInformation(authInfo));
+        if (props.location.pathname !== '/auth/welcome-page') {
+          history.push('/');
+        }
       }
     }
-  }, [dispatch]);
+  }, [dispatch, history, props.location.pathname]);
 
   if (props.location.pathname.includes('auth')) {
     return (
