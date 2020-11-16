@@ -25,6 +25,11 @@ export interface ShapeProperty {
   width: number;
 }
 
+export interface CanvasPoints {
+  x: number;
+  y: number;
+}
+
 export interface StickyProperty extends Partial<ShapeProperty> {
   text?: string;
   fontFamily?: string;
@@ -61,15 +66,14 @@ export interface StarProperties {
   numPoints: number;
 }
 
-export interface PointsInterface {
-  x: number;
-  y: number;
+export interface PointsInterface extends CanvasPoints {
   textData?: StickyProperty;
   sticky?: StickyProperty;
   rect?: RectangleProperties;
   star?: StarProperties;
   ellipse?: EllipseProperties;
   triangle?: TriangleProperties;
+  line?: CanvasPoints[];
   type: ShapeObjectType;
 }
 

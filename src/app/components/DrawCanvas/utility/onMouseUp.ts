@@ -63,6 +63,17 @@ export function onMouseUp(
       fontColor: '#000000',
       backgroundColor: undefined,
     });
+  } else if (drawingTool === 'Line') {
+    _.set(data, 'line', [
+      {
+        x: 0,
+        y: 0,
+      },
+      {
+        x: position.x - state.x,
+        y: position.y - state.y,
+      },
+    ]);
   }
   return data;
 }

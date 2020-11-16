@@ -8,6 +8,7 @@ import {
   Stage,
   Star,
   Text,
+  Line,
 } from 'react-konva';
 import { v4 as uuidv4 } from 'uuid';
 import Konva from 'konva';
@@ -24,6 +25,7 @@ import { defaultObjectState, fontNames } from './constants';
 import { Modal, Select } from 'antd';
 import {
   EllipseTransform,
+  LineTransform,
   RectTransform,
   StarTransform,
   StickyTransform,
@@ -604,6 +606,7 @@ class DrawCanvas extends Component<Props, State> {
       emitEvent: false,
     },
   ) => {
+    console.log('addCanvasShape', data, options);
     if (options.saveHistory) {
       this.updateHistory(JSON.parse(JSON.stringify(data)));
     }
@@ -1063,6 +1066,24 @@ class DrawCanvas extends Component<Props, State> {
                     }}
                   />
                 );
+              } else if (shapeObject.type === 'Line') {
+                return (
+                  <LineTransform
+                    key={shapeObject.id}
+                    data={shapeObject}
+                    onChangeStart={this.handleChangeStart}
+                    onChanging={this.handleChanging}
+                    onChange={data => {
+                      this.updateShape(data, {
+                        saveHistory: true,
+                        emitEvent: true,
+                      });
+                    }}
+                    onSelect={() => {
+                      this.handleSelect(shapeObject);
+                    }}
+                  />
+                );
               } else {
                 return <></>;
               }
@@ -1228,6 +1249,27 @@ class DrawCanvas extends Component<Props, State> {
                     shadowOffsetX: 10,
                     shadowOffsetY: 10,
                   }}
+                />
+              </>
+            )}
+
+            {this.props.drawingTool === 'Line' && this.isDrawing && (
+              <>
+                <Line
+                  x={this.state.points.x}
+                  y={this.state.points.y}
+                  points={(() => {
+                    const points: number[] = [];
+                    this.state.points.line?.forEach(point => {
+                      points.push(point.x);
+                      points.push(point.y);
+                    });
+                    return points;
+                  })()}
+                  stroke="#000000"
+                  strokeWidth={2}
+                  lineCap="round"
+                  lineJoin="round"
                 />
               </>
             )}
