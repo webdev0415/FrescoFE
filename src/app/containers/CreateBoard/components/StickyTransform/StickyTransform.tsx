@@ -1,10 +1,7 @@
 import React, { useCallback, useEffect, useRef } from 'react';
 import { Group, Rect, Star, Text, Transformer } from 'react-konva';
 import Konva from 'konva';
-import {
-  StickyProperty,
-  TransformShapeProps,
-} from '../../../../components/DrawCanvas/types';
+import { StickyProperty, TransformShapeProps } from '../../types';
 
 function StickyTransform(props: TransformShapeProps): JSX.Element {
   const { data, onSelect, onChange, draggable = true } = props;

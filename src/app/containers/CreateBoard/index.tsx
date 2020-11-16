@@ -121,6 +121,7 @@ export class CreateBoard extends Component<Props, State> {
   }
 
   saveCanvas(): void {
+    const id = this.props.match?.params.id || '';
     const data = JSON.stringify(
       this.state.objects.map(item => ({
         ...item,
@@ -132,6 +133,8 @@ export class CreateBoard extends Component<Props, State> {
     BoardApiService.updateById(this.props.match?.params.id as string, {
       ...this.state.canvas,
       data: data,
+      categoryId: '',
+      id: id,
       createdUserId: Auth.getUser().id,
     }).subscribe(
       response => {
@@ -149,6 +152,7 @@ export class CreateBoard extends Component<Props, State> {
     ) as HTMLSpanElement;
     BoardApiService.getById(this.props.match?.params.id as string).subscribe(
       boardData => {
+        console.log('boardData', boardData);
         boardTitle.innerText = boardData.name;
         const boardObjects = !!boardData.data ? JSON.parse(boardData.data) : [];
 
@@ -393,7 +397,7 @@ export class CreateBoard extends Component<Props, State> {
               color: '#ffffff',
               background: this.state.selectedStickyData?.shapeConfig?.fill,
               borderRadius: this.state.selectedStickyData?.sticky?.cornerRadius,
-              padding: '15px 0',
+              padding: '15px 5px',
               outline: 'none',
             }}
             onKeyDown={e => {

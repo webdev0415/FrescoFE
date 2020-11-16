@@ -1,10 +1,7 @@
 import React, { useCallback, useEffect, useRef } from 'react';
 import { Rect, Star, Transformer } from 'react-konva';
 import Konva from 'konva';
-import {
-  StarProperties,
-  TransformShapeProps,
-} from '../../../../components/DrawCanvas/types';
+import { StarProperties, TransformShapeProps } from '../../types';
 
 function StarTransform(props: TransformShapeProps): JSX.Element {
   const { data, onSelect, onChange } = props;

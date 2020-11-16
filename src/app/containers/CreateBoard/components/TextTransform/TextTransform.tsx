@@ -1,10 +1,7 @@
 import React, { useCallback, useEffect, useRef } from 'react';
 import { Rect, Text, Transformer } from 'react-konva';
 import Konva from 'konva';
-import {
-  TextProperties,
-  TransformShapeProps,
-} from '../../../../components/DrawCanvas/types';
+import { TextProperties, TransformShapeProps } from '../../types';
 
 function TextTransform(props: TransformShapeProps): JSX.Element {
   const { data, onSelect, onChange, draggable = true } = props;

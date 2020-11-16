@@ -14,7 +14,7 @@ const AuthLayout: React.FC<AuthLayoutProps> = props => {
   return (
     <Layout>
       <Header isLogIn={Auth.isLogged()} />
-      <Content style={{ padding: '0 50px' }}>{props.children}</Content>
+      <Content>{props.children}</Content>
     </Layout>
   );
 };

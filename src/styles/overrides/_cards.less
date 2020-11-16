@@ -18,10 +18,15 @@
     gap: 20px;
 
     .cards-board {
+      position: relative;
       width: 274px;
       border-radius: 5px;
       overflow: hidden;
       flex-shrink: 0;
+
+      &.card-board-select {
+        height: 229px;
+      }
 
       img {
         width: 100%;
@@ -43,11 +48,33 @@
         padding: 10px;
         gap: 5px;
 
+        &.card-board-footer {
+          position: absolute;
+          height: auto;
+          bottom: 0;
+
+          &:not(:hover) {
+            .card-board-action {
+              display: none;
+            }
+
+            .card-description {
+              display: none;
+            }
+          }
+
+          .card-board-action {
+            display: inline-flex;
+            justify-content: flex-end;
+            align-items: center;
+          }
+        }
+
         .card-action {
           position: absolute;
           right: 0;
           top: 0;
-          transform: translate(-20px, 20px);
+          transform: translate(-5px, 5px);
 
           .action-button {
             border-radius: 50%;
@@ -57,6 +84,7 @@
             justify-content: center;
             align-items: center;
             cursor: pointer;
+
             &:hover {
               background-color: rgba(0, 0, 0, 0.04);
             }

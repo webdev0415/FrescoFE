@@ -41,6 +41,7 @@ const CanvasesList = (props: CanvasesListProps) => {
       orgId: props.orgId,
       data: '',
       categoryId: '',
+      imageId: '',
     };
     CanvasApiService.create(data).subscribe(
       data => {

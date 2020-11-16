@@ -60,6 +60,8 @@ export const SelectBoard = memo((props: Props) => {
             data: canvasData,
             name: values.name,
             createdUserId: Auth.getUser().id,
+            categoryId: '',
+            id: canvasId,
           };
           BoardApiService.create(data).subscribe(res => {
             history.push(`/create-board/${res.orgId}/${res.id}`);

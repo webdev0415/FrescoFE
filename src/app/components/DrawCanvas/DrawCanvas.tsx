@@ -1,21 +1,32 @@
 import React, { Component, memo } from 'react';
-import { Ellipse, Layer, Rect, Shape, Stage, Star } from 'react-konva';
+import {
+  Ellipse,
+  Group,
+  Layer,
+  Rect,
+  Shape,
+  Stage,
+  Star,
+  Text,
+} from 'react-konva';
 import { v4 as uuidv4 } from 'uuid';
 import Konva from 'konva';
-import { ObjectInterface, Props, State, TextProperties } from './types';
-import _ from 'lodash';
 import {
-  defaultObjectState,
-  defaultTextProperties,
-  fontNames,
-} from './constants';
+  ObjectInterface,
+  ObjectSocketInterface,
+  Props,
+  State,
+  StickyProperty,
+} from './types';
+import socketIOClient from 'socket.io-client';
+import _ from 'lodash';
+import { defaultObjectState, fontNames } from './constants';
 import { Modal, Select } from 'antd';
 import {
   EllipseTransform,
   RectTransform,
   StarTransform,
   StickyTransform,
-  TextTransform,
   TriangleTransform,
 } from './components';
 import {
@@ -32,10 +43,31 @@ import {
   TextUnderLineIcon,
   VerticalLineIcon,
 } from '../CanvasIcons';
-import { CanvasApiService } from '../../../services/APIService';
+import {
+  BoardApiService,
+  CanvasApiService,
+  ImageUploadingService,
+} from '../../../services/APIService';
+import { ImageUploadResponseInterface } from '../../../services/APIService/interfaces';
+import { onMouseDown, onMouseMove, onMouseUp } from './utility';
+
+export enum BoardSocketEventEnum {
+  CREATE = 'create',
+  MOVE = 'move',
+  UPDATE = 'update',
+  DELETE = 'delete',
+  LOCK = 'lock',
+  UNLOCK = 'unlock',
+  JOIN_BOARD = 'joinBoard',
+  LEAVE_BOARD = 'leaveBoard',
+  CONNECT = 'connect',
+  DISCONNECT = 'disconnect',
+}
 
 class DrawCanvas extends Component<Props, State> {
+  socket: SocketIOClient.Socket;
   state: State = {
+    id: uuidv4(),
     objects: [],
     points: {
       ...defaultObjectState,
@@ -45,6 +77,7 @@ class DrawCanvas extends Component<Props, State> {
     canvas: {
       name: '',
       orgId: '',
+      categoryId: '',
     },
   };
   stageRef: Konva.Stage | null = null;
@@ -53,14 +86,29 @@ class DrawCanvas extends Component<Props, State> {
   isItemMoving: boolean = false;
   isDrawing: boolean = false;
 
+  constructor(props) {
+    super(props);
+    const url = new URL(process.env.REACT_APP_BASE_URL as string);
+    url.pathname = 'board';
+    this.socket = socketIOClient(url.href);
+  }
+
   componentDidMount() {
     document.addEventListener('keydown', event => {
       if (event.key === 'Delete') {
-        this.setState({
-          objects: this.state.objects.filter(
-            shapeObject => !shapeObject.isSelected,
-          ),
-        });
+        const currentObject = this.state.objects.find(
+          shapeObject => shapeObject.isSelected,
+        );
+        if (currentObject) {
+          this.deleteObject(
+            { id: this.state.id, data: currentObject },
+            {
+              emitEvent: true,
+              saveHistory: true,
+              saveCanvas: true,
+            },
+          );
+        }
       } else if (event.ctrlKey && event.key.toLowerCase() === 'y') {
         const redoHistory = document.getElementById(
           'redo-history',
@@ -80,9 +128,10 @@ class DrawCanvas extends Component<Props, State> {
 
     const saveCanvas = document.getElementById('save-canvas') as HTMLDivElement;
     saveCanvas.addEventListener('click', e => {
-      this.saveCanvas();
+      this.save();
     });
-    this.getCanvasObject();
+    this.getData();
+    this.canvasWebSockets();
   }
 
   componentDidUpdate(
@@ -92,8 +141,144 @@ class DrawCanvas extends Component<Props, State> {
   ) {
     if (JSON.stringify(this.props) !== JSON.stringify(prevProps)) {
       this.handleChangeCursor();
-      console.log(this.props.zoomLevel);
     }
+  }
+
+  canvasWebSockets(): void {
+    this.socket.on(BoardSocketEventEnum.CONNECT, () => {
+      console.log('Socket ' + BoardSocketEventEnum.CONNECT);
+      this.socket.emit(
+        BoardSocketEventEnum.JOIN_BOARD,
+        this.props.match?.params.id,
+      );
+    });
+    this.socket.on(BoardSocketEventEnum.CREATE, (event: string) => {
+      this.createObject(JSON.parse(event));
+    });
+    this.socket.on(BoardSocketEventEnum.JOIN_BOARD, (data: string) => {
+      console.log('Socket ' + BoardSocketEventEnum.JOIN_BOARD, data);
+    });
+    this.socket.on(BoardSocketEventEnum.LEAVE_BOARD, (data: string) => {
+      console.log('Socket ' + BoardSocketEventEnum.LEAVE_BOARD, data);
+    });
+    this.socket.on(BoardSocketEventEnum.UPDATE, (event: string) => {
+      this.updateObject(JSON.parse(event));
+    });
+    this.socket.on(BoardSocketEventEnum.MOVE, (event: string) => {
+      console.log(BoardSocketEventEnum.MOVE, event);
+      this.moveObject(JSON.parse(event));
+    });
+    this.socket.on(BoardSocketEventEnum.LOCK, (event: string) => {
+      console.log('Socket ' + BoardSocketEventEnum.LOCK, event);
+      this.lockObject(JSON.parse(event));
+    });
+    this.socket.on(BoardSocketEventEnum.UNLOCK, (event: string) => {
+      console.log('Socket ' + BoardSocketEventEnum.UNLOCK, event);
+    });
+    this.socket.on(BoardSocketEventEnum.DELETE, (event: string) => {
+      console.log('Socket ' + BoardSocketEventEnum.DELETE, event);
+      this.deleteObject(JSON.parse(event), { saveHistory: true });
+    });
+    this.socket.on(BoardSocketEventEnum.CREATE, (event: string) => {
+      console.log('Socket ' + BoardSocketEventEnum.CREATE, event);
+    });
+    this.socket.on(BoardSocketEventEnum.DISCONNECT, () => {
+      console.log('Socket ' + BoardSocketEventEnum.DISCONNECT);
+      this.socket.emit(
+        BoardSocketEventEnum.LEAVE_BOARD,
+        this.props.match?.params.id,
+      );
+    });
+  }
+
+  moveObject(objectData: ObjectSocketInterface): void {
+    this.setState({
+      objects: this.state.objects.map(item => {
+        if (item.id === objectData.data.id) {
+          return {
+            ...item,
+            ...objectData.data,
+          };
+        } else {
+          return item;
+        }
+      }),
+    });
+    if (objectData.id !== this.state.id) {
+      this.updateShape(objectData.data, { saveHistory: true });
+    }
+  }
+
+  lockObject(objectData: ObjectSocketInterface): void {
+    if (objectData.id !== this.state.id) {
+      this.setState({
+        objects: this.state.objects.map(item => {
+          if (item.id === objectData.data.id) {
+            return {
+              ...item,
+              ...objectData.data,
+            };
+          } else {
+            return item;
+          }
+        }),
+      });
+    }
+  }
+
+  updateObject(objectData: ObjectSocketInterface): void {
+    if (objectData.id !== this.state.id) {
+      this.updateShape(objectData.data, { saveHistory: true });
+    }
+  }
+
+  createObject(objectData: ObjectSocketInterface): void {
+    if (objectData.id !== this.state.id) {
+      this.addCanvasShape(objectData.data, { saveHistory: true });
+    }
+  }
+
+  deleteObject(
+    objectData: ObjectSocketInterface,
+    options: {
+      saveHistory?: boolean;
+      emitEvent?: boolean;
+      saveCanvas?: boolean;
+    } = {
+      saveHistory: false,
+      emitEvent: false,
+      saveCanvas: false,
+    },
+  ): void {
+    if (options.emitEvent) {
+      this.emitSocketEvent(BoardSocketEventEnum.DELETE, objectData.data);
+    }
+    this.setState(
+      {
+        objects: this.state.objects.filter(
+          shapeObject => shapeObject.id !== objectData.data.id,
+        ),
+      },
+      () => {
+        if (options.saveCanvas) {
+          this.save();
+        }
+      },
+    );
+  }
+
+  emitSocketEvent(
+    eventType: BoardSocketEventEnum,
+    data: ObjectInterface,
+  ): void {
+    const socketData = {
+      boardId: this.props.match?.params.id as string,
+      data: JSON.stringify({
+        id: this.state.id,
+        data: data,
+      }),
+    };
+    this.socket.emit(eventType, socketData);
   }
 
   undoHistory(): void {
@@ -156,21 +341,88 @@ class DrawCanvas extends Component<Props, State> {
     });
   }
 
-  saveCanvas(): void {
-    const data = JSON.stringify(
-      this.state.objects.map(item => ({
-        ...item,
-        isEditing: false,
-        isSelected: false,
-        isFocused: false,
-      })),
+  save(): void {
+    ImageUploadingService.imageUploadFromDataUrl(
+      this.stageRef?.toDataURL({ pixelRatio: 1 }) as string,
+      this.props.match?.params.type as string,
+    ).subscribe(
+      image => {
+        const data = JSON.stringify(
+          this.state.objects.map(item => ({
+            ...item,
+            isEditing: false,
+            isSelected: false,
+            isFocused: false,
+            isLocked: false,
+          })),
+        );
+        if (this.props.match?.params.type === 'canvas') {
+          this.saveCanvas(data, image);
+        } else if (this.props.match?.params.type === 'board') {
+          this.saveBoard(data, image);
+        }
+      },
+      error => {
+        console.error(error.response);
+      },
     );
-    CanvasApiService.updateById(this.props.match?.params.id as string, {
+  }
+
+  saveBoard(data: string, image: ImageUploadResponseInterface): void {
+    BoardApiService.updateById(this.props.match?.params.id as string, {
       ...this.state.canvas,
       data: data,
     }).subscribe(
       response => {
         console.log(response);
+      },
+      error => {
+        console.error(error.response);
+      },
+    );
+  }
+
+  saveCanvas(data: string, image: ImageUploadResponseInterface): void {
+    CanvasApiService.updateById(this.props.match?.params.id as string, {
+      ...this.state.canvas,
+      data: data,
+      imageId: image.id,
+    }).subscribe(
+      response => {
+        console.log(response);
+      },
+      error => {
+        console.error(error.response);
+      },
+    );
+  }
+
+  getData(): void {
+    if (this.props.match?.params.type === 'canvas') {
+      this.getCanvasObject();
+    } else if (this.props.match?.params.type === 'board') {
+      this.getBoardObject();
+    }
+  }
+
+  getBoardObject(): void {
+    const canvasTitle = document.getElementById(
+      'canvas-title',
+    ) as HTMLSpanElement;
+    BoardApiService.getById(this.props.match?.params.id as string).subscribe(
+      boardData => {
+        canvasTitle.innerText = boardData.name;
+        const canvasObjects = !!boardData.data
+          ? JSON.parse(boardData.data)
+          : [];
+        this.setState({
+          objects: canvasObjects,
+          canvas: {
+            orgId: boardData.orgId,
+            name: boardData.name,
+            categoryId: boardData.categoryId,
+          },
+        });
       },
       error => {
         console.error(error);
@@ -184,14 +436,17 @@ class DrawCanvas extends Component<Props, State> {
     ) as HTMLSpanElement;
     CanvasApiService.getById(this.props.match?.params.id as string).subscribe(
       canvasData => {
-        console.log(canvasData);
         canvasTitle.innerText = canvasData.name;
         const canvasObjects = !!canvasData.data
           ? JSON.parse(canvasData.data)
           : [];
         this.setState({
           objects: canvasObjects,
-          canvas: { orgId: canvasData.orgId, name: canvasData.name },
+          canvas: {
+            orgId: canvasData.orgId,
+            name: canvasData.name,
+            categoryId: canvasData.categoryId,
+          },
         });
       },
       error => {
@@ -239,116 +494,27 @@ class DrawCanvas extends Component<Props, State> {
   handleMouseDown = e => {
     if (this.props.drawingTool) {
       const position = e.target.getStage().getPointerPosition();
-      const data: ObjectInterface = {
-        ...this.state.points,
-        ...defaultObjectState,
-        id: uuidv4(),
-        rotation: 0,
-        x: Math.round(position.x),
-        y: Math.round(position.y),
-        type: this.props.drawingTool,
-      };
-      if (
-        this.props.drawingTool === 'Sticky' ||
-        this.props.drawingTool === 'Text'
-      ) {
-        Object.assign(data, {
-          isSelected: true,
-          isEditing: true,
-        });
-        _.set(data, 'textData', {
-          ...defaultTextProperties,
-          padding: 0,
-        });
+      const data: ObjectInterface = onMouseDown(
+        { ...this.state.points },
+        this.props.drawingTool,
+        position,
+      );
 
-        if (this.props.drawingTool === 'Sticky') {
-          _.set(data, 'sticky', {
-            width: 200,
-            height: 200,
-            cornerRadius: 30,
-          });
-        }
-        this.addCanvasShape(data, true);
-      } else {
-        if (this.props.drawingTool === 'RectRounded') {
-          _.set(data, 'rect', {
-            cornerRadius: 20,
-            height: 0,
-            width: 0,
-          });
-        } else if (this.props.drawingTool === 'Rect') {
-          _.set(data, 'rect', {
-            cornerRadius: 0,
-            height: 0,
-            width: 0,
-          });
-        } else if (this.props.drawingTool === 'Star') {
-          _.set(data, 'star', {
-            innerRadius: 0,
-            outerRadius: 0,
-            numPoints: 5,
-          });
-        } else if (this.props.drawingTool === 'Triangle') {
-          _.set(data, 'triangle', {
-            innerRadius: 0,
-            outerRadius: 0,
-            numPoints: 5,
-          });
-        } else if (this.props.drawingTool === 'Ellipse') {
-          _.set(data, 'ellipse', {
-            radiusX: 0,
-            radiusY: 0,
-          });
-        }
-        this.isDrawing = true;
-        this.setState({
-          points: _.cloneDeep(data),
-        });
-      }
+      this.isDrawing = true;
+      this.setState({
+        points: _.cloneDeep(data),
+      });
     }
   };
 
   handleMouseMove = e => {
     if (this.isDrawing && this.props.drawingTool) {
       const position = e.target.getStage().getPointerPosition();
-      const width = Math.abs(position.x - this.state.points.x);
-      const height = Math.abs(position.y - this.state.points.y);
-
-      const data: ObjectInterface = {
-        ...this.state.points,
-      };
-
-      const dimensions = {
-        height,
-        width,
-      };
-
-      if (this.props.drawingTool === 'RectRounded') {
-        _.set(data, 'rect', {
-          cornerRadius: 20,
-          ...dimensions,
-        });
-      } else if (this.props.drawingTool === 'Rect') {
-        _.set(data, 'rect', {
-          cornerRadius: 0,
-          ...dimensions,
-        });
-      } else if (this.props.drawingTool === 'Star') {
-        _.set(data, 'star', {
-          innerRadius: width / 2,
-          outerRadius: width,
-          numPoints: 5,
-        });
-      } else if (this.props.drawingTool === 'Triangle') {
-        _.set(data, 'triangle', {
-          ...dimensions,
-        });
-      } else if (this.props.drawingTool === 'Ellipse') {
-        _.set(data, 'ellipse', {
-          radiusX: Math.abs(width),
-          radiusY: Math.abs(height),
-        });
-      }
+      const data: ObjectInterface = onMouseMove(
+        { ...this.state.points },
+        this.props.drawingTool,
+        position,
+      );
 
       this.setState({
         points: _.cloneDeep(data),
@@ -356,74 +522,19 @@ class DrawCanvas extends Component<Props, State> {
     }
   };
 
-  addCanvasShape = (data: ObjectInterface, saveHistory: boolean = false) => {
-    if (saveHistory) {
-      this.updateHistory(JSON.parse(JSON.stringify(data)));
-    }
-    this.setState(
-      {
-        objects: [
-          ...this.state.objects.map(shapeObject => ({
-            ...shapeObject,
-            isEditing: false,
-            isSelected: false,
-            isFocused: false,
-          })),
-          {
-            ..._.cloneDeep(data),
-          },
-        ],
-      },
-      () => {
-        this.saveCanvas();
-      },
-    );
-  };
-
   handleMouseUp = e => {
     if (this.isDrawing) {
       this.isDrawing = false;
       const position = e.target.getStage().getPointerPosition();
-      const width = Math.abs(position.x - this.state.points.x);
-      const height = Math.abs(position.y - this.state.points.y);
-
-      const data: ObjectInterface = {
-        ...this.state.points,
-      };
-
-      const dimensions = {
-        height,
-        width,
-      };
-
-      if (this.props.drawingTool === 'RectRounded') {
-        _.set(data, 'rect', {
-          cornerRadius: 20,
-          ...dimensions,
-        });
-      } else if (this.props.drawingTool === 'Rect') {
-        _.set(data, 'rect', {
-          cornerRadius: 0,
-          ...dimensions,
-        });
-      } else if (this.props.drawingTool === 'Star') {
-        _.set(data, 'star', {
-          innerRadius: width / 2,
-          outerRadius: width,
-          numPoints: 5,
-        });
-      } else if (this.props.drawingTool === 'Triangle') {
-        _.set(data, 'triangle', {
-          ...dimensions,
-        });
-      } else if (this.props.drawingTool === 'Ellipse') {
-        _.set(data, 'ellipse', {
-          radiusX: Math.abs(width),
-          radiusY: Math.abs(height),
-        });
-      }
-
-      this.addCanvasShape(data, true);
+      const data = onMouseUp(
+        { ...this.state.points },
+        this.props.drawingTool,
+        position,
+      );
+      this.addCanvasShape(data, {
+        saveHistory: true,
+        emitEvent: true,
+      });
 
       this.setState({
         points: {
@@ -445,6 +556,45 @@ class DrawCanvas extends Component<Props, State> {
     }
   };
 
+  addCanvasShape = (
+    data: ObjectInterface,
+    options: { saveHistory?: boolean; emitEvent?: boolean } = {
+      saveHistory: false,
+      emitEvent: false,
+    },
+  ) => {
+    if (options.saveHistory) {
+      this.updateHistory(JSON.parse(JSON.stringify(data)));
+    }
+    if (options.emitEvent) {
+      this.emitSocketEvent(BoardSocketEventEnum.CREATE, {
+        ...data,
+        isEditing: false,
+        isSelected: false,
+        isFocused: false,
+        isLocked: false,
+      });
+    }
+    this.setState(
+      {
+        objects: [
+          ...this.state.objects.map(shapeObject => ({
+            ...shapeObject,
+            isEditing: false,
+            isSelected: false,
+            isFocused: false,
+          })),
+          {
+            ..._.cloneDeep(data),
+          },
+        ],
+      },
+      () => {
+        this.save();
+      },
+    );
+  };
+
   updateHistory(data: ObjectInterface) {
     this.setState({
       prevHistory: [
@@ -455,8 +605,14 @@ class DrawCanvas extends Component<Props, State> {
     });
   }
 
-  updateShape(data: ObjectInterface, saveHistory: boolean = false) {
-    if (saveHistory) {
+  updateShape(
+    data: ObjectInterface,
+    options: { saveHistory?: boolean; emitEvent?: boolean } = {
+      saveHistory: false,
+      emitEvent: false,
+    },
+  ) {
+    if (options.saveHistory) {
       const historyItem = this.state.objects.find(item => item.id === data.id);
       if (historyItem) {
         const history = JSON.parse(JSON.stringify(historyItem));
@@ -467,6 +623,16 @@ class DrawCanvas extends Component<Props, State> {
     }
 
     const item = this.state.objects.find(item => item.id === data.id);
+    if (options.emitEvent) {
+      this.emitSocketEvent(BoardSocketEventEnum.UPDATE, {
+        ...item,
+        ...data,
+        isSelected: false,
+        isEditing: false,
+        isFocused: false,
+        isLocked: false,
+      });
+    }
     const objects = this.state.objects
       .filter(item => item.id !== data.id)
       .map(shapeObject => ({
@@ -474,6 +640,7 @@ class DrawCanvas extends Component<Props, State> {
         isSelected: false,
         isEditing: false,
         isFocused: false,
+        isLocked: false,
       }));
 
     this.setState(
@@ -481,26 +648,45 @@ class DrawCanvas extends Component<Props, State> {
         objects: [...objects, { ...item, ...data }],
       },
       () => {
-        this.saveCanvas();
+        this.save();
       },
     );
   }
 
-  updateObjectText(id: string, data: TextProperties): void {
+  updateObjectText(id: string, data: StickyProperty): void {
     const object = this.state.objects.find(item => item.id === id);
     if (object) {
       this.updateShape(
         {
           ...object,
           isEditing: false,
-          textData: {
+          sticky: {
             ...data,
           },
         },
-        true,
+        {
+          saveHistory: true,
+          emitEvent: true,
+        },
       );
     }
   }
+
+  handleChanging = (data: ObjectInterface) => {
+    // this.emitSocketEvent(BoardSocketEventEnum.MOVE, data);
+  };
+
+  handleChangeStart = (data: ObjectInterface) => {
+    console.log(data);
+    this.emitSocketEvent(BoardSocketEventEnum.LOCK, {
+      ...data,
+      isSelected: false,
+      isLocked: true,
+      isEditing: false,
+      isFocused: false,
+    });
+  };
+
   render() {
     console.log('props', this.props);
     return (
@@ -523,7 +709,7 @@ class DrawCanvas extends Component<Props, State> {
                 ) as HTMLParagraphElement;
                 if (input) {
                   this.updateObjectText(shapeObject.id, {
-                    ...shapeObject.textData,
+                    ...shapeObject.sticky,
                     text: input.innerText,
                   });
                 }
@@ -544,7 +730,7 @@ class DrawCanvas extends Component<Props, State> {
                 id="canvas-text-editor"
                 contentEditable="true"
               >
-                {shapeObject.textData?.text}
+                {shapeObject.sticky?.text}
               </p>
             </Modal>
           ))}
@@ -566,12 +752,12 @@ class DrawCanvas extends Component<Props, State> {
             >
               <div className="canvas-text-toolbar-item">
                 <Select
-                  defaultValue={shapeObject.textData?.fontFamily}
+                  defaultValue={shapeObject.sticky?.fontFamily}
                   style={{ width: 120, paddingLeft: '10px' }}
                   suffixIcon={<ChevronDownIcon />}
                   onChange={value => {
                     this.updateObjectText(shapeObject.id, {
-                      ...shapeObject.textData,
+                      ...shapeObject.sticky,
                       fontFamily: value,
                     });
                   }}
@@ -593,26 +779,26 @@ class DrawCanvas extends Component<Props, State> {
                 <MinusSquareIcon
                   onClick={() => {
                     this.updateObjectText(shapeObject.id, {
-                      ...shapeObject.textData,
+                      ...shapeObject.sticky,
                       fontSize: Math.max(
                         10,
-                        (shapeObject.textData?.fontSize as number) - 1,
+                        (shapeObject.sticky?.fontSize as number) - 1,
                       ),
                     });
                   }}
                 />
               </div>
               <div className="canvas-text-toolbar-item">
-                {shapeObject.textData?.fontSize}
+                {shapeObject.sticky?.fontSize}
               </div>
               <div className="canvas-text-toolbar-item action-button">
                 <PlusSquareIcon
                   onClick={() => {
                     this.updateObjectText(shapeObject.id, {
-                      ...shapeObject.textData,
+                      ...shapeObject.sticky,
                       fontSize: Math.min(
                         30,
-                        (shapeObject.textData?.fontSize as number) + 1,
+                        (shapeObject.sticky?.fontSize as number) + 1,
                       ),
                     });
                   }}
@@ -628,9 +814,9 @@ class DrawCanvas extends Component<Props, State> {
                 <TextBoldIcon
                   onClick={() => {
                     this.updateObjectText(shapeObject.id, {
-                      ...shapeObject.textData,
+                      ...shapeObject.sticky,
                       fontStyle:
-                        shapeObject.textData?.fontStyle === 'bold'
+                        shapeObject.sticky?.fontStyle === 'bold'
                           ? 'normal'
                           : 'bold',
                     });
@@ -641,30 +827,75 @@ class DrawCanvas extends Component<Props, State> {
                 <TextUnderLineIcon
                   onClick={() => {
                     this.updateObjectText(shapeObject.id, {
-                      ...shapeObject.textData,
+                      ...shapeObject.sticky,
                       textDecoration:
-                        shapeObject.textData?.textDecoration === 'underline'
+                        shapeObject.sticky?.textDecoration === 'underline'
                           ? ''
                           : 'underline',
                     });
                   }}
                 />
               </div>
-              <div className="canvas-text-toolbar-item action-button">
-                <TextColorIcon />
-              </div>
+              <label className="canvas-text-toolbar-item action-button">
+                <TextColorIcon
+                  style={{
+                    color: shapeObject.sticky?.fontColor,
+                  }}
+                />
+                <input
+                  type="color"
+                  hidden={true}
+                  onChange={event => {
+                    this.updateObjectText(shapeObject.id, {
+                      ...shapeObject.sticky,
+                      fontColor: event.target.value,
+                    });
+                  }}
+                  value={shapeObject.sticky?.fontColor}
+                />
+              </label>
               <div className="canvas-text-toolbar-item action-button">
                 <MarkerIcon />
               </div>
               <div className="canvas-text-toolbar-item">
                 <VerticalLineIcon />
               </div>
-              <div className="canvas-text-toolbar-item action-button">
-                <BorderStyleIcon />
-              </div>
-              <div className="canvas-text-toolbar-item action-button">
-                <FillColorIcon />
-              </div>
+              <label className="canvas-text-toolbar-item action-button">
+                <BorderStyleIcon
+                  style={{
+                    color: shapeObject.sticky?.stroke,
+                  }}
+                />
+                <input
+                  type="color"
+                  hidden={true}
+                  onChange={event => {
+                    this.updateObjectText(shapeObject.id, {
+                      ...shapeObject.sticky,
+                      stroke: event.target.value,
+                    });
+                  }}
+                  value={shapeObject.sticky?.stroke}
+                />
+              </label>
+              <label className="canvas-text-toolbar-item action-button">
+                <FillColorIcon
+                  style={{
+                    color: shapeObject.sticky?.backgroundColor,
+                  }}
+                />
+                <input
+                  type="color"
+                  hidden={true}
+                  onChange={event => {
+                    this.updateObjectText(shapeObject.id, {
+                      ...shapeObject.sticky,
+                      backgroundColor: event.target.value,
+                    });
+                  }}
+                  value={shapeObject.sticky?.backgroundColor}
+                />
+              </label>
               <div className="canvas-text-toolbar-item">
                 <VerticalLineIcon />
               </div>
@@ -697,8 +928,13 @@ class DrawCanvas extends Component<Props, State> {
                   <RectTransform
                     key={shapeObject.id}
                     data={shapeObject}
+                    onChangeStart={this.handleChangeStart}
+                    onChanging={this.handleChanging}
                     onChange={data => {
-                      this.updateShape(data, true);
+                      this.updateShape(data, {
+                        saveHistory: true,
+                        emitEvent: true,
+                      });
                     }}
                     onSelect={() => {
                       this.handleSelect(shapeObject);
@@ -711,8 +947,13 @@ class DrawCanvas extends Component<Props, State> {
                     <EllipseTransform
                       key={shapeObject.id}
                       data={shapeObject}
+                      onChangeStart={this.handleChangeStart}
+                      onChanging={this.handleChanging}
                       onChange={data => {
-                        this.updateShape(data, true);
+                        this.updateShape(data, {
+                          saveHistory: true,
+                          emitEvent: true,
+                        });
                       }}
                       onSelect={() => {
                         this.handleSelect(shapeObject);
@@ -726,8 +967,13 @@ class DrawCanvas extends Component<Props, State> {
                     <StarTransform
                       key={shapeObject.id}
                       data={shapeObject}
+                      onChangeStart={this.handleChangeStart}
+                      onChanging={this.handleChanging}
                       onChange={data => {
-                        this.updateShape(data, true);
+                        this.updateShape(data, {
+                          saveHistory: true,
+                          emitEvent: true,
+                        });
                       }}
                       onSelect={() => {
                         this.handleSelect(shapeObject);
@@ -740,34 +986,37 @@ class DrawCanvas extends Component<Props, State> {
                   <TriangleTransform
                     key={shapeObject.id}
                     data={shapeObject}
+                    onChangeStart={this.handleChangeStart}
+                    onChanging={this.handleChanging}
                     onChange={data => {
-                      this.updateShape(data, true);
+                      this.updateShape(data, {
+                        saveHistory: true,
+                        emitEvent: true,
+                      });
                     }}
                     onSelect={() => {
                       this.handleSelect(shapeObject);
                     }}
                   />
                 );
-              } else if (shapeObject.type === 'Sticky') {
+              } else if (
+                shapeObject.type === 'Text' ||
+                shapeObject.type === 'Sticky'
+              ) {
                 return (
                   <StickyTransform
                     key={shapeObject.id}
                     data={shapeObject}
-                    onChange={data => {
-                      this.updateShape(data, true);
+                    onChangeStart={this.handleChangeStart}
+                    onChanging={this.handleChanging}
+                    onEdit={data => {
+                      this.updateShape(data);
                     }}
-                    onSelect={() => {
-                      this.handleSelect(shapeObject);
-                    }}
-                  />
-                );
-              } else if (shapeObject.type === 'Text') {
-                return (
-                  <TextTransform
-                    key={shapeObject.id}
-                    data={shapeObject}
                     onChange={data => {
-                      this.updateShape(data, true);
+                      this.updateShape(data, {
+                        saveHistory: true,
+                        emitEvent: true,
+                      });
                     }}
                     onSelect={() => {
                       this.handleSelect(shapeObject);
@@ -776,6 +1025,47 @@ class DrawCanvas extends Component<Props, State> {
                 );
               }
             })}
+
+            {(this.props.drawingTool === 'Text' ||
+              this.props.drawingTool === 'Sticky') &&
+              this.isDrawing && (
+                <Group
+                  x={this.state.points.x}
+                  y={this.state.points.y}
+                  width={this.state.points.rect?.width as number}
+                  height={this.state.points.rect?.height as number}
+                >
+                  <Rect
+                    x={0}
+                    y={0}
+                    width={this.state.points.rect?.width as number}
+                    height={this.state.points.rect?.height as number}
+                    stroke="#000000"
+                    dash={[10, 10]}
+                    fill={
+                      this.props.drawingTool === 'Sticky'
+                        ? '#f5ecfd'
+                        : undefined
+                    }
+                  />
+                  <Text
+                    x={0}
+                    y={0}
+                    width={this.state.points.rect?.width as number}
+                    height={this.state.points.rect?.height as number}
+                    align="center"
+                    verticalAlign="middle"
+                    fill={
+                      this.props.drawingTool === 'Text' ? '#bebebe' : '#000000'
+                    }
+                    text={
+                      this.props.drawingTool === 'Text'
+                        ? 'Type something'
+                        : 'Sticky notes area'
+                    }
+                  />
+                </Group>
+              )}
 
             {this.props.drawingTool === 'Star' && this.isDrawing && (
               <Star
@@ -881,16 +1171,13 @@ class DrawCanvas extends Component<Props, State> {
               />
             )}
 
-            {this.props.drawingTool === 'Sticky' && (
+            {this.props.drawingTool === 'Sticky' && this.isDrawing && (
               <>
                 <Rect
                   x={this.state.points.x}
                   y={this.state.points.y}
                   width={this.state.points.sticky?.width}
                   height={this.state.points.sticky?.height}
-                  cornerRadius={
-                    this.state.points.sticky?.cornerRadius as number
-                  }
                   stroke="#000000"
                   dash={[10, 10]}
                   {...{

@@ -3,7 +3,7 @@ import { http } from './http-instance';
 import {
   BoardInterface,
   BoardResponseInterface,
-} from './interfaces/board.interface';
+} from './interfaces/Board.interface';
 
 export class BoardApiService {
   static create(data: BoardInterface): Observable<BoardResponseInterface> {

@@ -113,4 +113,5 @@ export interface TransformShapeProps {
   data: ObjectInterface;
   onChange(data: ObjectInterface): void;
   onSelect(event: Konva.KonvaEventObject<MouseEvent>): void;
+  draggable?: boolean;
 }
