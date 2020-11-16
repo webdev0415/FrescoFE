@@ -39,7 +39,6 @@ import {
 } from '../../../services/APIService/interfaces';
 import { CanvasBoardTemplates } from '../../components/CanvasBoardTemplates';
 import { CanvasCategoryService } from '../../../services/APIService/CanvasCategory.service';
-import { v4 as uuidv4 } from 'uuid';
 
 const { TabPane } = Tabs;
 export const PERMISSION = {
@@ -50,12 +49,6 @@ export const PERMISSION = {
 
 interface Props {
   match?: any;
-}
-
-interface CanvasFormState {
-  name: string;
-  orgId: string;
-  data: string;
 }
 
 export const Dashboard = memo((props: Props) => {
@@ -74,6 +67,7 @@ export const Dashboard = memo((props: Props) => {
   // const [boardsList, setBoardsList] = useState<BoardInterface[]>([]);
   const [showAddNewBoard, setAddNewBoard] = useState(false);
   const [isShowAddNewCanvas, setIsShowAddNewCanvas] = useState(false);
+  const [loadingCreateCanvas, setLoadingCreateCanvas] = useState(false);
 
   const orgId = props?.match?.params?.id;
 
@@ -120,19 +114,23 @@ export const Dashboard = memo((props: Props) => {
   };
 
   const createCanvas = React.useCallback(() => {
+    setLoadingCreateCanvas(true);
     const data = {
       name: canvasName,
       orgId: orgId,
       data: '',
       categoryId: categoryId,
-      imageId: uuidv4(),
+      imageId: '',
     };
+
     CanvasApiService.create(data).subscribe(
       data => {
         console.log(data);
+        setLoadingCreateCanvas(false);
         history.push(`/canvas/${data.id}/canvas`);
       },
       error => {
+        setLoadingCreateCanvas(false);
         console.error(error.response);
       },
     );
@@ -358,6 +356,7 @@ export const Dashboard = memo((props: Props) => {
                 icon={<PlusOutlined />}
                 onClick={createCanvas}
                 disabled={!categoryId || !canvasName}
+                loading={loadingCreateCanvas}
               >
                 Create Canvas
               </Button>

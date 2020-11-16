@@ -8,7 +8,7 @@
 
 import React, { useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { Switch, Route } from 'react-router-dom';
+import { Switch, Route, useHistory } from 'react-router-dom';
 import { withRouter } from 'react-router';
 import { useInjectReducer } from 'utils/redux-injectors';
 import { GlobalStyle } from 'styles/global-styles';
@@ -41,6 +41,7 @@ import { CreateBoard } from './containers/CreateBoard';
 function AppComponent(props) {
   useInjectReducer({ key: sliceKey, reducer });
   const { Footer } = Layout;
+  const history = useHistory();
 
   const dispatch = useDispatch();
 
@@ -51,9 +52,15 @@ function AppComponent(props) {
       );
       if (authInfo) {
         dispatch(actions.setAuthInformation(authInfo));
+        if (
+          props.location.pathname.includes('auth') &&
+          props.location.pathname !== '/auth/welcome-page'
+        ) {
+          history.push('/');
+        }
       }
     }
-  }, [dispatch]);
+  }, [dispatch, history, props.location.pathname]);
 
   return (
     <>

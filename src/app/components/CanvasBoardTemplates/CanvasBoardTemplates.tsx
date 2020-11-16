@@ -1,21 +1,23 @@
-import React, { memo, MouseEvent, useEffect, useState } from 'react';
-import { Button, Tabs, Input } from 'antd';
-import { CloseOutlined } from '@ant-design/icons';
+import React, { memo, useEffect, useState } from 'react';
+import { Button, Input, Tabs } from 'antd';
+import { CloseOutlined, PlusOutlined } from '@ant-design/icons';
 import { CanvasCategoryService } from '../../../services/APIService/CanvasCategory.service';
 import { zip } from 'rxjs';
 import {
-  CanvasApiService,
   BoardApiService,
+  CanvasApiService,
 } from '../../../services/APIService';
 import {
   CanvasCategoryInterface,
   CanvasResponseInterface,
 } from '../../../services/APIService/interfaces';
 import { useHistory } from 'react-router-dom';
+
 const { TabPane } = Tabs;
 
 interface Props {
   orgId: string;
+
   onClose();
 }
 
@@ -27,6 +29,7 @@ interface State {
 
 export const CanvasBoardTemplates = memo((props: Props) => {
   const [boardName, setBoardName] = useState('');
+  const [loadingCreateBoard, setLoadingCreateBoard] = useState('');
   const [state, setState] = useState<State>({
     boards: [],
     categories: [],
@@ -36,16 +39,22 @@ export const CanvasBoardTemplates = memo((props: Props) => {
   const history = useHistory();
 
   const handleCreateBoard = (id: string) => {
+    setLoadingCreateBoard(id);
     CanvasApiService.getById(id).subscribe(canvas => {
       BoardApiService.create({
         data: canvas.data,
         name: boardName,
         orgId: props.orgId,
-      }).subscribe(board => {
-        props.onClose();
-        history.push(`/create-board/${props.orgId}/${board.id}`);
-        console.log(board);
-      });
+      }).subscribe(
+        board => {
+          props.onClose();
+          history.push(`/create-board/${props.orgId}/${board.id}`);
+          console.log(board);
+        },
+        () => {
+          setLoadingCreateBoard('');
+        },
+      );
     });
   };
 
@@ -112,6 +121,8 @@ export const CanvasBoardTemplates = memo((props: Props) => {
                           <Button
                             type="primary"
                             disabled={!boardName}
+                            icon={<PlusOutlined />}
+                            loading={loadingCreateBoard === board.id}
                             onClick={() => handleCreateBoard(board.id)}
                           >
                             Select

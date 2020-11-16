@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="d8d97e3b-fce0-48b8-9b11-9bfa870716c3" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/src/app/components/UserInfoModal/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/components/CanvasBoardTemplates/CanvasBoardTemplates.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/components/CanvasBoardTemplates/CanvasBoardTemplates.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/components/DrawCanvas/DrawCanvas.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/components/DrawCanvas/DrawCanvas.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/containers/Dashboard/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/Dashboard/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/containers/ListOrganizations/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/ListOrganizations/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/APIService/interfaces/canvas.interface.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/APIService/interfaces/canvas.interface.ts" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="1kNL6Cv8ISrPSwrHmxv6ya8zvX5" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../explority-web" />
+    <property name="vue.rearranger.settings.migration" value="true" />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="d8d97e3b-fce0-48b8-9b11-9bfa870716c3" name="Default Changelist" comment="" />
+      <created>1605535928532</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1605535928532</updated>
+      <workItem from="1605535931513" duration="18000" />
+    </task>
+    <servers />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="774" y="311" width="424" height="485" key="FileChooserDialogImpl" timestamp="1605535947419">
+      <screen x="63" y="27" width="1857" height="1053" />
+    </state>
+    <state x="774" y="311" width="424" height="485" key="FileChooserDialogImpl/63.27.1857.1053/1920.0.1366.768@63.27.1857.1053" timestamp="1605535947419" />
+  </component>
+</project>

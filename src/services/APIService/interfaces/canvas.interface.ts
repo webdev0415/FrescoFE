@@ -1,27 +1,9 @@
-interface abd {
-  id: string;
-  name: string;
-  orgId: string;
-  createdUserId: string;
-  data: string;
-  imageId: null;
-  categoryId: string;
-  createdAt: null;
-  updatedAt: string;
-  category: {
-    id: string;
-    name: string;
-    createdAt: string;
-    updatedAt: string;
-  };
-}
-
 export interface CanvasInterface {
   name: string;
   orgId: string;
   data: string;
   categoryId: string;
-  imageId: string;
+  imageId?: string;
 }
 
 export interface CanvasResponseInterface extends CanvasInterface {
