@@ -1,4 +1,4 @@
-import { ObjectInterface, PointsInterface, TextProperties } from './types';
+import { ObjectInterface, PointsInterface, StickyProperty } from './types';
 
 export const fontNames = [
   'Comic Sans MS',
@@ -42,21 +42,24 @@ export const defaultObjectState: ObjectInterface = {
   isFocused: false,
   isSelected: false,
   isEditing: false,
+  isLocked: false,
   ...defaultPointState,
   shapeConfig: {
     ...defaultShapeConfig,
   },
 };
 
-export const defaultTextProperties: TextProperties = {
+export const defaultTextProperties: StickyProperty = {
   height: 200,
   width: 200,
   fontFamily: 'Arial',
   fontSize: 12,
-  text:
-    "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s",
+  text: '',
   ellipsis: true,
   padding: 20,
   align: 'center',
+  fontColor: '#000000',
+  backgroundColor: undefined,
+  stroke: undefined,
   verticalAlign: 'middle',
 };

@@ -1,4 +1,4 @@
-import { Card, Col, Dropdown, Menu, Row, Typography } from 'antd';
+import { Card, Col, Dropdown, Menu, Row, Skeleton, Typography } from 'antd';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useInjectReducer, useInjectSaga } from 'utils/redux-injectors';
@@ -41,56 +41,93 @@ export const BoardList = (props: BoardListProps) => {
 
   return (
     <div className="card-grid">
-      {boardList.boardList.length ? (
-        boardList.boardList.map((item, index) => (
-          <div className="cards-board" key={index}>
-            <img
-              alt="example"
-              src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
-            />
-            <div className="card-footer">
-              <div className="card-action">
-                <Dropdown
-                  overlay={
-                    <Menu>
-                      <Menu.Item key="0">
-                        <Link to={`/create-board/${item.orgId}/${item.id}`}>
-                          Edit
-                        </Link>
-                      </Menu.Item>
-                      <Menu.Item key="1">
-                        <a href="http://www.taobao.com/">Action</a>
-                      </Menu.Item>
-                      <Menu.Divider />
-                      <Menu.Item
-                        key="3"
-                        onClick={() => handleDeleteBoard(item.id)}
-                      >
-                        Delete
-                      </Menu.Item>
-                    </Menu>
-                  }
-                  trigger={['click']}
-                >
-                  <div className="action-button">
-                    <span className="material-icons">more_vert</span>
-                  </div>
-                </Dropdown>
-              </div>
-              <div className="card-title">QuestionPro Journey Map</div>
-              <div className="card-timestamp">Opened Oct 12, 2020</div>
-              <div className="card-users">
-                <span className="material-icons">group</span>
-                <span className="user-title">{item.name}</span>
+      {boardList.loading &&
+        Array(5)
+          .fill(1)
+          .map((item, index) => (
+            <div className="cards-board" key={item + index}>
+              <Skeleton.Image />
+
+              <div className="card-footer">
+                <Skeleton
+                  active
+                  paragraph={{ rows: 0, style: { display: 'none' } }}
+                  title={{ width: '100%', style: { marginTop: 0 } }}
+                  className="card-title"
+                />
+                <Skeleton
+                  active
+                  paragraph={{ rows: 0, style: { display: 'none' } }}
+                  title={{ width: '100%', style: { marginTop: 0 } }}
+                  className="card-timestamp"
+                />
+
+                <Skeleton
+                  active
+                  paragraph={{ rows: 0, style: { display: 'none' } }}
+                  title={{ width: '100%', style: { marginTop: 0 } }}
+                  className="card-users"
+                />
               </div>
             </div>
-          </div>
-        ))
-      ) : (
-        <Typography.Title style={{ marginLeft: 10 }}>
-          No Boards
-        </Typography.Title>
-      )}
+          ))}
+      {boardList.boardList.length && !boardList.loading
+        ? boardList.boardList.map((item, index) => (
+            <div className="cards-board" key={index}>
+              <img
+                alt="example"
+                src={
+                  item.path ||
+                  'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png'
+                }
+              />
+              <div className="card-footer">
+                <div className="card-action">
+                  <Dropdown
+                    overlay={
+                      <Menu>
+                        <Menu.Item key="0">
+                          <Link to={`/canvas/${item.id}/board`}>Edit</Link>
+                        </Menu.Item>
+                        <Menu.Item key="1">
+                          <a href="http://www.taobao.com/">Action</a>
+                        </Menu.Item>
+                        <Menu.Divider />
+                        <Menu.Item
+                          key="3"
+                          onClick={() => handleDeleteBoard(item.id)}
+                        >
+                          Delete
+                        </Menu.Item>
+                      </Menu>
+                    }
+                    trigger={['click']}
+                  >
+                    <div className="action-button">
+                      <span className="material-icons">more_vert</span>
+                    </div>
+                  </Dropdown>
+                </div>
+                <div className="card-title">QuestionPro Journey Map</div>
+                <div className="card-timestamp">Opened Oct 12, 2020</div>
+                <div className="card-users">
+                  <span className="material-icons">group</span>
+                  <span className="user-title">{item.name}</span>
+                </div>
+              </div>
+            </div>
+          ))
+        : !boardList.loading && (
+            <h3
+              style={{
+                width: '100%',
+                color: 'red',
+                textAlign: 'center',
+              }}
+            >
+              No Boards
+            </h3>
+          )}
     </div>
   );
 };

@@ -1,5 +1,6 @@
 import Konva from 'konva';
 import { RouteChildrenProps } from 'react-router';
+import { CanvasResponseInterface } from '../../../services/APIService/interfaces';
 
 export type ShapeObjectType =
   | 'Rect'
@@ -8,6 +9,7 @@ export type ShapeObjectType =
   | 'Ellipse'
   | 'Star'
   | 'Text'
+  | 'Line'
   | 'Sticky'
   | null;
 
@@ -23,10 +25,18 @@ export interface ShapeProperty {
   width: number;
 }
 
-export interface TextProperties extends Partial<ShapeProperty> {
+export interface CanvasPoints {
+  x: number;
+  y: number;
+}
+
+export interface StickyProperty extends Partial<ShapeProperty> {
   text?: string;
   fontFamily?: string;
   fontSize?: number;
+  fontColor?: string;
+  backgroundColor?: string;
+  stroke?: string;
   fontStyle?: FontStyleType;
   fontVariant?: FontVariantType;
   align?: TextAlignType;
@@ -37,10 +47,6 @@ export interface TextProperties extends Partial<ShapeProperty> {
   textDecoration?: TextDecoration;
   wrap?: WrapType;
   ellipsis?: boolean;
-}
-
-export interface StickyProperty extends ShapeProperty {
-  cornerRadius: number;
 }
 
 export interface EllipseProperties {
@@ -60,15 +66,14 @@ export interface StarProperties {
   numPoints: number;
 }
 
-export interface PointsInterface {
-  x: number;
-  y: number;
-  textData?: TextProperties;
+export interface PointsInterface extends CanvasPoints {
+  textData?: StickyProperty;
   sticky?: StickyProperty;
   rect?: RectangleProperties;
   star?: StarProperties;
   ellipse?: EllipseProperties;
   triangle?: TriangleProperties;
+  line?: CanvasPoints[];
   type: ShapeObjectType;
 }
 
@@ -79,20 +84,18 @@ export interface ObjectInterface extends PointsInterface {
   isFocused: boolean;
   isSelected: boolean;
   isEditing: boolean;
-}
-export interface SelectedStickyInterface extends PointsInterface {
-  id: string;
-  shapeConfig?: Konva.ShapeConfig;
+  isLocked: boolean;
 }
 
 export interface Props
-  extends RouteChildrenProps<{ id: string; orgId: string }> {
+  extends RouteChildrenProps<{ id: string; type: string }> {
   className: string;
   drawingTool: ShapeObjectType;
   zoomLevel: number;
 }
 
 export interface State {
+  id: string;
   objects: ObjectInterface[];
   points: ObjectInterface;
   prevHistory: ObjectInterface[];
@@ -100,8 +103,10 @@ export interface State {
   canvas: {
     name: string;
     orgId: string;
+    categoryId: string;
+    imageId: string;
   };
-  selectedStickyData: SelectedStickyInterface | null;
+  selectedStickyData: ObjectInterface | null;
 }
 
 export interface FontInterface {
@@ -112,6 +117,18 @@ export interface FontInterface {
 export interface TransformShapeProps {
   data: ObjectInterface;
   onChange(data: ObjectInterface): void;
+  onChanging(data: ObjectInterface): void;
+  onChangeStart(data: ObjectInterface): void;
   onSelect(event: Konva.KonvaEventObject<MouseEvent>): void;
   draggable?: boolean;
+}
+
+export interface BoardEventInterface {
+  boardId: string;
+  data: string;
+}
+
+export interface ObjectSocketInterface {
+  id: string;
+  data: ObjectInterface;
 }

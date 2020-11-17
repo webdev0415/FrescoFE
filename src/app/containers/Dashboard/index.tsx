@@ -65,7 +65,7 @@ export const Dashboard = memo((props: Props) => {
   const [categories, setCategories] = useState<CanvasCategoryInterface[]>([]);
   const [categoryId, setCategoryId] = useState('');
   const [canvasList, setCanvasList] = useState<CanvasResponseInterface[]>([]);
-  const [boardsList, setBoardsList] = useState([]);
+  const [boardsList, setBoardsList] = useState<any>([]);
   const [showAddNewBoard, setAddNewBoard] = useState(false);
   const [isShowAddNewCanvas, setIsShowAddNewCanvas] = useState(false);
   const [loadingCreateCanvas, setLoadingCreateCanvas] = useState(false);
@@ -330,114 +330,6 @@ export const Dashboard = memo((props: Props) => {
               {organization && <BoardList orgId={organization.orgId} />}
             </div>
           )}
-          {/* 
-          <div className="card-section">
-            <Button
-              type="primary"
-              icon={<PlusOutlined />}
-              onClick={() => setAddNewBoard(true)}
-            >
-              New Board
-            </Button>
-            <h3 className="card-section-title">My Boards</h3>
-            <div className="card-grid">
-              {boardsList.map((data, index) => (
-                <div className="cards-board" key={index}>
-                  <img
-                    alt="example"
-                    style={{
-                      border: '1px solid #f0f2f5',
-                      backgroundColor: 'white',
-                    }}
-                    src={
-                      data.path ||
-                      'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png'
-                    }
-                  />
-
-                  <div className="card-footer">
-                    <div className="card-action">
-                      <Dropdown
-                        overlay={
-                          <Menu>
-                            <Menu.Item key="0">
-                              <Link to={`/canvas/${data.id}/board`}>Edit</Link>
-                            </Menu.Item>
-                            <Menu.Item key="1">
-                              <a href="http://www.taobao.com/">Action</a>
-                            </Menu.Item>
-                            <Menu.Divider />
-                            <Menu.Item
-                              key="3"
-                              onClick={() =>
-                                handleDeleteBoard(data.id, data.createdUserId)
-                              }
-                            >
-                              Delete
-                            </Menu.Item>
-                          </Menu>
-                        }
-                        trigger={['click']}
-                      >
-                        <div className="action-button">
-                          <span className="material-icons">more_vert</span>
-                        </div>
-                      </Dropdown>
-                    </div>
-                    <div className="card-title">{data.name}</div>
-                    <div className="card-timestamp">Opened Oct 12, 2020</div>
-                    <div className="card-users">
-                      <span className="material-icons">group</span>
-                      <span className="user-title">
-                        Anup Surendan, JJ and 5+ collaborating
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              ))}
-              {!loadingBoardsList && !boardsList.length && (
-                <h3
-                  style={{
-                    width: '100%',
-                    color: 'red',
-                    textAlign: 'center',
-                  }}
-                >
-                  No Boards
-                </h3>
-              )}
-              {loadingBoardsList &&
-                Array(5)
-                  .fill(1)
-                  .map((item, index) => (
-                    <div className="cards-board" key={item + index}>
-                      <Skeleton.Image />
-
-                      <div className="card-footer">
-                        <Skeleton
-                          active
-                          paragraph={{ rows: 0, style: { display: 'none' } }}
-                          title={{ width: '100%', style: { marginTop: 0 } }}
-                          className="card-title"
-                        />
-                        <Skeleton
-                          active
-                          paragraph={{ rows: 0, style: { display: 'none' } }}
-                          title={{ width: '100%', style: { marginTop: 0 } }}
-                          className="card-timestamp"
-                        />
-
-                        <Skeleton
-                          active
-                          paragraph={{ rows: 0, style: { display: 'none' } }}
-                          title={{ width: '100%', style: { marginTop: 0 } }}
-                          className="card-users"
-                        />
-                      </div>
-                    </div>
-                  ))}
-            </div>
-          )} */}
         </TabPane>
         <TabPane tab={<img src={dashboardIcon} alt="dashboard" />} key="2">
           <div className="card-section">
@@ -507,7 +399,7 @@ export const Dashboard = memo((props: Props) => {
                     textAlign: 'center',
                   }}
                 >
-                  No Boards
+                  No Canvases
                 </h3>
               )}
               {canvasList.map((data, index) => (

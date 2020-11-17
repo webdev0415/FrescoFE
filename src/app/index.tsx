@@ -24,7 +24,6 @@ import { EmailConfirmation } from './containers/EmailConfirmation';
 import { CheckEmailView } from './containers/CheckEmailView/Loadable';
 import { WelcomePage } from './containers/WelcomePage';
 import { SelectOrganizationPage } from './containers/SelectOrganizationPage';
-import { SelectBoard } from './containers/SelectBoard';
 import { actions } from './slice';
 
 // Containers
@@ -36,7 +35,7 @@ import { PrivateRoute } from '../services/PrivateRouter';
 import { SignupForInvitation } from './containers/SignupForInvitation/Loadable';
 import { CreateCanvas } from './containers/CreateCanvas';
 import { GuestRoute } from 'services/GuestRoute';
-import { CreateBoard } from './containers/CreateBoard';
+import { CreateBoard } from './containers/CreateBoard/Loadable';
 
 function AppComponent(props) {
   useInjectReducer({ key: sliceKey, reducer });
@@ -85,19 +84,21 @@ function AppComponent(props) {
         <GuestRoute exact path="/auth/welcome-page" component={WelcomePage} />
 
         <PrivateRoute exact path="/organization/:id" component={Dashboard} />
-        <PrivateRoute exact path="/board/:id" component={SelectBoard} />
         <PrivateRoute exact path="/create-canvas" component={CreateCanvas} />
-        <PrivateRoute
+        {/* <PrivateRoute
           exact
           path="/canvas/:orgId/:id"
           component={CreateCanvas}
-        />
+        /> */}
         <PrivateRoute exact path="/" component={ListOrganizations} />
         <PrivateRoute
           exact
           path="/create-board/:orgId/:id"
           component={CreateBoard}
         />
+        <PrivateRoute exact path="/canvas/:id/board" component={CreateBoard} />
+
+        <PrivateRoute exact path="/canvas/:id/:type" component={CreateCanvas} />
 
         <Route exact path="/invite/:token" component={VerifyInvitation} />
         <PrivateRoute

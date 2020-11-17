@@ -50,7 +50,7 @@ export const CanvasBoardTemplates = memo((props: Props) => {
       }).subscribe(
         board => {
           props.onClose();
-          history.push(`/create-board/${props.orgId}/${board.id}`);
+          history.push(`/canvas/${board.id}/board`);
           console.log(board);
         },
         () => {

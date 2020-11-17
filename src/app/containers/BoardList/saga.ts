@@ -3,6 +3,7 @@ import { message } from 'antd';
 import { actions } from './slice';
 import axios from 'axios';
 import Auth from 'services/Auth';
+axios.defaults.headers.common['Authorization'] = `Bearer ${Auth.getToken()}`;
 
 // import { actions as globalActions } from '../../slice';
 export function* getBoards(action) {
