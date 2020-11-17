@@ -1,14 +1,12 @@
-import React, { useCallback, useEffect, useRef } from 'react';
-import { Text, Transformer } from 'react-konva';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { Line, Transformer } from 'react-konva';
 import Konva from 'konva';
-import {
-  StickyProperty,
-  TransformShapeProps,
-} from '../../../../components/DrawCanvas/types';
+import { TransformShapeProps } from '../../../../components/DrawCanvas/types';
 
-function TextTransform(props: TransformShapeProps): JSX.Element {
+function LineTransform(props: TransformShapeProps): JSX.Element {
   const { data, onSelect, onChange, onChanging, onChangeStart } = props;
-  const shapeRef = useRef<Konva.Text>(null);
+  const [focus, setFocus] = useState(false);
+  const shapeRef = useRef<Konva.Line>(null);
   const trRef = useRef<Konva.Transformer>(null);
 
   const boundBoxFunc = useCallback((oldBox, newBox) => {
@@ -20,21 +18,26 @@ function TextTransform(props: TransformShapeProps): JSX.Element {
 
   const onTransformEnd = useCallback(
     (e: Konva.KonvaEventObject<Event>) => {
-      const node = shapeRef.current as Konva.Text;
+      const node = shapeRef.current as Konva.Line;
       const scaleX = node?.scaleX();
       const scaleY = node?.scaleY();
       node?.scaleX(1);
       node?.scaleY(1);
       onChange({
         ...data,
-        x: Math.round(node?.x()),
-        y: Math.round(node?.y()),
-        rotation: Math.round(node.attrs.rotation),
-        textData: {
-          ...(data.textData as StickyProperty),
-          width: Math.round(Math.max(5, node?.width() * scaleX)),
-          height: Math.round(Math.max(node?.height() * scaleY)),
-        },
+        x: node?.x(),
+        y: node?.y(),
+        rotation: Math.round(node?.attrs.rotation as number),
+        line: [
+          {
+            x: 0,
+            y: 0,
+          },
+          {
+            x: Math.max(5, node?.width() * scaleX),
+            y: Math.max(5, node?.height() * scaleY),
+          },
+        ],
       });
     },
     [data, onChange],
@@ -42,7 +45,7 @@ function TextTransform(props: TransformShapeProps): JSX.Element {
 
   const onTransform = useCallback(
     (e: Konva.KonvaEventObject<Event>) => {
-      const node = shapeRef.current as Konva.Text;
+      const node = shapeRef.current as Konva.Line;
       const scaleX = node?.scaleX();
       const scaleY = node?.scaleY();
       node?.scaleX(1);
@@ -52,11 +55,16 @@ function TextTransform(props: TransformShapeProps): JSX.Element {
         x: node?.x(),
         y: node?.y(),
         rotation: Math.round(node?.attrs.rotation as number),
-        rect: {
-          width: Math.max(5, node?.width() * scaleX),
-          height: Math.max(node?.height() * scaleY),
-          cornerRadius: data.rect?.cornerRadius as number,
-        },
+        line: [
+          {
+            x: node?.x(),
+            y: node?.y(),
+          },
+          {
+            x: Math.max(5, node?.width() * scaleX),
+            y: Math.max(5, node?.height() * scaleY),
+          },
+        ],
       });
     },
     [data, onChanging],
@@ -76,6 +84,7 @@ function TextTransform(props: TransformShapeProps): JSX.Element {
 
   const onDragEnd = useCallback(
     e => {
+      console.log(e);
       onChange({
         ...data,
         x: e.target.x(),
@@ -88,24 +97,32 @@ function TextTransform(props: TransformShapeProps): JSX.Element {
   useEffect(() => {
     if (data.isSelected) {
       // we need to attach transformer manually
-      trRef.current?.nodes([shapeRef.current as Konva.Text]);
+      trRef.current?.nodes([shapeRef.current as Konva.Line]);
       trRef.current?.getLayer()?.batchDraw();
     }
   }, [data.isSelected]);
 
   return (
     <React.Fragment>
-      <Text
-        id={data.id}
-        fill="#000000"
+      <Line
         x={data.x}
         y={data.y}
-        fillEnabled={true}
+        points={(() => {
+          const points: number[] = [];
+          data.line?.forEach(point => {
+            points.push(point.x);
+            points.push(point.y);
+          });
+          return points;
+        })()}
+        stroke="#000000"
+        strokeWidth={focus ? 10 : 2}
+        lineCap="round"
+        lineJoin="round"
+        id={data.id}
         onClick={onSelect}
         onTap={onSelect}
         ref={shapeRef}
-        {...data.textData}
-        text={data.sticky?.text ? data.sticky?.text : 'Sticky notes area'}
         draggable={!data.isLocked}
         onTransformStart={() => onChangeStart(data)}
         // onTransform={onTransform}
@@ -114,7 +131,13 @@ function TextTransform(props: TransformShapeProps): JSX.Element {
         // onDragMove={onDragMove}
         onDragEnd={onDragEnd}
         rotation={data.rotation}
-        opacity={data.isLocked ? 0.5 : 0.8}
+        opacity={data.isLocked ? 0.8 : 1}
+        onMouseEnter={() => {
+          setFocus(true);
+        }}
+        onMouseLeave={() => {
+          setFocus(false);
+        }}
       />
       {data.isSelected && (
         <Transformer ref={trRef} boundBoxFunc={boundBoxFunc} />
@@ -123,4 +146,4 @@ function TextTransform(props: TransformShapeProps): JSX.Element {
   );
 }
 
-export default TextTransform;
+export default LineTransform;

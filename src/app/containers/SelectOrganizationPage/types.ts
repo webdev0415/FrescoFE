@@ -1,6 +1,6 @@
 /* --- STATE --- */
 export interface SelectOrganizationPageState {
-  loading : boolean;
+  loading: boolean;
 }
 
 export type ContainerState = SelectOrganizationPageState;

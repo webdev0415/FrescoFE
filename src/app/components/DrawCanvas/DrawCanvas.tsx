@@ -8,6 +8,7 @@ import {
   Stage,
   Star,
   Text,
+  Line,
 } from 'react-konva';
 import { v4 as uuidv4 } from 'uuid';
 import Konva from 'konva';
@@ -24,6 +25,7 @@ import { defaultObjectState, fontNames } from './constants';
 import { Modal, Select } from 'antd';
 import {
   EllipseTransform,
+  LineTransform,
   RectTransform,
   StarTransform,
   StickyTransform,
@@ -48,7 +50,6 @@ import {
   CanvasApiService,
   ImageUploadingService,
 } from '../../../services/APIService';
-import { ImageUploadResponseInterface } from '../../../services/APIService/interfaces';
 import { onMouseDown, onMouseMove, onMouseUp } from './utility';
 
 export enum BoardSocketEventEnum {
@@ -78,6 +79,7 @@ class DrawCanvas extends Component<Props, State> {
       name: '',
       orgId: '',
       categoryId: '',
+      imageId: '',
     },
   };
   stageRef: Konva.Stage | null = null;
@@ -343,36 +345,83 @@ class DrawCanvas extends Component<Props, State> {
     });
   }
 
-  save(): void {
+  uploadImage(): void {
     ImageUploadingService.imageUploadFromDataUrl(
       this.stageRef?.toDataURL({ pixelRatio: 1 }) as string,
       this.props.match?.params.type as string,
-    ).subscribe(
-      image => {
-        const data = JSON.stringify(
-          this.state.objects.map(item => ({
-            ...item,
-            isEditing: false,
-            isSelected: false,
-            isFocused: false,
-            isLocked: false,
-          })),
-        );
-        if (this.props.match?.params.type === 'canvas') {
-          this.saveCanvas(data, image);
-        } else if (this.props.match?.params.type === 'board') {
-          this.saveBoard(data, image);
-        }
-      },
-      error => {
-        console.error(error.response);
-      },
+    ).subscribe(image => {
+      this.setState(
+        {
+          canvas: {
+            ...this.state.canvas,
+            imageId: image.id,
+          },
+        },
+        () => {
+          if (this.props.match?.params.type === 'canvas') {
+            this.saveCanvas();
+          } else if (this.props.match?.params.type === 'board') {
+            this.saveBoard();
+          }
+        },
+      );
+    });
+  }
+
+  updateImage(): void {
+    ImageUploadingService.imageUpdateFromDataUrl(
+      this.stageRef?.toDataURL({ pixelRatio: 1 }) as string,
+      this.props.match?.params.type as string,
+      this.state.canvas.imageId,
+    ).subscribe(image => {
+      this.setState({
+        canvas: {
+          ...this.state.canvas,
+          imageId: image.id,
+        },
+      });
+    });
+  }
+
+  saveImage(): void {
+    if (!!this.state.canvas.imageId) {
+      this.updateImage();
+    } else {
+      this.uploadImage();
+    }
+  }
+
+  save(): void {
+    this.saveImage();
+    if (!!this.state.canvas.imageId) {
+      if (this.props.match?.params.type === 'canvas') {
+        this.saveCanvas();
+      } else if (this.props.match?.params.type === 'board') {
+        this.saveBoard();
+      }
+    }
+  }
+
+  getJsonData(): string {
+    return JSON.stringify(
+      this.state.objects.map(item => ({
+        ...item,
+        isEditing: false,
+        isSelected: false,
+        isFocused: false,
+        isLocked: false,
+      })),
     );
   }
 
-  saveBoard(data: string, image: ImageUploadResponseInterface): void {
+  saveBoard(): void {
+    const data = this.getJsonData();
+    const canvas = { ...this.state.canvas };
+    if (!canvas.imageId) {
+      delete canvas.imageId;
+    }
     BoardApiService.updateById(this.props.match?.params.id as string, {
-      ...this.state.canvas,
+      ...canvas,
       data: data,
     }).subscribe(
       response => {
@@ -384,11 +433,15 @@ class DrawCanvas extends Component<Props, State> {
     );
   }
 
-  saveCanvas(data: string, image: ImageUploadResponseInterface): void {
+  saveCanvas(): void {
+    const data = this.getJsonData();
+    const canvas = { ...this.state.canvas };
+    if (!canvas.imageId) {
+      delete canvas.imageId;
+    }
     CanvasApiService.updateById(this.props.match?.params.id as string, {
-      ...this.state.canvas,
+      ...canvas,
       data: data,
-      imageId: image.id,
     }).subscribe(
       response => {
         console.log(response);
@@ -417,15 +470,22 @@ class DrawCanvas extends Component<Props, State> {
         const canvasObjects = !!boardData.data
           ? JSON.parse(boardData.data)
           : [];
-        this.setState({
-          objects: canvasObjects,
-          canvas: {
-            orgId: boardData.orgId,
-            name: boardData.name,
-            categoryId: boardData.categoryId,
+        this.setState(
+          {
+            objects: canvasObjects,
+            canvas: {
+              orgId: boardData.orgId,
+              name: boardData.name,
+              categoryId: boardData.categoryId as string,
+              imageId: boardData.imageId as string,
+            },
           },
-        });
+          () => {
+            this.save();
+          },
+        );
       },
+
       error => {
         console.error(error);
       },
@@ -442,14 +502,20 @@ class DrawCanvas extends Component<Props, State> {
         const canvasObjects = !!canvasData.data
           ? JSON.parse(canvasData.data)
           : [];
-        this.setState({
-          objects: canvasObjects,
-          canvas: {
-            orgId: canvasData.orgId,
-            name: canvasData.name,
-            categoryId: canvasData.categoryId,
+        this.setState(
+          {
+            objects: canvasObjects,
+            canvas: {
+              orgId: canvasData.orgId,
+              name: canvasData.name,
+              categoryId: canvasData.categoryId,
+              imageId: canvasData.imageId as string,
+            },
           },
-        });
+          () => {
+            this.save();
+          },
+        );
       },
       error => {
         console.error(error);
@@ -565,6 +631,7 @@ class DrawCanvas extends Component<Props, State> {
       emitEvent: false,
     },
   ) => {
+    console.log('addCanvasShape', data, options);
     if (options.saveHistory) {
       this.updateHistory(JSON.parse(JSON.stringify(data)));
     }
@@ -1025,6 +1092,24 @@ class DrawCanvas extends Component<Props, State> {
                     }}
                   />
                 );
+              } else if (shapeObject.type === 'Line') {
+                return (
+                  <LineTransform
+                    key={shapeObject.id}
+                    data={shapeObject}
+                    onChangeStart={this.handleChangeStart}
+                    onChanging={this.handleChanging}
+                    onChange={data => {
+                      this.updateShape(data, {
+                        saveHistory: true,
+                        emitEvent: true,
+                      });
+                    }}
+                    onSelect={() => {
+                      this.handleSelect(shapeObject);
+                    }}
+                  />
+                );
               } else {
                 return <></>;
               }
@@ -1064,7 +1149,7 @@ class DrawCanvas extends Component<Props, State> {
                     }
                     text={
                       this.props.drawingTool === 'Text'
-                        ? 'Type something'
+                        ? 'Type something here'
                         : 'Sticky notes area'
                     }
                   />
@@ -1158,38 +1243,23 @@ class DrawCanvas extends Component<Props, State> {
                 />
               )}
 
-            {this.props.drawingTool === 'Text' && this.isDrawing && (
-              <Rect
-                x={this.state.points.x}
-                y={this.state.points.y}
-                width={this.state.points.sticky?.width}
-                height={this.state.points.sticky?.height}
-                stroke="#000000"
-                dash={[10, 10]}
-                {...{
-                  shadowBlur: 10,
-                  shadowOpacity: 0.6,
-                  shadowOffsetX: 10,
-                  shadowOffsetY: 10,
-                }}
-              />
-            )}
-
-            {this.props.drawingTool === 'Sticky' && this.isDrawing && (
+            {this.props.drawingTool === 'Line' && this.isDrawing && (
               <>
-                <Rect
+                <Line
                   x={this.state.points.x}
                   y={this.state.points.y}
-                  width={this.state.points.sticky?.width}
-                  height={this.state.points.sticky?.height}
+                  points={(() => {
+                    const points: number[] = [];
+                    this.state.points.line?.forEach(point => {
+                      points.push(point.x);
+                      points.push(point.y);
+                    });
+                    return points;
+                  })()}
                   stroke="#000000"
-                  dash={[10, 10]}
-                  {...{
-                    shadowBlur: 10,
-                    shadowOpacity: 0.6,
-                    shadowOffsetX: 10,
-                    shadowOffsetY: 10,
-                  }}
+                  strokeWidth={2}
+                  lineCap="round"
+                  lineJoin="round"
                 />
               </>
             )}

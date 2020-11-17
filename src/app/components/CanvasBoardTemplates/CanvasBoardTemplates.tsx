@@ -30,6 +30,7 @@ interface State {
 export const CanvasBoardTemplates = memo((props: Props) => {
   const [boardName, setBoardName] = useState('');
   const [loadingCreateBoard, setLoadingCreateBoard] = useState('');
+  const [activeKey, setActiveKey] = useState('');
   const [state, setState] = useState<State>({
     boards: [],
     categories: [],
@@ -45,6 +46,7 @@ export const CanvasBoardTemplates = memo((props: Props) => {
         data: canvas.data,
         name: boardName,
         orgId: props.orgId,
+        categoryId: activeKey,
       }).subscribe(
         board => {
           props.onClose();
@@ -68,7 +70,9 @@ export const CanvasBoardTemplates = memo((props: Props) => {
       CanvasApiService.getByOrganizationId(props.orgId),
     ).subscribe(
       ([categories, boards]) => {
-        console.log(categories, boards);
+        if (categories.length) {
+          setActiveKey(categories[0].id);
+        }
         setState({
           categories,
           boards,
@@ -95,7 +99,13 @@ export const CanvasBoardTemplates = memo((props: Props) => {
           Cancel
         </Button>
       </div>
-      <Tabs className="canvas-board-template">
+      <Tabs
+        className="canvas-board-template"
+        defaultActiveKey={activeKey}
+        onChange={key => {
+          setActiveKey(key);
+        }}
+      >
         {state.categories.map(category => (
           <TabPane tab={category.name} key={category.id}>
             <div className="card-section">
@@ -109,7 +119,14 @@ export const CanvasBoardTemplates = memo((props: Props) => {
                     >
                       <img
                         alt="example"
-                        src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
+                        style={{
+                          border: '1px solid #f0f2f5',
+                          backgroundColor: 'white',
+                        }}
+                        src={
+                          board.path ||
+                          'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png'
+                        }
                       />
                       <div className="card-footer card-board-footer">
                         <div className="card-title">{board.name}</div>

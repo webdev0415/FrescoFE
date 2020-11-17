@@ -6,23 +6,24 @@ import { Dropdown, Input, Menu, Slider, Switch } from 'antd';
 import { CheckOutlined, CopyOutlined } from '@ant-design/icons';
 import { DrawCanvas } from '../../components/DrawCanvas';
 import {
+  CircleShapeIcon,
+  CursorIcon,
+  RectangleShapeIcon,
+  RedoIcon,
+  RoundedRectangleShapeIcon,
+  ShapesIcon,
+  StarShapeIcon,
+  StickyNoteIcon,
   TextIcon,
+  TriangleShapeIcon,
+  UndoIcon,
+  VerticalLineIcon,
   ZoomInIcon,
   ZoomOutIcon,
-  RedoIcon,
-  UndoIcon,
-  CursorIcon,
-  ShapesIcon,
-  StickyNoteIcon,
-  StarShapeIcon,
-  RectangleShapeIcon,
-  RoundedRectangleShapeIcon,
-  TriangleShapeIcon,
-  CircleShapeIcon,
-  VerticalLineIcon,
 } from '../../components/CanvasIcons';
 import clsx from 'clsx';
 import pageIcon from '../../../assets/icons/page.svg';
+import { useHistory } from 'react-router-dom';
 
 export const CreateCanvas = memo(
   (props: RouteChildrenProps<{ id: string; type: string }>) => {
@@ -39,6 +40,7 @@ export const CreateCanvas = memo(
       | null
     >(null);
     const [showSubTools, setShowSubTools] = useState<string>('');
+    const history = useHistory();
     useEffect(() => {
       document.addEventListener('click', event => {
         const target = event.target as Node;
@@ -101,7 +103,14 @@ export const CreateCanvas = memo(
                   </Menu>
                 }
               >
-                <span id="save-canvas">Publish</span>
+                <span
+                  id="save-canvas"
+                  onClick={() => {
+                    window.history.back();
+                  }}
+                >
+                  Publish
+                </span>
               </Dropdown.Button>
             </div>
           </div>

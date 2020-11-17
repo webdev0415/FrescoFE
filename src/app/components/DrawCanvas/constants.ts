@@ -54,8 +54,7 @@ export const defaultTextProperties: StickyProperty = {
   width: 200,
   fontFamily: 'Arial',
   fontSize: 12,
-  text:
-    "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s",
+  text: '',
   ellipsis: true,
   padding: 20,
   align: 'center',
