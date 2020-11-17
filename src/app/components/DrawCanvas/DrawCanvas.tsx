@@ -1148,7 +1148,7 @@ class DrawCanvas extends Component<Props, State> {
                     }
                     text={
                       this.props.drawingTool === 'Text'
-                        ? 'Type something'
+                        ? 'Type something here'
                         : 'Sticky notes area'
                     }
                   />
@@ -1241,42 +1241,6 @@ class DrawCanvas extends Component<Props, State> {
                   }}
                 />
               )}
-
-            {this.props.drawingTool === 'Text' && this.isDrawing && (
-              <Rect
-                x={this.state.points.x}
-                y={this.state.points.y}
-                width={this.state.points.sticky?.width}
-                height={this.state.points.sticky?.height}
-                stroke="#000000"
-                dash={[10, 10]}
-                {...{
-                  shadowBlur: 10,
-                  shadowOpacity: 0.6,
-                  shadowOffsetX: 10,
-                  shadowOffsetY: 10,
-                }}
-              />
-            )}
-
-            {this.props.drawingTool === 'Sticky' && this.isDrawing && (
-              <>
-                <Rect
-                  x={this.state.points.x}
-                  y={this.state.points.y}
-                  width={this.state.points.sticky?.width}
-                  height={this.state.points.sticky?.height}
-                  stroke="#000000"
-                  dash={[10, 10]}
-                  {...{
-                    shadowBlur: 10,
-                    shadowOpacity: 0.6,
-                    shadowOffsetX: 10,
-                    shadowOffsetY: 10,
-                  }}
-                />
-              </>
-            )}
 
             {this.props.drawingTool === 'Line' && this.isDrawing && (
               <>

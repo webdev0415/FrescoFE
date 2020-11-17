@@ -372,6 +372,17 @@ export const Dashboard = memo((props: Props) => {
                   </div>
                 </div>
               ))}
+              {!loadingBoardsList && !boardsList.length && (
+                <h3
+                  style={{
+                    width: '100%',
+                    color: 'red',
+                    textAlign: 'center',
+                  }}
+                >
+                  No Boards
+                </h3>
+              )}
               {loadingBoardsList &&
                 Array(5)
                   .fill(1)
@@ -465,6 +476,17 @@ export const Dashboard = memo((props: Props) => {
 
             <h3 className="card-section-title">Custom Canvas</h3>
             <div className="card-grid">
+              {!loadingCanvasList && !canvasList.length && (
+                <h3
+                  style={{
+                    width: '100%',
+                    color: 'red',
+                    textAlign: 'center',
+                  }}
+                >
+                  No Boards
+                </h3>
+              )}
               {canvasList.map((data, index) => (
                 <div className="cards-board" key={index}>
                   <img

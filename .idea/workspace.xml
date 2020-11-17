@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="d0235698-fcbf-40bf-a9de-ad7a068db01b" name="Default Changelist" comment="">
+    <list default="true" id="d0235698-fcbf-40bf-a9de-ad7a068db01b" name="Default Changelist" comment="Canvas And Boards, Skeleton and Snapshots Working">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/components/DrawCanvas/DrawCanvas.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/components/DrawCanvas/DrawCanvas.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/components/DrawCanvas/components/StickyTransform/StickyTransform.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/components/DrawCanvas/components/StickyTransform/StickyTransform.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/components/DrawCanvas/components/TextTransform/TextTransform.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/components/DrawCanvas/components/TextTransform/TextTransform.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/components/DrawCanvas/constants.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/components/DrawCanvas/constants.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/components/DrawCanvas/utility/onMouseUp.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/components/DrawCanvas/utility/onMouseUp.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/containers/CreateCanvas/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/CreateCanvas/index.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/app/containers/Dashboard/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/Dashboard/index.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -22,7 +28,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="dev" />
+        <entry key="$PROJECT_DIR$" value="master" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -524,33 +530,33 @@
     </state>
     <state x="2339" y="340" key="FileChooserDialogImpl/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604689114206" />
     <state x="616" y="252" key="FileChooserDialogImpl/0.0.1600.868@0.0.1600.868" timestamp="1605221593094" />
-    <state width="1579" height="224" key="GridCell.Tab.0.bottom" timestamp="1605568542709">
+    <state width="1160" height="224" key="GridCell.Tab.0.bottom" timestamp="1605593688667">
       <screen x="0" y="0" width="1600" height="868" />
     </state>
     <state width="1190" height="271" key="GridCell.Tab.0.bottom/0.0.1600.868/1600.0.1920.1170@0.0.1600.868" timestamp="1604591845324" />
     <state width="1486" height="216" key="GridCell.Tab.0.bottom/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1605058499074" />
-    <state width="1579" height="224" key="GridCell.Tab.0.bottom/0.0.1600.868@0.0.1600.868" timestamp="1605568542709" />
+    <state width="1160" height="224" key="GridCell.Tab.0.bottom/0.0.1600.868@0.0.1600.868" timestamp="1605593688667" />
     <state width="1490" height="216" key="GridCell.Tab.0.bottom/0.0.1600.870/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604971621169" />
-    <state width="1579" height="224" key="GridCell.Tab.0.center" timestamp="1605568542709">
+    <state width="1160" height="224" key="GridCell.Tab.0.center" timestamp="1605593688666">
       <screen x="0" y="0" width="1600" height="868" />
     </state>
     <state width="1190" height="271" key="GridCell.Tab.0.center/0.0.1600.868/1600.0.1920.1170@0.0.1600.868" timestamp="1604591845323" />
     <state width="1486" height="216" key="GridCell.Tab.0.center/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1605058499073" />
-    <state width="1579" height="224" key="GridCell.Tab.0.center/0.0.1600.868@0.0.1600.868" timestamp="1605568542709" />
+    <state width="1160" height="224" key="GridCell.Tab.0.center/0.0.1600.868@0.0.1600.868" timestamp="1605593688666" />
     <state width="1490" height="216" key="GridCell.Tab.0.center/0.0.1600.870/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604971621168" />
-    <state width="1579" height="224" key="GridCell.Tab.0.left" timestamp="1605568542709">
+    <state width="1160" height="224" key="GridCell.Tab.0.left" timestamp="1605593688666">
       <screen x="0" y="0" width="1600" height="868" />
     </state>
     <state width="1190" height="271" key="GridCell.Tab.0.left/0.0.1600.868/1600.0.1920.1170@0.0.1600.868" timestamp="1604591845323" />
     <state width="1486" height="216" key="GridCell.Tab.0.left/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1605058499072" />
-    <state width="1579" height="224" key="GridCell.Tab.0.left/0.0.1600.868@0.0.1600.868" timestamp="1605568542709" />
+    <state width="1160" height="224" key="GridCell.Tab.0.left/0.0.1600.868@0.0.1600.868" timestamp="1605593688666" />
     <state width="1490" height="216" key="GridCell.Tab.0.left/0.0.1600.870/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604971621168" />
-    <state width="1579" height="224" key="GridCell.Tab.0.right" timestamp="1605568542709">
+    <state width="1160" height="224" key="GridCell.Tab.0.right" timestamp="1605593688666">
       <screen x="0" y="0" width="1600" height="868" />
     </state>
     <state width="1190" height="271" key="GridCell.Tab.0.right/0.0.1600.868/1600.0.1920.1170@0.0.1600.868" timestamp="1604591845324" />
     <state width="1486" height="216" key="GridCell.Tab.0.right/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1605058499073" />
-    <state width="1579" height="224" key="GridCell.Tab.0.right/0.0.1600.868@0.0.1600.868" timestamp="1605568542709" />
+    <state width="1160" height="224" key="GridCell.Tab.0.right/0.0.1600.868@0.0.1600.868" timestamp="1605593688666" />
     <state width="1490" height="216" key="GridCell.Tab.0.right/0.0.1600.870/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604971621169" />
     <state width="1190" height="271" key="GridCell.Tab.1.bottom" timestamp="1604593485546">
       <screen x="1600" y="0" width="1920" height="1170" />
