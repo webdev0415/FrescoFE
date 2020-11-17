@@ -150,7 +150,7 @@ function StickyTransform(props: Props): JSX.Element {
           id={data.id + ':Text'}
           x={0}
           y={0}
-          text={data.sticky?.text ? data.sticky?.text : 'Type Something Here'}
+          text={data.sticky?.text ? data.sticky?.text : 'Sticky notes area'}
           fillEnabled={true}
         />
       </Group>

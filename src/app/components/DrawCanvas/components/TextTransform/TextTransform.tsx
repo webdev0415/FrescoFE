@@ -105,6 +105,7 @@ function TextTransform(props: TransformShapeProps): JSX.Element {
         onTap={onSelect}
         ref={shapeRef}
         {...data.textData}
+        text={data.sticky?.text ? data.sticky?.text : 'Sticky notes area'}
         draggable={!data.isLocked}
         onTransformStart={() => onChangeStart(data)}
         // onTransform={onTransform}
