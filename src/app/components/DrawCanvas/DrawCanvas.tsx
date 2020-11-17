@@ -372,7 +372,7 @@ class DrawCanvas extends Component<Props, State> {
     ImageUploadingService.imageUpdateFromDataUrl(
       this.stageRef?.toDataURL({ pixelRatio: 1 }) as string,
       this.props.match?.params.type as string,
-      this.props.match?.params.id as string,
+      this.state.canvas.imageId,
     ).subscribe(image => {
       this.setState({
         canvas: {
@@ -470,15 +470,20 @@ class DrawCanvas extends Component<Props, State> {
         const canvasObjects = !!boardData.data
           ? JSON.parse(boardData.data)
           : [];
-        this.setState({
-          objects: canvasObjects,
-          canvas: {
-            orgId: boardData.orgId,
-            name: boardData.name,
-            categoryId: boardData.categoryId as string,
-            imageId: boardData.imageId as string,
+        this.setState(
+          {
+            objects: canvasObjects,
+            canvas: {
+              orgId: boardData.orgId,
+              name: boardData.name,
+              categoryId: boardData.categoryId as string,
+              imageId: boardData.imageId as string,
+            },
           },
-        });
+          () => {
+            this.save();
+          },
+        );
       },
 
       error => {
@@ -497,15 +502,20 @@ class DrawCanvas extends Component<Props, State> {
         const canvasObjects = !!canvasData.data
           ? JSON.parse(canvasData.data)
           : [];
-        this.setState({
-          objects: canvasObjects,
-          canvas: {
-            orgId: canvasData.orgId,
-            name: canvasData.name,
-            categoryId: canvasData.categoryId,
-            imageId: canvasData.imageId as string,
+        this.setState(
+          {
+            objects: canvasObjects,
+            canvas: {
+              orgId: canvasData.orgId,
+              name: canvasData.name,
+              categoryId: canvasData.categoryId,
+              imageId: canvasData.imageId as string,
+            },
           },
-        });
+          () => {
+            this.save();
+          },
+        );
       },
       error => {
         console.error(error);
