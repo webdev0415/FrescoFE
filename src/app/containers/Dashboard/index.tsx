@@ -7,7 +7,7 @@
 import React, { memo, useCallback, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useDispatch, useSelector } from 'react-redux';
-import { Button, Dropdown, Input, Menu, Select, Tabs } from 'antd';
+import { Button, Dropdown, Input, Menu, Select, Tabs, Skeleton } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { Link, Redirect, useHistory } from 'react-router-dom';
 
@@ -60,6 +60,9 @@ export const Dashboard = memo((props: Props) => {
   const [boardsList, setBoardsList] = useState<BoardInterface[]>([]);
   const [showAddNewBoard, setAddNewBoard] = useState(false);
   const [loadingCreateCanvas, setLoadingCreateCanvas] = useState(false);
+  const [loadingCategoriesList, setLoadingCategoriesList] = useState(false);
+  const [loadingCanvasList, setLoadingCanvasList] = useState(false);
+  const [loadingBoardsList, setLoadingBoardsList] = useState(false);
 
   const orgId = props?.match?.params?.id;
 
@@ -212,23 +215,42 @@ export const Dashboard = memo((props: Props) => {
   }, []);
 
   const getCanvasList = useCallback(() => {
-    CanvasApiService.getByOrganizationId(orgId).subscribe(data => {
-      console.log('getByOrganizationId', data);
-      setCanvasList(data);
-    });
+    setLoadingCanvasList(true);
+    CanvasApiService.getByOrganizationId(orgId).subscribe(
+      data => {
+        setCanvasList(data);
+        setLoadingCanvasList(false);
+      },
+      () => {
+        setLoadingCanvasList(false);
+      },
+    );
   }, [orgId]);
 
   const getCategoriesList = () => {
-    CanvasCategoryService.list().subscribe(data => {
-      setCategories(data);
-    });
+    setLoadingCategoriesList(true);
+    CanvasCategoryService.list().subscribe(
+      data => {
+        setCategories(data);
+        setLoadingCategoriesList(false);
+      },
+      () => {
+        setLoadingCategoriesList(false);
+      },
+    );
   };
 
   const getBoardsList = useCallback(() => {
-    BoardApiService.getByOrganizationId(orgId).subscribe(data => {
-      console.log('getBoardsList => getByOrganizationId', data);
-      setBoardsList(data);
-    });
+    setLoadingBoardsList(true);
+    BoardApiService.getByOrganizationId(orgId).subscribe(
+      data => {
+        setBoardsList(data);
+        setLoadingBoardsList(false);
+      },
+      () => {
+        setLoadingBoardsList(false);
+      },
+    );
   }, [orgId]);
 
   useEffect(() => {
@@ -295,7 +317,6 @@ export const Dashboard = memo((props: Props) => {
               New Board
             </Button>
             <h3 className="card-section-title">My Boards</h3>
-
             <div className="card-grid">
               {boardsList.map((data, index) => (
                 <div className="cards-board" key={index}>
@@ -351,6 +372,36 @@ export const Dashboard = memo((props: Props) => {
                   </div>
                 </div>
               ))}
+              {loadingBoardsList &&
+                Array(5)
+                  .fill(1)
+                  .map((item, index) => (
+                    <div className="cards-board" key={item + index}>
+                      <Skeleton.Image />
+
+                      <div className="card-footer">
+                        <Skeleton
+                          active
+                          paragraph={{ rows: 0, style: { display: 'none' } }}
+                          title={{ width: '100%', style: { marginTop: 0 } }}
+                          className="card-title"
+                        />
+                        <Skeleton
+                          active
+                          paragraph={{ rows: 0, style: { display: 'none' } }}
+                          title={{ width: '100%', style: { marginTop: 0 } }}
+                          className="card-timestamp"
+                        />
+
+                        <Skeleton
+                          active
+                          paragraph={{ rows: 0, style: { display: 'none' } }}
+                          title={{ width: '100%', style: { marginTop: 0 } }}
+                          className="card-users"
+                        />
+                      </div>
+                    </div>
+                  ))}
             </div>
           </div>
         </TabPane>
@@ -389,6 +440,7 @@ export const Dashboard = memo((props: Props) => {
                 onChange={value => {
                   setCategoryId(value);
                 }}
+                loading={loadingCategoriesList}
                 allowClear
               >
                 <Select.Option value="" disabled>
@@ -465,6 +517,36 @@ export const Dashboard = memo((props: Props) => {
                   </div>
                 </div>
               ))}
+              {loadingCanvasList &&
+                Array(5)
+                  .fill(1)
+                  .map((item, index) => (
+                    <div className="cards-board" key={item + index}>
+                      <Skeleton.Image />
+
+                      <div className="card-footer">
+                        <Skeleton
+                          active
+                          paragraph={{ rows: 0, style: { display: 'none' } }}
+                          title={{ width: '100%', style: { marginTop: 0 } }}
+                          className="card-title"
+                        />
+                        <Skeleton
+                          active
+                          paragraph={{ rows: 0, style: { display: 'none' } }}
+                          title={{ width: '100%', style: { marginTop: 0 } }}
+                          className="card-timestamp"
+                        />
+
+                        <Skeleton
+                          active
+                          paragraph={{ rows: 0, style: { display: 'none' } }}
+                          title={{ width: '100%', style: { marginTop: 0 } }}
+                          className="card-users"
+                        />
+                      </div>
+                    </div>
+                  ))}
             </div>
           </div>
         </TabPane>

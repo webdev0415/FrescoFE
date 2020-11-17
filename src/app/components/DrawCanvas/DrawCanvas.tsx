@@ -350,12 +350,21 @@ class DrawCanvas extends Component<Props, State> {
       this.stageRef?.toDataURL({ pixelRatio: 1 }) as string,
       this.props.match?.params.type as string,
     ).subscribe(image => {
-      this.setState({
-        canvas: {
-          ...this.state.canvas,
-          imageId: image.id,
+      this.setState(
+        {
+          canvas: {
+            ...this.state.canvas,
+            imageId: image.id,
+          },
         },
-      });
+        () => {
+          if (this.props.match?.params.type === 'canvas') {
+            this.saveCanvas();
+          } else if (this.props.match?.params.type === 'board') {
+            this.saveBoard();
+          }
+        },
+      );
     });
   }
 
@@ -363,7 +372,7 @@ class DrawCanvas extends Component<Props, State> {
     ImageUploadingService.imageUpdateFromDataUrl(
       this.stageRef?.toDataURL({ pixelRatio: 1 }) as string,
       this.props.match?.params.type as string,
-      this.props.match?.params.id as string,
+      this.state.canvas.imageId,
     ).subscribe(image => {
       this.setState({
         canvas: {
@@ -384,7 +393,17 @@ class DrawCanvas extends Component<Props, State> {
 
   save(): void {
     this.saveImage();
-    const data = JSON.stringify(
+    if (!!this.state.canvas.imageId) {
+      if (this.props.match?.params.type === 'canvas') {
+        this.saveCanvas();
+      } else if (this.props.match?.params.type === 'board') {
+        this.saveBoard();
+      }
+    }
+  }
+
+  getJsonData(): string {
+    return JSON.stringify(
       this.state.objects.map(item => ({
         ...item,
         isEditing: false,
@@ -393,14 +412,10 @@ class DrawCanvas extends Component<Props, State> {
         isLocked: false,
       })),
     );
-    if (this.props.match?.params.type === 'canvas') {
-      this.saveCanvas(data);
-    } else if (this.props.match?.params.type === 'board') {
-      this.saveBoard(data);
-    }
   }
 
-  saveBoard(data: string): void {
+  saveBoard(): void {
+    const data = this.getJsonData();
     const canvas = { ...this.state.canvas };
     if (!canvas.imageId) {
       delete canvas.imageId;
@@ -418,7 +433,8 @@ class DrawCanvas extends Component<Props, State> {
     );
   }
 
-  saveCanvas(data: string): void {
+  saveCanvas(): void {
+    const data = this.getJsonData();
     const canvas = { ...this.state.canvas };
     if (!canvas.imageId) {
       delete canvas.imageId;
@@ -454,15 +470,20 @@ class DrawCanvas extends Component<Props, State> {
         const canvasObjects = !!boardData.data
           ? JSON.parse(boardData.data)
           : [];
-        this.setState({
-          objects: canvasObjects,
-          canvas: {
-            orgId: boardData.orgId,
-            name: boardData.name,
-            categoryId: boardData.categoryId as string,
-            imageId: boardData.imageId as string,
+        this.setState(
+          {
+            objects: canvasObjects,
+            canvas: {
+              orgId: boardData.orgId,
+              name: boardData.name,
+              categoryId: boardData.categoryId as string,
+              imageId: boardData.imageId as string,
+            },
           },
-        });
+          () => {
+            this.save();
+          },
+        );
       },
 
       error => {
@@ -481,15 +502,20 @@ class DrawCanvas extends Component<Props, State> {
         const canvasObjects = !!canvasData.data
           ? JSON.parse(canvasData.data)
           : [];
-        this.setState({
-          objects: canvasObjects,
-          canvas: {
-            orgId: canvasData.orgId,
-            name: canvasData.name,
-            categoryId: canvasData.categoryId,
-            imageId: canvasData.imageId as string,
+        this.setState(
+          {
+            objects: canvasObjects,
+            canvas: {
+              orgId: canvasData.orgId,
+              name: canvasData.name,
+              categoryId: canvasData.categoryId,
+              imageId: canvasData.imageId as string,
+            },
           },
-        });
+          () => {
+            this.save();
+          },
+        );
       },
       error => {
         console.error(error);
