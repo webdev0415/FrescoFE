@@ -638,50 +638,6 @@ class DrawBoard extends Component<Props, State> {
     console.log('this.state.selectedStickyData', this.state.selectedStickyData);
     return (
       <div className={this.props.className}>
-        {this.state.objects
-          .filter(
-            shapeObject =>
-              (shapeObject.type === 'Sticky' || shapeObject.type === 'Text') &&
-              shapeObject.isEditing &&
-              !this.isItemMoving,
-          )
-          .map(shapeObject => (
-            <Modal
-              key={shapeObject.id + ':textEditor'}
-              title="Edit Text"
-              visible={shapeObject.isEditing}
-              onOk={e => {
-                const input = document.getElementById(
-                  'canvas-text-editor',
-                ) as HTMLParagraphElement;
-                if (input) {
-                  this.updateObjectText(shapeObject.id, {
-                    ...shapeObject.sticky,
-                    text: input.innerText,
-                  });
-                }
-              }}
-              onCancel={e => {
-                this.updateShape({
-                  ...shapeObject,
-                  isSelected: false,
-                  isEditing: false,
-                  isFocused: false,
-                });
-              }}
-              okText="Save"
-              cancelText="Cancel"
-            >
-              <p
-                className="canvas-text-editor"
-                id="canvas-text-editor"
-                contentEditable="true"
-              >
-                {shapeObject.sticky?.text}
-              </p>
-            </Modal>
-          ))}
-
         <Stage
           width={window.innerWidth * this.props.zoomLevel}
           height={(window.innerHeight - 80) * this.props.zoomLevel}
@@ -835,8 +791,8 @@ class DrawBoard extends Component<Props, State> {
               width: this.state.selectedStickyData.rect?.width,
               height: this.state.selectedStickyData.rect?.height,
               resize: 'none',
-              color: '#ffffff',
-              background: this.state.selectedStickyData?.shapeConfig?.fill,
+              color: '#000000',
+              background: '#F5EDFE',
               // borderRadius: this.state.selectedStickyData?.sticky?.cornerRadius,
               padding: '15px 5px',
               outline: 'none',
