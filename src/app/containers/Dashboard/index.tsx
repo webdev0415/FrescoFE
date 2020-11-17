@@ -7,7 +7,7 @@
 import React, { memo, useCallback, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useDispatch, useSelector } from 'react-redux';
-import { Button, Dropdown, Input, Menu, Select, Tabs } from 'antd';
+import { Button, Dropdown, Input, Menu, Select, Tabs, Skeleton } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { Link, Redirect, useHistory } from 'react-router-dom';
 
@@ -60,6 +60,9 @@ export const Dashboard = memo((props: Props) => {
   const [boardsList, setBoardsList] = useState<BoardInterface[]>([]);
   const [showAddNewBoard, setAddNewBoard] = useState(false);
   const [loadingCreateCanvas, setLoadingCreateCanvas] = useState(false);
+  const [loadingCategoriesList, setLoadingCategoriesList] = useState(false);
+  const [loadingCanvasList, setLoadingCanvasList] = useState(false);
+  const [loadingBoardsList, setLoadingBoardsList] = useState(false);
 
   const orgId = props?.match?.params?.id;
 
@@ -212,23 +215,42 @@ export const Dashboard = memo((props: Props) => {
   }, []);
 
   const getCanvasList = useCallback(() => {
-    CanvasApiService.getByOrganizationId(orgId).subscribe(data => {
-      console.log('getByOrganizationId', data);
-      setCanvasList(data);
-    });
+    setLoadingCanvasList(true);
+    CanvasApiService.getByOrganizationId(orgId).subscribe(
+      data => {
+        setCanvasList(data);
+        setLoadingCanvasList(false);
+      },
+      () => {
+        setLoadingCanvasList(false);
+      },
+    );
   }, [orgId]);
 
   const getCategoriesList = () => {
-    CanvasCategoryService.list().subscribe(data => {
-      setCategories(data);
-    });
+    setLoadingCategoriesList(true);
+    CanvasCategoryService.list().subscribe(
+      data => {
+        setCategories(data);
+        setLoadingCategoriesList(false);
+      },
+      () => {
+        setLoadingCategoriesList(false);
+      },
+    );
   };
 
   const getBoardsList = useCallback(() => {
-    BoardApiService.getByOrganizationId(orgId).subscribe(data => {
-      console.log('getBoardsList => getByOrganizationId', data);
-      setBoardsList(data);
-    });
+    setLoadingBoardsList(true);
+    BoardApiService.getByOrganizationId(orgId).subscribe(
+      data => {
+        setBoardsList(data);
+        setLoadingBoardsList(false);
+      },
+      () => {
+        setLoadingBoardsList(false);
+      },
+    );
   }, [orgId]);
 
   useEffect(() => {
@@ -295,62 +317,94 @@ export const Dashboard = memo((props: Props) => {
               New Board
             </Button>
             <h3 className="card-section-title">My Boards</h3>
-
             <div className="card-grid">
-              {boardsList.map((data, index) => (
-                <div className="cards-board" key={index}>
-                  <img
-                    alt="example"
-                    style={{
-                      border: '1px solid #f0f2f5',
-                      backgroundColor: 'white',
-                    }}
-                    src={
-                      data.path ||
-                      'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png'
-                    }
-                  />
+              {loadingBoardsList &&
+                Array(5)
+                  .fill(1)
+                  .map((item, index) => (
+                    <div className="cards-board" key={item + index}>
+                      <Skeleton.Image />
 
-                  <div className="card-footer">
-                    <div className="card-action">
-                      <Dropdown
-                        overlay={
-                          <Menu>
-                            <Menu.Item key="0">
-                              <Link to={`/canvas/${data.id}/board`}>Edit</Link>
-                            </Menu.Item>
-                            <Menu.Item key="1">
-                              <a href="http://www.taobao.com/">Action</a>
-                            </Menu.Item>
-                            <Menu.Divider />
-                            <Menu.Item
-                              key="3"
-                              onClick={() =>
-                                handleDeleteBoard(data.id, data.createdUserId)
-                              }
-                            >
-                              Delete
-                            </Menu.Item>
-                          </Menu>
-                        }
-                        trigger={['click']}
-                      >
-                        <div className="action-button">
-                          <span className="material-icons">more_vert</span>
-                        </div>
-                      </Dropdown>
+                      <div className="card-footer">
+                        <Skeleton
+                          active
+                          paragraph={{ rows: 0, style: { display: 'none' } }}
+                          title={{ width: '100%', style: { marginTop: 0 } }}
+                          className="card-title"
+                        />
+                        <Skeleton
+                          active
+                          paragraph={{ rows: 0, style: { display: 'none' } }}
+                          title={{ width: '100%', style: { marginTop: 0 } }}
+                          className="card-timestamp"
+                        />
+
+                        <Skeleton
+                          active
+                          paragraph={{ rows: 0, style: { display: 'none' } }}
+                          title={{ width: '100%', style: { marginTop: 0 } }}
+                          className="card-users"
+                        />
+                      </div>
                     </div>
-                    <div className="card-title">{data.name}</div>
-                    <div className="card-timestamp">Opened Oct 12, 2020</div>
-                    <div className="card-users">
-                      <span className="material-icons">group</span>
-                      <span className="user-title">
-                        Anup Surendan, JJ and 5+ collaborating
-                      </span>
+                  ))}
+              {!loadingBoardsList &&
+                boardsList.map((data, index) => (
+                  <div className="cards-board" key={index}>
+                    <img
+                      alt="example"
+                      style={{
+                        border: '1px solid #f0f2f5',
+                        backgroundColor: 'white',
+                      }}
+                      src={
+                        data.path ||
+                        'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png'
+                      }
+                    />
+
+                    <div className="card-footer">
+                      <div className="card-action">
+                        <Dropdown
+                          overlay={
+                            <Menu>
+                              <Menu.Item key="0">
+                                <Link to={`/canvas/${data.id}/board`}>
+                                  Edit
+                                </Link>
+                              </Menu.Item>
+                              <Menu.Item key="1">
+                                <a href="http://www.taobao.com/">Action</a>
+                              </Menu.Item>
+                              <Menu.Divider />
+                              <Menu.Item
+                                key="3"
+                                onClick={() =>
+                                  handleDeleteBoard(data.id, data.createdUserId)
+                                }
+                              >
+                                Delete
+                              </Menu.Item>
+                            </Menu>
+                          }
+                          trigger={['click']}
+                        >
+                          <div className="action-button">
+                            <span className="material-icons">more_vert</span>
+                          </div>
+                        </Dropdown>
+                      </div>
+                      <div className="card-title">{data.name}</div>
+                      <div className="card-timestamp">Opened Oct 12, 2020</div>
+                      <div className="card-users">
+                        <span className="material-icons">group</span>
+                        <span className="user-title">
+                          Anup Surendan, JJ and 5+ collaborating
+                        </span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
             </div>
           </div>
         </TabPane>
@@ -389,6 +443,7 @@ export const Dashboard = memo((props: Props) => {
                 onChange={value => {
                   setCategoryId(value);
                 }}
+                loading={loadingCategoriesList}
                 allowClear
               >
                 <Select.Option value="" disabled>
@@ -413,58 +468,91 @@ export const Dashboard = memo((props: Props) => {
 
             <h3 className="card-section-title">Custom Canvas</h3>
             <div className="card-grid">
-              {canvasList.map((data, index) => (
-                <div className="cards-board" key={index}>
-                  <img
-                    alt="example"
-                    style={{
-                      border: '1px solid #f0f2f5',
-                      backgroundColor: 'white',
-                    }}
-                    src={
-                      data.path ||
-                      'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png'
-                    }
-                  />
+              {loadingCanvasList &&
+                Array(5)
+                  .fill(1)
+                  .map((item, index) => (
+                    <div className="cards-board" key={item + index}>
+                      <Skeleton.Image />
 
-                  <div className="card-footer">
-                    <div className="card-action">
-                      <Dropdown
-                        overlay={
-                          <Menu>
-                            <Menu.Item key="0">
-                              <Link to={`/canvas/${data.id}/canvas`}>Edit</Link>
-                            </Menu.Item>
-                            <Menu.Item key="1">
-                              <a href="http://www.taobao.com/">Action</a>
-                            </Menu.Item>
-                            <Menu.Divider />
-                            <Menu.Item
-                              key="3"
-                              onClick={() => handleDeleteCanvas(data.id)}
-                            >
-                              Delete
-                            </Menu.Item>
-                          </Menu>
-                        }
-                        trigger={['click']}
-                      >
-                        <div className="action-button">
-                          <span className="material-icons">more_vert</span>
-                        </div>
-                      </Dropdown>
+                      <div className="card-footer">
+                        <Skeleton
+                          active
+                          paragraph={{ rows: 0, style: { display: 'none' } }}
+                          title={{ width: '100%', style: { marginTop: 0 } }}
+                          className="card-title"
+                        />
+                        <Skeleton
+                          active
+                          paragraph={{ rows: 0, style: { display: 'none' } }}
+                          title={{ width: '100%', style: { marginTop: 0 } }}
+                          className="card-timestamp"
+                        />
+
+                        <Skeleton
+                          active
+                          paragraph={{ rows: 0, style: { display: 'none' } }}
+                          title={{ width: '100%', style: { marginTop: 0 } }}
+                          className="card-users"
+                        />
+                      </div>
                     </div>
-                    <div className="card-title">{data.name}</div>
-                    <div className="card-timestamp">Opened Oct 12, 2020</div>
-                    <div className="card-users">
-                      <span className="material-icons">group</span>
-                      <span className="user-title">
-                        Anup Surendan, JJ and 5+ collaborating
-                      </span>
+                  ))}
+              {!loadingCanvasList &&
+                canvasList.map((data, index) => (
+                  <div className="cards-board" key={index}>
+                    <img
+                      alt="example"
+                      style={{
+                        border: '1px solid #f0f2f5',
+                        backgroundColor: 'white',
+                      }}
+                      src={
+                        data.path ||
+                        'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png'
+                      }
+                    />
+
+                    <div className="card-footer">
+                      <div className="card-action">
+                        <Dropdown
+                          overlay={
+                            <Menu>
+                              <Menu.Item key="0">
+                                <Link to={`/canvas/${data.id}/canvas`}>
+                                  Edit
+                                </Link>
+                              </Menu.Item>
+                              <Menu.Item key="1">
+                                <a href="http://www.taobao.com/">Action</a>
+                              </Menu.Item>
+                              <Menu.Divider />
+                              <Menu.Item
+                                key="3"
+                                onClick={() => handleDeleteCanvas(data.id)}
+                              >
+                                Delete
+                              </Menu.Item>
+                            </Menu>
+                          }
+                          trigger={['click']}
+                        >
+                          <div className="action-button">
+                            <span className="material-icons">more_vert</span>
+                          </div>
+                        </Dropdown>
+                      </div>
+                      <div className="card-title">{data.name}</div>
+                      <div className="card-timestamp">Opened Oct 12, 2020</div>
+                      <div className="card-users">
+                        <span className="material-icons">group</span>
+                        <span className="user-title">
+                          Anup Surendan, JJ and 5+ collaborating
+                        </span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
             </div>
           </div>
         </TabPane>
