@@ -1,74 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="d0235698-fcbf-40bf-a9de-ad7a068db01b" name="Default Changelist" comment="">
+
+    <list default="true" id="d0235698-fcbf-40bf-a9de-ad7a068db01b" name="Default Changelist" comment="Canvas And Boards, Skeleton and Snapshots Working">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/components/DrawCanvas/DrawCanvas.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/components/DrawCanvas/DrawCanvas.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/components/DrawCanvas/components/StickyTransform/StickyTransform.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/components/DrawCanvas/components/StickyTransform/StickyTransform.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/components/DrawCanvas/components/TextTransform/TextTransform.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/components/DrawCanvas/components/TextTransform/TextTransform.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/components/DrawCanvas/constants.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/components/DrawCanvas/constants.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/components/DrawCanvas/utility/onMouseUp.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/components/DrawCanvas/utility/onMouseUp.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/app/containers/CreateCanvas/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/CreateCanvas/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/containers/Dashboard/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/containers/Dashboard/index.tsx" afterDir="false" />
+
+
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="FileTemplateManagerImpl">
-    <option name="RECENT_TEMPLATES">
-      <list>
-        <option value="TypeScript JSX File" />
-        <option value="Less File" />
-        <option value="TypeScript File" />
-      </list>
-    </option>
-  </component>
   <component name="Git.Settings">
-    <option name="RECENT_BRANCH_BY_REPOSITORY">
-      <map>
-        <entry key="$PROJECT_DIR$" value="master" />
-      </map>
-    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="JsBowerSettings">
-    <node-interpreter value="project" />
-    <bower-package value="" />
-    <bower.json value="" />
-  </component>
-  <component name="JsFlowSettings">
-    <service-enabled>true</service-enabled>
-    <exe-path />
-    <other-services-enabled>true</other-services-enabled>
-    <auto-save>true</auto-save>
-  </component>
-  <component name="ProjectId" id="1jke92fIyr4H4YyXk5rTC0dqXDo" />
-  <component name="ProjectLevelVcsManager">
-    <ConfirmationsSetting value="2" id="Add" />
-  </component>
+  <component name="ProjectId" id="1kNL6Cv8ISrPSwrHmxv6ya8zvX5" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
-    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/src/app/components" />
-    <property name="list.type.of.created.stylesheet" value="Less" />
-    <property name="node.js.detected.package.eslint" value="true" />
-    <property name="node.js.detected.package.standard" value="true" />
-    <property name="node.js.detected.package.stylelint" value="true" />
-    <property name="node.js.detected.package.tslint" value="true" />
-    <property name="node.js.path.for.package.eslint" value="project" />
-    <property name="node.js.path.for.package.standard" value="project" />
-    <property name="node.js.path.for.package.stylelint" value="project" />
-    <property name="node.js.path.for.package.tslint" value="project" />
-    <property name="node.js.selected.package.eslint" value="(autodetect)" />
-    <property name="node.js.selected.package.standard" value="" />
-    <property name="node.js.selected.package.stylelint" value="D:\Usama\Data\htdocs\React\FrescoFE\node_modules\stylelint" />
-    <property name="node.js.selected.package.tslint" value="(autodetect)" />
-    <property name="nodejs_package_manager_path" value="npm" />
-    <property name="prettierjs.PrettierConfiguration.Package" value="D:\Usama\Data\htdocs\React\FrescoFE\node_modules\prettier" />
-    <property name="settings.editor.selected.configurable" value="preferences.keymap" />
-    <property name="ts.external.directory.path" value="D:\Usama\Data\htdocs\React\FrescoFE\node_modules\typescript\lib" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../explority-web" />
     <property name="vue.rearranger.settings.migration" value="true" />
   </component>
+
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="D:\Usama\Data\htdocs\React\FrescoFE\src\services\BoardService" />
@@ -97,12 +63,14 @@
     </configuration>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="d0235698-fcbf-40bf-a9de-ad7a068db01b" name="Default Changelist" comment="" />
-      <created>1604352362323</created>
+      <changelist id="d8d97e3b-fce0-48b8-9b11-9bfa870716c3" name="Default Changelist" comment="" />
+      <created>1605535928532</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
+
       <updated>1604352362323</updated>
       <workItem from="1604352363346" duration="3086000" />
       <workItem from="1604425544711" duration="7043000" />
@@ -640,7 +608,8 @@
     <state x="2360" y="481" key="git4idea.remote.GitConfigureRemotesDialog/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1604596553144" />
     <state x="2216" y="273" key="run.anything.popup" timestamp="1605035335883">
       <screen x="1600" y="0" width="1920" height="1170" />
+
     </state>
-    <state x="2216" y="273" key="run.anything.popup/0.0.1600.868/1600.0.1920.1170@1600.0.1920.1170" timestamp="1605035335883" />
+    <state x="774" y="311" width="424" height="485" key="FileChooserDialogImpl/63.27.1857.1053/1920.0.1366.768@63.27.1857.1053" timestamp="1605535947419" />
   </component>
 </project>

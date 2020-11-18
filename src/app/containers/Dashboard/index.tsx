@@ -4,7 +4,7 @@
  *
  */
 
-import React, { memo, useCallback, useEffect, useState } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useDispatch, useSelector } from 'react-redux';
 import { Button, Dropdown, Input, Menu, Select, Tabs, Skeleton } from 'antd';
@@ -13,25 +13,33 @@ import { Link, Redirect, useHistory } from 'react-router-dom';
 
 import { useInjectReducer, useInjectSaga } from 'utils/redux-injectors';
 import { actions, reducer, sliceKey } from './slice';
+
 import { selectDashboard } from './selectors';
-import { selectToken } from '../../selectors';
+import { selectToken, selectUser } from '../../selectors';
 import { dashboardSaga } from './saga';
 import { actions as globalActions } from '../../slice';
 import dashboardIcon from 'assets/icons/dashboard.svg';
 import pageIcon from 'assets/icons/page.svg';
+import { BarChartOutlined } from '@ant-design/icons';
 
 // Components
 import { UserModal } from '../../components/UserModal';
 import Axios from 'axios';
-import { BoardApiService, CanvasApiService } from 'services/APIService';
+import { InviteMemberModal } from '../../components/InviteMemberModal';
+
+import './styles.less';
+import { BoardList } from '../BoardList';
+
+import { Categories } from '../Categories';
+
+import { CanvasApiService } from 'services/APIService';
 import {
-  BoardInterface,
   CanvasCategoryInterface,
   CanvasResponseInterface,
 } from '../../../services/APIService/interfaces';
-import { InviteMemberModal } from '../../components/InviteMemberModal';
 import { CanvasBoardTemplates } from '../../components/CanvasBoardTemplates';
 import { CanvasCategoryService } from '../../../services/APIService/CanvasCategory.service';
+import { BoardApiService } from 'services/APIService/BoardsApi.service';
 
 const { TabPane } = Tabs;
 export const PERMISSION = {
@@ -49,16 +57,17 @@ export const Dashboard = memo((props: Props) => {
   useInjectSaga({ key: sliceKey, saga: dashboardSaga });
   const [organization, setOrganization] = useState<any>(null);
   const [isShowUserModal, setIsShowUserModal] = useState(false);
-  const [isShowAddNewCanvas, setIsShowAddNewCanvas] = useState(false);
   const [isShowInvitationModal, setIsShowInvitationModal] = useState(false);
   const [email, setEmail] = useState('');
   const [permission, setPermission] = useState(PERMISSION.EDITOR);
+  const [isModalOpen, setModalOpen] = useState(false);
   const [canvasName, setCanvasName] = useState('');
   const [categories, setCategories] = useState<CanvasCategoryInterface[]>([]);
   const [categoryId, setCategoryId] = useState('');
   const [canvasList, setCanvasList] = useState<CanvasResponseInterface[]>([]);
-  const [boardsList, setBoardsList] = useState<BoardInterface[]>([]);
+  const [boardsList, setBoardsList] = useState<any>([]);
   const [showAddNewBoard, setAddNewBoard] = useState(false);
+  const [isShowAddNewCanvas, setIsShowAddNewCanvas] = useState(false);
   const [loadingCreateCanvas, setLoadingCreateCanvas] = useState(false);
   const [loadingCategoriesList, setLoadingCategoriesList] = useState(false);
   const [loadingCanvasList, setLoadingCanvasList] = useState(false);
@@ -75,6 +84,8 @@ export const Dashboard = memo((props: Props) => {
   const history = useHistory();
 
   const token = useSelector(selectToken);
+  const user = useSelector(selectUser);
+
   // const user = useSelector(selectUser);
   useEffect(() => {
     console.log(dashboard);
@@ -93,7 +104,7 @@ export const Dashboard = memo((props: Props) => {
     })
       .then(response => {
         setOrganization(response.data);
-        console.log(response);
+        console.log('response.data', response.data);
       })
       .catch(error => {
         console.error(error.response);
@@ -106,7 +117,7 @@ export const Dashboard = memo((props: Props) => {
     );
   };
 
-  const createCanvas = useCallback(() => {
+  const createCanvas = React.useCallback(() => {
     setLoadingCreateCanvas(true);
     const data = {
       name: canvasName,
@@ -173,21 +184,21 @@ export const Dashboard = memo((props: Props) => {
     );
   };
 
-  const handleDeleteBoard = (id: string, userId: string) => {
-    BoardApiService.deleteById(id, {
-      orgId: orgId as string,
-      boardId: id,
-      userId: userId,
-    }).subscribe(
-      data => {
-        console.log(data);
-        setBoardsList(boardsList.filter(item => item.id !== id));
-      },
-      error => {
-        console.error(error);
-      },
-    );
-  };
+  // const handleDeleteBoard = (id: string, userId: string) => {
+  //   BoardApiService.deleteById(id, {
+  //     orgId: orgId as string,
+  //     boardId: id,
+  //     userId: userId,
+  //   }).subscribe(
+  //     data => {
+  //       console.log(data);
+  //       setBoardsList(boardsList.filter(item => item.id !== id));
+  //     },
+  //     error => {
+  //       console.error(error);
+  //     },
+  //   );
+  // };
 
   useEffect(() => {
     const profileIcon = document.getElementById(
@@ -214,7 +225,7 @@ export const Dashboard = memo((props: Props) => {
     }
   }, []);
 
-  const getCanvasList = useCallback(() => {
+  const getCanvasList = React.useCallback(() => {
     setLoadingCanvasList(true);
     CanvasApiService.getByOrganizationId(orgId).subscribe(
       data => {
@@ -240,7 +251,7 @@ export const Dashboard = memo((props: Props) => {
     );
   };
 
-  const getBoardsList = useCallback(() => {
+  const getBoardsList = React.useCallback(() => {
     setLoadingBoardsList(true);
     BoardApiService.getByOrganizationId(orgId).subscribe(
       data => {
@@ -261,9 +272,9 @@ export const Dashboard = memo((props: Props) => {
     getCategoriesList();
   }, [orgId, showAddNewBoard]);
 
-  useEffect(() => {
-    getBoardsList();
-  }, [getBoardsList, orgId, showAddNewBoard]);
+  // useEffect(() => {
+  //   getBoardsList();
+  // }, [getBoardsList, orgId, showAddNewBoard]);
 
   const handleLogOut = () => {
     dispatch(globalActions.removeAuth());
@@ -274,7 +285,6 @@ export const Dashboard = memo((props: Props) => {
   if (!token) {
     return <Redirect to="/auth/login" />;
   }
-
   return (
     <>
       <Helmet>
@@ -293,128 +303,33 @@ export const Dashboard = memo((props: Props) => {
       <Tabs
         defaultActiveKey="1"
         tabPosition="left"
-        className="side-bar-tabs"
-        onChange={() => {
-          getBoardsList();
-          getCanvasList();
-          getCategoriesList();
-        }}
+        className="dashboard"
+        // onChange={() => {
+        //   // getBoardsList();
+        //   // getCanvasList();
+        //   // getCategoriesList();
+        // }}
       >
         <TabPane tab={<img src={pageIcon} alt="page" />} key="1">
-          {showAddNewBoard && (
+          {showAddNewBoard ? (
             <CanvasBoardTemplates
               orgId={orgId}
               onClose={() => setAddNewBoard(false)}
             />
-          )}
+          ) : (
+            <div className="card-section">
+              <Button
+                type="primary"
+                icon={<PlusOutlined />}
+                onClick={() => setAddNewBoard(true)}
+              >
+                New Board
+              </Button>
+              <h3 className="dashboard__tab-title">My Boards</h3>
 
-          <div className="card-section">
-            <Button
-              type="primary"
-              icon={<PlusOutlined />}
-              onClick={() => setAddNewBoard(true)}
-            >
-              New Board
-            </Button>
-            <h3 className="card-section-title">My Boards</h3>
-            <div className="card-grid">
-              {boardsList.map((data, index) => (
-                <div className="cards-board" key={index}>
-                  <img
-                    alt="example"
-                    style={{
-                      border: '1px solid #f0f2f5',
-                      backgroundColor: 'white',
-                    }}
-                    src={
-                      data.path ||
-                      'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png'
-                    }
-                  />
-
-                  <div className="card-footer">
-                    <div className="card-action">
-                      <Dropdown
-                        overlay={
-                          <Menu>
-                            <Menu.Item key="0">
-                              <Link to={`/canvas/${data.id}/board`}>Edit</Link>
-                            </Menu.Item>
-                            <Menu.Item key="1">
-                              <a href="http://www.taobao.com/">Action</a>
-                            </Menu.Item>
-                            <Menu.Divider />
-                            <Menu.Item
-                              key="3"
-                              onClick={() =>
-                                handleDeleteBoard(data.id, data.createdUserId)
-                              }
-                            >
-                              Delete
-                            </Menu.Item>
-                          </Menu>
-                        }
-                        trigger={['click']}
-                      >
-                        <div className="action-button">
-                          <span className="material-icons">more_vert</span>
-                        </div>
-                      </Dropdown>
-                    </div>
-                    <div className="card-title">{data.name}</div>
-                    <div className="card-timestamp">Opened Oct 12, 2020</div>
-                    <div className="card-users">
-                      <span className="material-icons">group</span>
-                      <span className="user-title">
-                        Anup Surendan, JJ and 5+ collaborating
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              ))}
-              {!loadingBoardsList && !boardsList.length && (
-                <h3
-                  style={{
-                    width: '100%',
-                    color: 'red',
-                    textAlign: 'center',
-                  }}
-                >
-                  No Boards
-                </h3>
-              )}
-              {loadingBoardsList &&
-                Array(5)
-                  .fill(1)
-                  .map((item, index) => (
-                    <div className="cards-board" key={item + index}>
-                      <Skeleton.Image />
-
-                      <div className="card-footer">
-                        <Skeleton
-                          active
-                          paragraph={{ rows: 0, style: { display: 'none' } }}
-                          title={{ width: '100%', style: { marginTop: 0 } }}
-                          className="card-title"
-                        />
-                        <Skeleton
-                          active
-                          paragraph={{ rows: 0, style: { display: 'none' } }}
-                          title={{ width: '100%', style: { marginTop: 0 } }}
-                          className="card-timestamp"
-                        />
-
-                        <Skeleton
-                          active
-                          paragraph={{ rows: 0, style: { display: 'none' } }}
-                          title={{ width: '100%', style: { marginTop: 0 } }}
-                          className="card-users"
-                        />
-                      </div>
-                    </div>
-                  ))}
+              {organization && <BoardList orgId={organization.orgId} />}
             </div>
-          </div>
+          )}
         </TabPane>
         <TabPane tab={<img src={dashboardIcon} alt="dashboard" />} key="2">
           <div className="card-section">
@@ -484,7 +399,7 @@ export const Dashboard = memo((props: Props) => {
                     textAlign: 'center',
                   }}
                 >
-                  No Boards
+                  No Canvases
                 </h3>
               )}
               {canvasList.map((data, index) => (
@@ -572,6 +487,28 @@ export const Dashboard = memo((props: Props) => {
             </div>
           </div>
         </TabPane>
+        {user && user.role === 'ADMIN' && (
+          <TabPane tab={<BarChartOutlined />} key="3">
+            <div className="card-section">
+              <Button
+                type="primary"
+                icon={<PlusOutlined />}
+                onClick={() => {
+                  setModalOpen(true);
+                }}
+              >
+                New Category
+              </Button>
+              <h3 className="dashboard__tab-title">Categories</h3>
+              <Categories
+                visible={isModalOpen}
+                onCancel={() => {
+                  setModalOpen(false);
+                }}
+              />
+            </div>
+          </TabPane>
+        )}
       </Tabs>
 
       {isShowInvitationModal && (

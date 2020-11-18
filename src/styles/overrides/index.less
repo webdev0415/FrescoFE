@@ -1,7 +1,7 @@
 @import '~antd/lib/style/themes/default.less';
 @import '_fonts';
-@import "_cards";
-@import "./_create-board";
+@import '_cards';
+@import './_create-board';
 
 @primary-color: #9646f5; // primary color for all components
 @layout-header-background: #5d2e8c;
@@ -22,11 +22,10 @@
 }
 
 .clearfix::after {
-  content: "";
+  content: '';
   clear: both;
   display: table;
 }
-
 
 .side-bar-tabs {
   left: 0;
@@ -60,6 +59,21 @@
   }
 }
 
+// .ant-tabs-nav-wrap {
+//   height: 100vh;
+//   background-color: #e9e9e9;
+//   width: 56px;
+// }
+
+// .ant-tabs-tab {
+//   padding: 0 !important;
+//   height: 56px;
+//   width: 100%;
+//   display: inline-flex;
+//   justify-content: center;
+//   align-items: center;
+//   margin: 0 !important;
+// }
 .canvas-dropdown {
   width: 300px;
   padding: 5px;
@@ -76,7 +90,7 @@
     cursor: pointer;
 
     &:hover {
-      background-color: rgba(0,0,0,0.1);
+      background-color: rgba(0, 0, 0, 0.1);
     }
   }
 
@@ -125,19 +139,16 @@
     }
   }
 
-  .ant-tabs-tab-btn{
+  .ant-tabs-tab-btn {
     padding-left: 10px;
     padding-right: 10px;
   }
-
 }
-
-
 
 .user-profile-icon {
   width: 24px;
   height: 24px;
-  background-color: #9646F5;
+  background-color: #9646f5;
   border-radius: 50%;
   font-size: 12px;
   display: inline-flex;
@@ -150,8 +161,6 @@
     background-color: #6a10d4;
   }
 }
-
-
 
 .canvas-text-editor {
   height: 100px !important;
@@ -193,8 +202,6 @@
           height: 100%;
         }
       }
-
-
     }
 
     .canvas-header {
@@ -298,7 +305,6 @@
       }
     }
 
-
     .canvas-text-toolbar {
       position: absolute;
       top: 400px;
@@ -338,7 +344,7 @@
 
           &:hover {
             background-color: white;
-            color: #9646f5
+            color: #9646f5;
           }
         }
       }
@@ -478,4 +484,13 @@
       }
     }
   }
+}
+
+.ant-layout-footer {
+  background: #eeeeee;
+  height: 40px;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

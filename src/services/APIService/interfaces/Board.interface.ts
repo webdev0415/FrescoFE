@@ -9,5 +9,7 @@ export interface BoardRequestInterface {
 export interface BoardInterface extends BoardRequestInterface {
   id: string;
   createdUserId: string;
-  path: string;
+  path?: string;
 }
+
+export interface BoardResponseInterface extends BoardInterface {}

@@ -49,7 +49,6 @@ export const CanvasBoardTemplates = memo((props: Props) => {
         categoryId: activeKey,
       }).subscribe(
         board => {
-          setLoadingCreateBoard('');
           props.onClose();
           history.push(`/canvas/${board.id}/board`);
           console.log(board);
@@ -88,7 +87,7 @@ export const CanvasBoardTemplates = memo((props: Props) => {
         console.error(error);
       },
     );
-  }, [props.orgId]);
+  }, [props.orgId, state]);
   return (
     <div className="create-board-view">
       <div className="form-view">
@@ -149,28 +148,6 @@ export const CanvasBoardTemplates = memo((props: Props) => {
                       </div>
                     </div>
                   ))}
-                {new Array(5).fill(0).map((item, index) => (
-                  <div className="cards-board card-board-select" key={index}>
-                    <img
-                      alt="example"
-                      src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
-                    />
-                    <div className="card-footer card-board-footer">
-                      <div className="card-title">
-                        {category.name} Placeholder
-                      </div>
-                      <div className="card-description">
-                        Use this template to create a shared understanding of
-                        customer aspirations and priorities{' '}
-                      </div>
-                      <div className="card-board-action">
-                        <Button type="primary" disabled={true}>
-                          Select
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
               </div>
             </div>
           </TabPane>

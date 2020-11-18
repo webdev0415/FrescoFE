@@ -757,6 +757,7 @@ class DrawCanvas extends Component<Props, State> {
   };
 
   render() {
+    console.log('props', this.props);
     return (
       <div className={this.props.className}>
         {this.state.objects
