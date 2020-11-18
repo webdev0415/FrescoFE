@@ -1,5 +1,5 @@
 import React from 'react';
-import logoImg from 'assets/icons/logo.svg';
+import logoImg from '../../../assets/icons/logo.svg';
 
 interface HeaderProps {
   isLogIn?: boolean;

@@ -17,12 +17,7 @@ export function* getBoards(action) {
 
     yield put(actions.getBoardsSuccess(response.data));
   } catch (error) {
-    yield put(
-      actions.getBoardsFail({
-        message: error.message,
-        status: error.response.status,
-      }),
-    );
+    yield put(actions.getBoardsFail());
     message.error(error.message);
   }
 }
