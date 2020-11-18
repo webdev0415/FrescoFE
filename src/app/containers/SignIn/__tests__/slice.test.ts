@@ -24,6 +24,7 @@ describe('Signin slice', () => {
   it('should handle signInSuccess', () => {
     const payload = {
       loading: false,
+      user: {},
       errorMessage: '',
     };
     expect(slice.reducer(state, slice.actions.signInSuccess(payload))).toEqual<

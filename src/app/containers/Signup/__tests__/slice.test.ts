@@ -31,7 +31,7 @@ describe('SignUp slice', () => {
   });
   it('should handle signinError', () => {
     expect(
-      slice.reducer(state, slice.actions.signUpError({ status: 409 })),
+      slice.reducer(state, slice.actions.signUpError({ status: null })),
     ).toEqual<ContainerState>({
       ...slice.initialState,
       loading: false,

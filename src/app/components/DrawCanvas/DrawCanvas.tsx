@@ -98,34 +98,7 @@ class DrawCanvas extends Component<Props, State> {
   }
 
   componentDidMount() {
-    document.addEventListener('keydown', event => {
-      if (event.key === 'Delete') {
-        const currentObject = this.state.objects.find(
-          shapeObject => shapeObject.isSelected,
-        );
-        if (currentObject) {
-          this.deleteObject(
-            { id: this.state.id, data: currentObject },
-            {
-              emitEvent: true,
-              saveHistory: true,
-              saveCanvas: true,
-            },
-          );
-        }
-      } else if (event.ctrlKey && event.key.toLowerCase() === 'y') {
-        const redoHistory = document.getElementById(
-          'redo-history',
-        ) as HTMLDivElement;
-        redoHistory.click();
-      }
-      if (event.ctrlKey && event.key.toLowerCase() === 'z') {
-        const undoHistory = document.getElementById(
-          'undo-history',
-        ) as HTMLDivElement;
-        undoHistory.click();
-      }
-    });
+    document.addEventListener('keydown', this.onKeyDown);
 
     this.redoHistory();
     this.undoHistory();
@@ -138,6 +111,10 @@ class DrawCanvas extends Component<Props, State> {
     this.canvasWebSockets();
   }
 
+  componentWillUnmount() {
+    document.removeEventListener('keydown', this.onKeyDown);
+  }
+
   componentDidUpdate(
     prevProps: Readonly<Props>,
     prevState: Readonly<State>,
@@ -147,6 +124,35 @@ class DrawCanvas extends Component<Props, State> {
       this.handleChangeCursor();
     }
   }
+
+  onKeyDown = event => {
+    if (event.key === 'Delete') {
+      const currentObject = this.state.objects.find(
+        shapeObject => shapeObject.isSelected,
+      );
+      if (currentObject) {
+        this.deleteObject(
+          { id: this.state.id, data: currentObject },
+          {
+            emitEvent: true,
+            saveHistory: true,
+            saveCanvas: true,
+          },
+        );
+      }
+    } else if (event.ctrlKey && event.key.toLowerCase() === 'y') {
+      const redoHistory = document.getElementById(
+        'redo-history',
+      ) as HTMLDivElement;
+      redoHistory.click();
+    }
+    if (event.ctrlKey && event.key.toLowerCase() === 'z') {
+      const undoHistory = document.getElementById(
+        'undo-history',
+      ) as HTMLDivElement;
+      undoHistory.click();
+    }
+  };
 
   canvasWebSockets(): void {
     this.socket.on(BoardSocketEventEnum.CONNECT, () => {
@@ -566,6 +572,7 @@ class DrawCanvas extends Component<Props, State> {
         { ...this.state.points },
         this.props.drawingTool,
         position,
+        uuidv4(),
       );
 
       this.isDrawing = true;
@@ -702,6 +709,7 @@ class DrawCanvas extends Component<Props, State> {
         isLocked: false,
       });
     }
+
     const objects = this.state.objects
       .filter(item => item.id !== data.id)
       .map(shapeObject => ({

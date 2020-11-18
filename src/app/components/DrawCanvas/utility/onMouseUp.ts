@@ -30,8 +30,8 @@ export function onMouseUp(
     });
   } else if (drawingTool === 'Star') {
     _.set(data, 'star', {
-      innerRadius: width / 2,
-      outerRadius: width,
+      innerRadius: Math.round(Math.min(width, height) / 2),
+      outerRadius: Math.min(width, height),
       numPoints: 5,
     });
   } else if (drawingTool === 'Triangle') {
