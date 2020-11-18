@@ -40,9 +40,8 @@ export function onMouseDown(
     });
   } else if (drawingTool === 'Triangle') {
     _.set(data, 'triangle', {
-      innerRadius: 0,
-      outerRadius: 0,
-      numPoints: 5,
+      height: 0,
+      width: 0,
     });
   } else if (drawingTool === 'Ellipse') {
     _.set(data, 'ellipse', {
