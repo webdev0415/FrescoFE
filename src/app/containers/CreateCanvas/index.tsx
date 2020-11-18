@@ -106,7 +106,7 @@ export const CreateCanvas = memo(
                 <span
                   id="save-canvas"
                   onClick={() => {
-                    window.history.back();
+                    // window.history.back();
                   }}
                 >
                   Publish
