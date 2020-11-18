@@ -8,11 +8,12 @@ export function onMouseDown(
   state: ObjectInterface,
   drawingTool: ShapeObjectType,
   position: Vector2d,
+  id: string,
 ): ObjectInterface {
   const data: ObjectInterface = {
     ...state,
     ...defaultObjectState,
-    id: uuidv4(),
+    id: id,
     rotation: 0,
     x: Math.round(position.x),
     y: Math.round(position.y),

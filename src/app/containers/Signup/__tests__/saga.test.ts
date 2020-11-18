@@ -49,7 +49,7 @@ describe('SignUp-> Saga-> signUp', () => {
     );
 
     const iteration = signUpSagaIterator.next();
-    expect(iteration.done).toBe(true);
+    expect(iteration.done).toBe(false);
   });
   it('signUp error 500', () => {
     const postDescriptorSignUpError = signUpSagaIterator.throw({
@@ -60,7 +60,7 @@ describe('SignUp-> Saga-> signUp', () => {
     );
 
     const iteration = signUpSagaIterator.next();
-    expect(iteration.done).toBe(true);
+    expect(iteration.done).toBe(false);
   });
 });
 
