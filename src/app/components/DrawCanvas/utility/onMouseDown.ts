@@ -1,7 +1,6 @@
 import { ObjectInterface, ShapeObjectType } from '../types';
 import { defaultObjectState } from '../constants';
 import _ from 'lodash';
-import { v4 as uuidv4 } from 'uuid';
 import { Vector2d } from 'konva/types/types';
 
 export function onMouseDown(
@@ -61,6 +60,8 @@ export function onMouseDown(
         y: 0,
       },
     ]);
+  } else {
+    console.log('No Lines');
   }
 
   return data;

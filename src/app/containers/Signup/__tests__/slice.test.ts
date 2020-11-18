@@ -37,4 +37,13 @@ describe('SignUp slice', () => {
       loading: false,
     });
   });
+
+  it('should handle signInErrorReset', () => {
+    expect(slice.reducer(state, slice.actions.signUpErrorReset())).toEqual<
+      ContainerState
+    >({
+      ...slice.initialState,
+      loading: false,
+    });
+  });
 });
