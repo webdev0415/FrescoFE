@@ -87,7 +87,7 @@ export const CanvasBoardTemplates = memo((props: Props) => {
         console.error(error);
       },
     );
-  }, [props.orgId, state]);
+  }, [props.orgId]);
   return (
     <div className="create-board-view">
       <div className="form-view">
