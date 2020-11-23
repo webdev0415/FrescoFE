@@ -1,10 +1,17 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Line, Transformer } from 'react-konva';
+import { Line, Rect, Star, Transformer } from 'react-konva';
 import Konva from 'konva';
 import { TransformShapeProps } from '../../../../components/DrawCanvas/types';
 
 function LineTransform(props: TransformShapeProps): JSX.Element {
-  const { data, onSelect, onChange, onChanging, onChangeStart } = props;
+  const {
+    data,
+    onSelect,
+    onChange,
+    onChanging,
+    onChangeStart,
+    onContextMenu,
+  } = props;
   const [focus, setFocus] = useState(false);
   const shapeRef = useRef<Konva.Line>(null);
   const trRef = useRef<Konva.Transformer>(null);
@@ -115,7 +122,7 @@ function LineTransform(props: TransformShapeProps): JSX.Element {
           });
           return points;
         })()}
-        stroke="#000000"
+        stroke={data.shapeConfig?.stroke || '#000000'}
         strokeWidth={focus ? 10 : 2}
         lineCap="round"
         lineJoin="round"
@@ -123,7 +130,7 @@ function LineTransform(props: TransformShapeProps): JSX.Element {
         onClick={onSelect}
         onTap={onSelect}
         ref={shapeRef}
-        draggable={!data.isLocked}
+        draggable={!data.isLocked && data.isEditable}
         onTransformStart={() => onChangeStart(data)}
         // onTransform={onTransform}
         onTransformEnd={onTransformEnd}
@@ -131,13 +138,18 @@ function LineTransform(props: TransformShapeProps): JSX.Element {
         // onDragMove={onDragMove}
         onDragEnd={onDragEnd}
         rotation={data.rotation}
-        opacity={data.isLocked ? 0.8 : 1}
+        opacity={
+          data.isLocked
+            ? Math.max(0.1, (data.shapeConfig?.opacity as number) - 0.2)
+            : (data.shapeConfig?.opacity as number)
+        }
         onMouseEnter={() => {
           setFocus(true);
         }}
         onMouseLeave={() => {
           setFocus(false);
         }}
+        onContextMenu={onContextMenu}
       />
       {data.isSelected && (
         <Transformer ref={trRef} boundBoxFunc={boundBoxFunc} />

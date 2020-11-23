@@ -7,7 +7,14 @@ import {
 } from '../../../../components/DrawCanvas/types';
 
 function StarTransform(props: TransformShapeProps): JSX.Element {
-  const { data, onSelect, onChange, onChanging, onChangeStart } = props;
+  const {
+    data,
+    onSelect,
+    onChange,
+    onChanging,
+    onChangeStart,
+    onContextMenu,
+  } = props;
   const shapeRef = useRef<Konva.Star>(null);
   const trRef = useRef<Konva.Transformer>(null);
 
@@ -109,7 +116,7 @@ function StarTransform(props: TransformShapeProps): JSX.Element {
         y={data.y}
         innerRadius={data.star?.innerRadius as number}
         outerRadius={data.star?.outerRadius as number}
-        draggable={!data.isLocked}
+        draggable={!data.isLocked && data.isEditable}
         onTransformStart={() => onChangeStart(data)}
         // onTransform={onTransform}
         onTransformEnd={onTransformEnd}
@@ -118,7 +125,12 @@ function StarTransform(props: TransformShapeProps): JSX.Element {
         onDragEnd={onDragEnd}
         rotation={data.rotation}
         {...data.shapeConfig}
-        opacity={data.isLocked ? 0.5 : 0.8}
+        opacity={
+          data.isLocked
+            ? Math.max(0.1, (data.shapeConfig?.opacity as number) - 0.2)
+            : (data.shapeConfig?.opacity as number)
+        }
+        onContextMenu={onContextMenu}
       />
       {data.isSelected && (
         <Transformer

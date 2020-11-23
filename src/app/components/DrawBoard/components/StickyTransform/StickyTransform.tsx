@@ -5,7 +5,7 @@ import {
   ObjectInterface,
   StickyProperty,
   TransformShapeProps,
-} from '../../../DrawCanvas/types';
+} from '../../../DrawBoard/types';
 
 interface Props extends TransformShapeProps {
   onEdit(data: ObjectInterface): void;

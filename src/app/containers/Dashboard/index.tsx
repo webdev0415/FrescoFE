@@ -388,7 +388,11 @@ export const Dashboard = memo((props: Props) => {
                         overlay={
                           <Menu>
                             <Menu.Item key="0">
-                              <Link to={`/canvas/${data.id}/canvas`}>Edit</Link>
+                              <Link
+                                to={`/canvas/${data.id}/canvas?organization=${orgId}`}
+                              >
+                                Edit
+                              </Link>
                             </Menu.Item>
                             <Menu.Item key="1">
                               <a href="http://www.taobao.com/">Action</a>

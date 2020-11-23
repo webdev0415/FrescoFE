@@ -12,7 +12,15 @@ interface Props extends TransformShapeProps {
 }
 
 function StickyTransform(props: Props): JSX.Element {
-  const { data, onSelect, onChange, onChanging, onChangeStart, onEdit } = props;
+  const {
+    data,
+    onSelect,
+    onChange,
+    onChanging,
+    onChangeStart,
+    onEdit,
+    onContextMenu,
+  } = props;
   const shapeRef = useRef<Konva.Group>(null);
   const trRef = useRef<Konva.Transformer>(null);
 
@@ -123,7 +131,7 @@ function StickyTransform(props: Props): JSX.Element {
     <>
       <Group
         id={data.id}
-        draggable={!data.isLocked}
+        draggable={!data.isLocked && data.isEditable}
         onTransformStart={() => onChangeStart(data)}
         // onTransform={onTransform}
         onDblClick={() =>
@@ -145,6 +153,7 @@ function StickyTransform(props: Props): JSX.Element {
         height={data.rect?.height as number}
         width={data.rect?.width as number}
         rotation={data.rotation}
+        onContextMenu={onContextMenu}
       >
         <Rect
           id={data.id + ':Rect'}

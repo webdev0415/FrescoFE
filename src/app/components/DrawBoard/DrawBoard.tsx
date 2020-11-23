@@ -12,7 +12,7 @@ import {
 import socketIOClient from 'socket.io-client';
 import _ from 'lodash';
 import { defaultObjectState } from './constants';
-import { Modal } from 'antd';
+
 import {
   EllipseTransform,
   LineTransform,

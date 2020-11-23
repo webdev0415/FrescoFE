@@ -4,7 +4,14 @@ import Konva from 'konva';
 import { TransformShapeProps } from '../../../../components/DrawCanvas/types';
 
 function TriangleTransform(props: TransformShapeProps): JSX.Element {
-  const { data, onSelect, onChange, onChanging, onChangeStart } = props;
+  const {
+    data,
+    onSelect,
+    onChange,
+    onChanging,
+    onChangeStart,
+    onContextMenu,
+  } = props;
   const shapeRef = useRef<Konva.Ellipse>(null);
   const trRef = useRef<Konva.Transformer>(null);
 
@@ -100,7 +107,7 @@ function TriangleTransform(props: TransformShapeProps): JSX.Element {
         y={data.y}
         width={data.triangle?.width}
         height={data.triangle?.height}
-        draggable={!data.isLocked}
+        draggable={!data.isLocked && data.isEditable}
         onTransformStart={() => onChangeStart(data)}
         // onTransform={onTransform}
         onTransformEnd={onTransformEnd}
@@ -122,7 +129,12 @@ function TriangleTransform(props: TransformShapeProps): JSX.Element {
         }}
         {...data.shapeConfig}
         rotation={data.rotation}
-        opacity={data.isLocked ? 0.5 : 0.8}
+        opacity={
+          data.isLocked
+            ? Math.max(0.1, (data.shapeConfig?.opacity as number) - 0.2)
+            : (data.shapeConfig?.opacity as number)
+        }
+        onContextMenu={onContextMenu}
       />
       {data.isSelected && (
         <Transformer ref={trRef} boundBoxFunc={boundBoxFunc} />
