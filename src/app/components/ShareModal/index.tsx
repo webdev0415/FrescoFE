@@ -77,10 +77,10 @@ export const ShareModal = ({
               <Input
                 bordered={false}
                 disabled
-                value={`${process.env.REACT_APP_BASE_URL}invitation-type/verification/${linkInvitation.token}`}
+                value={`${process.env.REACT_APP_CLIENT_LINK}invitation-type/verification/${linkInvitation.token}`}
               />
               <CopyToClipboard
-                text={`${process.env.REACT_APP_BASE_URL}invitation-type/verification/${linkInvitation.token}`}
+                text={`${process.env.REACT_APP_CLIENT_LINK}invitation-type/verification/${linkInvitation.token}`}
               >
                 <CopyOutlined style={{ color: 'gray' }} />
               </CopyToClipboard>
