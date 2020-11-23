@@ -79,15 +79,20 @@ export const CreateBoard = memo(
 
     const _getLinkInvitation = async () => {
       try {
-        const res = await Axios.request({
-          method: 'GET',
-          url:
-            process.env.REACT_APP_BASE_URL +
-            `invitation-type/${boardId}/board-link`,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        let res;
+        try {
+          res = await Axios.request({
+            method: 'GET',
+            url:
+              process.env.REACT_APP_BASE_URL +
+              `invitation-type/${boardId}/board-link`,
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+        } catch (e) {
+          console.log(e);
+        }
         if (!res) {
           const resCreated = await Axios.request({
             method: 'POST',
@@ -103,14 +108,12 @@ export const CreateBoard = memo(
               Authorization: `Bearer ${token}`,
             },
           });
-          console.log('resCreated', resCreated);
           setLinkInvitation(resCreated?.data);
           setPermission(resCreated?.data?.permission);
         } else {
           setLinkInvitation(res.data);
           setPermission(res?.data?.permission);
         }
-        console.log('response.data', res.data);
       } catch (error) {
         console.error(error.response);
       }
