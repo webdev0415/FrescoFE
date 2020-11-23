@@ -120,7 +120,8 @@ export const CreateBoard = memo(
       if (boardId && token) {
         _getLinkInvitation();
       }
-    }, [_getLinkInvitation, boardId, token]);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [boardId, token]);
 
     const _onChangePermission = async e => {
       // console.log(e, linkInvitation);

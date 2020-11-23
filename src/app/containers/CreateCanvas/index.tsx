@@ -133,7 +133,8 @@ export const CreateCanvas = memo(
       if (canvasId && token) {
         _getLinkInvitation();
       }
-    }, [_getLinkInvitation, canvasId, token]);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [canvasId, token]);
 
     const _onChangePermission = async e => {
       // console.log(e, linkInvitation);
