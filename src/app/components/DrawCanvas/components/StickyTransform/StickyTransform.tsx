@@ -103,6 +103,22 @@ function StickyTransform(props: Props): JSX.Element {
     }
   }, [data.isSelected]);
 
+  const getText = () => {
+    let text = '';
+    if (data.sticky?.text) {
+      text = data.sticky?.text;
+    } else if (data.type === 'Sticky') {
+      text = 'Sticky notes area';
+    } else if (data.type === 'Text') {
+      text = 'Type something here';
+    }
+
+    if (data.isEditing) {
+      text = '';
+    }
+    return text;
+  };
+
   return (
     <>
       <Group
@@ -150,7 +166,7 @@ function StickyTransform(props: Props): JSX.Element {
           id={data.id + ':Text'}
           x={0}
           y={0}
-          text={data.sticky?.text ? data.sticky?.text : 'Sticky notes area'}
+          text={getText()}
           fillEnabled={true}
         />
       </Group>

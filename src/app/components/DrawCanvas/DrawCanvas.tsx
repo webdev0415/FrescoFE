@@ -736,7 +736,6 @@ class DrawCanvas extends Component<Props, State> {
       this.updateShape(
         {
           ...object,
-          isEditing: false,
           sticky: {
             ...data,
           },
@@ -775,42 +774,55 @@ class DrawCanvas extends Component<Props, State> {
               shapeObject.isEditing &&
               !this.isItemMoving,
           )
-          .map(shapeObject => (
-            <Modal
-              key={shapeObject.id + ':textEditor'}
-              title="Edit Text"
-              visible={shapeObject.isEditing}
-              onOk={e => {
-                const input = document.getElementById(
-                  'canvas-text-editor',
-                ) as HTMLParagraphElement;
-                if (input) {
-                  this.updateObjectText(shapeObject.id, {
-                    ...shapeObject.sticky,
-                    text: input.innerText,
-                  });
+          .map(shapeObject => {
+            const getFontWeight = (): 'normal' | 'bold' => {
+              let fontWeight: 'normal' | 'bold' = 'normal';
+              if (shapeObject.sticky?.fontStyle) {
+                if (
+                  shapeObject.sticky?.fontStyle === 'normal' ||
+                  shapeObject.sticky?.fontStyle === 'bold'
+                ) {
+                  fontWeight = shapeObject.sticky?.fontStyle;
                 }
-              }}
-              onCancel={e => {
-                this.updateShape({
-                  ...shapeObject,
-                  isSelected: false,
-                  isEditing: false,
-                  isFocused: false,
-                });
-              }}
-              okText="Save"
-              cancelText="Cancel"
-            >
+              }
+              return fontWeight;
+            };
+            return (
               <p
-                className="canvas-text-editor"
+                style={{
+                  position: 'absolute',
+                  left: shapeObject.x * this.props.zoomLevel,
+                  top: shapeObject.y * this.props.zoomLevel,
+                  width: shapeObject.rect?.width + 'px',
+                  height: shapeObject.rect?.height + 'px',
+                  fontSize: shapeObject.sticky?.fontSize + 'px',
+                  display: 'inline-flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  zIndex: 10000,
+                  color: shapeObject.sticky?.fontColor,
+                  fontWeight: getFontWeight(),
+                  textDecorationLine: shapeObject.sticky?.textDecoration,
+                  fontStyle:
+                    shapeObject.sticky?.fontStyle === 'italic'
+                      ? 'italic'
+                      : 'normal',
+                  fontFamily: shapeObject.sticky?.fontFamily,
+                }}
                 id="canvas-text-editor"
                 contentEditable="true"
+                onBlur={event => {
+                  console.log(event);
+                  this.updateObjectText(shapeObject.id, {
+                    ...shapeObject.sticky,
+                    text: event.currentTarget.innerText,
+                  });
+                }}
               >
                 {shapeObject.sticky?.text}
               </p>
-            </Modal>
-          ))}
+            );
+          })}
         {this.state.objects
           .filter(
             shapeObject =>

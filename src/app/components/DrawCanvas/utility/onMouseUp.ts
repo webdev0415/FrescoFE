@@ -52,7 +52,7 @@ export function onMouseUp(
       ...defaultTextProperties,
       fontColor: '#000000',
       backgroundColor: '#f5ecfd',
-      text: 'Sticky notes area',
+      text: '',
     });
   } else if (drawingTool === 'Text') {
     _.set(data, 'rect', {
@@ -63,7 +63,7 @@ export function onMouseUp(
       ...defaultTextProperties,
       fontColor: '#000000',
       backgroundColor: undefined,
-      text: 'Type something here',
+      text: '',
     });
   } else if (drawingTool === 'Line') {
     _.set(data, 'line', [
