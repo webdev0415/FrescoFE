@@ -50,7 +50,7 @@ export const CanvasBoardTemplates = memo((props: Props) => {
       }).subscribe(
         board => {
           props.onClose();
-          history.push(`/canvas/${board.id}/board`);
+          history.push(`/canvas/${board.id}/board`, { orgId: props.orgId });
           console.log(board);
         },
         () => {
@@ -87,7 +87,7 @@ export const CanvasBoardTemplates = memo((props: Props) => {
         console.error(error);
       },
     );
-  }, [props.orgId]);
+  }, [props.orgId, state]);
   return (
     <div className="create-board-view">
       <div className="form-view">

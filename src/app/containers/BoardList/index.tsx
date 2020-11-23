@@ -87,7 +87,14 @@ export const BoardList = (props: BoardListProps) => {
                     overlay={
                       <Menu>
                         <Menu.Item key="0">
-                          <Link to={`/canvas/${item.id}/board`}>Edit</Link>
+                          <Link
+                            to={{
+                              pathname: `/canvas/${item.id}/board`,
+                              state: { orgId: props.orgId },
+                            }}
+                          >
+                            Edit
+                          </Link>
                         </Menu.Item>
                         <Menu.Item key="1">
                           <a href="http://www.taobao.com/">Action</a>

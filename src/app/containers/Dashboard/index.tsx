@@ -130,7 +130,7 @@ export const Dashboard = memo((props: Props) => {
       data => {
         console.log(data);
         setLoadingCreateCanvas(false);
-        history.push(`/canvas/${data.id}/canvas`);
+        history.push(`/canvas/${data.id}/canvas`, { orgId });
       },
       error => {
         setLoadingCreateCanvas(false);
@@ -422,7 +422,14 @@ export const Dashboard = memo((props: Props) => {
                         overlay={
                           <Menu>
                             <Menu.Item key="0">
-                              <Link to={`/canvas/${data.id}/canvas`}>Edit</Link>
+                              <Link
+                                to={{
+                                  pathname: `/canvas/${data.id}/canvas`,
+                                  state: { orgId },
+                                }}
+                              >
+                                Edit
+                              </Link>
                             </Menu.Item>
                             <Menu.Item key="1">
                               <a href="http://www.taobao.com/">Action</a>
