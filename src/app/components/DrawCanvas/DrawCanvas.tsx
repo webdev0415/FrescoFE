@@ -1498,6 +1498,7 @@ class DrawCanvas extends Component<Props, State> {
                       onChangeStart={this.handleChangeStart}
                       onChanging={this.handleChanging}
                       onChange={data => {
+                        this.destroyGuides();
                         this.updateShape(data, {
                           saveHistory: true,
                           emitEvent: true,
@@ -1524,6 +1525,7 @@ class DrawCanvas extends Component<Props, State> {
                       onChangeStart={this.handleChangeStart}
                       onChanging={this.handleChanging}
                       onChange={data => {
+                        this.destroyGuides();
                         this.updateShape(data, {
                           saveHistory: true,
                           emitEvent: true,
@@ -1549,6 +1551,7 @@ class DrawCanvas extends Component<Props, State> {
                     onChangeStart={this.handleChangeStart}
                     onChanging={this.handleChanging}
                     onChange={data => {
+                      this.destroyGuides();
                       this.updateShape(data, {
                         saveHistory: true,
                         emitEvent: true,
@@ -1579,6 +1582,7 @@ class DrawCanvas extends Component<Props, State> {
                       this.updateShape(data);
                     }}
                     onChange={data => {
+                      this.destroyGuides();
                       this.updateShape(data, {
                         saveHistory: true,
                         emitEvent: true,
@@ -1603,6 +1607,7 @@ class DrawCanvas extends Component<Props, State> {
                     onChangeStart={this.handleChangeStart}
                     onChanging={this.handleChanging}
                     onChange={data => {
+                      this.destroyGuides();
                       this.updateShape(data, {
                         saveHistory: true,
                         emitEvent: true,
