@@ -14,6 +14,9 @@ import { v4 as uuidv4 } from 'uuid';
 import Konva from 'konva';
 import {
   ObjectInterface,
+  ObjectSnappingEdges,
+  ObjectSnappingGuide,
+  ObjectSnappingResult,
   ObjectSocketInterface,
   Props,
   State,
@@ -87,10 +90,12 @@ class DrawCanvas extends Component<Props, State> {
     },
   };
   stageRef: Konva.Stage | null = null;
+  layerRef: Konva.Layer | null = null;
 
   isItemFocused: boolean = false;
   isItemMoving: boolean = false;
   isDrawing: boolean = false;
+  GUIDELINE_OFFSET = 5;
 
   constructor(props) {
     super(props);
@@ -222,6 +227,15 @@ class DrawCanvas extends Component<Props, State> {
       this.updateShape(objectData.data, { saveHistory: true });
     }
   }
+
+  getCanvasDimensions = (): { width: number; height: number } => {
+    const width = window.innerWidth * this.props.zoomLevel;
+    const height = (window.innerHeight - 80) * this.props.zoomLevel;
+    return {
+      width,
+      height,
+    };
+  };
 
   lockObject(objectData: ObjectSocketInterface): void {
     if (objectData.id !== this.state.id) {
@@ -402,14 +416,16 @@ class DrawCanvas extends Component<Props, State> {
   }
 
   save(): void {
-    this.saveImage();
-    if (!!this.state.canvas.imageId) {
-      if (this.props.match?.params.type === 'canvas') {
-        this.saveCanvas();
-      } else if (this.props.match?.params.type === 'board') {
-        this.saveBoard();
+    setTimeout(() => {
+      this.saveImage();
+      if (!!this.state.canvas.imageId) {
+        if (this.props.match?.params.type === 'canvas') {
+          this.saveCanvas();
+        } else if (this.props.match?.params.type === 'board') {
+          this.saveBoard();
+        }
       }
-    }
+    }, 100);
   }
 
   getJsonData(): string {
@@ -837,8 +853,201 @@ class DrawCanvas extends Component<Props, State> {
     }
   }
 
-  handleChanging = (data: ObjectInterface) => {
-    // this.emitSocketEvent(BoardSocketEventEnum.MOVE, data);
+  getLineGuideStops(
+    skipShape: any,
+  ): {
+    vertical: number[];
+    horizontal: number[];
+  } {
+    // we can snap to stage borders and the center of the stage
+    const vertical: any[] = [
+      0,
+      (this.stageRef?.width() as number) / 2,
+      this.stageRef?.width() as number,
+    ];
+    const horizontal: any[] = [
+      0,
+      (this.stageRef?.height() as number) / 2,
+      this.stageRef?.height() as number,
+    ];
+
+    // and we snap over edges and center of each object on the canvas
+    this.stageRef?.find('.object')?.each(guideItem => {
+      if (guideItem === skipShape) {
+        return;
+      }
+      const box = guideItem.getClientRect();
+      // and we can snap to all edges of shapes
+      vertical.push([box.x, box.x + box.width, box.x + box.width / 2]);
+      horizontal.push([box.y, box.y + box.height, box.y + box.height / 2]);
+    });
+
+    return {
+      vertical: vertical.flat(),
+      horizontal: horizontal.flat(),
+    };
+  }
+
+  getGuides(
+    lineGuideStops: {
+      vertical: number[];
+      horizontal: number[];
+    },
+    itemBounds: ObjectSnappingEdges,
+  ): ObjectSnappingGuide[] {
+    const resultV: ObjectSnappingResult[] = [];
+    const resultH: ObjectSnappingResult[] = [];
+
+    lineGuideStops.vertical.forEach(lineGuide => {
+      itemBounds.vertical.forEach(itemBound => {
+        const diff = Math.abs(lineGuide - itemBound.guide);
+        // if the distance between guild line and object snap point is close we can consider this for snapping
+        if (diff < this.GUIDELINE_OFFSET) {
+          resultV.push({
+            lineGuide: lineGuide,
+            diff: diff,
+            snap: itemBound.snap,
+            offset: itemBound.offset,
+          });
+        }
+      });
+    });
+
+    lineGuideStops.horizontal.forEach(lineGuide => {
+      itemBounds.horizontal.forEach(itemBound => {
+        const diff = Math.abs(lineGuide - itemBound.guide);
+        if (diff < this.GUIDELINE_OFFSET) {
+          resultH.push({
+            lineGuide: lineGuide,
+            diff: diff,
+            snap: itemBound.snap,
+            offset: itemBound.offset,
+          });
+        }
+      });
+    });
+
+    const guides: ObjectSnappingGuide[] = [];
+
+    // find closest snap
+    const minV = resultV.sort((a, b) => a.diff - b.diff)[0];
+    const minH = resultH.sort((a, b) => a.diff - b.diff)[0];
+    if (minV) {
+      guides.push({
+        lineGuide: minV.lineGuide,
+        offset: minV.offset,
+        orientation: 'V',
+        snap: minV.snap,
+      });
+    }
+    if (minH) {
+      guides.push({
+        lineGuide: minH.lineGuide,
+        offset: minH.offset,
+        orientation: 'H',
+        snap: minH.snap,
+      });
+    }
+    return guides;
+  }
+
+  drawGuides(guides: ObjectSnappingGuide[]) {
+    const layer = this.layerRef as Konva.Layer;
+    guides.forEach(lg => {
+      let line;
+      if (lg.orientation === 'H') {
+        line = new Konva.Line({
+          points: [-6000, 0, 6000, 0],
+          stroke: 'rgb(0, 161, 255)',
+          strokeWidth: 1,
+          name: 'guid-line',
+          dash: [4, 6],
+        });
+        layer.add(line);
+        line.absolutePosition({
+          x: 0,
+          y: lg.lineGuide,
+        });
+        layer.batchDraw();
+      } else if (lg.orientation === 'V') {
+        line = new Konva.Line({
+          points: [0, -6000, 0, 6000],
+          stroke: 'rgb(0, 161, 255)',
+          strokeWidth: 1,
+          name: 'guid-line',
+          dash: [4, 6],
+        });
+        layer.add(line);
+        line.absolutePosition({
+          x: lg.lineGuide,
+          y: 0,
+        });
+        layer.batchDraw();
+      }
+    });
+  }
+
+  destroyGuides = () => {
+    const layer = this.layerRef as Konva.Layer;
+    layer.find('.guid-line').each(guideItem => {
+      guideItem.destroy();
+    });
+  };
+
+  handleChanging = (target: any, itemBounds: ObjectSnappingEdges) => {
+    const layer = this.layerRef as Konva.Layer;
+    this.destroyGuides();
+    const lineGuideStops = this.getLineGuideStops(target);
+    const guides = this.getGuides(lineGuideStops, itemBounds);
+    if (!guides.length) {
+      return;
+    }
+    this.drawGuides(guides);
+    var absPos = (target as Konva.Node).absolutePosition();
+    guides.forEach(lg => {
+      switch (lg.snap) {
+        case 'start': {
+          switch (lg.orientation) {
+            case 'V': {
+              absPos.x = lg.lineGuide + lg.offset;
+              break;
+            }
+            case 'H': {
+              absPos.y = lg.lineGuide + lg.offset;
+              break;
+            }
+          }
+          break;
+        }
+        case 'center': {
+          switch (lg.orientation) {
+            case 'V': {
+              absPos.x = lg.lineGuide + lg.offset;
+              break;
+            }
+            case 'H': {
+              absPos.y = lg.lineGuide + lg.offset;
+              break;
+            }
+          }
+          break;
+        }
+        case 'end': {
+          switch (lg.orientation) {
+            case 'V': {
+              absPos.x = lg.lineGuide + lg.offset;
+              break;
+            }
+            case 'H': {
+              absPos.y = lg.lineGuide + lg.offset;
+              break;
+            }
+          }
+          break;
+        }
+      }
+    });
+    target.absolutePosition(absPos);
   };
 
   handleChangeStart = (data: ObjectInterface) => {
@@ -1250,7 +1459,7 @@ class DrawCanvas extends Component<Props, State> {
             y: this.props.zoomLevel,
           }}
         >
-          <Layer>
+          <Layer ref={ref => (this.layerRef = ref)}>
             {this.state.objects.map(shapeObject => {
               if (
                 shapeObject.type === 'Rect' ||
@@ -1263,6 +1472,7 @@ class DrawCanvas extends Component<Props, State> {
                     onChangeStart={this.handleChangeStart}
                     onChanging={this.handleChanging}
                     onChange={data => {
+                      this.destroyGuides();
                       this.updateShape(data, {
                         saveHistory: true,
                         emitEvent: true,

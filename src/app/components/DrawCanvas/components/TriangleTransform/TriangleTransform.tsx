@@ -1,7 +1,10 @@
 import React, { useCallback, useEffect, useRef } from 'react';
 import { Ellipse, Rect, Shape, Transformer } from 'react-konva';
 import Konva from 'konva';
-import { TransformShapeProps } from '../../../../components/DrawCanvas/types';
+import {
+  ObjectSnappingEdges,
+  TransformShapeProps,
+} from '../../../../components/DrawCanvas/types';
 
 function TriangleTransform(props: TransformShapeProps): JSX.Element {
   const {
@@ -43,39 +46,67 @@ function TriangleTransform(props: TransformShapeProps): JSX.Element {
     [data, onChange],
   );
 
-  const onTransform = useCallback(
-    (e: Konva.KonvaEventObject<Event>) => {
-      const node = shapeRef.current as Konva.Shape;
-      const scaleX = node?.scaleX();
-      const scaleY = node?.scaleY();
-      node?.scaleX(1);
-      node?.scaleY(1);
-      onChanging({
-        ...data,
-        x: node?.x(),
-        y: node?.y(),
-        rotation: Math.round(node?.attrs.rotation as number),
-        rect: {
-          width: Math.max(5, node?.width() * scaleX),
-          height: Math.max(node?.height() * scaleY),
-          cornerRadius: data.rect?.cornerRadius as number,
-        },
-      });
-    },
-    [data, onChanging],
-  );
+  const onTransform = useCallback((e: Konva.KonvaEventObject<Event>) => {
+    const node = shapeRef.current as Konva.Shape;
+    const scaleX = node?.scaleX();
+    const scaleY = node?.scaleY();
+    node?.scaleX(1);
+    node?.scaleY(1);
+    // onChanging({
+    //   ...data,
+    //   x: node?.x(),
+    //   y: node?.y(),
+    //   rotation: Math.round(node?.attrs.rotation as number),
+    //   rect: {
+    //     width: Math.max(5, node?.width() * scaleX),
+    //     height: Math.max(node?.height() * scaleY),
+    //     cornerRadius: data.rect?.cornerRadius as number,
+    //   },
+    // });
+  }, []);
 
-  const onDragMove = useCallback(
-    e => {
-      onChanging({
-        ...data,
-        x: e.target.x(),
-        y: e.target.y(),
-        isLocked: true,
-      });
-    },
-    [data, onChanging],
-  );
+  const onDragMove = e => {
+    const node = shapeRef.current as Konva.Shape;
+    var box = node.getClientRect(node?.attrs);
+    var absPos = node.absolutePosition();
+    const edges: ObjectSnappingEdges = {
+      vertical: [
+        {
+          guide: Math.round(box.x),
+          offset: Math.round(absPos.x - box.x),
+          snap: 'start',
+        },
+        {
+          guide: Math.round(box.x + box.width / 2),
+          offset: Math.round(absPos.x - box.x - box.width / 2),
+          snap: 'center',
+        },
+        {
+          guide: Math.round(box.x + box.width),
+          offset: Math.round(absPos.x - box.x - box.width),
+          snap: 'end',
+        },
+      ],
+      horizontal: [
+        {
+          guide: Math.round(box.y),
+          offset: Math.round(absPos.y - box.y),
+          snap: 'start',
+        },
+        {
+          guide: Math.round(box.y + box.height / 2),
+          offset: Math.round(absPos.y - box.y - box.height / 2),
+          snap: 'center',
+        },
+        {
+          guide: Math.round(box.y + box.height),
+          offset: Math.round(absPos.y - box.y - box.height),
+          snap: 'end',
+        },
+      ],
+    };
+    onChanging(e.target, edges);
+  };
 
   const onDragEnd = useCallback(
     e => {
@@ -112,7 +143,7 @@ function TriangleTransform(props: TransformShapeProps): JSX.Element {
         // onTransform={onTransform}
         onTransformEnd={onTransformEnd}
         onDragStart={() => onChangeStart(data)}
-        // onDragMove={onDragMove}
+        onDragMove={onDragMove}
         onDragEnd={onDragEnd}
         sceneFunc={(context, shape) => {
           context.beginPath();
@@ -135,6 +166,7 @@ function TriangleTransform(props: TransformShapeProps): JSX.Element {
             : (data.shapeConfig?.opacity as number)
         }
         onContextMenu={onContextMenu}
+        name="object"
       />
       {data.isSelected && (
         <Transformer ref={trRef} boundBoxFunc={boundBoxFunc} />

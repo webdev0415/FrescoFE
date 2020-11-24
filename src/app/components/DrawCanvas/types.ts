@@ -125,10 +125,33 @@ export interface FontInterface {
   fontName: string;
 }
 
+export interface ObjectSnappingResult {
+  lineGuide: number;
+  diff: number;
+  snap: 'start' | 'center' | 'end';
+  offset: number;
+}
+
+export interface ObjectSnappingGuide
+  extends Pick<ObjectSnappingResult, 'lineGuide' | 'snap' | 'offset'> {
+  orientation: 'V' | 'H';
+}
+
+export interface ObjectSnappingEdge {
+  guide: number;
+  offset: number;
+  snap: 'start' | 'center' | 'end';
+}
+
+export interface ObjectSnappingEdges {
+  vertical: ObjectSnappingEdge[];
+  horizontal: ObjectSnappingEdge[];
+}
+
 export interface TransformShapeProps {
   data: ObjectInterface;
   onChange(data: ObjectInterface): void;
-  onChanging(data: ObjectInterface): void;
+  onChanging(target: any, data: ObjectSnappingEdges): void;
   onChangeStart(data: ObjectInterface): void;
   onSelect(event: Konva.KonvaEventObject<MouseEvent>): void;
   onContextMenu(event: Konva.KonvaEventObject<MouseEvent>): void;
