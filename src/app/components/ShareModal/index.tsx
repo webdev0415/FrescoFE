@@ -26,10 +26,12 @@ export const ShareModal = ({
           position: 'absolute',
           right: 0,
           top: 40,
+          bottom: 40,
           width: '25rem',
           paddingBottom: '10px',
           backgroundColor: 'white',
           zIndex: 1000,
+          paddingLeft: 30,
         }}
         id="share-modal"
       >
