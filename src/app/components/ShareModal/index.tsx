@@ -19,6 +19,7 @@ export const ShareModal = ({
   closeModal,
 }) => {
   // console.log('linkInvitation', linkInvitation);
+  const baseClient = `${window.location.protocol}${window.location.hostname}:${window.location.port}/`;
   return (
     <Fragment>
       <div
@@ -79,10 +80,10 @@ export const ShareModal = ({
               <Input
                 bordered={false}
                 disabled
-                value={`${process.env.REACT_APP_CLIENT_LINK}invitation-type/verification/${linkInvitation.token}`}
+                value={`${baseClient}invitation-type/verification/${linkInvitation.token}`}
               />
               <CopyToClipboard
-                text={`${process.env.REACT_APP_CLIENT_LINK}invitation-type/verification/${linkInvitation.token}`}
+                text={`${baseClient}invitation-type/verification/${linkInvitation.token}`}
               >
                 <CopyOutlined style={{ color: 'gray' }} />
               </CopyToClipboard>
