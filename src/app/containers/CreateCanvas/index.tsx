@@ -28,7 +28,7 @@ import {
 } from '../../components/CanvasIcons';
 import clsx from 'clsx';
 import pageIcon from '../../../assets/icons/page.svg';
-import { useHistory } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { ShareModal } from 'app/components/ShareModal';
 import { PERMISSION } from '../Dashboard';
 import Axios from 'axios';
@@ -43,6 +43,7 @@ interface IState {
 export const CreateCanvas = memo(
   (props: RouteChildrenProps<{ id: string; type: string }>) => {
     const [zoom, setZoom] = useState<number>(0);
+    const [url, setUrl] = useState<URL>(new URL(window.location.href));
     const [drawingTool, setDrawingTool] = useState<
       | 'Rect'
       | 'RectRounded'
@@ -63,6 +64,9 @@ export const CreateCanvas = memo(
     const orgId = (location.state as IState)?.orgId;
     const token = useSelector(selectToken);
     const canvasId = props?.match?.params?.id;
+    useEffect(() => {
+      setUrl(new URL(window.location.href));
+    }, [history]);
     useEffect(() => {
       document.addEventListener('click', event => {
         const target = event.target as Node;
@@ -178,9 +182,12 @@ export const CreateCanvas = memo(
           />
           <div className="canvas-header">
             <div className="canvas-header-left">
-              <div className="canvas-header-logo">
+              <Link
+                to={`/organization/${url.searchParams.get('organization')}`}
+                className="canvas-header-logo"
+              >
                 <img src={logoImg} alt="logo" />
-              </div>
+              </Link>
               <div className="canvas-header-title" id="canvas-title">
                 My Customer Journey
               </div>

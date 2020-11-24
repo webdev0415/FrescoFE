@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef } from 'react';
 import { Ellipse, Rect, Shape, Transformer } from 'react-konva';
 import Konva from 'konva';
-import { TransformShapeProps } from '../../../DrawCanvas/types';
+import { TransformShapeProps } from '../../../DrawBoard/types';
 
 function TriangleTransform(props: TransformShapeProps): JSX.Element {
   const { data, onSelect, onChange, onChanging, onChangeStart } = props;

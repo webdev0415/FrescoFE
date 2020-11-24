@@ -2,12 +2,20 @@ import React, { useCallback, useEffect, useRef } from 'react';
 import { Rect, Star, Transformer } from 'react-konva';
 import Konva from 'konva';
 import {
+  ObjectSnappingEdges,
   StarProperties,
   TransformShapeProps,
 } from '../../../../components/DrawCanvas/types';
 
 function StarTransform(props: TransformShapeProps): JSX.Element {
-  const { data, onSelect, onChange, onChanging, onChangeStart } = props;
+  const {
+    data,
+    onSelect,
+    onChange,
+    onChanging,
+    onChangeStart,
+    onContextMenu,
+  } = props;
   const shapeRef = useRef<Konva.Star>(null);
   const trRef = useRef<Konva.Transformer>(null);
 
@@ -44,39 +52,67 @@ function StarTransform(props: TransformShapeProps): JSX.Element {
     [data, onChange],
   );
 
-  const onTransform = useCallback(
-    (e: Konva.KonvaEventObject<Event>) => {
-      const node = shapeRef.current as Konva.Star;
-      const scaleX = node?.scaleX();
-      const scaleY = node?.scaleY();
-      node?.scaleX(1);
-      node?.scaleY(1);
-      onChanging({
-        ...data,
-        x: node?.x(),
-        y: node?.y(),
-        rotation: Math.round(node?.attrs.rotation as number),
-        rect: {
-          width: Math.max(5, node?.width() * scaleX),
-          height: Math.max(node?.height() * scaleY),
-          cornerRadius: data.rect?.cornerRadius as number,
-        },
-      });
-    },
-    [data, onChanging],
-  );
+  const onTransform = useCallback((e: Konva.KonvaEventObject<Event>) => {
+    const node = shapeRef.current as Konva.Star;
+    const scaleX = node?.scaleX();
+    const scaleY = node?.scaleY();
+    node?.scaleX(1);
+    node?.scaleY(1);
+    // onChanging({
+    //   ...data,
+    //   x: node?.x(),
+    //   y: node?.y(),
+    //   rotation: Math.round(node?.attrs.rotation as number),
+    //   rect: {
+    //     width: Math.max(5, node?.width() * scaleX),
+    //     height: Math.max(node?.height() * scaleY),
+    //     cornerRadius: data.rect?.cornerRadius as number,
+    //   },
+    // });
+  }, []);
 
-  const onDragMove = useCallback(
-    e => {
-      onChanging({
-        ...data,
-        x: e.target.x(),
-        y: e.target.y(),
-        isLocked: true,
-      });
-    },
-    [data, onChanging],
-  );
+  const onDragMove = e => {
+    const node = shapeRef.current as Konva.Star;
+    var box = node.getClientRect(node?.attrs);
+    var absPos = node.absolutePosition();
+    const edges: ObjectSnappingEdges = {
+      vertical: [
+        {
+          guide: Math.round(box.x),
+          offset: Math.round(absPos.x - box.x),
+          snap: 'start',
+        },
+        {
+          guide: Math.round(box.x + box.width / 2),
+          offset: Math.round(absPos.x - box.x - box.width / 2),
+          snap: 'center',
+        },
+        {
+          guide: Math.round(box.x + box.width),
+          offset: Math.round(absPos.x - box.x - box.width),
+          snap: 'end',
+        },
+      ],
+      horizontal: [
+        {
+          guide: Math.round(box.y),
+          offset: Math.round(absPos.y - box.y),
+          snap: 'start',
+        },
+        {
+          guide: Math.round(box.y + box.height / 2),
+          offset: Math.round(absPos.y - box.y - box.height / 2),
+          snap: 'center',
+        },
+        {
+          guide: Math.round(box.y + box.height),
+          offset: Math.round(absPos.y - box.y - box.height),
+          snap: 'end',
+        },
+      ],
+    };
+    onChanging(e.target, edges);
+  };
 
   const onDragEnd = useCallback(
     (e: Konva.KonvaEventObject<Event>) => {
@@ -109,16 +145,22 @@ function StarTransform(props: TransformShapeProps): JSX.Element {
         y={data.y}
         innerRadius={data.star?.innerRadius as number}
         outerRadius={data.star?.outerRadius as number}
-        draggable={!data.isLocked}
+        draggable={!data.isLocked && data.isEditable}
         onTransformStart={() => onChangeStart(data)}
         // onTransform={onTransform}
         onTransformEnd={onTransformEnd}
         onDragStart={() => onChangeStart(data)}
-        // onDragMove={onDragMove}
+        onDragMove={onDragMove}
         onDragEnd={onDragEnd}
         rotation={data.rotation}
         {...data.shapeConfig}
-        opacity={data.isLocked ? 0.5 : 0.8}
+        opacity={
+          data.isLocked
+            ? Math.max(0.1, (data.shapeConfig?.opacity as number) - 0.2)
+            : (data.shapeConfig?.opacity as number)
+        }
+        onContextMenu={onContextMenu}
+        name="object"
       />
       {data.isSelected && (
         <Transformer

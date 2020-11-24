@@ -1,6 +1,7 @@
 import Konva from 'konva';
 import { RouteChildrenProps } from 'react-router';
 import { CanvasResponseInterface } from '../../../services/APIService/interfaces';
+import { Vector2d } from 'konva/types/types';
 
 export type ShapeObjectType =
   | 'Rect'
@@ -66,6 +67,14 @@ export interface StarProperties {
   numPoints: number;
 }
 
+export interface CommonProperties {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  opacity: number;
+}
+
 export interface PointsInterface extends CanvasPoints {
   textData?: StickyProperty;
   sticky?: StickyProperty;
@@ -85,6 +94,8 @@ export interface ObjectInterface extends PointsInterface {
   isSelected: boolean;
   isEditing: boolean;
   isLocked: boolean;
+  isContextMenu: boolean;
+  isEditable: boolean;
 }
 
 export interface Props
@@ -106,6 +117,7 @@ export interface State {
     categoryId: string;
     imageId: string;
   };
+  pointerPosition: Vector2d;
 }
 
 export interface FontInterface {
@@ -113,12 +125,36 @@ export interface FontInterface {
   fontName: string;
 }
 
+export interface ObjectSnappingResult {
+  lineGuide: number;
+  diff: number;
+  snap: 'start' | 'center' | 'end';
+  offset: number;
+}
+
+export interface ObjectSnappingGuide
+  extends Pick<ObjectSnappingResult, 'lineGuide' | 'snap' | 'offset'> {
+  orientation: 'V' | 'H';
+}
+
+export interface ObjectSnappingEdge {
+  guide: number;
+  offset: number;
+  snap: 'start' | 'center' | 'end';
+}
+
+export interface ObjectSnappingEdges {
+  vertical: ObjectSnappingEdge[];
+  horizontal: ObjectSnappingEdge[];
+}
+
 export interface TransformShapeProps {
   data: ObjectInterface;
   onChange(data: ObjectInterface): void;
-  onChanging(data: ObjectInterface): void;
+  onChanging(target: any, data: ObjectSnappingEdges): void;
   onChangeStart(data: ObjectInterface): void;
   onSelect(event: Konva.KonvaEventObject<MouseEvent>): void;
+  onContextMenu(event: Konva.KonvaEventObject<MouseEvent>): void;
   draggable?: boolean;
 }
 
