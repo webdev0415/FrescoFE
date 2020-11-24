@@ -16,6 +16,7 @@ import { reducer, sliceKey, actions } from './slice';
 import { selectWelcomePage } from './selectors';
 import { welcomePageSaga } from './saga';
 import Auth from 'services/Auth';
+import { selectUser } from '../../selectors';
 
 interface Props {
   location: any;
@@ -36,6 +37,7 @@ export const WelcomePage = memo((props: Props) => {
     : null;
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const welcomePage = useSelector(selectWelcomePage);
+  const user = useSelector(selectUser);
 
   let token = null;
   if (authInfo && authInfo.token && authInfo.token.accessToken) {
@@ -55,6 +57,9 @@ export const WelcomePage = memo((props: Props) => {
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  useEffect(() => {
+    console.log('User ', user);
+  }, [user]);
 
   const { loading } = welcomePage;
 
@@ -86,8 +91,8 @@ export const WelcomePage = memo((props: Props) => {
 
           <div style={{ textAlign: 'center', marginTop: 85 }}>
             <Text>
-              "QuestionPro" is here release the power of collaboration with your
-              team"
+              "{user?.email}" is here release the power of collaboration with
+              your team"
             </Text>
           </div>
 

@@ -65,13 +65,11 @@ export const Dashboard = memo((props: Props) => {
   const [categories, setCategories] = useState<CanvasCategoryInterface[]>([]);
   const [categoryId, setCategoryId] = useState('');
   const [canvasList, setCanvasList] = useState<CanvasResponseInterface[]>([]);
-  const [boardsList, setBoardsList] = useState<any>([]);
   const [showAddNewBoard, setAddNewBoard] = useState(false);
   const [isShowAddNewCanvas, setIsShowAddNewCanvas] = useState(false);
   const [loadingCreateCanvas, setLoadingCreateCanvas] = useState(false);
   const [loadingCategoriesList, setLoadingCategoriesList] = useState(false);
   const [loadingCanvasList, setLoadingCanvasList] = useState(false);
-  const [loadingBoardsList, setLoadingBoardsList] = useState(false);
 
   const orgId = props?.match?.params?.id;
 
@@ -184,22 +182,6 @@ export const Dashboard = memo((props: Props) => {
     );
   };
 
-  // const handleDeleteBoard = (id: string, userId: string) => {
-  //   BoardApiService.deleteById(id, {
-  //     orgId: orgId as string,
-  //     boardId: id,
-  //     userId: userId,
-  //   }).subscribe(
-  //     data => {
-  //       console.log(data);
-  //       setBoardsList(boardsList.filter(item => item.id !== id));
-  //     },
-  //     error => {
-  //       console.error(error);
-  //     },
-  //   );
-  // };
-
   useEffect(() => {
     const profileIcon = document.getElementById(
       'profile-icon',
@@ -251,19 +233,6 @@ export const Dashboard = memo((props: Props) => {
     );
   };
 
-  const getBoardsList = React.useCallback(() => {
-    setLoadingBoardsList(true);
-    BoardApiService.getByOrganizationId(orgId).subscribe(
-      data => {
-        setBoardsList(data);
-        setLoadingBoardsList(false);
-      },
-      () => {
-        setLoadingBoardsList(false);
-      },
-    );
-  }, [orgId]);
-
   useEffect(() => {
     getCanvasList();
   }, [getCanvasList, orgId]);
@@ -271,10 +240,6 @@ export const Dashboard = memo((props: Props) => {
   useEffect(() => {
     getCategoriesList();
   }, [orgId, showAddNewBoard]);
-
-  // useEffect(() => {
-  //   getBoardsList();
-  // }, [getBoardsList, orgId, showAddNewBoard]);
 
   const handleLogOut = () => {
     dispatch(globalActions.removeAuth());
@@ -285,6 +250,7 @@ export const Dashboard = memo((props: Props) => {
   if (!token) {
     return <Redirect to="/auth/login" />;
   }
+
   return (
     <>
       <Helmet>
@@ -422,7 +388,11 @@ export const Dashboard = memo((props: Props) => {
                         overlay={
                           <Menu>
                             <Menu.Item key="0">
-                              <Link to={`/canvas/${data.id}/canvas`}>Edit</Link>
+                              <Link
+                                to={`/canvas/${data.id}/canvas?organization=${orgId}`}
+                              >
+                                Edit
+                              </Link>
                             </Menu.Item>
                             <Menu.Item key="1">
                               <a href="http://www.taobao.com/">Action</a>

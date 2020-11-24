@@ -2,6 +2,7 @@
 @import '_fonts';
 @import '_cards';
 @import './_create-board';
+@import './_context-menu';
 
 @primary-color: #9646f5; // primary color for all components
 @layout-header-background: #5d2e8c;
@@ -59,21 +60,26 @@
   }
 }
 
-// .ant-tabs-nav-wrap {
-//   height: 100vh;
-//   background-color: #e9e9e9;
-//   width: 56px;
-// }
+ .ant-tabs-nav-wrap {
+   height: 100vh;
+   background-color: #e9e9e9;
+   width: 56px;
+ }
 
-// .ant-tabs-tab {
-//   padding: 0 !important;
-//   height: 56px;
-//   width: 100%;
-//   display: inline-flex;
-//   justify-content: center;
-//   align-items: center;
-//   margin: 0 !important;
-// }
+ .ant-tabs-tab {
+   padding: 0 !important;
+   height: 56px;
+   width: 100%;
+   display: inline-flex;
+   justify-content: center;
+   align-items: center;
+   margin: 0 !important;
+
+   &.ant-tabs-tab-active {
+     background-color: white;
+   }
+ }
+
 .canvas-dropdown {
   width: 300px;
   padding: 5px;

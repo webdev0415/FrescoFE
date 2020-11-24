@@ -1,4 +1,5 @@
 import { ObjectInterface, PointsInterface, StickyProperty } from './types';
+import Konva from 'konva';
 
 export const fontNames = [
   'Comic Sans MS',
@@ -26,7 +27,7 @@ export const defaultPointState: PointsInterface = {
   type: null,
 };
 
-export const defaultShapeConfig = {
+export const defaultShapeConfig: Konva.ShapeConfig = {
   fill: '#9646f5',
   strokeWidth: 2,
   opacity: 0.8,
@@ -43,6 +44,8 @@ export const defaultObjectState: ObjectInterface = {
   isSelected: false,
   isEditing: false,
   isLocked: false,
+  isEditable: true,
+  isContextMenu: false,
   ...defaultPointState,
   shapeConfig: {
     ...defaultShapeConfig,

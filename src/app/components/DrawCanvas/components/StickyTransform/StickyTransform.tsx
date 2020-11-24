@@ -3,6 +3,7 @@ import { Group, Rect, Text, Transformer } from 'react-konva';
 import Konva from 'konva';
 import {
   ObjectInterface,
+  ObjectSnappingEdges,
   StickyProperty,
   TransformShapeProps,
 } from '../../../../components/DrawCanvas/types';
@@ -12,7 +13,15 @@ interface Props extends TransformShapeProps {
 }
 
 function StickyTransform(props: Props): JSX.Element {
-  const { data, onSelect, onChange, onChanging, onChangeStart, onEdit } = props;
+  const {
+    data,
+    onSelect,
+    onChange,
+    onChanging,
+    onChangeStart,
+    onEdit,
+    onContextMenu,
+  } = props;
   const shapeRef = useRef<Konva.Group>(null);
   const trRef = useRef<Konva.Transformer>(null);
 
@@ -50,39 +59,67 @@ function StickyTransform(props: Props): JSX.Element {
     [data, onChange],
   );
 
-  const onTransform = useCallback(
-    (e: Konva.KonvaEventObject<Event>) => {
-      const node = shapeRef.current as Konva.Group;
-      const scaleX = node?.scaleX();
-      const scaleY = node?.scaleY();
-      node?.scaleX(1);
-      node?.scaleY(1);
-      onChanging({
-        ...data,
-        x: node?.x(),
-        y: node?.y(),
-        rotation: Math.round(node?.attrs.rotation as number),
-        rect: {
-          width: Math.max(5, node?.width() * scaleX),
-          height: Math.max(node?.height() * scaleY),
-          cornerRadius: data.rect?.cornerRadius as number,
-        },
-      });
-    },
-    [data, onChanging],
-  );
+  const onTransform = useCallback((e: Konva.KonvaEventObject<Event>) => {
+    const node = shapeRef.current as Konva.Group;
+    const scaleX = node?.scaleX();
+    const scaleY = node?.scaleY();
+    node?.scaleX(1);
+    node?.scaleY(1);
+    // onChanging({
+    //   ...data,
+    //   x: node?.x(),
+    //   y: node?.y(),
+    //   rotation: Math.round(node?.attrs.rotation as number),
+    //   rect: {
+    //     width: Math.max(5, node?.width() * scaleX),
+    //     height: Math.max(node?.height() * scaleY),
+    //     cornerRadius: data.rect?.cornerRadius as number,
+    //   },
+    // });
+  }, []);
 
-  const onDragMove = useCallback(
-    e => {
-      onChanging({
-        ...data,
-        x: e.target.x(),
-        y: e.target.y(),
-        isLocked: true,
-      });
-    },
-    [data, onChanging],
-  );
+  const onDragMove = e => {
+    const node = shapeRef.current as Konva.Group;
+    var box = node.getClientRect(node?.attrs);
+    var absPos = node.absolutePosition();
+    const edges: ObjectSnappingEdges = {
+      vertical: [
+        {
+          guide: Math.round(box.x),
+          offset: Math.round(absPos.x - box.x),
+          snap: 'start',
+        },
+        {
+          guide: Math.round(box.x + box.width / 2),
+          offset: Math.round(absPos.x - box.x - box.width / 2),
+          snap: 'center',
+        },
+        {
+          guide: Math.round(box.x + box.width),
+          offset: Math.round(absPos.x - box.x - box.width),
+          snap: 'end',
+        },
+      ],
+      horizontal: [
+        {
+          guide: Math.round(box.y),
+          offset: Math.round(absPos.y - box.y),
+          snap: 'start',
+        },
+        {
+          guide: Math.round(box.y + box.height / 2),
+          offset: Math.round(absPos.y - box.y - box.height / 2),
+          snap: 'center',
+        },
+        {
+          guide: Math.round(box.y + box.height),
+          offset: Math.round(absPos.y - box.y - box.height),
+          snap: 'end',
+        },
+      ],
+    };
+    onChanging(e.target, edges);
+  };
 
   const onDragEnd = useCallback(
     e => {
@@ -103,11 +140,27 @@ function StickyTransform(props: Props): JSX.Element {
     }
   }, [data.isSelected]);
 
+  const getText = () => {
+    let text = '';
+    if (data.sticky?.text) {
+      text = data.sticky?.text;
+    } else if (data.type === 'Sticky') {
+      text = 'Sticky notes area';
+    } else if (data.type === 'Text') {
+      text = 'Type something here';
+    }
+
+    if (data.isEditing) {
+      text = '';
+    }
+    return text;
+  };
+
   return (
     <>
       <Group
         id={data.id}
-        draggable={!data.isLocked}
+        draggable={!data.isLocked && data.isEditable}
         onTransformStart={() => onChangeStart(data)}
         // onTransform={onTransform}
         onDblClick={() =>
@@ -119,7 +172,7 @@ function StickyTransform(props: Props): JSX.Element {
         }
         onTransformEnd={onTransformEnd}
         onDragStart={() => onChangeStart(data)}
-        // onDragMove={onDragMove}
+        onDragMove={onDragMove}
         onDragEnd={onDragEnd}
         ref={shapeRef}
         onClick={onSelect}
@@ -129,6 +182,8 @@ function StickyTransform(props: Props): JSX.Element {
         height={data.rect?.height as number}
         width={data.rect?.width as number}
         rotation={data.rotation}
+        onContextMenu={onContextMenu}
+        name="object"
       >
         <Rect
           id={data.id + ':Rect'}
@@ -150,7 +205,7 @@ function StickyTransform(props: Props): JSX.Element {
           id={data.id + ':Text'}
           x={0}
           y={0}
-          text={data.sticky?.text ? data.sticky?.text : 'Sticky notes area'}
+          text={getText()}
           fillEnabled={true}
         />
       </Group>
