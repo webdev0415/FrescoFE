@@ -4,6 +4,7 @@ import axios from 'axios';
 
 import { actions } from './slice';
 import { actions as globalActions } from '../../slice';
+import Auth from 'services/Auth';
 
 export function* signIn(action) {
   try {
@@ -20,6 +21,7 @@ export function* signIn(action) {
     localStorage.setItem('authInformation', JSON.stringify(authInfo));
     message.success('Logged in successfully.');
     history.push('/auth/welcome-page');
+    Auth.setToken(token);
 
     // check if have invitation type
     try {
