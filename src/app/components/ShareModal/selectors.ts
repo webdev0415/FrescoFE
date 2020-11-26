@@ -5,7 +5,7 @@ import { initialState } from './slice';
 
 const selectDomain = (state: RootState) => state.shareModal || initialState;
 
-export const selectDashboard = createSelector(
+export const selectShareModal = createSelector(
   [selectDomain],
   shareModalState => shareModalState,
 );

@@ -8,17 +8,16 @@ import { v4 as uuidv4 } from 'uuid';
 
 export function* searchEmail(action) {
   const { payload } = action;
-  console.log('payload', payload);
   try {
     axios.defaults.headers.common['Authorization'] = `Bearer ${payload.token}`;
     const response = yield axios.get(
       `/users/search?keyword=${payload.keyword}`,
     );
     console.log('response', response);
-    yield put(actions.searchEmailSuccess(response.data));
+    yield put(actions.searchEmailOrNameSuccess(response.data));
   } catch (error) {
     yield put(
-      actions.searchEmailError({
+      actions.searchEmailOrNameError({
         message: error.message,
         status: error.response.status,
       }),

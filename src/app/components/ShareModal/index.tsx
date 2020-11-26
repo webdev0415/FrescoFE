@@ -6,7 +6,16 @@ import {
   CopyOutlined,
   CaretDownFilled,
 } from '@ant-design/icons';
-import { AutoComplete, Dropdown, Input, Menu, Tabs } from 'antd';
+import {
+  AutoComplete,
+  Dropdown,
+  Input,
+  Menu,
+  Tabs,
+  Select,
+  List,
+  Typography,
+} from 'antd';
 import Text from 'antd/lib/typography/Text';
 import { PERMISSION } from 'app/containers/Dashboard';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
@@ -15,7 +24,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { selectToken } from 'app/selectors';
 import { useInjectReducer, useInjectSaga } from 'redux-injectors';
 import { shareModalSaga } from './saga';
-import { Option } from 'antd/lib/mentions';
+import { selectShareModal } from './selectors';
+const { Option } = Select;
 let timer;
 
 const { TabPane } = Tabs;
@@ -37,31 +47,35 @@ export const ShareModal = ({
   const baseClient = `${window.location.protocol}${window.location.hostname}:${window.location.port}/`;
 
   const [listEmailAndPermission, setListEmailAndPermission] = useState(
-    [] as any,
+    [] as Array<EmailAndPermission>,
   );
 
   const dispatch = useDispatch();
   const token = useSelector(selectToken);
+  const { listEmail } = useSelector(selectShareModal);
 
   const _handleSearch = (value: string) => {
-    console.log('value', value);
-
-    if (timer) {
-      clearTimeout(timer);
+    if (!value) {
+      dispatch(actions.searchEmailOrNameSuccess([]));
+    } else {
+      if (timer) {
+        clearTimeout(timer);
+      }
+      timer = setTimeout(() => {
+        dispatch(actions.searchEmailOrNameRequest({ keyword: value, token }));
+      }, 1000);
     }
-    timer = setTimeout(() => {
-      dispatch(
-        dispatch(actions.searchEmailOrNameRequest({ keyword: value, token })),
-      );
-    }, 1000);
   };
 
-  const _handleSelectEmail = value => {
-    console.log(value);
-
+  const _handleSelectEmail = (key, value) => {
+    console.log(value, key);
+    for (let index = 0; index < listEmailAndPermission.length; index++) {
+      const emailAndPermission = listEmailAndPermission[index];
+      if (emailAndPermission.email === key) return;
+    }
     setListEmailAndPermission([
       ...listEmailAndPermission,
-      { email: value, permission: PERMISSION.EDITOR },
+      { email: key, permission: PERMISSION.EDITOR },
     ]);
   };
 
@@ -116,14 +130,24 @@ export const ShareModal = ({
               onSearch={_handleSearch}
               placeholder="Search email or user name"
               onSelect={_handleSelectEmail}
-              onChange={_handleSelectEmail}
             >
-              {/* {listEmail?.map(item => (
+              {listEmail?.map(item => (
                 <Option key={item.id} value={item.email}>
-                  {email.email}
+                  {item.email}
                 </Option>
-              ))} */}
+              ))}
             </AutoComplete>
+            <List
+              header={<div>Header</div>}
+              footer={<div>Footer</div>}
+              bordered
+              dataSource={listEmailAndPermission}
+              renderItem={item => (
+                // <div>
+                <Text>{item?.email}</Text>
+                // </div>
+              )}
+            />
           </TabPane>
           <TabPane tab="Use Link" key="2">
             <div

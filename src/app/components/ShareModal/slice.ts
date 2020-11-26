@@ -19,13 +19,13 @@ const shareModalSlice = createSlice({
     },
 
     // TODO: define Payload type and use here
-    searchEmailSuccess(state, action: PayloadAction<any>) {
+    searchEmailOrNameSuccess(state, action: PayloadAction<any>) {
       // console.log(action.payload);
       state.listEmail = action.payload;
       // state.loading = false;
     },
 
-    searchEmailError(state, action: PayloadAction<any>) {
+    searchEmailOrNameError(state, action: PayloadAction<any>) {
       // state.loading = false;
     },
 
