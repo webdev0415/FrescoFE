@@ -128,7 +128,7 @@ export const Dashboard = memo((props: Props) => {
       data => {
         console.log(data);
         setLoadingCreateCanvas(false);
-        history.push(`/canvas/${data.id}/canvas`);
+        history.push(`/canvas/${data.id}/canvas`, { orgId });
       },
       error => {
         setLoadingCreateCanvas(false);
@@ -389,7 +389,10 @@ export const Dashboard = memo((props: Props) => {
                           <Menu>
                             <Menu.Item key="0">
                               <Link
-                                to={`/canvas/${data.id}/canvas?organization=${orgId}`}
+                                to={{
+                                  pathname: `/canvas/${data.id}/canvas?organization=${orgId}`,
+                                  state: { orgId },
+                                }}
                               >
                                 Edit
                               </Link>

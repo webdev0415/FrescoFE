@@ -4,6 +4,8 @@ import axios from 'axios';
 
 import { actions } from './slice';
 import { actions as globalActions } from '../../slice';
+import { actions as verifyInvitationTypeActions } from '../VerifyInvitationType/slice';
+import Auth from 'services/Auth';
 
 export function* signIn(action) {
   try {
@@ -15,6 +17,20 @@ export function* signIn(action) {
     localStorage.setItem('authInformation', JSON.stringify(response.data));
     message.success('Logged in successfully.');
     history.push('/auth/welcome-page');
+    Auth.setToken(response?.data?.token?.accessToken);
+
+    // check if have invitation type
+    const tokenVerifyJson = localStorage.getItem('tokenVerify');
+    if (tokenVerifyJson) {
+      localStorage.removeItem('tokenVerify');
+      yield put(
+        verifyInvitationTypeActions.verifyInvitationTypeRequest({
+          tokenVerify: JSON.parse(tokenVerifyJson).tokenVerify,
+          history,
+          token: response?.data?.token?.accessToken,
+        }),
+      );
+    }
   } catch (error) {
     if (error.response.status === 401) {
       yield put(

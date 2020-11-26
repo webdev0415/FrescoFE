@@ -36,6 +36,7 @@ import { SignupForInvitation } from './containers/SignupForInvitation/Loadable';
 import { CreateCanvas } from './containers/CreateCanvas';
 import { GuestRoute } from 'services/GuestRoute';
 import { CreateBoard } from './containers/CreateBoard/Loadable';
+import { VerifyInvitationType } from './containers/VerifyInvitationType';
 
 function AppComponent(props) {
   useInjectReducer({ key: sliceKey, reducer });
@@ -97,10 +98,13 @@ function AppComponent(props) {
           component={CreateBoard}
         />
         <PrivateRoute exact path="/canvas/:id/board" component={CreateBoard} />
-
         <PrivateRoute exact path="/canvas/:id/:type" component={CreateCanvas} />
-
         <Route exact path="/invite/:token" component={VerifyInvitation} />
+        <Route
+          exact
+          path="/invitation-type/verification/:token"
+          component={VerifyInvitationType}
+        />
         <PrivateRoute
           exact
           path="/create-org"

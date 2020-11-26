@@ -1,9 +1,14 @@
 import React, { memo, useEffect, useState } from 'react';
-import { RouteChildrenProps } from 'react-router';
+import { RouteChildrenProps, useLocation } from 'react-router';
 import logoImg from 'assets/icons/logo-color.svg';
+import { v4 as uuidv4 } from 'uuid';
 
-import { Dropdown, Input, Menu, Slider, Switch } from 'antd';
-import { CheckOutlined, CopyOutlined } from '@ant-design/icons';
+import { Button, Dropdown, Input, Menu, Slider, Switch } from 'antd';
+import {
+  CheckOutlined,
+  CopyOutlined,
+  ShareAltOutlined,
+} from '@ant-design/icons';
 import { DrawCanvas } from '../../components/DrawCanvas';
 import {
   CircleShapeIcon,
@@ -24,6 +29,16 @@ import {
 import clsx from 'clsx';
 import pageIcon from '../../../assets/icons/page.svg';
 import { Link, useHistory } from 'react-router-dom';
+import { ShareModal } from 'app/components/ShareModal';
+import { PERMISSION } from '../Dashboard';
+import Axios from 'axios';
+import { useSelector } from 'react-redux';
+import { selectToken } from 'app/selectors';
+import { invitationType } from 'utils/constant';
+
+interface IState {
+  orgId?: any;
+}
 
 export const CreateCanvas = memo(
   (props: RouteChildrenProps<{ id: string; type: string }>) => {
@@ -41,7 +56,14 @@ export const CreateCanvas = memo(
       | null
     >(null);
     const [showSubTools, setShowSubTools] = useState<string>('');
+    const [isShowShareModal, setIsShowShareModal] = useState(false);
+    const [permission, setPermission] = useState(PERMISSION.EDITOR);
+    const [linkInvitation, setLinkInvitation] = useState(Object);
     const history = useHistory();
+    const location = useLocation();
+    const orgId = (location.state as IState)?.orgId;
+    const token = useSelector(selectToken);
+    const canvasId = props?.match?.params?.id;
     useEffect(() => {
       setUrl(new URL(window.location.href));
     }, [history]);
@@ -58,9 +80,100 @@ export const CreateCanvas = memo(
         }
       });
     }, []);
+
+    useEffect(() => {
+      const shareIcon = document.getElementById('share-icon') as HTMLDivElement;
+      if (shareIcon) {
+        shareIcon.addEventListener('click', () => {
+          setIsShowShareModal(true);
+        });
+      }
+    }, []);
+
+    const _getLinkInvitation = async () => {
+      try {
+        let res;
+        try {
+          res = await Axios.request({
+            method: 'GET',
+            url:
+              process.env.REACT_APP_BASE_URL +
+              `invitation-type/${canvasId}/canvas-link`,
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+        } catch (e) {
+          console.log(e);
+        }
+
+        if (!res) {
+          const resCreated = await Axios.request({
+            method: 'POST',
+            url: process.env.REACT_APP_BASE_URL + 'invitation-type',
+            data: {
+              orgId: orgId,
+              token: uuidv4(),
+              permission: PERMISSION.EDITOR,
+              type: invitationType.CANVAS,
+              typeId: canvasId,
+            },
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          console.log('resCreated', resCreated);
+          setLinkInvitation(resCreated?.data);
+          setPermission(resCreated?.data?.permission);
+        } else {
+          setLinkInvitation(res.data);
+          setPermission(res?.data?.permission);
+        }
+      } catch (error) {
+        console.error(error.response);
+      }
+    };
+
+    useEffect(() => {
+      if (canvasId && token) {
+        _getLinkInvitation();
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [canvasId, token]);
+
+    const _onChangePermission = async e => {
+      // console.log(e, linkInvitation);
+      setPermission(e.key);
+      const resUpdated = await Axios.request({
+        method: 'PUT',
+        url: `${process.env.REACT_APP_BASE_URL}invitation-type/${linkInvitation.id}/${invitationType.CANVAS}`,
+        data: {
+          permission: e.key,
+          type: invitationType.CANVAS,
+        },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      // console.log('resUpdated', resUpdated);
+      setLinkInvitation(resUpdated?.data);
+    };
+
+    const _closeModal = () => {
+      setIsShowShareModal(false);
+    };
+
     return (
       <div className="canvas-view">
         <div className="canvas-editor">
+          {isShowShareModal && (
+            <ShareModal
+              permission={permission}
+              onChangePermission={_onChangePermission}
+              linkInvitation={linkInvitation}
+              closeModal={_closeModal}
+            />
+          )}
           <DrawCanvas
             className="canvas-body"
             drawingTool={drawingTool}
@@ -119,6 +232,12 @@ export const CreateCanvas = memo(
                   Publish
                 </span>
               </Dropdown.Button>
+              <Button
+                id="share-icon"
+                style={{ marginLeft: 30, marginRight: 16 }}
+              >
+                <ShareAltOutlined />
+              </Button>
             </div>
           </div>
 
