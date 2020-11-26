@@ -13,7 +13,7 @@ const shareModalSlice = createSlice({
   name: 'shareModal',
   initialState,
   reducers: {
-    searchEmailRequest(state, action: PayloadAction<any>) {
+    searchEmailOrNameRequest(state, action: PayloadAction<any>) {
       state.linkInvitation = '';
       // state.loading = true;
     },

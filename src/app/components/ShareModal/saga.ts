@@ -56,9 +56,9 @@ export function* invitation(action) {
   }
 }
 
-export function* dashboardSaga() {
+export function* shareModalSaga() {
   yield all([
-    takeLatest(actions.searchEmailRequest.type, searchEmail),
+    takeLatest(actions.searchEmailOrNameRequest.type, searchEmail),
     takeLatest(actions.invitationRequest.type, invitation),
   ]);
 }

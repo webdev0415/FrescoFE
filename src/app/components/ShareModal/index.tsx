@@ -1,4 +1,5 @@
-import React, { Fragment, useEffect } from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { Fragment, useEffect, useState } from 'react';
 import {
   CloseOutlined,
   ShareAltOutlined,
@@ -12,9 +13,17 @@ import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { actions, reducer, sliceKey } from './slice';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectToken } from 'app/selectors';
+import { useInjectReducer, useInjectSaga } from 'redux-injectors';
+import { shareModalSaga } from './saga';
+import { Option } from 'antd/lib/mentions';
 let timer;
 
 const { TabPane } = Tabs;
+
+interface EmailAndPermission {
+  email: string;
+  permission: string;
+}
 
 export const ShareModal = ({
   permission,
@@ -22,26 +31,39 @@ export const ShareModal = ({
   linkInvitation,
   closeModal,
 }) => {
+  useInjectReducer({ key: sliceKey, reducer: reducer });
+  useInjectSaga({ key: sliceKey, saga: shareModalSaga });
   // console.log('linkInvitation', linkInvitation);
   const baseClient = `${window.location.protocol}${window.location.hostname}:${window.location.port}/`;
+
+  const [listEmailAndPermission, setListEmailAndPermission] = useState(
+    [] as any,
+  );
 
   const dispatch = useDispatch();
   const token = useSelector(selectToken);
 
-  useEffect(() => {
-    dispatch(actions.searchEmailRequest({ keyword: '123', token }));
-  }, [dispatch, token]);
+  const _handleSearch = (value: string) => {
+    console.log('value', value);
 
-  // const _handleSearch = (value: string) => {
-  //   if (timer) {
-  //     clearTimeout(timer);
-  //   }
-  //   timer = setTimeout(() => {
-  //     dispatch(
-  //       actions.searchEmailRequest({ data: { email: value, orgId }, token }),
-  //     );
-  //   }, 1000);
-  // };
+    if (timer) {
+      clearTimeout(timer);
+    }
+    timer = setTimeout(() => {
+      dispatch(
+        dispatch(actions.searchEmailOrNameRequest({ keyword: value, token })),
+      );
+    }, 1000);
+  };
+
+  const _handleSelectEmail = value => {
+    console.log(value);
+
+    setListEmailAndPermission([
+      ...listEmailAndPermission,
+      { email: value, permission: PERMISSION.EDITOR },
+    ]);
+  };
 
   return (
     <Fragment>
@@ -83,22 +105,25 @@ export const ShareModal = ({
           </div>
           <CloseOutlined onClick={closeModal} />
         </div>
-        <Tabs defaultActiveKey="1" style={{ paddingRight: 16 }}>
+        <Tabs
+          defaultActiveKey="1"
+          className="tab-modal-share"
+          style={{ paddingRight: 16 }}
+        >
           <TabPane tab="Add People" key="1">
-            Add People
-            {/* <AutoComplete
+            <AutoComplete
               style={{ width: '100%', borderRadius: 5, marginBottom: 10 }}
               onSearch={_handleSearch}
-              placeholder="Search email"
-              onSelect={value => handleSelectEmail(value)}
-              onChange={value => handleSelectEmail(value)}
+              placeholder="Search email or user name"
+              onSelect={_handleSelectEmail}
+              onChange={_handleSelectEmail}
             >
-              {listEmail?.map(item => (
+              {/* {listEmail?.map(item => (
                 <Option key={item.id} value={item.email}>
                   {email.email}
                 </Option>
-              ))}
-            </AutoComplete> */}
+              ))} */}
+            </AutoComplete>
           </TabPane>
           <TabPane tab="Use Link" key="2">
             <div
