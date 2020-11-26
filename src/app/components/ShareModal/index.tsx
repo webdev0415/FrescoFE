@@ -1,14 +1,18 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useEffect } from 'react';
 import {
   CloseOutlined,
   ShareAltOutlined,
   CopyOutlined,
   CaretDownFilled,
 } from '@ant-design/icons';
-import { Dropdown, Input, Menu, Tabs } from 'antd';
+import { AutoComplete, Dropdown, Input, Menu, Tabs } from 'antd';
 import Text from 'antd/lib/typography/Text';
 import { PERMISSION } from 'app/containers/Dashboard';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
+import { actions, reducer, sliceKey } from './slice';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectToken } from 'app/selectors';
+let timer;
 
 const { TabPane } = Tabs;
 
@@ -20,6 +24,25 @@ export const ShareModal = ({
 }) => {
   // console.log('linkInvitation', linkInvitation);
   const baseClient = `${window.location.protocol}${window.location.hostname}:${window.location.port}/`;
+
+  const dispatch = useDispatch();
+  const token = useSelector(selectToken);
+
+  useEffect(() => {
+    dispatch(actions.searchEmailRequest({ keyword: '123', token }));
+  }, [dispatch, token]);
+
+  // const _handleSearch = (value: string) => {
+  //   if (timer) {
+  //     clearTimeout(timer);
+  //   }
+  //   timer = setTimeout(() => {
+  //     dispatch(
+  //       actions.searchEmailRequest({ data: { email: value, orgId }, token }),
+  //     );
+  //   }, 1000);
+  // };
+
   return (
     <Fragment>
       <div
@@ -63,6 +86,19 @@ export const ShareModal = ({
         <Tabs defaultActiveKey="1" style={{ paddingRight: 16 }}>
           <TabPane tab="Add People" key="1">
             Add People
+            {/* <AutoComplete
+              style={{ width: '100%', borderRadius: 5, marginBottom: 10 }}
+              onSearch={_handleSearch}
+              placeholder="Search email"
+              onSelect={value => handleSelectEmail(value)}
+              onChange={value => handleSelectEmail(value)}
+            >
+              {listEmail?.map(item => (
+                <Option key={item.id} value={item.email}>
+                  {email.email}
+                </Option>
+              ))}
+            </AutoComplete> */}
           </TabPane>
           <TabPane tab="Use Link" key="2">
             <div
