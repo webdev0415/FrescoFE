@@ -29,7 +29,7 @@ const ItemBoard = props => {
         onMouseEnter={() => setIsShown(true)}
         onMouseLeave={() => setIsShown(false)}
       >
-        <Meta title={`CJM ${props.item}.${props.i}`} />
+        <Meta title={props.item.name} />
         {isShown && (
           <Div>
             <div>
@@ -40,7 +40,13 @@ const ItemBoard = props => {
               </Text>
             </div>
             <DivFlexEnd>
-              <Button>Select</Button>
+              <Button
+                onClick={() => {
+                  props.onCreateBoard(props.item.data, props.item.id);
+                }}
+              >
+                Select
+              </Button>
             </DivFlexEnd>
           </Div>
         )}

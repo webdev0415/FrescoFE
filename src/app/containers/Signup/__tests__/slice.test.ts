@@ -30,7 +30,16 @@ describe('SignUp slice', () => {
     });
   });
   it('should handle signinError', () => {
-    expect(slice.reducer(state, slice.actions.signUpError())).toEqual<
+    expect(
+      slice.reducer(state, slice.actions.signUpError({ status: null })),
+    ).toEqual<ContainerState>({
+      ...slice.initialState,
+      loading: false,
+    });
+  });
+
+  it('should handle signInErrorReset', () => {
+    expect(slice.reducer(state, slice.actions.signUpErrorReset())).toEqual<
       ContainerState
     >({
       ...slice.initialState,

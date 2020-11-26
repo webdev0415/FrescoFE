@@ -13,6 +13,7 @@ export const InviteMemberModal = ({
   handleSearch,
   handleSelectEmail,
   handleChangePermission,
+  loading,
 }) => {
   const handleOnCancel = () => {
     onCancel();
@@ -76,7 +77,7 @@ export const InviteMemberModal = ({
             </Row>
           </div>
 
-          <Button type="primary" onClick={handleInvitation}>
+          <Button type="primary" loading={loading} onClick={handleInvitation}>
             Send invitations
           </Button>
 

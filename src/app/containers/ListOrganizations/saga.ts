@@ -8,11 +8,9 @@ import { actions } from './slice';
 export function* listOrganizations(action) {
   const { payload } = action;
   const { history, token } = payload;
-  console.log('payload', token);
   try {
     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
     const response = yield axios.get('organization/');
-    console.log('response', response);
     // if (true) {
     //   history.push('/');
     // } else {

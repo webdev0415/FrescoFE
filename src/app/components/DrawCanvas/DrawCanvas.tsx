@@ -1,132 +1,127 @@
 import React, { Component, memo } from 'react';
 import {
+  Ellipse,
+  Group,
   Layer,
+  Rect,
+  Shape,
   Stage,
   Star,
   Text,
-  Rect,
-  Circle,
-  Ellipse,
-  Shape,
-  Group,
+  Line,
 } from 'react-konva';
 import { v4 as uuidv4 } from 'uuid';
 import Konva from 'konva';
 import {
-  ShapeObjectType,
-  Props,
   ObjectInterface,
+  ObjectSnappingEdges,
+  ObjectSnappingGuide,
+  ObjectSnappingResult,
+  ObjectSocketInterface,
+  Props,
   State,
-  TextProperties,
-  FontInterface,
+  StickyProperty,
 } from './types';
-import { defaultPointState, defaultTextProperties } from './constants';
-import { Select } from 'antd';
+import socketIOClient from 'socket.io-client';
+import _ from 'lodash';
+import { defaultObjectState, fontNames } from './constants';
+import { Modal, Select } from 'antd';
 import {
+  EllipseTransform,
+  LineTransform,
+  RectTransform,
+  StarTransform,
+  StickyTransform,
+  TriangleTransform,
+} from './components';
+import {
+  BorderStyleIcon,
   ChevronDownIcon,
+  FillColorIcon,
+  MarkerIcon,
   MinusSquareIcon,
   MoreIcon,
+  PlusSquareIcon,
   TextAlignmentIcon,
   TextBoldIcon,
+  TextColorIcon,
   TextUnderLineIcon,
   VerticalLineIcon,
-  TextColorIcon,
-  FillColorIcon,
-  BorderStyleIcon,
-  MarkerIcon,
 } from '../CanvasIcons';
+import {
+  BoardApiService,
+  CanvasApiService,
+  ImageUploadingService,
+} from '../../../services/APIService';
+import { onMouseDown, onMouseMove, onMouseUp } from './utility';
+
+export enum BoardSocketEventEnum {
+  CREATE = 'create',
+  MOVE = 'move',
+  UPDATE = 'update',
+  DELETE = 'delete',
+  LOCK = 'lock',
+  UNLOCK = 'unlock',
+  JOIN_BOARD = 'joinBoard',
+  LEAVE_BOARD = 'leaveBoard',
+  CONNECT = 'connect',
+  DISCONNECT = 'disconnect',
+}
 
 class DrawCanvas extends Component<Props, State> {
+  socket: SocketIOClient.Socket;
   state: State = {
+    id: uuidv4(),
     objects: [],
     points: {
-      ...defaultPointState,
+      ...defaultObjectState,
     },
-    history: [[]],
-    historyIndex: 0,
+    prevHistory: [],
+    nextHistory: [],
+    canvas: {
+      name: '',
+      orgId: '',
+      categoryId: '',
+      imageId: '',
+    },
+    pointerPosition: {
+      x: 0,
+      y: 0,
+    },
   };
   stageRef: Konva.Stage | null = null;
+  layerRef: Konva.Layer | null = null;
 
   isItemFocused: boolean = false;
   isItemMoving: boolean = false;
   isDrawing: boolean = false;
+  GUIDELINE_OFFSET = 5;
 
-  fontList: FontInterface[] = [
-    {
-      fontFamily: 'Arial',
-      fontName: 'Arial',
-    },
-    {
-      fontFamily: 'Roboto',
-      fontName: 'Roboto',
-    },
-    {
-      fontFamily: 'Space Grotesk',
-      fontName: 'Space Grotesk',
-    },
-    {
-      fontFamily: 'Poppins',
-      fontName: 'Poppins',
-    },
-    {
-      fontFamily: 'Syne Tactile',
-      fontName: 'Syne Tactile',
-    },
-    {
-      fontFamily: 'Itim',
-      fontName: 'Itim',
-    },
-    {
-      fontFamily: 'Anton',
-      fontName: 'Anton',
-    },
-    {
-      fontFamily: 'Josefin Sans',
-      fontName: 'Josefin Sans',
-    },
-  ];
+  constructor(props) {
+    super(props);
+    const url = new URL(process.env.REACT_APP_BASE_URL as string);
+    url.pathname = 'board';
+    this.socket = socketIOClient(url.href, {
+      transports: ['websocket'],
+    });
+  }
 
   componentDidMount() {
-    document.addEventListener('keydown', event => {
-      if (event.key === 'Delete') {
-        this.setState({
-          objects: this.state.objects.filter(
-            shapeObject => !shapeObject.isSelected,
-          ),
-        });
-      }
-    });
+    document.addEventListener('keydown', this.onKeyDown);
 
-    const undoHistory = document.getElementById(
-      'undo-history',
-    ) as HTMLDivElement;
-    const redoHistory = document.getElementById(
-      'redo-history',
-    ) as HTMLDivElement;
+    this.redoHistory();
+    this.undoHistory();
 
-    undoHistory.addEventListener('click', () => {
-      const historyLength = this.state.history.length;
-      const historyIndex = this.state.historyIndex;
-      if (historyIndex => 0 && historyIndex < historyLength) {
-        const newHistoryIndex = Math.max(0, historyIndex - 1);
-        this.setState({
-          objects: this.state.history[newHistoryIndex].slice(),
-          historyIndex: newHistoryIndex,
-        });
-      }
+    const saveCanvas = document.getElementById('save-canvas') as HTMLDivElement;
+    saveCanvas.addEventListener('click', () => {
+      this.save();
     });
+    this.getData();
+    this.canvasWebSockets();
+  }
 
-    redoHistory.addEventListener('click', e => {
-      const historyLength = this.state.history.length;
-      const historyIndex = this.state.historyIndex;
-      if (historyIndex => 0 && historyIndex < historyLength - 1) {
-        const newHistoryIndex = Math.max(historyIndex - 1, historyLength - 1);
-        this.setState({
-          objects: this.state.history[newHistoryIndex].slice(),
-          historyIndex: newHistoryIndex,
-        });
-      }
-    });
+  componentWillUnmount() {
+    document.removeEventListener('keydown', this.onKeyDown);
   }
 
   componentDidUpdate(
@@ -136,8 +131,422 @@ class DrawCanvas extends Component<Props, State> {
   ) {
     if (JSON.stringify(this.props) !== JSON.stringify(prevProps)) {
       this.handleChangeCursor();
-      console.log(this.props.zoomLevel);
     }
+  }
+
+  onKeyDown = event => {
+    if (event.key === 'Delete') {
+      const currentObject = this.state.objects.find(
+        shapeObject => shapeObject.isSelected,
+      );
+      if (currentObject) {
+        this.deleteObject(
+          { id: this.state.id, data: currentObject },
+          {
+            emitEvent: true,
+            saveHistory: true,
+            saveCanvas: true,
+          },
+        );
+      }
+    } else if (event.ctrlKey && event.key.toLowerCase() === 'y') {
+      const redoHistory = document.getElementById(
+        'redo-history',
+      ) as HTMLDivElement;
+      redoHistory.click();
+    }
+    if (event.ctrlKey && event.key.toLowerCase() === 'z') {
+      const undoHistory = document.getElementById(
+        'undo-history',
+      ) as HTMLDivElement;
+      undoHistory.click();
+    }
+  };
+
+  canvasWebSockets(): void {
+    this.socket.on(BoardSocketEventEnum.CONNECT, () => {
+      console.log('Socket ' + BoardSocketEventEnum.CONNECT);
+      this.socket.emit(
+        BoardSocketEventEnum.JOIN_BOARD,
+        this.props.match?.params.id,
+      );
+    });
+    this.socket.on(BoardSocketEventEnum.CREATE, (event: string) => {
+      this.createObject(JSON.parse(event));
+    });
+    this.socket.on(BoardSocketEventEnum.JOIN_BOARD, (data: string) => {
+      console.log('Socket ' + BoardSocketEventEnum.JOIN_BOARD, data);
+    });
+    this.socket.on(BoardSocketEventEnum.LEAVE_BOARD, (data: string) => {
+      console.log('Socket ' + BoardSocketEventEnum.LEAVE_BOARD, data);
+    });
+    this.socket.on(BoardSocketEventEnum.UPDATE, (event: string) => {
+      this.updateObject(JSON.parse(event));
+    });
+    this.socket.on(BoardSocketEventEnum.MOVE, (event: string) => {
+      console.log(BoardSocketEventEnum.MOVE, event);
+      this.moveObject(JSON.parse(event));
+    });
+    this.socket.on(BoardSocketEventEnum.LOCK, (event: string) => {
+      console.log('Socket ' + BoardSocketEventEnum.LOCK, event);
+      this.lockObject(JSON.parse(event));
+    });
+    this.socket.on(BoardSocketEventEnum.UNLOCK, (event: string) => {
+      console.log('Socket ' + BoardSocketEventEnum.UNLOCK, event);
+    });
+    this.socket.on(BoardSocketEventEnum.DELETE, (event: string) => {
+      console.log('Socket ' + BoardSocketEventEnum.DELETE, event);
+      this.deleteObject(JSON.parse(event), { saveHistory: true });
+    });
+    this.socket.on(BoardSocketEventEnum.CREATE, (event: string) => {
+      console.log('Socket ' + BoardSocketEventEnum.CREATE, event);
+    });
+    this.socket.on(BoardSocketEventEnum.DISCONNECT, () => {
+      console.log('Socket ' + BoardSocketEventEnum.DISCONNECT);
+      this.socket.emit(
+        BoardSocketEventEnum.LEAVE_BOARD,
+        this.props.match?.params.id,
+      );
+    });
+  }
+
+  moveObject(objectData: ObjectSocketInterface): void {
+    this.setState({
+      objects: this.state.objects.map(item => {
+        if (item.id === objectData.data.id) {
+          return {
+            ...item,
+            ...objectData.data,
+          };
+        } else {
+          return item;
+        }
+      }),
+    });
+    if (objectData.id !== this.state.id) {
+      this.updateShape(objectData.data, { saveHistory: true });
+    }
+  }
+
+  getCanvasDimensions = (): { width: number; height: number } => {
+    const width = window.innerWidth * this.props.zoomLevel;
+    const height = (window.innerHeight - 80) * this.props.zoomLevel;
+    return {
+      width,
+      height,
+    };
+  };
+
+  lockObject(objectData: ObjectSocketInterface): void {
+    if (objectData.id !== this.state.id) {
+      this.setState({
+        objects: this.state.objects.map(item => {
+          if (item.id === objectData.data.id) {
+            return {
+              ...item,
+              ...objectData.data,
+            };
+          } else {
+            return item;
+          }
+        }),
+      });
+    }
+  }
+
+  updateObject(objectData: ObjectSocketInterface): void {
+    if (objectData.id !== this.state.id) {
+      this.updateShape(objectData.data, { saveHistory: true });
+    }
+  }
+
+  createObject(objectData: ObjectSocketInterface): void {
+    if (objectData.id !== this.state.id) {
+      this.addCanvasShape(objectData.data, { saveHistory: true });
+    }
+  }
+
+  deleteObject(
+    objectData: ObjectSocketInterface,
+    options: {
+      saveHistory?: boolean;
+      emitEvent?: boolean;
+      saveCanvas?: boolean;
+    } = {
+      saveHistory: false,
+      emitEvent: false,
+      saveCanvas: false,
+    },
+  ): void {
+    if (options.emitEvent) {
+      this.emitSocketEvent(BoardSocketEventEnum.DELETE, objectData.data);
+    }
+    this.setState(
+      {
+        objects: this.state.objects.filter(
+          shapeObject => shapeObject.id !== objectData.data.id,
+        ),
+      },
+      () => {
+        if (options.saveCanvas) {
+          this.save();
+        }
+      },
+    );
+  }
+
+  emitSocketEvent(
+    eventType: BoardSocketEventEnum,
+    data: ObjectInterface,
+  ): void {
+    const socketData = {
+      boardId: this.props.match?.params.id as string,
+      data: JSON.stringify({
+        id: this.state.id,
+        data: data,
+      }),
+    };
+    this.socket.emit(eventType, socketData);
+  }
+
+  undoHistory(): void {
+    const undoHistory = document.getElementById(
+      'undo-history',
+    ) as HTMLDivElement;
+    undoHistory.addEventListener('click', () => {
+      if (this.state.prevHistory.length) {
+        const nextHistory = JSON.parse(JSON.stringify(this.state.nextHistory));
+        const prevHistory = JSON.parse(JSON.stringify(this.state.prevHistory));
+        const historyItem = prevHistory.pop();
+        if (historyItem) {
+          nextHistory.unshift(historyItem);
+          this.setState({
+            nextHistory,
+            prevHistory,
+            objects: this.state.objects.map(item => {
+              if (item.id === historyItem.id) {
+                return {
+                  ...item,
+                  ...historyItem,
+                };
+              } else {
+                return item;
+              }
+            }),
+          });
+        }
+      }
+    });
+  }
+
+  redoHistory(): void {
+    const redoHistory = document.getElementById(
+      'redo-history',
+    ) as HTMLDivElement;
+    redoHistory.addEventListener('click', () => {
+      if (this.state.nextHistory.length) {
+        const nextHistory = JSON.parse(JSON.stringify(this.state.nextHistory));
+        const prevHistory = JSON.parse(JSON.stringify(this.state.prevHistory));
+        const historyItem = nextHistory.shift();
+        if (historyItem) {
+          prevHistory.push(historyItem);
+          this.setState({
+            nextHistory,
+            prevHistory,
+            objects: this.state.objects.map(item => {
+              if (item.id === historyItem.id) {
+                return {
+                  ...item,
+                  ...historyItem,
+                };
+              } else {
+                return item;
+              }
+            }),
+          });
+        }
+      }
+    });
+  }
+
+  uploadImage(): void {
+    ImageUploadingService.imageUploadFromDataUrl(
+      this.stageRef?.toDataURL({ pixelRatio: 1 }) as string,
+      this.props.match?.params.type as string,
+    ).subscribe(image => {
+      this.setState(
+        {
+          canvas: {
+            ...this.state.canvas,
+            imageId: image.id,
+          },
+        },
+        () => {
+          if (this.props.match?.params.type === 'canvas') {
+            this.saveCanvas();
+          } else if (this.props.match?.params.type === 'board') {
+            this.saveBoard();
+          }
+        },
+      );
+    });
+  }
+
+  updateImage(): void {
+    ImageUploadingService.imageUpdateFromDataUrl(
+      this.stageRef?.toDataURL({ pixelRatio: 1 }) as string,
+      this.props.match?.params.type as string,
+      this.state.canvas.imageId,
+    ).subscribe(image => {
+      this.setState({
+        canvas: {
+          ...this.state.canvas,
+          imageId: image.id,
+        },
+      });
+    });
+  }
+
+  saveImage(): void {
+    if (!!this.state.canvas.imageId) {
+      this.updateImage();
+    } else {
+      this.uploadImage();
+    }
+  }
+
+  save(): void {
+    setTimeout(() => {
+      this.saveImage();
+      if (!!this.state.canvas.imageId) {
+        if (this.props.match?.params.type === 'canvas') {
+          this.saveCanvas();
+        } else if (this.props.match?.params.type === 'board') {
+          this.saveBoard();
+        }
+      }
+    }, 100);
+  }
+
+  getJsonData(): string {
+    return JSON.stringify(
+      this.state.objects.map(item => ({
+        ...item,
+        isEditing: false,
+        isSelected: false,
+        isFocused: false,
+        isLocked: false,
+      })),
+    );
+  }
+
+  saveBoard(): void {
+    const data = this.getJsonData();
+    const canvas = { ...this.state.canvas };
+    if (!canvas.imageId) {
+      delete canvas.imageId;
+    }
+    BoardApiService.updateById(this.props.match?.params.id as string, {
+      ...canvas,
+      data: data,
+    }).subscribe(
+      response => {
+        console.log(response);
+      },
+      error => {
+        console.error(error.response);
+      },
+    );
+  }
+
+  saveCanvas(): void {
+    const data = this.getJsonData();
+    const canvas = { ...this.state.canvas };
+    if (!canvas.imageId) {
+      delete canvas.imageId;
+    }
+    CanvasApiService.updateById(this.props.match?.params.id as string, {
+      ...canvas,
+      data: data,
+    }).subscribe(
+      response => {
+        console.log(response);
+      },
+      error => {
+        console.error(error.response);
+      },
+    );
+  }
+
+  getData(): void {
+    if (this.props.match?.params.type === 'canvas') {
+      this.getCanvasObject();
+    } else if (this.props.match?.params.type === 'board') {
+      this.getBoardObject();
+    }
+  }
+
+  getBoardObject(): void {
+    const canvasTitle = document.getElementById(
+      'canvas-title',
+    ) as HTMLSpanElement;
+    BoardApiService.getById(this.props.match?.params.id as string).subscribe(
+      boardData => {
+        canvasTitle.innerText = boardData.name;
+        const canvasObjects = !!boardData.data
+          ? JSON.parse(boardData.data)
+          : [];
+        this.setState(
+          {
+            objects: canvasObjects,
+            canvas: {
+              orgId: boardData.orgId,
+              name: boardData.name,
+              categoryId: boardData.categoryId as string,
+              imageId: boardData.imageId as string,
+            },
+          },
+          () => {
+            this.save();
+          },
+        );
+      },
+
+      error => {
+        console.error(error);
+      },
+    );
+  }
+
+  getCanvasObject(): void {
+    const canvasTitle = document.getElementById(
+      'canvas-title',
+    ) as HTMLSpanElement;
+    CanvasApiService.getById(this.props.match?.params.id as string).subscribe(
+      canvasData => {
+        canvasTitle.innerText = canvasData.name;
+        const canvasObjects = !!canvasData.data
+          ? JSON.parse(canvasData.data)
+          : [];
+        this.setState(
+          {
+            objects: canvasObjects,
+            canvas: {
+              orgId: canvasData.orgId,
+              name: canvasData.name,
+              categoryId: canvasData.categoryId,
+              imageId: canvasData.imageId as string,
+            },
+          },
+          () => {
+            this.save();
+          },
+        );
+      },
+      error => {
+        console.error(error);
+      },
+    );
   }
 
   handleChangeCursor = () => {
@@ -155,7 +564,7 @@ class DrawCanvas extends Component<Props, State> {
         ].includes(this.props.drawingTool as string)
       ) {
         container.style.cursor = 'crosshair';
-      } else if (this.props.drawingTool === 'Drag') {
+      } else if (!this.props.drawingTool) {
         if (this.isItemFocused) {
           if (this.isItemMoving) {
             container.style.cursor = 'grabbing';
@@ -169,332 +578,544 @@ class DrawCanvas extends Component<Props, State> {
     }
   };
 
-  handleSelectObject = (id: string): void => {
-    const data = this.state.objects.find(
-      item => item.id === id,
-    ) as ObjectInterface;
-    if (data) {
-      this.updateShape({
+  handleSelect = (data: ObjectInterface) => {
+    this.updateShape(
+      {
         ...data,
-        isDragging: false,
-        isEditing: false,
         isSelected: true,
-        isFocused: true,
-      });
-    }
+      },
+      {
+        saveHistory: false,
+        emitEvent: false,
+        save: false,
+      },
+    );
   };
 
-  handleDblClick = e => {
-    let id = e.target.id();
-    if (id) {
-      id = id.replace(':Rect', '').replace(':Text', '');
-    }
-
-    const data = this.state.objects.find(
-      item => item.id === id,
-    ) as ObjectInterface;
-    if (data) {
-      this.updateShape({
+  handleLockObject = (data: ObjectInterface) => {
+    this.updateShape(
+      {
         ...data,
-        x: e.target.x(),
-        y: e.target.y(),
-        isDragging: false,
-        isEditing: true,
-        isSelected: true,
-        isFocused: true,
-      });
-    }
+        isContextMenu: false,
+        isSelected: false,
+        isEditable: false,
+      },
+      {
+        saveHistory: true,
+        emitEvent: true,
+        save: true,
+      },
+    );
   };
 
-  onMouseEnterItem = e => {
-    let id = e.target.id();
-    if (id) {
-      id = id.replace(':Rect', '').replace(':Text', '');
-    }
-    this.setState({
-      objects: this.state.objects.map(shapeObject => {
-        return {
-          ...shapeObject,
-          isFocused: shapeObject.id === id,
-        };
-      }),
-    });
-    this.isItemFocused = true;
-    this.handleChangeCursor();
-  };
-
-  onMouseLeaveItem = () => {
-    this.setState({
-      objects: this.state.objects.map(shapeObject => {
-        return {
-          ...shapeObject,
-          isFocused: false,
-        };
-      }),
-    });
-
-    this.isItemFocused = false;
-    this.handleChangeCursor();
-  };
-
-  handleClickShape = e => {
-    let id = e.target.id();
-    if (id) {
-      id = id.replace(':Rect', '').replace(':Text', '');
-    }
-
-    const data = this.state.objects.find(
-      item => item.id === id,
-    ) as ObjectInterface;
-    if (data) {
-      this.updateShape({
+  handleUnlockObject = (data: ObjectInterface) => {
+    this.updateShape(
+      {
         ...data,
-        x: e.target.x(),
-        y: e.target.y(),
-        isDragging: false,
-        isEditing: false,
-        isSelected: true,
-        isFocused: false,
-      });
-    }
-    this.handleSelectObject(id);
+        isContextMenu: false,
+        isSelected: false,
+        isEditable: true,
+      },
+      {
+        saveHistory: true,
+        emitEvent: true,
+        save: true,
+      },
+    );
   };
 
-  handleDragStart = e => {
-    this.isItemMoving = true;
-    this.handleChangeCursor();
-    const id = e.target.id();
-    this.handleSelectObject(id);
-    const data = this.state.objects.find(
-      item => item.id === e.target.id(),
-    ) as ObjectInterface;
-    if (data) {
-      this.updateShape({
+  handleContextMenu = (data: ObjectInterface) => {
+    this.updateShape(
+      {
         ...data,
-        x: e.target.x(),
-        y: e.target.y(),
-        isDragging: true,
-        isEditing: false,
-        isSelected: true,
-        isFocused: true,
-      });
-    }
+        isContextMenu: true,
+      },
+      {
+        saveHistory: false,
+        emitEvent: false,
+        save: false,
+      },
+    );
   };
 
-  handleDragEnd = e => {
-    this.isItemMoving = false;
-    this.handleChangeCursor();
-    const data = this.state.objects.find(
-      item => item.id === e.target.id(),
-    ) as ObjectInterface;
-    if (data) {
-      this.updateShape({
-        ...data,
-        x: e.target.x(),
-        y: e.target.y(),
-        isDragging: false,
-        isEditing: false,
-        isSelected: true,
-        isFocused: true,
-      });
-    }
-  };
   handleMouseDown = e => {
     if (this.props.drawingTool) {
       const position = e.target.getStage().getPointerPosition();
-      if (
-        this.props.drawingTool === 'Sticky' ||
-        this.props.drawingTool === 'Text'
-      ) {
-        const data: ObjectInterface = {
-          ...this.state.points,
-          x: position.x - 100,
-          y: position.y - 100,
-          width: 200,
-          height: 200,
-          id: uuidv4(),
-          isDragging: false,
-          isFocused: false,
-          isSelected: true,
-          isEditing: true,
-          rotation: 0,
-          type: this.props.drawingTool,
-          textData: {
-            ...defaultTextProperties,
-          },
-        };
+      const data: ObjectInterface = onMouseDown(
+        { ...this.state.points },
+        this.props.drawingTool,
+        position,
+        uuidv4(),
+      );
 
-        if (this.props.drawingTool === 'Text') {
-          data.textData = {
-            ...defaultTextProperties,
-            padding: 0,
-          };
-        }
-        this.addCanvasShape(data);
-      } else {
-        let radius = 0;
-        if (this.props.drawingTool === 'RectRounded') {
-          radius = 20;
-        }
-        this.isDrawing = true;
-        this.setState({
-          points: {
-            ...this.state.points,
-            x: position.x,
-            y: position.y,
-            radius: radius,
-            type: this.props.drawingTool,
-          },
-        });
-      }
-    }
-  };
-  handleMouseMove = e => {
-    if (this.isDrawing) {
-      const position = e.target.getStage().getPointerPosition();
-      const width = position.x - this.state.points.x;
-      const height = position.y - this.state.points.y;
-      let shapeObjectType: ShapeObjectType = this.props.drawingTool;
-      let radius = 0;
-      let ellipseRadius: any = {
-        x: 0,
-        y: 0,
-      };
-
-      if (this.props.drawingTool === 'Circle') {
-        if (width === height) {
-          shapeObjectType = 'Circle';
-          radius = Math.abs(width);
-        } else {
-          shapeObjectType = 'Ellipse';
-          ellipseRadius = {
-            x: Math.abs(width),
-            y: Math.abs(height),
-          };
-        }
-      } else if (this.props.drawingTool === 'RectRounded') {
-        radius = 20;
-      }
+      this.isDrawing = true;
       this.setState({
-        points: {
-          ...this.state.points,
-          width: width,
-          height: height,
-          radius: radius,
-          ellipseRadius: ellipseRadius,
-          type: shapeObjectType,
-        },
+        points: _.cloneDeep(data),
       });
     }
   };
 
-  addCanvasShape = (data: ObjectInterface) => {
-    this.setState({
-      history: [...this.state.history, this.state.objects.slice()],
-      historyIndex: this.state.historyIndex + 1,
-      objects: [
-        ...this.state.objects.map(shapeObject => ({
-          ...shapeObject,
-          isDragging: false,
-          isEditing: false,
-          isSelected: false,
-          isFocused: false,
-        })),
-        {
-          ...data,
-        },
-      ],
-    });
+  handleMouseMove = e => {
+    if (this.isDrawing && this.props.drawingTool) {
+      const position = e.target.getStage().getPointerPosition();
+      const data: ObjectInterface = onMouseMove(
+        { ...this.state.points },
+        this.props.drawingTool,
+        position,
+      );
+
+      this.setState({
+        points: _.cloneDeep(data),
+      });
+    }
   };
+
   handleMouseUp = e => {
     if (this.isDrawing) {
       this.isDrawing = false;
       const position = e.target.getStage().getPointerPosition();
-      const width = position.x - this.state.points.x;
-      const height = position.y - this.state.points.y;
-      let shapeObjectType: ShapeObjectType = this.props.drawingTool;
-      let radius = 0;
-      let ellipseRadius: any = {
-        x: 0,
-        y: 0,
-      };
-      if (this.props.drawingTool === 'Circle') {
-        if (width === height) {
-          shapeObjectType = 'Circle';
-          radius = Math.abs(width);
-        } else {
-          shapeObjectType = 'Ellipse';
-          ellipseRadius = {
-            x: Math.abs(width),
-            y: Math.abs(height),
-          };
-        }
-      } else if (this.props.drawingTool === 'RectRounded') {
-        radius = 20;
-      }
-
-      const data: ObjectInterface = {
-        ...this.state.points,
-        width: width,
-        height: height,
-        radius: radius,
-        ellipseRadius: ellipseRadius,
-        id: uuidv4(),
-        isDragging: false,
-        isFocused: false,
-        isSelected: false,
-        isEditing: false,
-        rotation: 0,
-        type: shapeObjectType,
-      };
-
-      this.addCanvasShape(data);
+      const data = onMouseUp(
+        { ...this.state.points },
+        this.props.drawingTool,
+        position,
+      );
+      this.addCanvasShape(data, {
+        saveHistory: true,
+        emitEvent: true,
+      });
 
       this.setState({
         points: {
-          ...defaultPointState,
+          ...defaultObjectState,
         },
       });
+    } else {
+      const clickedOnEmpty = e.target === e.target.getStage();
+      if (clickedOnEmpty) {
+        this.setState({
+          objects: this.state.objects.map(item => ({
+            ...item,
+            isSelected: false,
+            isFocused: false,
+            isEditing: false,
+            isContextMenu: false,
+          })),
+        });
+      }
     }
   };
-  updateShape(data: ObjectInterface) {
-    const history = this.state.objects.slice();
-    this.setState({
-      history: [...this.state.history, history],
-      historyIndex: this.state.historyIndex + 1,
-      objects: this.state.objects.map(shapeObject => {
-        if (shapeObject.id === data.id) {
-          return {
-            ...data,
-            id: shapeObject.id,
-          };
-        } else {
-          return {
+
+  addCanvasShape = (
+    data: ObjectInterface,
+    options: { saveHistory?: boolean; emitEvent?: boolean } = {
+      saveHistory: false,
+      emitEvent: false,
+    },
+  ) => {
+    console.log('addCanvasShape', data, options);
+    if (options.saveHistory) {
+      this.updateHistory(JSON.parse(JSON.stringify(data)));
+    }
+    if (options.emitEvent) {
+      this.emitSocketEvent(BoardSocketEventEnum.CREATE, {
+        ...data,
+        isEditing: false,
+        isSelected: false,
+        isFocused: false,
+        isLocked: false,
+        isContextMenu: false,
+      });
+    }
+    this.setState(
+      {
+        objects: [
+          ...this.state.objects.map(shapeObject => ({
             ...shapeObject,
-            isDragging: false,
-            isSelected: false,
             isEditing: false,
+            isSelected: false,
             isFocused: false,
-          };
-        }
-      }),
+            isContextMenu: false,
+          })),
+          {
+            ..._.cloneDeep(data),
+          },
+        ],
+      },
+      () => {
+        this.save();
+      },
+    );
+  };
+
+  updateHistory(data: ObjectInterface) {
+    this.setState({
+      prevHistory: [
+        ...this.state.prevHistory,
+        { ...data, isEditing: false, isSelected: false, isFocused: false },
+      ],
+      nextHistory: [],
     });
   }
 
-  updateObjectText(id: string, data: TextProperties): void {
-    const object = this.state.objects.find(item => item.id === id);
-    if (object) {
-      this.updateShape({
-        ...object,
-        textData: {
-          ...data,
-        },
+  updateShape(
+    data: ObjectInterface,
+    options: { saveHistory?: boolean; emitEvent?: boolean; save?: boolean } = {
+      saveHistory: false,
+      emitEvent: false,
+      save: true,
+    },
+  ) {
+    if (options.saveHistory) {
+      const historyItem = this.state.objects.find(item => item.id === data.id);
+      if (historyItem) {
+        const history = JSON.parse(JSON.stringify(historyItem));
+        this.updateHistory({
+          ...history,
+        });
+      }
+    }
+
+    const item = this.state.objects.find(item => item.id === data.id);
+    if (options.emitEvent) {
+      this.emitSocketEvent(BoardSocketEventEnum.UPDATE, {
+        ...item,
+        ...data,
+        isSelected: false,
+        isEditing: false,
+        isFocused: false,
+        isLocked: false,
+        isContextMenu: false,
       });
     }
+
+    const objects = this.state.objects
+      .filter(item => item.id !== data.id)
+      .map(shapeObject => ({
+        ...shapeObject,
+        isSelected: false,
+        isEditing: false,
+        isFocused: false,
+        isLocked: false,
+        isContextMenu: false,
+      }));
+
+    this.setState(
+      {
+        objects: [...objects, { ...item, ...data }],
+      },
+      () => {
+        if (options.save) {
+          this.save();
+        }
+      },
+    );
   }
+
+  updateObjectText(id: string, data: StickyProperty): void {
+    const object = this.state.objects.find(item => item.id === id);
+    if (object) {
+      this.updateShape(
+        {
+          ...object,
+          sticky: {
+            ...data,
+          },
+        },
+        {
+          saveHistory: true,
+          emitEvent: true,
+          save: true,
+        },
+      );
+    }
+  }
+
+  updateObjectColor(
+    data: ObjectInterface,
+    shapeConfig: Konva.ShapeConfig,
+  ): void {
+    const object = this.state.objects.find(item => item.id === data.id);
+    if (object) {
+      object.shapeConfig = {
+        ...object.shapeConfig,
+        ...shapeConfig,
+      };
+      this.updateShape(
+        {
+          ...object,
+        },
+        {
+          saveHistory: true,
+          emitEvent: true,
+          save: true,
+        },
+      );
+    }
+  }
+
+  getLineGuideStops(
+    skipShape: any,
+  ): {
+    vertical: number[];
+    horizontal: number[];
+  } {
+    // we can snap to stage borders and the center of the stage
+    const vertical: any[] = [
+      0,
+      (this.stageRef?.width() as number) / 2,
+      this.stageRef?.width() as number,
+    ];
+    const horizontal: any[] = [
+      0,
+      (this.stageRef?.height() as number) / 2,
+      this.stageRef?.height() as number,
+    ];
+
+    // and we snap over edges and center of each object on the canvas
+    this.stageRef?.find('.object')?.each(guideItem => {
+      if (guideItem === skipShape) {
+        return;
+      }
+      const box = guideItem.getClientRect();
+      // and we can snap to all edges of shapes
+      vertical.push([box.x, box.x + box.width, box.x + box.width / 2]);
+      horizontal.push([box.y, box.y + box.height, box.y + box.height / 2]);
+    });
+
+    return {
+      vertical: vertical.flat(),
+      horizontal: horizontal.flat(),
+    };
+  }
+
+  getGuides(
+    lineGuideStops: {
+      vertical: number[];
+      horizontal: number[];
+    },
+    itemBounds: ObjectSnappingEdges,
+  ): ObjectSnappingGuide[] {
+    const resultV: ObjectSnappingResult[] = [];
+    const resultH: ObjectSnappingResult[] = [];
+
+    lineGuideStops.vertical.forEach(lineGuide => {
+      itemBounds.vertical.forEach(itemBound => {
+        const diff = Math.abs(lineGuide - itemBound.guide);
+        // if the distance between guild line and object snap point is close we can consider this for snapping
+        if (diff < this.GUIDELINE_OFFSET) {
+          resultV.push({
+            lineGuide: lineGuide,
+            diff: diff,
+            snap: itemBound.snap,
+            offset: itemBound.offset,
+          });
+        }
+      });
+    });
+
+    lineGuideStops.horizontal.forEach(lineGuide => {
+      itemBounds.horizontal.forEach(itemBound => {
+        const diff = Math.abs(lineGuide - itemBound.guide);
+        if (diff < this.GUIDELINE_OFFSET) {
+          resultH.push({
+            lineGuide: lineGuide,
+            diff: diff,
+            snap: itemBound.snap,
+            offset: itemBound.offset,
+          });
+        }
+      });
+    });
+
+    const guides: ObjectSnappingGuide[] = [];
+
+    // find closest snap
+    const minV = resultV.sort((a, b) => a.diff - b.diff)[0];
+    const minH = resultH.sort((a, b) => a.diff - b.diff)[0];
+    if (minV) {
+      guides.push({
+        lineGuide: minV.lineGuide,
+        offset: minV.offset,
+        orientation: 'V',
+        snap: minV.snap,
+      });
+    }
+    if (minH) {
+      guides.push({
+        lineGuide: minH.lineGuide,
+        offset: minH.offset,
+        orientation: 'H',
+        snap: minH.snap,
+      });
+    }
+    return guides;
+  }
+
+  drawGuides(guides: ObjectSnappingGuide[]) {
+    const layer = this.layerRef as Konva.Layer;
+    guides.forEach(lg => {
+      let line;
+      if (lg.orientation === 'H') {
+        line = new Konva.Line({
+          points: [-6000, 0, 6000, 0],
+          stroke: 'rgb(0, 161, 255)',
+          strokeWidth: 1,
+          name: 'guid-line',
+          dash: [4, 6],
+        });
+        layer.add(line);
+        line.absolutePosition({
+          x: 0,
+          y: lg.lineGuide,
+        });
+        layer.batchDraw();
+      } else if (lg.orientation === 'V') {
+        line = new Konva.Line({
+          points: [0, -6000, 0, 6000],
+          stroke: 'rgb(0, 161, 255)',
+          strokeWidth: 1,
+          name: 'guid-line',
+          dash: [4, 6],
+        });
+        layer.add(line);
+        line.absolutePosition({
+          x: lg.lineGuide,
+          y: 0,
+        });
+        layer.batchDraw();
+      }
+    });
+  }
+
+  destroyGuides = () => {
+    const layer = this.layerRef as Konva.Layer;
+    layer.find('.guid-line').each(guideItem => {
+      guideItem.destroy();
+    });
+  };
+
+  handleChanging = (target: any, itemBounds: ObjectSnappingEdges) => {
+    const layer = this.layerRef as Konva.Layer;
+    this.destroyGuides();
+    const lineGuideStops = this.getLineGuideStops(target);
+    const guides = this.getGuides(lineGuideStops, itemBounds);
+    if (!guides.length) {
+      return;
+    }
+    this.drawGuides(guides);
+    var absPos = (target as Konva.Node).absolutePosition();
+    guides.forEach(lg => {
+      switch (lg.snap) {
+        case 'start': {
+          switch (lg.orientation) {
+            case 'V': {
+              absPos.x = lg.lineGuide + lg.offset;
+              break;
+            }
+            case 'H': {
+              absPos.y = lg.lineGuide + lg.offset;
+              break;
+            }
+          }
+          break;
+        }
+        case 'center': {
+          switch (lg.orientation) {
+            case 'V': {
+              absPos.x = lg.lineGuide + lg.offset;
+              break;
+            }
+            case 'H': {
+              absPos.y = lg.lineGuide + lg.offset;
+              break;
+            }
+          }
+          break;
+        }
+        case 'end': {
+          switch (lg.orientation) {
+            case 'V': {
+              absPos.x = lg.lineGuide + lg.offset;
+              break;
+            }
+            case 'H': {
+              absPos.y = lg.lineGuide + lg.offset;
+              break;
+            }
+          }
+          break;
+        }
+      }
+    });
+    target.absolutePosition(absPos);
+  };
+
+  handleChangeStart = (data: ObjectInterface) => {
+    console.log(data);
+    this.emitSocketEvent(BoardSocketEventEnum.LOCK, {
+      ...data,
+      isSelected: false,
+      isLocked: true,
+      isEditing: false,
+      isFocused: false,
+    });
+  };
+
   render() {
+    console.log('props', this.props);
     return (
-      <>
+      <div className={this.props.className}>
+        {this.state.objects
+          .filter(shapeObject => shapeObject.isContextMenu)
+          .map(shapeObject => (
+            <div
+              className="context-menu"
+              style={{
+                left: this.state.pointerPosition.x,
+                top: this.state.pointerPosition.y,
+              }}
+            >
+              {shapeObject.isEditable && (
+                <>
+                  <div
+                    className="context-menu-item"
+                    onClick={() => {
+                      this.handleLockObject(shapeObject);
+                    }}
+                  >
+                    Lock
+                  </div>
+                  <div
+                    className="context-menu-item"
+                    onClick={() => {
+                      this.deleteObject(
+                        {
+                          id: this.state.id,
+                          data: shapeObject,
+                        },
+                        {
+                          saveHistory: true,
+                        },
+                      );
+                    }}
+                  >
+                    Delete
+                  </div>
+                </>
+              )}
+
+              {!shapeObject.isEditable && (
+                <div
+                  className="context-menu-item"
+                  onClick={() => {
+                    this.handleUnlockObject(shapeObject);
+                  }}
+                >
+                  Unlock
+                </div>
+              )}
+            </div>
+          ))}
         {this.state.objects
           .filter(
             shapeObject =>
@@ -502,88 +1123,93 @@ class DrawCanvas extends Component<Props, State> {
               shapeObject.isEditing &&
               !this.isItemMoving,
           )
-          .map(shapeObject => (
-            <textarea
-              key={shapeObject.id + ':textarea'}
-              className="canvas-textarea"
-              value={shapeObject.textData?.text}
-              style={{
-                position: 'absolute',
-                left: Math.round(
-                  (shapeObject.x + 20 + 20 * (this.props.zoomLevel - 1)) *
-                    this.props.zoomLevel,
-                ),
-                top: Math.round(
-                  (shapeObject.y + 20 + 20 * (this.props.zoomLevel - 1)) *
-                    this.props.zoomLevel,
-                ),
-                width: Math.round((shapeObject.width as number) - 40) + 'px',
-                height: Math.round((shapeObject.height as number) - 40) + 'px',
-                zIndex: 10000,
-                backgroundColor:
-                  shapeObject.type === 'Sticky' ? '#9646f5' : 'white',
-                transform: `scale(${this.props.zoomLevel})  translateY(${
-                  40 + 20 * (this.props.zoomLevel - 1)
-                }px)`,
-
-                // transform: (() => {
-                //   const x = (this.props.zoomLevel - 1) * 100;
-                //   const y = 0;
-                //   const translateX = `translateX(calc(${x}% - calc( ) ))`;
-                //   const translateY = `translateY()`;
-                //   const translate = `translate(calc(${x}% - calc(${
-                //     40 * (this.props.zoomLevel - 1)
-                //   }px / ${this.props.zoomLevel})), calc(${
-                //     40 * this.props.zoomLevel
-                //   }px * ${this.props.zoomLevel}))`;
-                //   const scale = `scale(${this.props.zoomLevel})`;
-                //   console.log(translate);
-                //   return `${scale} ${translate}`;
-                // })(),
-              }}
-              onChange={event => {
-                const target = event.target as HTMLTextAreaElement;
-                this.updateObjectText(shapeObject.id, {
-                  ...shapeObject.textData,
-                  text: target.value,
-                });
-              }}
-            />
-          ))}
+          .map(shapeObject => {
+            const getFontWeight = (): 'normal' | 'bold' => {
+              let fontWeight: 'normal' | 'bold' = 'normal';
+              if (shapeObject.sticky?.fontStyle) {
+                if (
+                  shapeObject.sticky?.fontStyle === 'normal' ||
+                  shapeObject.sticky?.fontStyle === 'bold'
+                ) {
+                  fontWeight = shapeObject.sticky?.fontStyle;
+                }
+              }
+              return fontWeight;
+            };
+            return (
+              <p
+                key={shapeObject.id + ':Text-Edit'}
+                style={{
+                  position: 'absolute',
+                  left: shapeObject.x * this.props.zoomLevel,
+                  top: shapeObject.y * this.props.zoomLevel,
+                  width: shapeObject.rect?.width + 'px',
+                  height: shapeObject.rect?.height + 'px',
+                  fontSize: shapeObject.sticky?.fontSize + 'px',
+                  display: 'inline-flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  zIndex: 10000,
+                  color: shapeObject.sticky?.fontColor,
+                  fontWeight: getFontWeight(),
+                  textDecorationLine: shapeObject.sticky?.textDecoration,
+                  fontStyle:
+                    shapeObject.sticky?.fontStyle === 'italic'
+                      ? 'italic'
+                      : 'normal',
+                  fontFamily: shapeObject.sticky?.fontFamily,
+                }}
+                id="canvas-text-editor"
+                contentEditable="true"
+                onBlur={event => {
+                  console.log(event);
+                  this.updateObjectText(shapeObject.id, {
+                    ...shapeObject.sticky,
+                    text: event.currentTarget.innerText,
+                  });
+                }}
+              >
+                {shapeObject.sticky?.text}
+              </p>
+            );
+          })}
         {this.state.objects
           .filter(
             shapeObject =>
               (shapeObject.type === 'Sticky' || shapeObject.type === 'Text') &&
-              (shapeObject.isEditing || shapeObject.isSelected) &&
+              shapeObject.isSelected &&
               !this.isItemMoving,
           )
           .map(shapeObject => (
             <div
               key={shapeObject.id + ':toolbar'}
               className="canvas-text-toolbar"
-              style={{ left: shapeObject.x, top: shapeObject.y }}
+              style={{
+                left: shapeObject.x * this.props.zoomLevel,
+                top: shapeObject.y * this.props.zoomLevel,
+              }}
             >
               <div className="canvas-text-toolbar-item">
                 <Select
-                  defaultValue={shapeObject.textData?.fontFamily}
+                  defaultValue={shapeObject.sticky?.fontFamily}
                   style={{ width: 120, paddingLeft: '10px' }}
                   suffixIcon={<ChevronDownIcon />}
                   onChange={value => {
                     this.updateObjectText(shapeObject.id, {
-                      ...shapeObject.textData,
+                      ...shapeObject.sticky,
                       fontFamily: value,
                     });
                   }}
                 >
-                  {this.fontList.map(font => (
+                  {fontNames.map(font => (
                     <Select.Option
-                      key={font.fontName}
-                      value={font.fontFamily}
+                      key={font}
+                      value={font}
                       style={{
-                        fontFamily: font.fontFamily,
+                        fontFamily: font,
                       }}
                     >
-                      {font.fontName}
+                      {font}
                     </Select.Option>
                   ))}
                 </Select>
@@ -592,26 +1218,26 @@ class DrawCanvas extends Component<Props, State> {
                 <MinusSquareIcon
                   onClick={() => {
                     this.updateObjectText(shapeObject.id, {
-                      ...shapeObject.textData,
+                      ...shapeObject.sticky,
                       fontSize: Math.max(
                         10,
-                        (shapeObject.textData?.fontSize as number) - 1,
+                        (shapeObject.sticky?.fontSize as number) - 1,
                       ),
                     });
                   }}
                 />
               </div>
               <div className="canvas-text-toolbar-item">
-                {shapeObject.textData?.fontSize}
+                {shapeObject.sticky?.fontSize}
               </div>
               <div className="canvas-text-toolbar-item action-button">
-                <MinusSquareIcon
+                <PlusSquareIcon
                   onClick={() => {
                     this.updateObjectText(shapeObject.id, {
-                      ...shapeObject.textData,
+                      ...shapeObject.sticky,
                       fontSize: Math.min(
                         30,
-                        (shapeObject.textData?.fontSize as number) + 1,
+                        (shapeObject.sticky?.fontSize as number) + 1,
                       ),
                     });
                   }}
@@ -627,9 +1253,9 @@ class DrawCanvas extends Component<Props, State> {
                 <TextBoldIcon
                   onClick={() => {
                     this.updateObjectText(shapeObject.id, {
-                      ...shapeObject.textData,
+                      ...shapeObject.sticky,
                       fontStyle:
-                        shapeObject.textData?.fontStyle === 'bold'
+                        shapeObject.sticky?.fontStyle === 'bold'
                           ? 'normal'
                           : 'bold',
                     });
@@ -640,30 +1266,167 @@ class DrawCanvas extends Component<Props, State> {
                 <TextUnderLineIcon
                   onClick={() => {
                     this.updateObjectText(shapeObject.id, {
-                      ...shapeObject.textData,
+                      ...shapeObject.sticky,
                       textDecoration:
-                        shapeObject.textData?.textDecoration === 'underline'
+                        shapeObject.sticky?.textDecoration === 'underline'
                           ? ''
                           : 'underline',
                     });
                   }}
                 />
               </div>
-              <div className="canvas-text-toolbar-item action-button">
-                <TextColorIcon />
-              </div>
+              <label className="canvas-text-toolbar-item action-button">
+                <TextColorIcon
+                  style={{
+                    color: shapeObject.sticky?.fontColor,
+                  }}
+                />
+                <input
+                  type="color"
+                  hidden={true}
+                  onChange={event => {
+                    this.updateObjectText(shapeObject.id, {
+                      ...shapeObject.sticky,
+                      fontColor: event.target.value,
+                    });
+                  }}
+                  value={shapeObject.sticky?.fontColor}
+                />
+              </label>
               <div className="canvas-text-toolbar-item action-button">
                 <MarkerIcon />
               </div>
               <div className="canvas-text-toolbar-item">
                 <VerticalLineIcon />
               </div>
-              <div className="canvas-text-toolbar-item action-button">
-                <BorderStyleIcon />
+              <label className="canvas-text-toolbar-item action-button">
+                <BorderStyleIcon
+                  style={{
+                    color: shapeObject.sticky?.stroke,
+                  }}
+                />
+                <input
+                  type="color"
+                  hidden={true}
+                  onChange={event => {
+                    this.updateObjectText(shapeObject.id, {
+                      ...shapeObject.sticky,
+                      stroke: event.target.value,
+                    });
+                  }}
+                  value={shapeObject.sticky?.stroke}
+                />
+              </label>
+              <label className="canvas-text-toolbar-item action-button">
+                <FillColorIcon
+                  style={{
+                    color: shapeObject.sticky?.backgroundColor,
+                  }}
+                />
+                <input
+                  type="color"
+                  hidden={true}
+                  onChange={event => {
+                    this.updateObjectText(shapeObject.id, {
+                      ...shapeObject.sticky,
+                      backgroundColor: event.target.value,
+                    });
+                  }}
+                  value={shapeObject.sticky?.backgroundColor}
+                />
+              </label>
+              <div className="canvas-text-toolbar-item">
+                <VerticalLineIcon />
               </div>
               <div className="canvas-text-toolbar-item action-button">
-                <FillColorIcon />
+                <MoreIcon />
               </div>
+            </div>
+          ))}
+
+        {this.state.objects
+          .filter(
+            shapeObject =>
+              shapeObject.type !== 'Sticky' &&
+              shapeObject.type !== 'Text' &&
+              shapeObject.isSelected &&
+              !this.isItemMoving,
+          )
+          .map(shapeObject => (
+            <div
+              key={shapeObject.id + ':toolbar'}
+              className="canvas-text-toolbar"
+              style={{
+                left: shapeObject.x * this.props.zoomLevel,
+                top: shapeObject.y * this.props.zoomLevel,
+              }}
+            >
+              <div className="canvas-text-toolbar-item action-button">
+                <MinusSquareIcon
+                  onClick={() => {
+                    this.updateObjectColor(shapeObject, {
+                      opacity: +Math.max(
+                        0.1,
+                        (shapeObject.shapeConfig?.opacity as number) - 0.1,
+                      ).toFixed(1),
+                    });
+                  }}
+                />
+              </div>
+              <div className="canvas-text-toolbar-item">
+                {Math.abs(
+                  ((shapeObject.shapeConfig?.opacity as number) || 0) * 10,
+                )}
+              </div>
+              <div className="canvas-text-toolbar-item action-button">
+                <PlusSquareIcon
+                  onClick={() => {
+                    this.updateObjectColor(shapeObject, {
+                      opacity: +Math.min(
+                        1,
+                        (shapeObject.shapeConfig?.opacity as number) + 0.1,
+                      ).toFixed(1),
+                    });
+                  }}
+                />
+              </div>
+
+              <label className="canvas-text-toolbar-item action-button">
+                <BorderStyleIcon
+                  style={{
+                    color: shapeObject.shapeConfig?.stroke,
+                  }}
+                />
+                <input
+                  type="color"
+                  hidden={true}
+                  onChange={event => {
+                    this.updateObjectColor(shapeObject, {
+                      stroke: event.target.value,
+                    });
+                  }}
+                  value={shapeObject.shapeConfig?.stroke}
+                />
+              </label>
+              {shapeObject.type !== 'Line' && (
+                <label className="canvas-text-toolbar-item action-button">
+                  <FillColorIcon
+                    style={{
+                      color: shapeObject.shapeConfig?.fill,
+                    }}
+                  />
+                  <input
+                    type="color"
+                    hidden={true}
+                    onChange={event => {
+                      this.updateObjectColor(shapeObject, {
+                        fill: event.target.value,
+                      });
+                    }}
+                    value={shapeObject.shapeConfig?.fill}
+                  />
+                </label>
+              )}
               <div className="canvas-text-toolbar-item">
                 <VerticalLineIcon />
               </div>
@@ -674,194 +1437,244 @@ class DrawCanvas extends Component<Props, State> {
           ))}
 
         <Stage
-          width={window.innerWidth}
-          height={window.innerHeight - 80}
-          className={this.props.className}
+          width={window.innerWidth * this.props.zoomLevel}
+          height={(window.innerHeight - 80) * this.props.zoomLevel}
+          className="canvas-body-content"
           ref={ref => (this.stageRef = ref)}
           onMouseDown={this.handleMouseDown}
           onMousemove={this.handleMouseMove}
           onMouseup={this.handleMouseUp}
+          onContextMenu={event => {
+            event.evt.preventDefault();
+            event.evt.stopPropagation();
+            this.setState({
+              pointerPosition: {
+                x: event.evt.x,
+                y: event.evt.y - 40,
+              },
+            });
+          }}
           scale={{
             x: this.props.zoomLevel,
             y: this.props.zoomLevel,
           }}
         >
-          <Layer>
+          <Layer ref={ref => (this.layerRef = ref)}>
             {this.state.objects.map(shapeObject => {
-              const shapeConfig: Konva.ShapeConfig = {
-                fill: '#9646f5',
-                strokeWidth: 2,
-                opacity: 0.8,
-                stroke:
-                  shapeObject.isSelected ||
-                  (shapeObject.isFocused && this.props.drawingTool === 'Drag')
-                    ? '#000000'
-                    : undefined,
-                shadowBlur: 10,
-                shadowOpacity: 0.6,
-                shadowOffsetX: (() => {
-                  let shadowOffset = 5;
-                  if (shapeObject.isDragging) {
-                    shadowOffset = 10;
-                  } else if (
-                    shapeObject.isFocused &&
-                    this.props.drawingTool === 'Drag'
-                  ) {
-                    shadowOffset = 6;
-                  }
-                  return shadowOffset;
-                })(),
-                shadowOffsetY: (() => {
-                  let shadowOffset = 5;
-                  if (shapeObject.isDragging) {
-                    shadowOffset = 10;
-                  } else if (
-                    shapeObject.isFocused &&
-                    this.props.drawingTool === 'Drag'
-                  ) {
-                    shadowOffset = 6;
-                  }
-                  return shadowOffset;
-                })(),
-              };
-
-              const nodeConfig: Konva.NodeConfig = {
-                id: shapeObject.id,
-                name: shapeObject.id,
-                x: shapeObject.x,
-                y: shapeObject.y,
-                width: shapeObject.width,
-                height: shapeObject.height,
-                draggable: this.props.drawingTool === 'Drag',
-                onClick: this.handleClickShape,
-                onDblClick: this.handleDblClick,
-                onDragStart: this.handleDragStart,
-                onDragEnd: this.handleDragEnd,
-                onMouseEnter: this.onMouseEnterItem,
-                onMouseLeave: this.onMouseLeaveItem,
-                scaleX: shapeObject.isDragging ? 1.2 : 1,
-                scaleY: shapeObject.isDragging ? 1.2 : 1,
-              };
-              if (shapeObject.type === 'Rect') {
+              if (
+                shapeObject.type === 'Rect' ||
+                shapeObject.type === 'RectRounded'
+              ) {
                 return (
-                  <Rect
+                  <RectTransform
                     key={shapeObject.id}
-                    cornerRadius={shapeObject.radius}
-                    {...shapeConfig}
-                    {...nodeConfig}
-                  />
-                );
-              } else if (shapeObject.type === 'RectRounded') {
-                return (
-                  <Rect
-                    key={shapeObject.id}
-                    cornerRadius={shapeObject.radius}
-                    {...shapeConfig}
-                    {...nodeConfig}
-                  />
-                );
-              } else if (shapeObject.type === 'Circle') {
-                delete nodeConfig['width'];
-                delete nodeConfig['height'];
-                return (
-                  <Circle
-                    key={shapeObject.id}
-                    radius={shapeObject.radius as number}
-                    {...shapeConfig}
-                    {...nodeConfig}
+                    data={shapeObject}
+                    onChangeStart={this.handleChangeStart}
+                    onChanging={this.handleChanging}
+                    onChange={data => {
+                      this.destroyGuides();
+                      this.updateShape(data, {
+                        saveHistory: true,
+                        emitEvent: true,
+                        save: true,
+                      });
+                    }}
+                    onSelect={() => {
+                      if (shapeObject.isEditable) {
+                        this.handleSelect(shapeObject);
+                      }
+                    }}
+                    onContextMenu={() => {
+                      this.handleContextMenu(shapeObject);
+                    }}
                   />
                 );
               } else if (shapeObject.type === 'Ellipse') {
-                delete nodeConfig['width'];
-                delete nodeConfig['height'];
                 return (
-                  <Ellipse
-                    key={shapeObject.id}
-                    radiusX={shapeObject.ellipseRadius?.x as number}
-                    radiusY={shapeObject.ellipseRadius?.y as number}
-                    {...shapeConfig}
-                    {...nodeConfig}
-                  />
+                  <>
+                    <EllipseTransform
+                      key={shapeObject.id}
+                      data={shapeObject}
+                      onChangeStart={this.handleChangeStart}
+                      onChanging={this.handleChanging}
+                      onChange={data => {
+                        this.destroyGuides();
+                        this.updateShape(data, {
+                          saveHistory: true,
+                          emitEvent: true,
+                          save: true,
+                        });
+                      }}
+                      onSelect={() => {
+                        if (shapeObject.isEditable) {
+                          this.handleSelect(shapeObject);
+                        }
+                      }}
+                      onContextMenu={() => {
+                        this.handleContextMenu(shapeObject);
+                      }}
+                    />
+                  </>
                 );
               } else if (shapeObject.type === 'Star') {
                 return (
-                  <Star
-                    key={shapeObject.id}
-                    numPoints={5}
-                    {...shapeConfig}
-                    {...nodeConfig}
-                    innerRadius={(shapeObject.width as number) / 2}
-                    outerRadius={shapeObject.width as number}
-                  />
+                  <>
+                    <StarTransform
+                      key={shapeObject.id}
+                      data={shapeObject}
+                      onChangeStart={this.handleChangeStart}
+                      onChanging={this.handleChanging}
+                      onChange={data => {
+                        this.destroyGuides();
+                        this.updateShape(data, {
+                          saveHistory: true,
+                          emitEvent: true,
+                          save: true,
+                        });
+                      }}
+                      onSelect={() => {
+                        if (shapeObject.isEditable) {
+                          this.handleSelect(shapeObject);
+                        }
+                      }}
+                      onContextMenu={() => {
+                        this.handleContextMenu(shapeObject);
+                      }}
+                    />
+                  </>
                 );
               } else if (shapeObject.type === 'Triangle') {
                 return (
-                  <Shape
+                  <TriangleTransform
                     key={shapeObject.id}
-                    sceneFunc={(context, shape) => {
-                      context.beginPath();
-
-                      context.moveTo((shapeObject.width as number) / 2, 0);
-                      context.lineTo(0, shapeObject.height as number);
-                      context.lineTo(
-                        shapeObject.width as number,
-                        shapeObject.height as number,
-                      );
-                      context.closePath();
-                      // (!) Konva specific method, it is very important
-                      context.fillStrokeShape(shape);
+                    data={shapeObject}
+                    onChangeStart={this.handleChangeStart}
+                    onChanging={this.handleChanging}
+                    onChange={data => {
+                      this.destroyGuides();
+                      this.updateShape(data, {
+                        saveHistory: true,
+                        emitEvent: true,
+                        save: true,
+                      });
                     }}
-                    {...shapeConfig}
-                    {...nodeConfig}
+                    onSelect={() => {
+                      if (shapeObject.isEditable) {
+                        this.handleSelect(shapeObject);
+                      }
+                    }}
+                    onContextMenu={() => {
+                      this.handleContextMenu(shapeObject);
+                    }}
                   />
                 );
-              } else if (shapeObject.type === 'Sticky') {
+              } else if (
+                shapeObject.type === 'Text' ||
+                shapeObject.type === 'Sticky'
+              ) {
                 return (
-                  <Group key={shapeObject.id} {...nodeConfig}>
-                    <Rect
-                      key={shapeObject.id + ':Rect'}
-                      id={shapeObject.id + ':Rect'}
-                      x={0}
-                      y={0}
-                      height={shapeObject.height as number}
-                      width={shapeObject.width as number}
-                      onDblClick={this.handleDblClick}
-                      cornerRadius={30}
-                      fill="#9646f5"
-                      {...shapeConfig}
-                    />
-                    <Text
-                      key={shapeObject.id + ':Text'}
-                      id={shapeObject.id + ':Text'}
-                      x={0}
-                      y={0}
-                      height={shapeObject.height as number}
-                      width={shapeObject.width as number}
-                      padding={20}
-                      fill="#ffffff"
-                      fillEnabled={true}
-                      {...shapeObject.textData}
-                    />
-                  </Group>
-                );
-              } else if (shapeObject.type === 'Text') {
-                return (
-                  <Text
-                    key={shapeObject.id + ':Text'}
-                    fill="#000000"
-                    fillEnabled={true}
-                    {...nodeConfig}
-                    {...shapeObject.textData}
+                  <StickyTransform
+                    key={shapeObject.id}
+                    data={shapeObject}
+                    onChangeStart={this.handleChangeStart}
+                    onChanging={this.handleChanging}
+                    onEdit={data => {
+                      this.updateShape(data);
+                    }}
+                    onChange={data => {
+                      this.destroyGuides();
+                      this.updateShape(data, {
+                        saveHistory: true,
+                        emitEvent: true,
+                        save: true,
+                      });
+                    }}
+                    onSelect={() => {
+                      if (shapeObject.isEditable) {
+                        this.handleSelect(shapeObject);
+                      }
+                    }}
+                    onContextMenu={() => {
+                      this.handleContextMenu(shapeObject);
+                    }}
                   />
                 );
+              } else if (shapeObject.type === 'Line') {
+                return (
+                  <LineTransform
+                    key={shapeObject.id}
+                    data={shapeObject}
+                    onChangeStart={this.handleChangeStart}
+                    onChanging={this.handleChanging}
+                    onChange={data => {
+                      this.destroyGuides();
+                      this.updateShape(data, {
+                        saveHistory: true,
+                        emitEvent: true,
+                        save: true,
+                      });
+                    }}
+                    onSelect={() => {
+                      if (shapeObject.isEditable) {
+                        this.handleSelect(shapeObject);
+                      }
+                    }}
+                    onContextMenu={() => {
+                      this.handleContextMenu(shapeObject);
+                    }}
+                  />
+                );
+              } else {
+                return <></>;
               }
             })}
 
+            {(this.props.drawingTool === 'Text' ||
+              this.props.drawingTool === 'Sticky') &&
+              this.isDrawing && (
+                <Group
+                  x={this.state.points.x}
+                  y={this.state.points.y}
+                  width={this.state.points.rect?.width as number}
+                  height={this.state.points.rect?.height as number}
+                >
+                  <Rect
+                    x={0}
+                    y={0}
+                    width={this.state.points.rect?.width as number}
+                    height={this.state.points.rect?.height as number}
+                    stroke="#000000"
+                    dash={[10, 10]}
+                    fill={
+                      this.props.drawingTool === 'Sticky'
+                        ? '#f5ecfd'
+                        : undefined
+                    }
+                  />
+                  <Text
+                    x={0}
+                    y={0}
+                    width={this.state.points.rect?.width as number}
+                    height={this.state.points.rect?.height as number}
+                    align="center"
+                    verticalAlign="middle"
+                    fill={
+                      this.props.drawingTool === 'Text' ? '#bebebe' : '#000000'
+                    }
+                    text={
+                      this.props.drawingTool === 'Text'
+                        ? 'Type something here'
+                        : 'Sticky notes area'
+                    }
+                  />
+                </Group>
+              )}
+
             {this.props.drawingTool === 'Star' && this.isDrawing && (
               <Star
-                numPoints={5}
-                innerRadius={(this.state.points.width as number) / 2}
-                outerRadius={this.state.points.width as number}
+                numPoints={this.state.points.star?.numPoints as number}
+                innerRadius={this.state.points.star?.innerRadius as number}
+                outerRadius={this.state.points.star?.outerRadius as number}
                 x={this.state.points.x}
                 y={this.state.points.y}
                 stroke="#000000"
@@ -880,11 +1693,17 @@ class DrawCanvas extends Component<Props, State> {
                 y={this.state.points.y}
                 sceneFunc={(context, shape) => {
                   context.beginPath();
-                  context.moveTo((this.state.points.width as number) / 2, 0);
-                  context.lineTo(0, this.state.points.height as number);
+                  context.moveTo(
+                    (this.state.points.triangle?.width as number) / 2,
+                    0,
+                  );
                   context.lineTo(
-                    this.state.points.width as number,
-                    this.state.points.height as number,
+                    0,
+                    this.state.points.triangle?.height as number,
+                  );
+                  context.lineTo(
+                    this.state.points.triangle?.width as number,
+                    this.state.points.triangle?.height as number,
                   );
                   context.closePath();
                   // (!) Konva specific method, it is very important
@@ -901,70 +1720,12 @@ class DrawCanvas extends Component<Props, State> {
               />
             )}
 
-            {this.props.drawingTool === 'Circle' &&
-              this.isDrawing &&
-              this.state.points.type === 'Circle' && (
-                <Circle
-                  x={this.state.points.x}
-                  y={this.state.points.y}
-                  radius={this.state.points.radius as number}
-                  stroke="#000000"
-                  dash={[10, 10]}
-                  {...{
-                    shadowBlur: 10,
-                    shadowOpacity: 0.6,
-                    shadowOffsetX: 10,
-                    shadowOffsetY: 10,
-                  }}
-                />
-              )}
-
-            {this.props.drawingTool === 'Circle' &&
-              this.isDrawing &&
-              this.state.points.type === 'Ellipse' && (
-                <Ellipse
-                  x={this.state.points.x}
-                  y={this.state.points.y}
-                  radiusX={this.state.points.ellipseRadius?.x as number}
-                  radiusY={this.state.points.ellipseRadius?.y as number}
-                  stroke="#000000"
-                  dash={[10, 10]}
-                  {...{
-                    shadowBlur: 10,
-                    shadowOpacity: 0.6,
-                    shadowOffsetX: 10,
-                    shadowOffsetY: 10,
-                  }}
-                />
-              )}
-
-            {(this.props.drawingTool === 'Rect' ||
-              this.props.drawingTool === 'RectRounded') &&
-              this.isDrawing && (
-                <Rect
-                  x={this.state.points.x}
-                  y={this.state.points.y}
-                  width={this.state.points.width}
-                  height={this.state.points.height}
-                  cornerRadius={this.state.points.radius}
-                  stroke="#000000"
-                  dash={[10, 10]}
-                  {...{
-                    shadowBlur: 10,
-                    shadowOpacity: 0.6,
-                    shadowOffsetX: 10,
-                    shadowOffsetY: 10,
-                  }}
-                />
-              )}
-
-            {this.props.drawingTool === 'Text' && this.isDrawing && (
-              <Rect
+            {this.props.drawingTool === 'Ellipse' && this.isDrawing && (
+              <Ellipse
                 x={this.state.points.x}
                 y={this.state.points.y}
-                width={this.state.points.width}
-                height={this.state.points.height}
-                cornerRadius={this.state.points.radius}
+                radiusX={this.state.points.ellipse?.radiusX as number}
+                radiusY={this.state.points.ellipse?.radiusY as number}
                 stroke="#000000"
                 dash={[10, 10]}
                 {...{
@@ -976,14 +1737,15 @@ class DrawCanvas extends Component<Props, State> {
               />
             )}
 
-            {this.props.drawingTool === 'Sticky' && (
-              <>
+            {(this.props.drawingTool === 'Rect' ||
+              this.props.drawingTool === 'RectRounded') &&
+              this.isDrawing && (
                 <Rect
                   x={this.state.points.x}
                   y={this.state.points.y}
-                  width={this.state.points.width}
-                  height={this.state.points.height}
-                  cornerRadius={30}
+                  width={this.state.points.rect?.width as number}
+                  height={this.state.points.rect?.height as number}
+                  cornerRadius={this.state.points.rect?.cornerRadius as number}
                   stroke="#000000"
                   dash={[10, 10]}
                   {...{
@@ -993,11 +1755,31 @@ class DrawCanvas extends Component<Props, State> {
                     shadowOffsetY: 10,
                   }}
                 />
+              )}
+
+            {this.props.drawingTool === 'Line' && this.isDrawing && (
+              <>
+                <Line
+                  x={this.state.points.x}
+                  y={this.state.points.y}
+                  points={(() => {
+                    const points: number[] = [];
+                    this.state.points.line?.forEach(point => {
+                      points.push(point.x);
+                      points.push(point.y);
+                    });
+                    return points;
+                  })()}
+                  stroke="#000000"
+                  strokeWidth={2}
+                  lineCap="round"
+                  lineJoin="round"
+                />
               </>
             )}
           </Layer>
         </Stage>
-      </>
+      </div>
     );
   }
 }

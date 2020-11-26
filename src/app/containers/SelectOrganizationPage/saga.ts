@@ -8,14 +8,12 @@ export function* companySelect(action) {
   const { payload } = action;
   const { history, data, token } = payload;
   try {
-    console.log('payload', payload);
     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
     const response = yield axios.post('organization/', {
       name: data.company,
       fName: data.firstName,
       lName: data.lastName,
     });
-    console.log('response', response);
 
     yield put(actions.selectOrganizationRequestSuccess(response.data));
     message.success('Create organization successfully.');
