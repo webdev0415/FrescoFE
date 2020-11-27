@@ -112,6 +112,10 @@ export const ShareModal = ({
   };
 
   const _sendInvitation = () => {
+    if (!listEmailAndPermission.length) {
+      alert.error('Please select email befofe invite');
+      return;
+    }
     dispatch(
       actions.invitationRequest({
         listEmailAndPermission,
@@ -121,6 +125,8 @@ export const ShareModal = ({
       }),
     );
     setListEmailAndPermission([]);
+    setIsNoti(false);
+    setMessage('');
   };
 
   const _changePermissionPeople = ({ key, index }) => {
@@ -276,7 +282,11 @@ export const ShareModal = ({
               />
             ) : null}
 
-            <Checkbox style={{ marginTop: 20 }} onChange={_changeCheckboxNoti}>
+            <Checkbox
+              style={{ marginTop: 20 }}
+              onChange={_changeCheckboxNoti}
+              checked={isNoti}
+            >
               Notify people
             </Checkbox>
             <div
