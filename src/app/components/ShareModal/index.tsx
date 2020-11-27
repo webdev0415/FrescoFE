@@ -16,6 +16,7 @@ import {
   List,
   Button,
   Checkbox,
+  Avatar,
 } from 'antd';
 import Text from 'antd/lib/typography/Text';
 import { PERMISSION } from 'app/containers/Dashboard';
@@ -35,6 +36,7 @@ let timer;
 const { TabPane } = Tabs;
 
 interface EmailAndPermission {
+  name: string;
   orgId: string;
   toUserId: string;
   toEmail: string;
@@ -95,6 +97,7 @@ export const ShareModal = ({
     setListEmailAndPermission([
       ...listEmailAndPermission,
       {
+        name: value.name,
         orgId,
         toUserId: value.key,
         toEmail: value.value,
@@ -202,7 +205,7 @@ export const ShareModal = ({
                 onSelect={_handleSelectEmail}
               >
                 {listEmail?.map(item => (
-                  <Option key={item.id} value={item.email}>
+                  <Option key={item.id} value={item.email} name={item.name}>
                     {item.email}
                   </Option>
                 ))}
@@ -210,11 +213,39 @@ export const ShareModal = ({
             </div>
             {listEmailAndPermission.length ? (
               <List
-                bordered
                 dataSource={listEmailAndPermission}
                 renderItem={(item, index) => (
-                  <List.Item>
-                    <Text>{item?.toEmail}</Text>
+                  <List.Item style={{ paddingTop: 10, paddingBottom: 10 }}>
+                    <List.Item.Meta
+                      style={{
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                      }}
+                      avatar={
+                        <Avatar style={{ backgroundColor: '#9b9b9b' }}>
+                          <Text style={{ color: 'white' }}>
+                            {item?.name?.slice(0, 1).toUpperCase()}
+                          </Text>
+                        </Avatar>
+                      }
+                      title={
+                        <div
+                          style={{
+                            height: 18,
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            display: 'inline-flex',
+                          }}
+                        >
+                          <Text>{item.name || '---'}</Text>
+                        </div>
+                      }
+                      description={
+                        <div style={{ height: 18 }}>
+                          <Text style={{ fontSize: 14 }}>{item.toEmail}</Text>
+                        </div>
+                      }
+                    />
                     <Dropdown
                       overlay={
                         <Menu
@@ -268,7 +299,9 @@ export const ShareModal = ({
             <div
               style={{
                 width: '100%',
-                marginTop: 80,
+                position: 'absolute',
+                bottom: 16,
+                right: 16,
                 display: 'flex',
                 flexDirection: 'row',
                 justifyContent: 'flex-end',
