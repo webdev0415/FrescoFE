@@ -14,7 +14,8 @@ import {
   Tabs,
   Select,
   List,
-  Typography,
+  Button,
+  Checkbox,
 } from 'antd';
 import Text from 'antd/lib/typography/Text';
 import { PERMISSION } from 'app/containers/Dashboard';
@@ -25,14 +26,19 @@ import { selectToken } from 'app/selectors';
 import { useInjectReducer, useInjectSaga } from 'redux-injectors';
 import { shareModalSaga } from './saga';
 import { selectShareModal } from './selectors';
+import TextArea from 'antd/lib/input/TextArea';
 const { Option } = Select;
 let timer;
 
 const { TabPane } = Tabs;
 
 interface EmailAndPermission {
-  email: string;
+  orgId: string;
+  toUserId: string;
+  toEmail: string;
   permission: string;
+  typeId: string;
+  type: string;
 }
 
 export const ShareModal = ({
@@ -40,6 +46,9 @@ export const ShareModal = ({
   onChangePermission,
   linkInvitation,
   closeModal,
+  orgId,
+  typeId,
+  type,
 }) => {
   useInjectReducer({ key: sliceKey, reducer: reducer });
   useInjectSaga({ key: sliceKey, saga: shareModalSaga });
@@ -49,12 +58,16 @@ export const ShareModal = ({
   const [listEmailAndPermission, setListEmailAndPermission] = useState(
     [] as Array<EmailAndPermission>,
   );
+  const [textSearch, setTextSearch] = useState('');
+  const [message, setMessage] = useState('');
+  const [isNoti, setIsNoti] = useState(false);
 
   const dispatch = useDispatch();
   const token = useSelector(selectToken);
   const { listEmail } = useSelector(selectShareModal);
 
   const _handleSearch = (value: string) => {
+    setTextSearch(value);
     if (!value) {
       dispatch(actions.searchEmailOrNameSuccess([]));
     } else {
@@ -71,12 +84,51 @@ export const ShareModal = ({
     console.log(value, key);
     for (let index = 0; index < listEmailAndPermission.length; index++) {
       const emailAndPermission = listEmailAndPermission[index];
-      if (emailAndPermission.email === key) return;
+      if (emailAndPermission.toEmail === key) return;
     }
     setListEmailAndPermission([
       ...listEmailAndPermission,
-      { email: key, permission: PERMISSION.EDITOR },
+      {
+        orgId,
+        toUserId: value.key,
+        toEmail: value.value,
+        permission: PERMISSION.EDITOR,
+        typeId,
+        type,
+      },
     ]);
+    // clear text search & list email
+    setTextSearch('');
+    dispatch(actions.searchEmailOrNameSuccess([]));
+  };
+
+  const _sendInvitation = () => {
+    dispatch(
+      actions.invitationRequest({
+        listEmailAndPermission,
+        token,
+        messageInvite: message,
+        isNoti,
+      }),
+    );
+  };
+
+  const _changePermissionPeople = ({ key, index }) => {
+    console.log(key, index);
+    const listEmailAndPermissionTemp = [...listEmailAndPermission];
+    listEmailAndPermissionTemp[index] = {
+      ...listEmailAndPermissionTemp[index],
+      permission: key,
+    };
+    setListEmailAndPermission(listEmailAndPermissionTemp);
+  };
+
+  const _onchangeMessage = ({ target: { value } }) => {
+    setMessage(value);
+  };
+
+  const _changeCheckboxNoti = ({ target: { checked } }) => {
+    setIsNoti(checked);
   };
 
   return (
@@ -126,9 +178,15 @@ export const ShareModal = ({
         >
           <TabPane tab="Add People" key="1">
             <AutoComplete
-              style={{ width: '100%', borderRadius: 5, marginBottom: 10 }}
+              style={{
+                width: '100%',
+                borderRadius: 5,
+                marginBottom: 10,
+                backgroundColor: '#eeeeee',
+              }}
               onSearch={_handleSearch}
-              placeholder="Search email or user name"
+              value={textSearch}
+              placeholder="Write name or email"
               onSelect={_handleSelectEmail}
             >
               {listEmail?.map(item => (
@@ -137,17 +195,69 @@ export const ShareModal = ({
                 </Option>
               ))}
             </AutoComplete>
-            <List
-              header={<div>Header</div>}
-              footer={<div>Footer</div>}
-              bordered
-              dataSource={listEmailAndPermission}
-              renderItem={item => (
-                // <div>
-                <Text>{item?.email}</Text>
-                // </div>
-              )}
+            {listEmailAndPermission.length ? (
+              <List
+                bordered
+                dataSource={listEmailAndPermission}
+                renderItem={(item, index) => (
+                  <List.Item>
+                    <Text>{item?.toEmail}</Text>
+                    <Dropdown
+                      overlay={
+                        <Menu
+                          onClick={({ key }) =>
+                            _changePermissionPeople({ key, index })
+                          }
+                        >
+                          <Menu.Item key={PERMISSION.EDITOR}>
+                            <Text>{PERMISSION.EDITOR}</Text>
+                          </Menu.Item>
+                          <Menu.Item key={PERMISSION.VIEW}>
+                            <Text>{PERMISSION.VIEW}</Text>
+                          </Menu.Item>
+                        </Menu>
+                      }
+                      trigger={['click']}
+                    >
+                      <div
+                        style={{ display: 'inline-flex', alignItems: 'center' }}
+                      >
+                        <Text>{item.permission}</Text>
+                        <CaretDownFilled style={{ padding: 10 }} />
+                      </div>
+                    </Dropdown>
+                  </List.Item>
+                )}
+              />
+            ) : null}
+
+            <Checkbox style={{ marginTop: 20 }} onChange={_changeCheckboxNoti}>
+              Notify people
+            </Checkbox>
+            <TextArea
+              style={{
+                marginTop: 20,
+                backgroundColor: '#eeeeee',
+                height: 100,
+              }}
+              placeholder="Write a message"
+              bordered={false}
+              value={message}
+              onChange={_onchangeMessage}
             />
+            <div
+              style={{
+                width: '100%',
+                marginTop: 80,
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: 'flex-end',
+              }}
+            >
+              <Button type="primary" onClick={_sendInvitation}>
+                Send
+              </Button>
+            </div>
           </TabPane>
           <TabPane tab="Use Link" key="2">
             <div

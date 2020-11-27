@@ -157,6 +157,9 @@ export const CreateBoard = memo(
               onChangePermission={_onChangePermission}
               linkInvitation={linkInvitation}
               closeModal={_closeModal}
+              orgId={orgId}
+              typeId={boardId}
+              type={invitationType.BOARD}
             />
           )}
           <DrawBoard

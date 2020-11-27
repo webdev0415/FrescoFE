@@ -172,6 +172,9 @@ export const CreateCanvas = memo(
               onChangePermission={_onChangePermission}
               linkInvitation={linkInvitation}
               closeModal={_closeModal}
+              orgId={orgId}
+              typeId={canvasId}
+              type={invitationType.CANVAS}
             />
           )}
           <DrawCanvas
