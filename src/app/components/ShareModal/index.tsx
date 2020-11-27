@@ -27,6 +27,8 @@ import { useInjectReducer, useInjectSaga } from 'redux-injectors';
 import { shareModalSaga } from './saga';
 import { selectShareModal } from './selectors';
 import TextArea from 'antd/lib/input/TextArea';
+import { message as alert } from 'antd';
+const MAX_EMAIL = 3;
 const { Option } = Select;
 let timer;
 
@@ -82,6 +84,10 @@ export const ShareModal = ({
 
   const _handleSelectEmail = (key, value) => {
     console.log(value, key);
+    if (listEmailAndPermission.length >= MAX_EMAIL) {
+      alert.error('Can not invite more than 3 email at once!');
+      return;
+    }
     for (let index = 0; index < listEmailAndPermission.length; index++) {
       const emailAndPermission = listEmailAndPermission[index];
       if (emailAndPermission.toEmail === key) return;
