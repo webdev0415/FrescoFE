@@ -120,6 +120,7 @@ export const ShareModal = ({
         isNoti,
       }),
     );
+    setListEmailAndPermission([]);
   };
 
   const _changePermissionPeople = ({ key, index }) => {
