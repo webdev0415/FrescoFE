@@ -177,24 +177,31 @@ export const ShareModal = ({
           style={{ paddingRight: 16 }}
         >
           <TabPane tab="Add People" key="1">
-            <AutoComplete
+            <div
               style={{
-                width: '100%',
-                borderRadius: 5,
+                paddingBottom: 1,
+                backgroundColor: 'gray',
                 marginBottom: 10,
-                backgroundColor: '#eeeeee',
               }}
-              onSearch={_handleSearch}
-              value={textSearch}
-              placeholder="Write name or email"
-              onSelect={_handleSelectEmail}
             >
-              {listEmail?.map(item => (
-                <Option key={item.id} value={item.email}>
-                  {item.email}
-                </Option>
-              ))}
-            </AutoComplete>
+              <AutoComplete
+                bordered={false}
+                style={{
+                  width: '100%',
+                  backgroundColor: '#eeeeee',
+                }}
+                onSearch={_handleSearch}
+                value={textSearch}
+                placeholder="Write name or email"
+                onSelect={_handleSelectEmail}
+              >
+                {listEmail?.map(item => (
+                  <Option key={item.id} value={item.email}>
+                    {item.email}
+                  </Option>
+                ))}
+              </AutoComplete>
+            </div>
             {listEmailAndPermission.length ? (
               <List
                 bordered
@@ -234,17 +241,24 @@ export const ShareModal = ({
             <Checkbox style={{ marginTop: 20 }} onChange={_changeCheckboxNoti}>
               Notify people
             </Checkbox>
-            <TextArea
+            <div
               style={{
+                paddingBottom: 1,
+                backgroundColor: 'gray',
                 marginTop: 20,
-                backgroundColor: '#eeeeee',
-                height: 100,
               }}
-              placeholder="Write a message"
-              bordered={false}
-              value={message}
-              onChange={_onchangeMessage}
-            />
+            >
+              <TextArea
+                style={{
+                  backgroundColor: '#eeeeee',
+                  height: 100,
+                }}
+                placeholder="Write a message"
+                bordered={false}
+                value={message}
+                onChange={_onchangeMessage}
+              />
+            </div>
             <div
               style={{
                 width: '100%',
