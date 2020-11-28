@@ -20,6 +20,7 @@ import {
   StarTransform,
   StickyTransform,
   TriangleTransform,
+  NotesArea,
 } from './components';
 
 import {
@@ -778,42 +779,13 @@ class DrawBoard extends Component<Props, State> {
                 return <></>;
               }
             })}
+
+            <NotesArea y={130} x={20} />
+            <NotesArea y={130} x={290 + 20} />
+            <NotesArea y={130} x={290 + 290 + 20 + 20} />
+            <NotesArea y={130} x={290 + 290 + 290 + 20 + 20 + 20} />
           </Layer>
         </Stage>
-        {!!this.state.selectedStickyData && (
-          <textarea
-            ref={this.textAreaRef}
-            style={{
-              ...this.state.selectedStickyData.textData,
-              position: 'absolute',
-              top: this.state.selectedStickyData?.y,
-              left: this.state.selectedStickyData?.x,
-              width: this.state.selectedStickyData.rect?.width,
-              height: this.state.selectedStickyData.rect?.height,
-              resize: 'none',
-              color: '#000000',
-              background: '#F5EDFE',
-              // borderRadius: this.state.selectedStickyData?.sticky?.cornerRadius,
-              padding: '15px 5px',
-              outline: 'none',
-            }}
-            onKeyDown={e => {
-              if (e.key === 'Enter' && this.state.selectedStickyData) {
-                this.updateObjectText(this.state.selectedStickyData.id, {
-                  ...this.state.selectedStickyData.sticky,
-                  text: this.textAreaRef.current?.value,
-                });
-                this.setState({
-                  selectedStickyData: null,
-                });
-              }
-            }}
-            // className="canvas-text-editor"
-            id="canvas-text-editor"
-            contentEditable="true"
-            defaultValue={this.state.selectedStickyData.sticky?.text}
-          ></textarea>
-        )}
       </div>
     );
   }
