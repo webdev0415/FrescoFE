@@ -21,6 +21,7 @@ import {
   StickyTransform,
   TriangleTransform,
   NotesArea,
+  BoardsSection,
 } from './components';
 
 import {
@@ -779,6 +780,14 @@ class DrawBoard extends Component<Props, State> {
                 return <></>;
               }
             })}
+
+            <BoardsSection
+              x={20}
+              y={90}
+              width={window.innerWidth - 20}
+              height={14}
+              text="Sticky notes area"
+            />
 
             <NotesArea y={130} x={20} />
             <NotesArea y={130} x={290 + 30} />

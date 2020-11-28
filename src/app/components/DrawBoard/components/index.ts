@@ -6,3 +6,4 @@ export * from './TextTransform';
 export * from './TriangleTransform';
 export * from './LineTransform';
 export * from './NotesArea';
+export * from './BoardsSection';
