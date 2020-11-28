@@ -7,3 +7,4 @@ export * from './TriangleTransform';
 export * from './LineTransform';
 export * from './NotesArea';
 export * from './BoardsSection';
+export * from './NotesHeaderSection';

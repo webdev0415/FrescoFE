@@ -22,6 +22,7 @@ import {
   TriangleTransform,
   NotesArea,
   BoardsSection,
+  NotesHeaderSection,
 } from './components';
 
 import {
@@ -781,18 +782,109 @@ class DrawBoard extends Component<Props, State> {
               }
             })}
 
+            <NotesHeaderSection
+              x={20}
+              y={35}
+              width={290}
+              height={40}
+              fill="#55DDE0"
+              textFill="#ffffff"
+              text="Awareness"
+            />
+
+            <NotesHeaderSection
+              x={290 + 30}
+              y={35}
+              width={290}
+              height={40}
+              fill="#33658A"
+              textFill="#ffffff"
+              text="Choices"
+            />
+
+            <NotesHeaderSection
+              x={290 + 30 + 290 + 10}
+              y={35}
+              width={290}
+              height={40}
+              fill="#F6AE2D"
+              textFill="#4E4B5C"
+              text="Decisions"
+            />
+
+            <NotesHeaderSection
+              x={290 + 30 + 290 + 10 + 290 + 10}
+              y={35}
+              width={290}
+              height={40}
+              fill="#F26419"
+              textFill="#ffffff"
+              text="Threats"
+            />
+
             <BoardsSection
               x={20}
               y={90}
               width={window.innerWidth - 20}
               height={14}
-              text="Sticky notes area"
+              text="What do you think?"
+            />
+            <NotesArea id={uuidv4()} y={130} x={20} />
+            <NotesArea id={uuidv4()} y={130} x={290 + 30} />
+            <NotesArea id={uuidv4()} y={130} x={290 + 30 + 290 + 10} />
+            <NotesArea
+              id={uuidv4()}
+              y={130}
+              x={290 + 30 + 290 + 10 + 290 + 10}
             />
 
-            <NotesArea y={130} x={20} />
-            <NotesArea y={130} x={290 + 30} />
-            <NotesArea y={130} x={290 + 30 + 290 + 10} />
-            <NotesArea y={130} x={290 + 30 + 290 + 10 + 290 + 10} />
+            <BoardsSection
+              x={20}
+              y={310}
+              width={window.innerWidth - 20}
+              height={14}
+              text="Search Queries"
+            />
+            <NotesArea id={uuidv4()} y={350} x={20} />
+            <NotesArea id={uuidv4()} y={350} x={290 + 30} />
+            <NotesArea id={uuidv4()} y={350} x={290 + 30 + 290 + 10} />
+            <NotesArea
+              id={uuidv4()}
+              y={350}
+              x={290 + 30 + 290 + 10 + 290 + 10}
+            />
+
+            <BoardsSection
+              x={20}
+              y={530}
+              width={window.innerWidth - 20}
+              height={14}
+              text="Search Queries"
+            />
+            <NotesArea id={uuidv4()} y={570} x={20} />
+            <NotesArea id={uuidv4()} y={570} x={290 + 30} />
+            <NotesArea id={uuidv4()} y={570} x={290 + 30 + 290 + 10} />
+            <NotesArea
+              id={uuidv4()}
+              y={570}
+              x={290 + 30 + 290 + 10 + 290 + 10}
+            />
+
+            <BoardsSection
+              x={20}
+              y={750}
+              width={window.innerWidth - 20}
+              height={14}
+              text="Opportunity Areas"
+            />
+            <NotesArea id={uuidv4()} y={790} x={20} />
+            <NotesArea id={uuidv4()} y={790} x={290 + 30} />
+            <NotesArea id={uuidv4()} y={790} x={290 + 30 + 290 + 10} />
+            <NotesArea
+              id={uuidv4()}
+              y={790}
+              x={290 + 30 + 290 + 10 + 290 + 10}
+            />
           </Layer>
         </Stage>
       </div>

@@ -5,13 +5,28 @@ import addNotesImage from 'assets/icons/add-notes.svg';
 import addNotesPlusImage from 'assets/icons/toolbar-plus-violet.svg';
 
 interface NotesAreaInterface {
+  id: string;
   x: number;
   y: number;
 }
+interface StickyNoteInterface {
+  id: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  fontSize: number;
+  text: string;
+  circle: {
+    radius: number;
+    x: number;
+    y: number;
+  };
+}
 
 const NotesArea = (props: NotesAreaInterface) => {
-  const [hovered, setHovered] = useState(true);
-  const [state, setState] = useState<any[]>([]);
+  const [hovered, setHovered] = useState(false);
+  const [state, setState] = useState<StickyNoteInterface[]>([]);
   const [addNotesIcon, setAddNotesIcon] = useState<any>(null);
   const [addNotesPlusIcon, setAddNotesPlusIcon] = useState<any>(null);
   const onMouseEnter = e => {
@@ -137,8 +152,24 @@ const NotesArea = (props: NotesAreaInterface) => {
       backgroundColor: '#FEF8BA',
     });
 
+    const changeValue = value => {
+      setState(
+        state.map(item => {
+          if (item.id === data.id) {
+            return {
+              ...item,
+              text: value,
+            };
+          } else {
+            return item;
+          }
+        }),
+      );
+    };
+
     const onClickDocument = event => {
       if (!(event.target as HTMLElement).contains(p)) {
+        changeValue(p.innerText);
         canvasEditor.removeChild(p);
         document.removeEventListener('click', onClickDocument);
       }
@@ -210,7 +241,7 @@ const NotesArea = (props: NotesAreaInterface) => {
             id={item.id + ':Text'}
             x={0}
             y={0}
-            text={'Sticky notes area'}
+            text={item.text}
             fontSize={item.fontSize}
             align="center"
             verticalAlign="middle"
