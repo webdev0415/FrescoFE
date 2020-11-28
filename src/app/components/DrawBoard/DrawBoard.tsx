@@ -781,9 +781,9 @@ class DrawBoard extends Component<Props, State> {
             })}
 
             <NotesArea y={130} x={20} />
-            <NotesArea y={130} x={290 + 20} />
-            <NotesArea y={130} x={290 + 290 + 20 + 20} />
-            <NotesArea y={130} x={290 + 290 + 290 + 20 + 20 + 20} />
+            <NotesArea y={130} x={290 + 30} />
+            <NotesArea y={130} x={290 + 30 + 290 + 10} />
+            <NotesArea y={130} x={290 + 30 + 290 + 10 + 290 + 10} />
           </Layer>
         </Stage>
       </div>

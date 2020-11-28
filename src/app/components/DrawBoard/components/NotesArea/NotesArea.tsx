@@ -10,7 +10,7 @@ interface NotesAreaInterface {
 }
 
 const NotesArea = (props: NotesAreaInterface) => {
-  const [hovered, setHovered] = useState(false);
+  const [hovered, setHovered] = useState(true);
   const [state, setState] = useState<any[]>([]);
   const [addNotesIcon, setAddNotesIcon] = useState<any>(null);
   const [addNotesPlusIcon, setAddNotesPlusIcon] = useState<any>(null);
