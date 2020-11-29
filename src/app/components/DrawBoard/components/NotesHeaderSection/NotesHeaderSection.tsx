@@ -27,7 +27,7 @@ const NotesHeaderSection = (props: NotesHeaderSectionProps) => {
         width={props.width}
         x={0}
         y={0}
-        text={'Sticky notes area'}
+        text={props.text}
         fontSize={16}
         align="center"
         verticalAlign="middle"

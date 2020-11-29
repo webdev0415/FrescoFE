@@ -1,4 +1,4 @@
-import React, { Component, memo } from 'react';
+import React, { PureComponent } from 'react';
 import { Layer, Stage } from 'react-konva';
 import { v4 as uuidV4 } from 'uuid';
 import Konva from 'konva';
@@ -28,7 +28,7 @@ import {
   ImageUploadingService,
 } from '../../../services/APIService';
 
-class DrawBoard extends Component<Props, State> {
+class DrawBoard extends PureComponent<Props, State> {
   state: State = {
     id: uuidV4(),
     objects: [],
@@ -203,8 +203,10 @@ class DrawBoard extends Component<Props, State> {
     return (
       <div className={this.props.className}>
         <Stage
-          width={window.innerWidth * this.props.zoomLevel}
-          height={1200 * this.props.zoomLevel}
+          width={Math.max(1200, window.innerWidth) * this.props.zoomLevel}
+          height={
+            Math.max(1100, window.innerHeight - 80) * this.props.zoomLevel
+          }
           className="canvas-body-content"
           ref={ref => (this.stageRef = ref)}
           scale={{
@@ -343,4 +345,4 @@ class DrawBoard extends Component<Props, State> {
   }
 }
 
-export default memo(DrawBoard);
+export default DrawBoard;
