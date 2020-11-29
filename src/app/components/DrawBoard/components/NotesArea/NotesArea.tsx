@@ -1,32 +1,21 @@
-import React, { memo, useEffect, useState } from 'react';
+import React, { memo, useEffect, useReducer, useState } from 'react';
 import { Circle, Group, Rect, Text, Image } from 'react-konva';
-import { v4 } from 'uuid';
 import addNotesImage from 'assets/icons/add-notes.svg';
 import addNotesPlusImage from 'assets/icons/toolbar-plus-violet.svg';
+import {
+  BoardNotesAreaPropsInterface,
+  BoardObjectInterface,
+} from '../../types';
+import { reducer, ReducerActionsInterface } from './reducer';
 
-interface NotesAreaInterface {
-  id: string;
-  x: number;
-  y: number;
-}
-interface StickyNoteInterface {
-  id: string;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  fontSize: number;
-  text: string;
-  circle: {
-    radius: number;
-    x: number;
-    y: number;
-  };
-}
+type Reducer = (
+  prevState: BoardObjectInterface[],
+  action: ReducerActionsInterface,
+) => BoardObjectInterface[];
 
-const NotesArea = (props: NotesAreaInterface) => {
+const NotesArea = (props: BoardNotesAreaPropsInterface) => {
   const [hovered, setHovered] = useState(false);
-  const [state, setState] = useState<StickyNoteInterface[]>([]);
+  const [notes, notesDispatch] = useReducer<Reducer>(reducer, props.data);
   const [addNotesIcon, setAddNotesIcon] = useState<any>(null);
   const [addNotesPlusIcon, setAddNotesPlusIcon] = useState<any>(null);
   const onMouseEnter = e => {
@@ -53,83 +42,10 @@ const NotesArea = (props: NotesAreaInterface) => {
   }, []);
 
   const onClickAdd = () => {
-    if (state.length) {
-      let oldState = [...state];
-      if (oldState.length === 1) {
-        oldState.push({
-          id: v4(),
-          x: 150,
-          y: 10,
-          width: 130,
-          height: 130,
-          fontSize: 14,
-          text: 'Sticky notes area',
-          circle: {
-            radius: 7,
-            x: 12,
-            y: 12,
-          },
-        });
-      } else {
-        let x = 10;
-        let y = 10;
-        oldState = oldState.map(item => {
-          const newItem = {
-            ...item,
-            x: x,
-            y: y,
-            width: 60,
-            height: 60,
-            fontSize: 8,
-            circle: {
-              radius: 3,
-              x: 7,
-              y: 7,
-            },
-          };
-          x = y === 10 ? x : x + 70;
-          y = y === 10 ? y + 70 : 10;
-          return newItem;
-        });
-        oldState.push({
-          id: v4(),
-          x: x,
-          y: y,
-          width: 60,
-          height: 60,
-          fontSize: 8,
-          text: 'Sticky notes area',
-          circle: {
-            radius: 3,
-            x: 7,
-            y: 7,
-          },
-        });
-      }
-      setState(oldState);
-    } else {
-      setState([
-        ...state,
-        {
-          id: v4(),
-          x: 10,
-          y: 10,
-          width: 130,
-          height: 130,
-          fontSize: 14,
-          text: 'Sticky notes area',
-          circle: {
-            radius: 7,
-            x: 12,
-            y: 12,
-          },
-        },
-      ]);
-    }
+    notesDispatch({ type: 'add', props });
   };
 
-  const onEditNotes = (data: any) => {
-    console.log(data);
+  const onEditNotes = (data: BoardObjectInterface) => {
     const p = document.createElement('p');
     p.autofocus = true;
     p.innerText = data.text;
@@ -153,18 +69,16 @@ const NotesArea = (props: NotesAreaInterface) => {
     });
 
     const changeValue = value => {
-      setState(
-        state.map(item => {
-          if (item.id === data.id) {
-            return {
-              ...item,
-              text: value,
-            };
-          } else {
-            return item;
-          }
-        }),
-      );
+      if (value !== data.text) {
+        notesDispatch({
+          type: 'update',
+          props,
+          data: {
+            ...data,
+            text: value,
+          },
+        });
+      }
     };
 
     const onClickDocument = event => {
@@ -174,6 +88,7 @@ const NotesArea = (props: NotesAreaInterface) => {
         document.removeEventListener('click', onClickDocument);
       }
     };
+
     setTimeout(() => {
       document.addEventListener('click', onClickDocument);
     }, 100);
@@ -183,29 +98,28 @@ const NotesArea = (props: NotesAreaInterface) => {
   };
   return (
     <Group
-      id="3423432423"
+      id={props.id}
       x={props.x}
       y={props.y}
-      height={150}
-      width={290}
+      height={props.height}
+      width={props.width}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
-      <Group id="3423432423" x={0} y={0} height={150} width={290}>
+      <Group x={0} y={0} height={props.height} width={props.width}>
         <Rect
-          id={'Recsddsft'}
           x={0}
           y={0}
-          height={150}
-          width={290}
+          height={props.height}
+          width={props.width}
           fill={hovered ? '#F5EDFE' : undefined}
           opacity={0.8}
         />
-        {hovered && !state.length && (
+        {hovered && !notes.length && (
           <Image
             image={addNotesIcon}
-            x={290 / 2 - 58 / 2}
-            y={150 / 2 - 36 / 2}
+            x={props.width / 2 - 58 / 2}
+            y={props.height / 2 - 36 / 2}
             onClick={onClickAdd}
             onMouseEnter={() => {
               document.body.style.cursor = 'pointer';
@@ -216,8 +130,9 @@ const NotesArea = (props: NotesAreaInterface) => {
           />
         )}
       </Group>
-      {state.map(item => (
+      {notes.map(item => (
         <Group
+          key={item.id}
           id={item.id}
           x={item.x}
           y={item.y}
@@ -225,7 +140,6 @@ const NotesArea = (props: NotesAreaInterface) => {
           width={item.width}
         >
           <Rect
-            id={item.id + ':Rect'}
             x={0}
             y={0}
             height={item.height}
@@ -238,7 +152,6 @@ const NotesArea = (props: NotesAreaInterface) => {
           <Text
             height={item.height}
             width={item.width}
-            id={item.id + ':Text'}
             x={0}
             y={0}
             text={item.text}
@@ -253,19 +166,18 @@ const NotesArea = (props: NotesAreaInterface) => {
             }}
           />
           <Circle
-            id={item.id + ':Circle'}
             radius={item.circle.radius}
             x={item.circle.x}
             y={item.circle.y}
-            fill="#000000"
+            fill={item.circle.fill}
           />
         </Group>
       ))}
-      {hovered && !!state.length && state.length < 8 && (
+      {hovered && !!notes.length && notes.length < 8 && (
         <Image
           image={addNotesPlusIcon}
-          x={290 - 24}
-          y={150 - 24}
+          x={props.width - 24}
+          y={props.height - 24}
           onClick={onClickAdd}
           onMouseEnter={() => {
             document.body.style.cursor = 'pointer';

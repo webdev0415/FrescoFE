@@ -1,4 +1,10 @@
-import { ObjectInterface, PointsInterface, StickyProperty } from './types';
+import {
+  BoardNotesAreaInterface,
+  ObjectInterface,
+  PointsInterface,
+  StickyProperty,
+} from './types';
+import { v4 as uuidV4 } from 'uuid';
 
 export const fontNames = [
   'Comic Sans MS',
@@ -63,3 +69,31 @@ export const defaultTextProperties: StickyProperty = {
   stroke: undefined,
   verticalAlign: 'middle',
 };
+
+export function generateDefaultBoardNotesData(): BoardNotesAreaInterface[] {
+  let x = 20;
+  let y = 130;
+  const data: BoardNotesAreaInterface[] = [];
+  Array(4)
+    .fill('row')
+    .forEach(() => {
+      Array(4)
+        .fill('column')
+        .forEach(() => {
+          let newData: BoardNotesAreaInterface = {
+            width: 290,
+            height: 150,
+            x: x,
+            y: y,
+            data: [],
+            id: uuidV4(),
+          };
+          data.push(newData);
+          x = x + 290 + 10;
+        });
+      x = 20;
+      y = y + 220;
+    });
+  console.log('generateDefaultBoardNotesData', data);
+  return data;
+}

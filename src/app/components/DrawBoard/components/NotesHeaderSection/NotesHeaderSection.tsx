@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { Circle, Group, Rect, Text } from 'react-konva';
+import { Group, Rect, Text } from 'react-konva';
 
 interface NotesHeaderSectionProps {
   x: number;
