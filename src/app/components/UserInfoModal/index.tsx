@@ -1,13 +1,7 @@
 import React, { Fragment } from 'react';
 import { useSelector } from 'react-redux';
 import { selectUser } from '../../selectors';
-import {
-  CopyOutlined,
-  GlobalOutlined,
-  LogoutOutlined,
-  UserAddOutlined,
-} from '@ant-design/icons';
-import { Col, Row } from 'antd';
+import { LogoutOutlined } from '@ant-design/icons';
 
 export const UserInfoModal = ({ logOut }) => {
   const user = useSelector(selectUser);
@@ -18,6 +12,7 @@ export const UserInfoModal = ({ logOut }) => {
 
   return (
     <Fragment>
+      <div className="backdrop" />
       <div className="user-modal-container" id="account-modal">
         <div className="user-profile-section">
           <div className="profile-image">

@@ -21,6 +21,7 @@ export const UserModal = ({ logOut, showInvite, organization }) => {
 
   return (
     <Fragment>
+      <div className="backdrop" />
       <div className="user-modal-container" id="account-modal">
         <div className="user-profile-section">
           <div className="profile-image">
@@ -50,7 +51,7 @@ export const UserModal = ({ logOut, showInvite, organization }) => {
             <span>Invite people</span>
           </div>
           <div className="user-invitation-link-input">
-            <input type="text" />
+            <input readOnly type="text" value="www.fresco.com/QuestionPro" />
             <div className="copy-button">
               <CopyOutlined />
             </div>

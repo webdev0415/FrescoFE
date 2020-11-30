@@ -1,5 +1,19 @@
 @import 'variables';
 
+
+.backdrop {
+
+  @media only screen and (max-width: 600px) {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: 999;
+  }
+}
+
 .user-modal-container {
   position: absolute;
   right: 0;
@@ -15,6 +29,7 @@
     right: unset;
     top: 0;
     bottom: 0;
+
   }
 
   .user-profile-section {
