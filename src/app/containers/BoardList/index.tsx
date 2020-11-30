@@ -115,7 +115,7 @@ export const BoardList = (props: BoardListProps) => {
                     </div>
                   </Dropdown>
                 </div>
-                <div className="card-title">QuestionPro Journey Map</div>
+                <div className="card-title">{item.name}</div>
                 <div className="card-timestamp">Opened Oct 12, 2020</div>
                 <div className="card-users">
                   <span className="material-icons">group</span>

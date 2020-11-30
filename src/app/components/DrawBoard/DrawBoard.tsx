@@ -203,7 +203,7 @@ class DrawBoard extends PureComponent<Props, State> {
     return (
       <div className={this.props.className}>
         <Stage
-          width={Math.max(1200, window.innerWidth) * this.props.zoomLevel}
+          width={Math.max(1980, window.innerWidth) * this.props.zoomLevel}
           height={
             Math.max(1100, window.innerHeight - 80) * this.props.zoomLevel
           }

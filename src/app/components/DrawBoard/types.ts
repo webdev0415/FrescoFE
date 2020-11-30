@@ -1,6 +1,5 @@
 import Konva from 'konva';
 import { RouteChildrenProps } from 'react-router';
-import { CanvasResponseInterface } from '../../../services/APIService/interfaces';
 
 export type ShapeObjectType =
   | 'Rect'
@@ -90,7 +89,6 @@ export interface ObjectInterface extends PointsInterface {
 export interface Props
   extends RouteChildrenProps<{ id: string; type: string }> {
   className: string;
-  drawingTool: ShapeObjectType;
   zoomLevel: number;
 }
 

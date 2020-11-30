@@ -34,39 +34,13 @@ interface IState {
 export const CreateBoard = memo(
   (props: RouteChildrenProps<{ id: string; type: string }>) => {
     const [zoom, setZoom] = useState<number>(0);
-    const [drawingTool, setDrawingTool] = useState<
-      | 'Rect'
-      | 'RectRounded'
-      | 'Triangle'
-      | 'Ellipse'
-      | 'Star'
-      | 'Text'
-      | 'Sticky'
-      | 'Line'
-      | null
-    >(null);
-    const [showSubTools, setShowSubTools] = useState<string>('');
     const [isShowShareModal, setIsShowShareModal] = useState(false);
     const [permission, setPermission] = useState(PERMISSION.EDITOR);
     const [linkInvitation, setLinkInvitation] = useState(Object);
-    const history = useHistory();
     const location = useLocation();
     const orgId = (location.state as IState)?.orgId;
     const token = useSelector(selectToken);
     const boardId = props?.match?.params?.id;
-    useEffect(() => {
-      document.addEventListener('click', event => {
-        const target = event.target as Node;
-        const toolbar = document.getElementById(
-          'canvas-toolbar',
-        ) as HTMLDivElement;
-        if (toolbar) {
-          if (!toolbar.contains(target)) {
-            setShowSubTools('');
-          }
-        }
-      });
-    }, []);
 
     useEffect(() => {
       const shareIcon = document.getElementById('share-icon') as HTMLDivElement;
@@ -161,7 +135,6 @@ export const CreateBoard = memo(
           )}
           <DrawBoard
             className="canvas-body"
-            drawingTool={drawingTool}
             zoomLevel={zoom / 100 + 1}
             {...props}
           />
