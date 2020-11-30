@@ -87,7 +87,7 @@ export const ShareModal = ({
   const _handleSelectEmail = (key, value) => {
     console.log(value, key);
     if (listEmailAndPermission.length >= MAX_EMAIL) {
-      alert.error('Can not invite more than 3 email at once!');
+      alert.error(`Can not invite more than ${MAX_EMAIL} email at once!`);
       return;
     }
     for (let index = 0; index < listEmailAndPermission.length; index++) {
