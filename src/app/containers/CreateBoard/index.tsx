@@ -150,6 +150,17 @@ export const CreateBoard = memo(
               </div>
             </div>
             <div className="canvas-header-right">
+              <div className="canvas-collaborators">
+                <div className="oval" style={{ zIndex: 100 }}>
+                  jj
+                </div>
+                <div className="oval" style={{ zIndex: 99 }}>
+                  AS
+                </div>
+                <div className="oval" style={{ zIndex: 98 }}>
+                  AB
+                </div>
+              </div>
               <div className="canvas-header-actions">
                 <div className="canvas-header-action-item">
                   <GroupIcon />

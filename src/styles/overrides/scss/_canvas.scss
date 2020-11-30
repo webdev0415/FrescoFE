@@ -1,3 +1,5 @@
+@import "variables";
+
 .canvas-view {
   position: fixed;
   overflow: hidden;
@@ -81,7 +83,7 @@
             color: #9b9b9b;
 
             &:hover {
-              color: #9646f5;
+              color: $primary-color;
             }
           }
         }
@@ -92,6 +94,40 @@
         justify-content: center;
         align-items: center;
         height: 100%;
+
+        .canvas-collaborators {
+          margin-right: 10px !important;
+          display: inline-flex !important;
+          align-items: center !important;
+
+          .oval {
+            height: 28px !important;
+            width: 28px !important;
+            border-radius: 50% !important;
+            border: 1px solid white !important;
+            background-color: $primary-color;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 12px;
+            color: white;
+
+            &:not(:last-child) {
+              margin-right: -12px !important;
+            }
+          }
+
+          img {
+            height: 23px !important;
+            width: 23px !important;
+            border-radius: 50% !important;
+            border: 1px solid white !important;
+
+            &:not(:last-child) {
+              margin-right: -5px !important;
+            }
+          }
+        }
 
         .canvas-header-actions {
           display: inline-flex;
