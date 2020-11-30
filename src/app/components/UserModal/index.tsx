@@ -2,12 +2,11 @@ import React, { Fragment } from 'react';
 import { useSelector } from 'react-redux';
 import { selectUser } from '../../selectors';
 import {
-  LogoutOutlined,
-  GlobalOutlined,
-  UserAddOutlined,
   CopyOutlined,
+  GlobalOutlined,
+  LogoutOutlined,
+  UserAddOutlined,
 } from '@ant-design/icons';
-import { Col, Row } from 'antd';
 
 export const UserModal = ({ logOut, showInvite, organization }) => {
   const user = useSelector(selectUser);
