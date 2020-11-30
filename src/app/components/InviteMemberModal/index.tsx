@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react';
 import { Modal, Input, Button, Row, Col, Select, AutoComplete } from 'antd';
 import { PERMISSION } from 'app/containers/Dashboard';
-let timmer;
+let timer;
 
 const { Option } = Select;
 
@@ -24,10 +24,10 @@ export const InviteMemberModal = ({
   };
 
   const _handleSearch = (value: string) => {
-    if (timmer) {
-      clearTimeout(timmer);
+    if (timer) {
+      clearTimeout(timer);
     }
-    timmer = setTimeout(() => {
+    timer = setTimeout(() => {
       handleSearch(value);
     }, 1000);
   };

@@ -12,6 +12,7 @@ import { ListOrganizationsState } from 'app/containers/ListOrganizations/types';
 import { SignupForInvitationState } from 'app/containers/SignupForInvitation/types';
 import { BoardListState } from 'app/containers/BoardList/types';
 import { VerifyInvitationTypeState } from 'app/containers/VerifyInvitationType/types';
+import { ShareModalState } from 'app/components/ShareModal/types';
 // [IMPORT NEW CONTAINERSTATE ABOVE] < Needed for generating containers seamlessly
 
 export interface RootState {
@@ -28,5 +29,6 @@ export interface RootState {
   signupForInvitation?: SignupForInvitationState;
   boardList?: BoardListState;
   verifyInvitationType?: VerifyInvitationTypeState;
+  shareModal?: ShareModalState;
   // [INSERT NEW REDUCER KEY ABOVE] < Needed for generating containers seamlessly
 }
