@@ -66,6 +66,11 @@
           height: 100%;
           gap: 1px;
 
+
+          @media only screen and (max-width: 600px) {
+            display: none;
+          }
+
           .canvas-header-action-item {
             display: inline-flex;
             justify-content: center;
@@ -88,8 +93,41 @@
         align-items: center;
         height: 100%;
 
+        .canvas-header-actions {
+          display: inline-flex;
+          justify-content: center;
+          align-items: center;
+          height: 100%;
+          gap: 1px;
+
+          .canvas-header-action-item {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            width: 40px;
+            cursor: pointer;
+            color: #9b9b9b;
+
+            &:hover {
+              color: #9646f5;
+            }
+          }
+
+          .d-sm-only {
+            display: none;
+            @media only screen and (max-width: 600px) {
+              display: inline-flex;
+            }
+          }
+        }
+
         .ant-btn-group.ant-dropdown-button {
           height: 30px;
+
+          @media only screen and (max-width: 600px) {
+            display: none;
+          }
 
           .ant-btn.ant-btn-default {
             height: 100%;

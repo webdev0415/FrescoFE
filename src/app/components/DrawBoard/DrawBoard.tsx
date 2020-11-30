@@ -43,10 +43,6 @@ class DrawBoard extends PureComponent<Props, State> {
   stageRef: Konva.Stage | null = null;
 
   componentDidMount() {
-    const saveCanvas = document.getElementById('save-canvas') as HTMLDivElement;
-    saveCanvas.addEventListener('click', () => {
-      this.save();
-    });
     this.getData();
   }
 

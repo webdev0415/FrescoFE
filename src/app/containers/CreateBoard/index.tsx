@@ -2,23 +2,17 @@ import React, { memo, useEffect, useState } from 'react';
 import { RouteChildrenProps, useLocation } from 'react-router';
 import logoImg from 'assets/icons/logo-color.svg';
 import { v4 as uuidv4 } from 'uuid';
+import { GroupIcon, ChatIcon, ShareIcon } from 'assets/icons';
 
-import { Button, Dropdown, Input, Menu, Slider, Switch } from 'antd';
-import {
-  CheckOutlined,
-  CopyOutlined,
-  ShareAltOutlined,
-} from '@ant-design/icons';
-import { DrawCanvas } from '../../components/DrawCanvas';
+import { Dropdown, Input, Menu, Slider, Switch } from 'antd';
+import { CheckOutlined, CopyOutlined } from '@ant-design/icons';
 import {
   RedoIcon,
   UndoIcon,
   ZoomInIcon,
   ZoomOutIcon,
 } from '../../components/CanvasIcons';
-import clsx from 'clsx';
 import pageIcon from '../../../assets/icons/page.svg';
-import { useHistory } from 'react-router-dom';
 import DrawBoard from 'app/components/DrawBoard/DrawBoard';
 import { ShareModal } from 'app/components/ShareModal';
 import { PERMISSION } from '../Dashboard';
@@ -156,43 +150,17 @@ export const CreateBoard = memo(
               </div>
             </div>
             <div className="canvas-header-right">
-              <Dropdown.Button
-                trigger={['click']}
-                overlay={
-                  <Menu className="canvas-dropdown">
-                    <div className="dropdown-item">
-                      <CheckOutlined /> Published
-                    </div>
-                    <div className="dropdown-item">
-                      <img src={pageIcon} alt="page" /> Publish & Create Canvas
-                    </div>
-                    <div className="switch-item">
-                      Public URL <Switch defaultChecked />
-                    </div>
-                    <div className="input-item">
-                      <Input
-                        addonAfter={<CopyOutlined />}
-                        defaultValue="https://example.org"
-                      />
-                    </div>
-                  </Menu>
-                }
-              >
-                <span
-                  id="save-canvas"
-                  onClick={() => {
-                    window.history.back();
-                  }}
-                >
-                  Publish
-                </span>
-              </Dropdown.Button>
-              <Button
-                id="share-icon"
-                style={{ marginLeft: 30, marginRight: 16 }}
-              >
-                <ShareAltOutlined />
-              </Button>
+              <div className="canvas-header-actions">
+                <div className="canvas-header-action-item">
+                  <GroupIcon />
+                </div>
+                <div className="canvas-header-action-item">
+                  <ChatIcon />
+                </div>
+                <div className="canvas-header-action-item" id="share-icon">
+                  <ShareIcon />
+                </div>
+              </div>
             </div>
           </div>
 
