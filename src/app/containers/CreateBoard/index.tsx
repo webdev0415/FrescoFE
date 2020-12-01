@@ -19,6 +19,7 @@ import { useSelector } from 'react-redux';
 import { selectToken } from 'app/selectors';
 import { invitationType } from 'utils/constant';
 import clsx from 'clsx';
+import { Link, useHistory } from 'react-router-dom';
 
 interface IState {
   orgId?: any;
@@ -27,6 +28,7 @@ interface IState {
 export const CreateBoard = memo(
   (props: RouteChildrenProps<{ id: string; type: string }>) => {
     const [zoom, setZoom] = useState<number>(0);
+    const [url, setUrl] = useState<URL>(new URL(window.location.href));
     const [isShowShareModal, setIsShowShareModal] = useState(false);
     const [permission, setPermission] = useState(PERMISSION.EDITOR);
     const [linkInvitation, setLinkInvitation] = useState(Object);
@@ -34,6 +36,11 @@ export const CreateBoard = memo(
     const orgId = (location.state as IState)?.orgId;
     const token = useSelector(selectToken);
     const boardId = props?.match?.params?.id;
+    const history = useHistory();
+
+    useEffect(() => {
+      setUrl(new URL(window.location.href));
+    }, [history]);
 
     useEffect(() => {
       const shareIcon = document.getElementById('share-icon') as HTMLDivElement;
@@ -133,9 +140,12 @@ export const CreateBoard = memo(
           />
           <div className="canvas-header">
             <div className="canvas-header-left">
-              <div className="canvas-header-logo">
+              <Link
+                to={`/organization/${url.searchParams.get('organization')}`}
+                className="canvas-header-logo"
+              >
                 <img src={logoImg} alt="logo" />
-              </div>
+              </Link>
               <div className="canvas-header-title" id="canvas-title">
                 My Customer Journey
               </div>

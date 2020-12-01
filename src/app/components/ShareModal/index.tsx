@@ -1,11 +1,11 @@
 import React, { Fragment, useCallback, useState } from 'react';
 import { CaretDownFilled } from '@ant-design/icons';
-import { Checkbox, Dropdown, Input, Menu } from 'antd';
+import { Checkbox, Dropdown, Menu } from 'antd';
 import Text from 'antd/lib/typography/Text';
 import { PERMISSION } from 'app/containers/Dashboard';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 
-import { CloseIcon, CopyIcon, ShareIcon, PencilIcon } from 'assets/icons';
+import { CloseIcon, CopyIcon, PencilIcon, ShareIcon } from 'assets/icons';
 import clsx from 'clsx';
 
 declare type Tabs = 'add-people' | 'use-link';
