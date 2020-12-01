@@ -1,5 +1,6 @@
 import React from 'react';
 import logoImg from 'assets/icons/logo.svg';
+import { Link } from 'react-router-dom';
 
 interface HeaderProps {
   isLogIn?: boolean;
@@ -28,14 +29,15 @@ const Header: React.FC<HeaderProps> = props => {
           width: '100%',
         }}
       >
-        <div
+        <Link
+          to="/"
           style={{
             textAlign: 'left',
             color: 'white',
           }}
         >
           <img src={logoImg} alt="logo" />
-        </div>
+        </Link>
         {props.isLogIn && (
           <div
             style={{
