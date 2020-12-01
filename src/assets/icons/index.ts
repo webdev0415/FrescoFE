@@ -1,8 +1,8 @@
 export { ReactComponent as AddNotesIcon } from './add-notes.svg';
 export { ReactComponent as CanvasToolbarSelectionIcon } from './canvas-toolbar-selection.svg';
+export { ReactComponent as CaretDownIcon } from './caret-down.svg';
 export { ReactComponent as ChatIcon } from './chat.svg';
 export { ReactComponent as CopyIcon } from './copy.svg';
-export { ReactComponent as ChevronDownIcon } from './chevron-down.svg';
 export { ReactComponent as CloseIcon } from './close.svg';
 export { ReactComponent as CursorIcon } from './cursor.svg';
 export { ReactComponent as DashboardIcon } from './dashboard.svg';
