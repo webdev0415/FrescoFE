@@ -1,14 +1,11 @@
 import React, { Fragment } from 'react';
-import {
-  CloseOutlined,
-  ShareAltOutlined,
-  CopyOutlined,
-  CaretDownFilled,
-} from '@ant-design/icons';
+import { CaretDownFilled, CopyOutlined } from '@ant-design/icons';
 import { Dropdown, Input, Menu, Tabs } from 'antd';
 import Text from 'antd/lib/typography/Text';
 import { PERMISSION } from 'app/containers/Dashboard';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
+
+import { CloseIcon, ShareIcon, CopyIcon } from 'assets/icons';
 
 const { TabPane } = Tabs;
 
@@ -22,49 +19,22 @@ export const ShareModal = ({
   const baseClient = `${window.location.protocol}${window.location.hostname}:${window.location.port}/`;
   return (
     <Fragment>
-      <div
-        style={{
-          position: 'absolute',
-          right: 0,
-          top: 40,
-          bottom: 40,
-          width: '25rem',
-          paddingBottom: '10px',
-          backgroundColor: 'white',
-          zIndex: 1000,
-          paddingLeft: 30,
-        }}
-        id="share-modal"
-      >
-        <div
-          style={{
-            display: 'inline-flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            width: '100%',
-            height: '40px',
-            padding: '0 16px 0 0',
-          }}
-        >
-          <div
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              height: '100%',
-            }}
-          >
-            <ShareAltOutlined />
-            <Text style={{ marginLeft: 6, fontSize: 20, fontWeight: 400 }}>
-              Share
-            </Text>
+      <div className="share-modal-container">
+        <div className="share-modal-header">
+          <div className="share-modal-title">
+            <ShareIcon />
+            <span>Share</span>
           </div>
-          <CloseOutlined onClick={closeModal} />
+          <div className="share-modal-close-icon">
+            <CloseIcon onClick={closeModal} />
+          </div>
         </div>
-        <Tabs defaultActiveKey="1" style={{ paddingRight: 16 }}>
-          <TabPane tab="Add People" key="1">
-            Add People
-          </TabPane>
-          <TabPane tab="Use Link" key="2">
+        <div className="share-modal-content">
+          <div className="share-modal-tabs">
+            <div className="share-modal-tab">Add People</div>
+            <div className="share-modal-tab">Use Link</div>
+          </div>
+          <div className="share-modal-tab-content">
             <div
               style={{
                 display: 'inline-flex',
@@ -85,7 +55,7 @@ export const ShareModal = ({
               <CopyToClipboard
                 text={`${baseClient}invitation-type/verification/${linkInvitation.token}`}
               >
-                <CopyOutlined style={{ color: 'gray' }} />
+                <CopyIcon style={{ color: 'gray' }} />
               </CopyToClipboard>
             </div>
             <div
@@ -113,8 +83,8 @@ export const ShareModal = ({
                 </div>
               </Dropdown>
             </div>
-          </TabPane>
-        </Tabs>
+          </div>
+        </div>
       </div>
     </Fragment>
   );

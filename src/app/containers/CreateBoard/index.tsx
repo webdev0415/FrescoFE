@@ -2,17 +2,15 @@ import React, { memo, useEffect, useState } from 'react';
 import { RouteChildrenProps, useLocation } from 'react-router';
 import logoImg from 'assets/icons/logo-color.svg';
 import { v4 as uuidv4 } from 'uuid';
-import { GroupIcon, ChatIcon, ShareIcon, PlusIcon } from 'assets/icons';
+import { ChatIcon, GroupIcon, PlusIcon, ShareIcon } from 'assets/icons';
 
-import { Dropdown, Input, Menu, Slider, Switch } from 'antd';
-import { CheckOutlined, CopyOutlined } from '@ant-design/icons';
+import { Slider } from 'antd';
 import {
   RedoIcon,
   UndoIcon,
   ZoomInIcon,
   ZoomOutIcon,
 } from '../../components/CanvasIcons';
-import pageIcon from '../../../assets/icons/page.svg';
 import DrawBoard from 'app/components/DrawBoard/DrawBoard';
 import { ShareModal } from 'app/components/ShareModal';
 import { PERMISSION } from '../Dashboard';
@@ -20,6 +18,7 @@ import Axios from 'axios';
 import { useSelector } from 'react-redux';
 import { selectToken } from 'app/selectors';
 import { invitationType } from 'utils/constant';
+import clsx from 'clsx';
 
 interface IState {
   orgId?: any;
@@ -168,7 +167,12 @@ export const CreateBoard = memo(
                 <div className="canvas-header-action-item">
                   <ChatIcon />
                 </div>
-                <div className="canvas-header-action-item" id="share-icon">
+                <div
+                  className={clsx('canvas-header-action-item', {
+                    active: isShowShareModal,
+                  })}
+                  id="share-icon"
+                >
                   <ShareIcon />
                 </div>
               </div>
