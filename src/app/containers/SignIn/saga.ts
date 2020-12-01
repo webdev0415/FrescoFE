@@ -23,13 +23,25 @@ export function* signIn(action) {
     const tokenVerifyJson = localStorage.getItem('tokenVerify');
     if (tokenVerifyJson) {
       localStorage.removeItem('tokenVerify');
-      yield put(
-        verifyInvitationTypeActions.verifyInvitationTypeRequest({
-          tokenVerify: JSON.parse(tokenVerifyJson).tokenVerify,
+      try {
+        axios.defaults.headers.common[
+          'Authorization'
+        ] = `Bearer ${response?.data?.token?.accessToken}`;
+        const res = yield axios.post('invitation-type/request', {
+          token: JSON.parse(tokenVerifyJson).tokenVerify,
           history,
-          token: response?.data?.token?.accessToken,
-        }),
-      );
+        });
+        console.log('res', res);
+        if (res?.data?.typeId) {
+          history.push(`/canvas/${res?.data?.typeId}/${res?.data?.type}`, {
+            orgId: res?.data?.orgId,
+          });
+        }
+        message.success('Invitation successfully.');
+      } catch (e) {
+        history.push('/');
+        message.error(`Invitation : ${e.message}`);
+      }
     }
   } catch (error) {
     if (error.response.status === 401) {
