@@ -2,7 +2,7 @@ import React, { memo, useEffect, useState } from 'react';
 import { RouteChildrenProps, useLocation } from 'react-router';
 import logoImg from 'assets/icons/logo-color.svg';
 import { v4 as uuidv4 } from 'uuid';
-import { GroupIcon, ChatIcon, ShareIcon } from 'assets/icons';
+import { GroupIcon, ChatIcon, ShareIcon, PlusIcon } from 'assets/icons';
 
 import { Dropdown, Input, Menu, Slider, Switch } from 'antd';
 import { CheckOutlined, CopyOutlined } from '@ant-design/icons';
@@ -176,6 +176,14 @@ export const CreateBoard = memo(
           </div>
 
           <div className="canvas-footer">
+            <div className="canvas-footer-actions-left">
+              <div className="canvas-footer-action-add-item">
+                <PlusIcon />
+              </div>
+              <div className="canvas-footer-action-item">
+                Custom Journey Test Board
+              </div>
+            </div>
             <div className="canvas-footer-actions">
               <div
                 className="canvas-footer-action-item"

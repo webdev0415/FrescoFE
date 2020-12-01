@@ -336,6 +336,52 @@
       align-items: center;
       background: #eeeeee;
 
+      .canvas-footer-actions-left {
+        display: inline-flex;
+        justify-content: flex-start;
+        align-items: center;
+        height: 100%;
+        flex-grow: 1;
+
+        .canvas-footer-action-add-item {
+          display: inline-flex;
+          justify-content: center;
+          align-items: center;
+          height: 100%;
+          width: 56px;
+          cursor: pointer;
+          color: #9b9b9b;
+
+          &:hover {
+            background-color: white;
+            color: #9646f5;
+          }
+        }
+
+        .canvas-footer-action-item {
+          display: inline-flex;
+          justify-content: center;
+          align-items: center;
+          height: 100%;
+          cursor: pointer;
+          color: #9b9b9b;
+          padding-left: 10px;
+          padding-right: 10px;
+
+          &:hover {
+            background-color: #F5F5F5;
+            color: #9646f5;
+            border-top: 2px solid #9646f5;
+          }
+
+          &.active {
+            background-color: #F5F5F5;
+            color: #9646f5;
+            border-top: 2px solid #9646f5;
+          }
+        }
+      }
+
       .canvas-footer-actions {
         display: inline-flex;
         justify-content: center;
