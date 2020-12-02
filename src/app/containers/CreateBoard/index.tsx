@@ -1,6 +1,7 @@
 import React, { memo, useEffect, useState } from 'react';
 import { RouteChildrenProps, useLocation } from 'react-router';
 import logoImg from 'assets/icons/logo-color.svg';
+import chatIcon from 'assets/icons/chat.svg';
 import { v4 as uuidv4 } from 'uuid';
 
 import { Button, Dropdown, Input, Menu, Slider, Switch } from 'antd';
@@ -26,6 +27,7 @@ import Axios from 'axios';
 import { useSelector } from 'react-redux';
 import { selectToken } from 'app/selectors';
 import { invitationType } from 'utils/constant';
+import { Chat } from 'app/components/Chat/Chat';
 
 interface IState {
   orgId?: any;
@@ -47,6 +49,7 @@ export const CreateBoard = memo(
     >(null);
     const [showSubTools, setShowSubTools] = useState<string>('');
     const [isShowShareModal, setIsShowShareModal] = useState(false);
+    const [chatModal, setChatModal] = useState(false);
     const [permission, setPermission] = useState(PERMISSION.EDITOR);
     const [linkInvitation, setLinkInvitation] = useState(Object);
     const history = useHistory();
@@ -73,6 +76,14 @@ export const CreateBoard = memo(
       if (shareIcon) {
         shareIcon.addEventListener('click', () => {
           setIsShowShareModal(true);
+        });
+      }
+
+      const chatIcon = document.getElementById('chat-icon') as HTMLDivElement;
+
+      if (chatIcon) {
+        chatIcon.addEventListener('click', () => {
+          setChatModal(true);
         });
       }
     }, []);
@@ -148,9 +159,14 @@ export const CreateBoard = memo(
       setIsShowShareModal(false);
     };
 
+    const hideChat = () => {
+      setChatModal(false);
+    };
+
     return (
       <div className="canvas-view">
         <div className="canvas-editor">
+          <Chat open={chatModal} hide={hideChat} />
           {isShowShareModal && (
             <ShareModal
               permission={permission}
@@ -218,9 +234,13 @@ export const CreateBoard = memo(
                 </span>
               </Dropdown.Button>
               <Button
-                id="share-icon"
-                style={{ marginLeft: 30, marginRight: 16 }}
+                id="chat-icon"
+                className={`${chatModal ? 'active' : ''}`}
+                style={{ marginLeft: 16 }}
               >
+                <img src={chatIcon} />
+              </Button>
+              <Button id="share-icon" style={{ marginRight: 16 }}>
                 <ShareAltOutlined />
               </Button>
             </div>

@@ -235,6 +235,7 @@ export const CreateCanvas = memo(
                   Publish
                 </span>
               </Dropdown.Button>
+
               <Button
                 id="share-icon"
                 style={{ marginLeft: 30, marginRight: 16 }}
