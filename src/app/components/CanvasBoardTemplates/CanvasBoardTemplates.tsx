@@ -52,7 +52,9 @@ export const CanvasBoardTemplates = memo((props: Props) => {
       }).subscribe(
         board => {
           props.onClose();
-          history.push(`/canvas/${board.id}/board`, { orgId: props.orgId });
+          history.push(`/board/${board.id}?organization=${props.orgId}`, {
+            orgId: props.orgId,
+          });
           console.log(board);
         },
         () => {

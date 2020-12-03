@@ -390,7 +390,7 @@ export const Dashboard = memo((props: Props) => {
                             <Menu.Item key="0">
                               <Link
                                 to={{
-                                  pathname: `/canvas/${data.id}/canvas?organization=${orgId}`,
+                                  pathname: `/canvas/${data.id}?organization=${orgId}`,
                                   state: { orgId },
                                 }}
                               >

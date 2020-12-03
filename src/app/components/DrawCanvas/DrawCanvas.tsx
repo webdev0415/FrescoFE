@@ -1,4 +1,4 @@
-import React, { Component, memo } from 'react';
+import React, { PureComponent } from 'react';
 import {
   Ellipse,
   Group,
@@ -25,7 +25,7 @@ import {
 import socketIOClient from 'socket.io-client';
 import _ from 'lodash';
 import { defaultObjectState, fontNames } from './constants';
-import { Modal, Select } from 'antd';
+import { Select } from 'antd';
 import {
   EllipseTransform,
   LineTransform,
@@ -68,7 +68,7 @@ export enum BoardSocketEventEnum {
   DISCONNECT = 'disconnect',
 }
 
-class DrawCanvas extends Component<Props, State> {
+class DrawCanvas extends PureComponent<Props, State> {
   socket: SocketIOClient.Socket;
   state: State = {
     id: uuidv4(),
@@ -116,7 +116,7 @@ class DrawCanvas extends Component<Props, State> {
     saveCanvas.addEventListener('click', () => {
       this.save();
     });
-    this.getData();
+    this.getCanvasObject();
     this.canvasWebSockets();
   }
 
@@ -129,9 +129,7 @@ class DrawCanvas extends Component<Props, State> {
     prevState: Readonly<State>,
     snapshot?: any,
   ) {
-    if (JSON.stringify(this.props) !== JSON.stringify(prevProps)) {
-      this.handleChangeCursor();
-    }
+    this.handleChangeCursor();
   }
 
   onKeyDown = event => {
@@ -372,7 +370,7 @@ class DrawCanvas extends Component<Props, State> {
   uploadImage(): void {
     ImageUploadingService.imageUploadFromDataUrl(
       this.stageRef?.toDataURL({ pixelRatio: 1 }) as string,
-      this.props.match?.params.type as string,
+      'canvas',
     ).subscribe(image => {
       this.setState(
         {
@@ -382,11 +380,7 @@ class DrawCanvas extends Component<Props, State> {
           },
         },
         () => {
-          if (this.props.match?.params.type === 'canvas') {
-            this.saveCanvas();
-          } else if (this.props.match?.params.type === 'board') {
-            this.saveBoard();
-          }
+          this.saveCanvas();
         },
       );
     });
@@ -395,7 +389,7 @@ class DrawCanvas extends Component<Props, State> {
   updateImage(): void {
     ImageUploadingService.imageUpdateFromDataUrl(
       this.stageRef?.toDataURL({ pixelRatio: 1 }) as string,
-      this.props.match?.params.type as string,
+      'canvas',
       this.state.canvas.imageId,
     ).subscribe(image => {
       this.setState({
@@ -419,11 +413,7 @@ class DrawCanvas extends Component<Props, State> {
     setTimeout(() => {
       this.saveImage();
       if (!!this.state.canvas.imageId) {
-        if (this.props.match?.params.type === 'canvas') {
-          this.saveCanvas();
-        } else if (this.props.match?.params.type === 'board') {
-          this.saveBoard();
-        }
+        this.saveCanvas();
       }
     }, 100);
   }
@@ -437,25 +427,6 @@ class DrawCanvas extends Component<Props, State> {
         isFocused: false,
         isLocked: false,
       })),
-    );
-  }
-
-  saveBoard(): void {
-    const data = this.getJsonData();
-    const canvas = { ...this.state.canvas };
-    if (!canvas.imageId) {
-      delete canvas.imageId;
-    }
-    BoardApiService.updateById(this.props.match?.params.id as string, {
-      ...canvas,
-      data: data,
-    }).subscribe(
-      response => {
-        console.log(response);
-      },
-      error => {
-        console.error(error.response);
-      },
     );
   }
 
@@ -474,46 +445,6 @@ class DrawCanvas extends Component<Props, State> {
       },
       error => {
         console.error(error.response);
-      },
-    );
-  }
-
-  getData(): void {
-    if (this.props.match?.params.type === 'canvas') {
-      this.getCanvasObject();
-    } else if (this.props.match?.params.type === 'board') {
-      this.getBoardObject();
-    }
-  }
-
-  getBoardObject(): void {
-    const canvasTitle = document.getElementById(
-      'canvas-title',
-    ) as HTMLSpanElement;
-    BoardApiService.getById(this.props.match?.params.id as string).subscribe(
-      boardData => {
-        canvasTitle.innerText = boardData.name;
-        const canvasObjects = !!boardData.data
-          ? JSON.parse(boardData.data)
-          : [];
-        this.setState(
-          {
-            objects: canvasObjects,
-            canvas: {
-              orgId: boardData.orgId,
-              name: boardData.name,
-              categoryId: boardData.categoryId as string,
-              imageId: boardData.imageId as string,
-            },
-          },
-          () => {
-            this.save();
-          },
-        );
-      },
-
-      error => {
-        console.error(error);
       },
     );
   }
@@ -1784,4 +1715,4 @@ class DrawCanvas extends Component<Props, State> {
   }
 }
 
-export default memo(DrawCanvas);
+export default DrawCanvas;
