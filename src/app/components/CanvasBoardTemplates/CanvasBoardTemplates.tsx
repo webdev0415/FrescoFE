@@ -142,6 +142,7 @@ export const CanvasBoardTemplates = memo((props: Props) => {
                         </div>
                         <div className="card-board-action">
                           <Button
+                            block
                             type="primary"
                             icon={<PlusOutlined />}
                             loading={loadingCreateBoard === board.id}
