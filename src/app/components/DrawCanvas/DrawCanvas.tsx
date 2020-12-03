@@ -25,7 +25,7 @@ import {
 import socketIOClient from 'socket.io-client';
 import _ from 'lodash';
 import { defaultObjectState, fontNames } from './constants';
-import { Select } from 'antd';
+import { Dropdown, Menu, Select } from 'antd';
 import {
   EllipseTransform,
   LineTransform,
@@ -1269,9 +1269,35 @@ class DrawCanvas extends PureComponent<Props, State> {
               <div className="canvas-text-toolbar-item">
                 <VerticalLineIcon />
               </div>
-              <div className="canvas-text-toolbar-item action-button">
+
+              <Dropdown
+                className="canvas-text-toolbar-item action-button action-more"
+                overlay={
+                  <Menu>
+                    <Menu.Item
+                      onClick={() => {
+                        this.deleteObject(
+                          {
+                            id: shapeObject.id,
+                            data: shapeObject,
+                          },
+                          {
+                            saveHistory: true,
+                            saveCanvas: true,
+                            emitEvent: true,
+                          },
+                        );
+                      }}
+                      key="1"
+                    >
+                      Delete
+                    </Menu.Item>
+                  </Menu>
+                }
+                trigger={['click']}
+              >
                 <MoreIcon />
-              </div>
+              </Dropdown>
             </div>
           ))}
 
@@ -1321,7 +1347,6 @@ class DrawCanvas extends PureComponent<Props, State> {
                   }}
                 />
               </div>
-
               <label className="canvas-text-toolbar-item action-button">
                 <BorderStyleIcon
                   style={{
@@ -1361,9 +1386,34 @@ class DrawCanvas extends PureComponent<Props, State> {
               <div className="canvas-text-toolbar-item">
                 <VerticalLineIcon />
               </div>
-              <div className="canvas-text-toolbar-item action-button">
+              <Dropdown
+                className="canvas-text-toolbar-item action-button action-more"
+                overlay={
+                  <Menu>
+                    <Menu.Item
+                      onClick={() => {
+                        this.deleteObject(
+                          {
+                            id: shapeObject.id,
+                            data: shapeObject,
+                          },
+                          {
+                            saveHistory: true,
+                            saveCanvas: true,
+                            emitEvent: true,
+                          },
+                        );
+                      }}
+                      key="1"
+                    >
+                      Delete
+                    </Menu.Item>
+                  </Menu>
+                }
+                trigger={['click']}
+              >
                 <MoreIcon />
-              </div>
+              </Dropdown>
             </div>
           ))}
 
