@@ -44,7 +44,7 @@ export const CanvasBoardTemplates = memo((props: Props) => {
     CanvasApiService.getById(id).subscribe(canvas => {
       BoardApiService.create({
         data: canvas.data,
-        name: boardName,
+        name: boardName ? boardName : 'Untitled',
         orgId: props.orgId,
         categoryId: activeKey,
       }).subscribe(
@@ -138,7 +138,6 @@ export const CanvasBoardTemplates = memo((props: Props) => {
                         <div className="card-board-action">
                           <Button
                             type="primary"
-                            disabled={!boardName}
                             icon={<PlusOutlined />}
                             loading={loadingCreateBoard === board.id}
                             onClick={() => handleCreateBoard(board.id)}
