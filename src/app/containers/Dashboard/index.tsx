@@ -128,7 +128,7 @@ export const Dashboard = memo((props: Props) => {
       data => {
         console.log(data);
         setLoadingCreateCanvas(false);
-        history.push(`/canvas/${data.id}/canvas`, { orgId });
+        history.push(`/canvas/${data.id}?organization=${orgId}`, { orgId });
       },
       error => {
         setLoadingCreateCanvas(false);

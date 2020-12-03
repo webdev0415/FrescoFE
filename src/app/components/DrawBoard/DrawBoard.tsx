@@ -103,16 +103,6 @@ class DrawBoard extends PureComponent<Props, State> {
     this.canvasWebSockets();
   }
 
-  componentDidUpdate(
-    prevProps: Readonly<Props>,
-    prevState: Readonly<State>,
-    snapshot?: any,
-  ) {
-    if (JSON.stringify(this.props) !== JSON.stringify(prevProps)) {
-      // this.handleChangeCursor();
-    }
-  }
-
   canvasWebSockets(): void {
     this.socket.on(BoardSocketEventEnum.CONNECT, () => {
       console.log('Socket ' + BoardSocketEventEnum.CONNECT);
