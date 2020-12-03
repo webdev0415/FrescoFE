@@ -43,7 +43,6 @@ interface IState {
 export const CreateCanvas = memo(
   (props: RouteChildrenProps<{ id: string; type: string }>) => {
     const [zoom, setZoom] = useState<number>(0);
-    const [url, setUrl] = useState<URL>(new URL(window.location.href));
     const [drawingTool, setDrawingTool] = useState<
       | 'Rect'
       | 'RectRounded'
@@ -59,14 +58,11 @@ export const CreateCanvas = memo(
     const [isShowShareModal, setIsShowShareModal] = useState(false);
     const [permission, setPermission] = useState(PERMISSION.EDITOR);
     const [linkInvitation, setLinkInvitation] = useState(Object);
-    const history = useHistory();
     const location = useLocation();
     const orgId = (location.state as IState)?.orgId;
     const token = useSelector(selectToken);
     const canvasId = props?.match?.params?.id;
-    useEffect(() => {
-      setUrl(new URL(window.location.href));
-    }, [history]);
+
     useEffect(() => {
       document.addEventListener('click', event => {
         const target = event.target as Node;
@@ -183,7 +179,7 @@ export const CreateCanvas = memo(
           <div className="canvas-header">
             <div className="canvas-header-left">
               <Link
-                to={`/organization/${url.searchParams.get('organization')}`}
+                to={`/organization/${orgId}`}
                 className="canvas-header-logo"
               >
                 <img src={logoImg} alt="logo" />
