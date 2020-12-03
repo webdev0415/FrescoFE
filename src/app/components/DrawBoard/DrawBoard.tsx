@@ -61,9 +61,14 @@ class DrawBoard extends PureComponent<Props, State> {
 
   onDeleteCanvasItem = (event: KeyboardEvent) => {
     if (!!this.state.SelectedItem && event.key === 'Delete') {
-      this.setState(state => ({
-        objects: state.objects.filter(item => item.id !== state.SelectedItem),
-      }));
+      this.setState(
+        state => ({
+          objects: state.objects.filter(item => item.id !== state.SelectedItem),
+        }),
+        () => {
+          this.save();
+        },
+      );
     }
   };
 
