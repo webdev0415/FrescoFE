@@ -24,11 +24,31 @@ import { BrowserRouter } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 
 import { configureAppStore } from 'store/configureStore';
+import History from './services/History';
 
 const store = configureAppStore();
 const MOUNT_NODE = document.getElementById('root') as HTMLElement;
 
 axios.defaults.baseURL = process.env.REACT_APP_BASE_URL;
+axios.interceptors.response.use(
+  response => {
+    return response;
+  },
+  error => {
+    if (!error.response) {
+      error.response = {
+        data: 'Network error',
+        status: 500,
+      };
+    }
+    if (error.response.status === 401) {
+      localStorage.clear();
+      History.push('/auth/login');
+      throw error;
+    }
+    return Promise.reject(error);
+  },
+);
 
 interface Props {
   Component: typeof App;
