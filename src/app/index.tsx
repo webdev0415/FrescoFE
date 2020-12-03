@@ -97,8 +97,8 @@ function AppComponent(props) {
           path="/create-board/:orgId/:id"
           component={CreateBoard}
         />
-        <PrivateRoute exact path="/canvas/:id/board" component={CreateBoard} />
-        <PrivateRoute exact path="/canvas/:id/:type" component={CreateCanvas} />
+        <PrivateRoute exact path="/board/:id" component={CreateBoard} />
+        <PrivateRoute exact path="/canvas/:id" component={CreateCanvas} />
         <Route exact path="/invite/:token" component={VerifyInvitation} />
         <Route
           exact
