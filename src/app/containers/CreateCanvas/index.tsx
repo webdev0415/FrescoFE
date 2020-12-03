@@ -96,18 +96,24 @@ export const CreateCanvas = memo(
         try {
           res = await Axios.request({
             method: 'GET',
-            url:
-              process.env.REACT_APP_BASE_URL +
-              `invitation-type/${canvasId}/canvas-link`,
+            url: process.env.REACT_APP_BASE_URL + 'invitation-type',
             headers: {
               Authorization: `Bearer ${token}`,
+            },
+            params: {
+              typeId: canvasId,
+              orgId: orgId,
+              type: invitationType.CANVAS,
             },
           });
         } catch (e) {
           console.log(e);
         }
 
-        if (!res) {
+        if (res?.data?.length) {
+          setLinkInvitation(res.data[0]);
+          setPermission(res?.data[0]?.permission);
+        } else {
           const resCreated = await Axios.request({
             method: 'POST',
             url: process.env.REACT_APP_BASE_URL + 'invitation-type',
@@ -125,9 +131,6 @@ export const CreateCanvas = memo(
           console.log('resCreated', resCreated);
           setLinkInvitation(resCreated?.data);
           setPermission(resCreated?.data?.permission);
-        } else {
-          setLinkInvitation(res.data);
-          setPermission(res?.data?.permission);
         }
       } catch (error) {
         console.error(error.response);

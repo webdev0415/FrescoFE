@@ -28,7 +28,9 @@ interface State {
 }
 
 export const CanvasBoardTemplates = memo((props: Props) => {
-  const [boardName, setBoardName] = useState('');
+  const defaultBoardName = `Untitled Board ${new Date().toDateString()} ${new Date().toLocaleTimeString()}`;
+
+  const [boardName, setBoardName] = useState(defaultBoardName);
   const [loadingCreateBoard, setLoadingCreateBoard] = useState('');
   const [activeKey, setActiveKey] = useState('');
   const [state, setState] = useState<State>({
@@ -94,6 +96,7 @@ export const CanvasBoardTemplates = memo((props: Props) => {
       <div className="form-view">
         <Input
           placeholder="Board Name"
+          value={boardName}
           onChange={event => setBoardName(event.target.value)}
         />
         <Button type="default" icon={<CloseOutlined />} onClick={props.onClose}>
@@ -138,7 +141,6 @@ export const CanvasBoardTemplates = memo((props: Props) => {
                         <div className="card-board-action">
                           <Button
                             type="primary"
-                            disabled={!boardName}
                             icon={<PlusOutlined />}
                             loading={loadingCreateBoard === board.id}
                             onClick={() => handleCreateBoard(board.id)}
