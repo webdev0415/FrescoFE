@@ -12,6 +12,7 @@ import {
   CanvasResponseInterface,
 } from '../../../services/APIService/interfaces';
 import { useHistory } from 'react-router-dom';
+import moment from 'moment';
 
 const { TabPane } = Tabs;
 
@@ -28,7 +29,9 @@ interface State {
 }
 
 export const CanvasBoardTemplates = memo((props: Props) => {
-  const defaultBoardName = `Untitled Board ${new Date().toDateString()} ${new Date().toLocaleTimeString()}`;
+  const defaultBoardName = `Untitled Board, ${moment().format(
+    'DD/mm/yy, hh:mm A',
+  )}`;
 
   const [boardName, setBoardName] = useState(defaultBoardName);
   const [loadingCreateBoard, setLoadingCreateBoard] = useState('');
