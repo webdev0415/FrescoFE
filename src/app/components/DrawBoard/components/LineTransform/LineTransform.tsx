@@ -19,12 +19,14 @@ function LineTransform(props: TransformShapeProps): JSX.Element {
           return points;
         })()}
         stroke="#000000"
-        strokeWidth={2}
+        strokeWidth={data.id === props.selected ? 5 : 2}
         lineCap="round"
         lineJoin="round"
         id={data.id}
         draggable={false}
         rotation={data.rotation}
+        onMouseEnter={() => props.onMouseEnter(data.id)}
+        onMouseLeave={() => props.onMouseEnter(data.id)}
       />
     </React.Fragment>
   );

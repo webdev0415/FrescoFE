@@ -96,6 +96,8 @@ export interface State {
   id: string;
   objects: ObjectInterface[];
   data: BoardNotesAreaInterface[];
+  hoverItem: string;
+  SelectedItem: string;
   canvas: {
     name: string;
     orgId: string;
@@ -111,6 +113,9 @@ export interface FontInterface {
 
 export interface TransformShapeProps {
   data: ObjectInterface;
+  onMouseEnter(id: string);
+  onMouseLeave(id: string);
+  selected: string;
 }
 
 export interface BoardEventInterface {

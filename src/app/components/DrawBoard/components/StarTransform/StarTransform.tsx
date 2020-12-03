@@ -1,5 +1,5 @@
 import React from 'react';
-import { Star } from 'react-konva';
+import { Rect, Star } from 'react-konva';
 import { TransformShapeProps } from '../../types';
 
 function StarTransform(props: TransformShapeProps): JSX.Element {
@@ -16,6 +16,9 @@ function StarTransform(props: TransformShapeProps): JSX.Element {
         draggable={false}
         rotation={data.rotation}
         {...data.shapeConfig}
+        onMouseEnter={() => props.onMouseEnter(data.id)}
+        onMouseLeave={() => props.onMouseEnter(data.id)}
+        stroke={data.id === props.selected ? '#000000' : undefined}
       />
     </React.Fragment>
   );

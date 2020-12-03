@@ -33,6 +33,8 @@ class DrawBoard extends PureComponent<Props, State> {
     id: uuidV4(),
     objects: [],
     data: [],
+    hoverItem: '',
+    SelectedItem: '',
     canvas: {
       name: '',
       orgId: '',
@@ -44,7 +46,26 @@ class DrawBoard extends PureComponent<Props, State> {
 
   componentDidMount() {
     this.getData();
+    document.addEventListener('keydown', this.onDeleteCanvasItem);
+    document.addEventListener('click', this.onSelectCanvasItem);
   }
+
+  componentWillUnmount() {
+    document.removeEventListener('keydown', this.onDeleteCanvasItem);
+    document.removeEventListener('click', this.onSelectCanvasItem);
+  }
+
+  onSelectCanvasItem = (event: MouseEvent) => {
+    this.setState(state => ({ SelectedItem: state.hoverItem }));
+  };
+
+  onDeleteCanvasItem = (event: KeyboardEvent) => {
+    if (!!this.state.SelectedItem && event.key === 'Delete') {
+      this.setState(state => ({
+        objects: state.objects.filter(item => item.id !== state.SelectedItem),
+      }));
+    }
+  };
 
   uploadImage(): void {
     ImageUploadingService.imageUploadFromDataUrl(
@@ -195,6 +216,16 @@ class DrawBoard extends PureComponent<Props, State> {
     );
   };
 
+  onMouseEnterCanvasObject = id => {
+    this.setState({ hoverItem: id });
+  };
+
+  onMouseLeaveCanvasObject = id => {
+    if (this.state.hoverItem === id) {
+      this.setState({ hoverItem: id });
+    }
+  };
+
   render() {
     return (
       <div className={this.props.className}>
@@ -217,34 +248,70 @@ class DrawBoard extends PureComponent<Props, State> {
                 shapeObject.type === 'RectRounded'
               ) {
                 return (
-                  <RectTransform key={shapeObject.id} data={shapeObject} />
+                  <RectTransform
+                    key={shapeObject.id}
+                    data={shapeObject}
+                    onMouseEnter={this.onMouseEnterCanvasObject}
+                    onMouseLeave={this.onMouseLeaveCanvasObject}
+                    selected={this.state.SelectedItem}
+                  />
                 );
               } else if (shapeObject.type === 'Ellipse') {
                 return (
                   <>
-                    <EllipseTransform key={shapeObject.id} data={shapeObject} />
+                    <EllipseTransform
+                      key={shapeObject.id}
+                      data={shapeObject}
+                      onMouseEnter={this.onMouseEnterCanvasObject}
+                      onMouseLeave={this.onMouseLeaveCanvasObject}
+                      selected={this.state.SelectedItem}
+                    />
                   </>
                 );
               } else if (shapeObject.type === 'Star') {
                 return (
                   <>
-                    <StarTransform key={shapeObject.id} data={shapeObject} />
+                    <StarTransform
+                      key={shapeObject.id}
+                      data={shapeObject}
+                      onMouseEnter={this.onMouseEnterCanvasObject}
+                      onMouseLeave={this.onMouseLeaveCanvasObject}
+                      selected={this.state.SelectedItem}
+                    />
                   </>
                 );
               } else if (shapeObject.type === 'Triangle') {
                 return (
-                  <TriangleTransform key={shapeObject.id} data={shapeObject} />
+                  <TriangleTransform
+                    key={shapeObject.id}
+                    data={shapeObject}
+                    onMouseEnter={this.onMouseEnterCanvasObject}
+                    onMouseLeave={this.onMouseLeaveCanvasObject}
+                    selected={this.state.SelectedItem}
+                  />
                 );
               } else if (
                 shapeObject.type === 'Text' ||
                 shapeObject.type === 'Sticky'
               ) {
                 return (
-                  <StickyTransform key={shapeObject.id} data={shapeObject} />
+                  <StickyTransform
+                    key={shapeObject.id}
+                    data={shapeObject}
+                    onMouseEnter={this.onMouseEnterCanvasObject}
+                    onMouseLeave={this.onMouseLeaveCanvasObject}
+                    selected={this.state.SelectedItem}
+                  />
                 );
               } else if (shapeObject.type === 'Line') {
                 return (
-                  <LineTransform key={shapeObject.id} data={shapeObject} />
+                  <LineTransform
+                    key={shapeObject.id}
+                    data={shapeObject}
+                    onMouseEnter={this.onMouseEnterCanvasObject}
+                    onMouseLeave={this.onMouseLeaveCanvasObject}
+                    selected={this.state.SelectedItem}
+                  />
                 );
               } else {
                 return <></>;

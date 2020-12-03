@@ -373,23 +373,28 @@ class DrawCanvas extends Component<Props, State> {
     ImageUploadingService.imageUploadFromDataUrl(
       this.stageRef?.toDataURL({ pixelRatio: 1 }) as string,
       this.props.match?.params.type as string,
-    ).subscribe(image => {
-      this.setState(
-        {
-          canvas: {
-            ...this.state.canvas,
-            imageId: image.id,
+    ).subscribe(
+      image => {
+        this.setState(
+          {
+            canvas: {
+              ...this.state.canvas,
+              imageId: image.id,
+            },
           },
-        },
-        () => {
-          if (this.props.match?.params.type === 'canvas') {
-            this.saveCanvas();
-          } else if (this.props.match?.params.type === 'board') {
-            this.saveBoard();
-          }
-        },
-      );
-    });
+          () => {
+            if (this.props.match?.params.type === 'canvas') {
+              this.saveCanvas();
+            } else if (this.props.match?.params.type === 'board') {
+              this.saveBoard();
+            }
+          },
+        );
+      },
+      () => {
+        this.saveCanvas();
+      },
+    );
   }
 
   updateImage(): void {

@@ -89,7 +89,7 @@ export const BoardList = (props: BoardListProps) => {
                         <Menu.Item key="0">
                           <Link
                             to={{
-                              pathname: `/canvas/${item.id}/board?organization=${props.orgId}`,
+                              pathname: `/board/${item.id}?organization=${props.orgId}`,
                               state: { orgId: props.orgId },
                             }}
                           >
@@ -97,7 +97,7 @@ export const BoardList = (props: BoardListProps) => {
                           </Link>
                         </Menu.Item>
                         <Menu.Item key="1">
-                          <a href="http://www.taobao.com/">Action</a>
+                          <a href="#">Action</a>
                         </Menu.Item>
                         <Menu.Divider />
                         <Menu.Item

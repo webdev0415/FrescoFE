@@ -15,6 +15,8 @@ function StickyTransform(props: TransformShapeProps): JSX.Element {
         height={data.rect?.height as number}
         width={data.rect?.width as number}
         rotation={data.rotation}
+        onMouseEnter={() => props.onMouseEnter(data.id)}
+        onMouseLeave={() => props.onMouseEnter(data.id)}
       >
         <Rect
           id={data.id + ':Rect'}
@@ -24,7 +26,7 @@ function StickyTransform(props: TransformShapeProps): JSX.Element {
           width={data.rect?.width as number}
           fill={data.sticky?.backgroundColor}
           opacity={0.8}
-          stroke={data.sticky?.stroke}
+          stroke={data.id === props.selected ? '#000000' : data.sticky?.stroke}
         />
 
         <Text

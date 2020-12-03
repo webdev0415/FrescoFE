@@ -1,4 +1,10 @@
-import React, { memo, useEffect, useReducer, useState } from 'react';
+import React, {
+  memo,
+  useCallback,
+  useEffect,
+  useReducer,
+  useState,
+} from 'react';
 import { Circle, Group, Rect, Text, Image } from 'react-konva';
 import addNotesImage from 'assets/icons/add-notes.svg';
 import addNotesPlusImage from 'assets/icons/toolbar-plus-violet.svg';
@@ -15,6 +21,8 @@ type Reducer = (
 
 const NotesArea = (props: BoardNotesAreaPropsInterface) => {
   const [hovered, setHovered] = useState(false);
+  const [hoveredItem, setHoveredItem] = useState('');
+  const [selected, setSelected] = useState<string>('');
   const [notes, notesDispatch] = useReducer<Reducer>(reducer, props.data);
   const [addNotesIcon, setAddNotesIcon] = useState<any>(null);
   const [addNotesPlusIcon, setAddNotesPlusIcon] = useState<any>(null);
@@ -24,6 +32,39 @@ const NotesArea = (props: BoardNotesAreaPropsInterface) => {
   const onMouseLeave = e => {
     setHovered(false);
   };
+
+  const onDelete = (event: KeyboardEvent) => {
+    if (!!selected && event.key === 'Delete') {
+      notesDispatch({
+        type: 'delete',
+        id: selected,
+        props,
+      });
+    }
+  };
+  const onSelectItem = useCallback(
+    (event: MouseEvent) => {
+      setSelected(hoveredItem);
+    },
+    [hoveredItem],
+  );
+
+  useEffect(() => {
+    const KeyEvent = () => {
+      if (!!selected) {
+        document.addEventListener('keydown', onDelete);
+      } else {
+        document.removeEventListener('keydown', onDelete);
+      }
+    };
+
+    document.addEventListener('click', onSelectItem);
+    KeyEvent();
+    return () => {
+      KeyEvent();
+      document.removeEventListener('click', onSelectItem);
+    };
+  });
 
   useEffect(() => {
     const img = new window.Image();
@@ -138,6 +179,12 @@ const NotesArea = (props: BoardNotesAreaPropsInterface) => {
           y={item.y}
           height={item.height}
           width={item.width}
+          onMouseEnter={() => {
+            setHoveredItem(item.id);
+          }}
+          onMouseLeave={() => {
+            setHoveredItem('');
+          }}
         >
           <Rect
             x={0}
@@ -147,6 +194,7 @@ const NotesArea = (props: BoardNotesAreaPropsInterface) => {
             fill="#FEF8BA"
             opacity={0.8}
             cornerRadius={4}
+            stroke={item.id === selected ? '#000000' : undefined}
           />
 
           <Text

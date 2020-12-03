@@ -1,5 +1,5 @@
 import React from 'react';
-import { Shape } from 'react-konva';
+import { Rect, Shape } from 'react-konva';
 import { TransformShapeProps } from '../../types';
 
 function TriangleTransform(props: TransformShapeProps): JSX.Element {
@@ -30,6 +30,9 @@ function TriangleTransform(props: TransformShapeProps): JSX.Element {
         {...data.shapeConfig}
         rotation={data.rotation}
         opacity={0.8}
+        onMouseEnter={() => props.onMouseEnter(data.id)}
+        onMouseLeave={() => props.onMouseEnter(data.id)}
+        stroke={data.id === props.selected ? '#000000' : undefined}
       />
     </React.Fragment>
   );

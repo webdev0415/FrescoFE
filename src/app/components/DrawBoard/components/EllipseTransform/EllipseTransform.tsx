@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { Ellipse } from 'react-konva';
+import { Ellipse, Rect } from 'react-konva';
 import Konva from 'konva';
 import { TransformShapeProps } from '../../types';
 
@@ -18,6 +18,9 @@ function EllipseTransform(props: TransformShapeProps): JSX.Element {
         draggable={false}
         rotation={data.rotation}
         {...data.shapeConfig}
+        onMouseEnter={() => props.onMouseEnter(data.id)}
+        onMouseLeave={() => props.onMouseEnter(data.id)}
+        stroke={data.id === props.selected ? '#000000' : undefined}
       />
     </React.Fragment>
   );
