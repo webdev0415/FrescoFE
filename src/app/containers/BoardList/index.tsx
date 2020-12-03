@@ -116,7 +116,14 @@ export const BoardList = (props: BoardListProps) => {
                     </div>
                   </Dropdown>
                 </div>
-                <div className="card-title">{item.name}</div>
+                <div className="card-title">
+                  {item.name}
+                  {item && item.name && item.name.length >= 34 ? (
+                    <span className="tooltip">{item.name}</span>
+                  ) : (
+                    ''
+                  )}
+                </div>
                 <div className="card-timestamp">
                   {item && item.createdAt
                     ? moment(item.createdAt).format('LLL')
