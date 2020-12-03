@@ -36,11 +36,13 @@ class API {
             data: 'Network error',
             status: 500,
           };
-        }
-        if (error.response.status === 401) {
+          History.push('/500');
+        } else if (error.response.status === 401) {
           Auth.clearToken();
           History.push('/login/admin');
           throw error;
+        } else {
+          History.push('/404');
         }
         return Promise.reject(error);
       },

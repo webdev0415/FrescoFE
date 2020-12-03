@@ -46,13 +46,13 @@ export const CanvasBoardTemplates = memo((props: Props) => {
     CanvasApiService.getById(id).subscribe(canvas => {
       BoardApiService.create({
         data: canvas.data,
-        name: boardName,
+        name: boardName ? boardName : 'Untitled',
         orgId: props.orgId,
         categoryId: activeKey,
       }).subscribe(
         board => {
           props.onClose();
-          history.push(`/canvas/${board.id}/board`, { orgId: props.orgId });
+          history.push(`/board/${board.id}`, { orgId: props.orgId });
           console.log(board);
         },
         () => {

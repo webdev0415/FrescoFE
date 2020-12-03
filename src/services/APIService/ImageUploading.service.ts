@@ -31,17 +31,12 @@ export class ImageUploadingService {
     });
   }
 
-  static imageUpdateFromDataUrl(
-    dataURI: string,
+  static upload(
+    image: File,
     type: string,
     id: string,
   ): Observable<ImageUploadResponseInterface> {
     return new Observable<ImageUploadResponseInterface>(observer => {
-      const imageFile = ImageUploadingService.dataURItoBlob(dataURI);
-      const image = new File([imageFile], 'image.png', {
-        lastModified: new Date().getTime(),
-        type: imageFile.type,
-      });
       const formData = new FormData();
       formData.append('file', image);
       http
@@ -57,6 +52,37 @@ export class ImageUploadingService {
         .catch(error => {
           observer.error(error.response);
         });
+    });
+  }
+
+  static imageUploadFromFile(
+    image: File,
+    type: string,
+    id: string,
+  ): Observable<ImageUploadResponseInterface> {
+    return ImageUploadingService.upload(image, type, id);
+  }
+
+  static imageUpdateFromDataUrl(
+    dataURI: string,
+    type: string,
+    id: string,
+  ): Observable<ImageUploadResponseInterface> {
+    return new Observable<ImageUploadResponseInterface>(observer => {
+      const imageFile = ImageUploadingService.dataURItoBlob(dataURI);
+      const image = new File([imageFile], 'image.png', {
+        lastModified: new Date().getTime(),
+        type: imageFile.type,
+      });
+      ImageUploadingService.upload(image, type, id).subscribe(
+        response => {
+          observer.next(response);
+          observer.complete();
+        },
+        error => {
+          observer.error(error.response);
+        },
+      );
     });
   }
 

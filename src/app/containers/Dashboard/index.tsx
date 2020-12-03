@@ -398,7 +398,7 @@ export const Dashboard = memo((props: Props) => {
                               </Link>
                             </Menu.Item>
                             <Menu.Item key="1">
-                              <a href="http://www.taobao.com/">Action</a>
+                              <a href="#">Action</a>
                             </Menu.Item>
                             <Menu.Divider />
                             <Menu.Item

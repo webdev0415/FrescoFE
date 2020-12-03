@@ -15,6 +15,7 @@ import * as serviceWorker from 'serviceWorker';
 import axios from 'axios';
 import 'sanitize.css/sanitize.css';
 import './index.less';
+import './index.scss';
 
 // Import root app
 import { App } from 'app';

@@ -1,6 +1,5 @@
 import Konva from 'konva';
 import { RouteChildrenProps } from 'react-router';
-import { CanvasResponseInterface } from '../../../services/APIService/interfaces';
 
 export type ShapeObjectType =
   | 'Rect'
@@ -90,23 +89,21 @@ export interface ObjectInterface extends PointsInterface {
 export interface Props
   extends RouteChildrenProps<{ id: string; type: string }> {
   className: string;
-  drawingTool: ShapeObjectType;
   zoomLevel: number;
 }
 
 export interface State {
   id: string;
   objects: ObjectInterface[];
-  points: ObjectInterface;
-  prevHistory: ObjectInterface[];
-  nextHistory: ObjectInterface[];
+  data: BoardNotesAreaInterface[];
+  hoverItem: string;
+  SelectedItem: string;
   canvas: {
     name: string;
     orgId: string;
     categoryId: string;
     imageId: string;
   };
-  selectedStickyData: ObjectInterface | null;
 }
 
 export interface FontInterface {
@@ -116,11 +113,9 @@ export interface FontInterface {
 
 export interface TransformShapeProps {
   data: ObjectInterface;
-  onChange(data: ObjectInterface): void;
-  onChanging(data: ObjectInterface): void;
-  onChangeStart(data: ObjectInterface): void;
-  onSelect(event: Konva.KonvaEventObject<MouseEvent>): void;
-  draggable?: boolean;
+  onMouseEnter(id: string);
+  onMouseLeave(id: string);
+  selected: string;
 }
 
 export interface BoardEventInterface {
@@ -131,4 +126,64 @@ export interface BoardEventInterface {
 export interface ObjectSocketInterface {
   id: string;
   data: ObjectInterface;
+}
+
+export interface BoardNotesIdentityCircle extends CanvasPoints {
+  radius: number;
+  fill: string;
+}
+export interface BoardObjectInterface extends CanvasPoints, ShapeProperty {
+  id: string;
+  userId: string;
+  fontSize: number;
+  text: string;
+  circle: BoardNotesIdentityCircle;
+}
+export interface BoardNotesAreaInterface extends CanvasPoints, ShapeProperty {
+  id: string;
+  data: BoardObjectInterface[];
+}
+
+export interface BoardNotesAreaPropsInterface extends BoardNotesAreaInterface {
+  onChange(id: string, data: BoardObjectInterface[]);
+}
+
+export interface BoardNotesIdentityCircle extends CanvasPoints {
+  radius: number;
+  fill: string;
+}
+export interface BoardObjectInterface extends CanvasPoints, ShapeProperty {
+  id: string;
+  userId: string;
+  fontSize: number;
+  text: string;
+  circle: BoardNotesIdentityCircle;
+}
+export interface BoardNotesAreaInterface extends CanvasPoints, ShapeProperty {
+  id: string;
+  data: BoardObjectInterface[];
+}
+
+export interface BoardNotesAreaPropsInterface extends BoardNotesAreaInterface {
+  onChange(id: string, data: BoardObjectInterface[]);
+}
+
+export interface BoardNotesIdentityCircle extends CanvasPoints {
+  radius: number;
+  fill: string;
+}
+export interface BoardObjectInterface extends CanvasPoints, ShapeProperty {
+  id: string;
+  userId: string;
+  fontSize: number;
+  text: string;
+  circle: BoardNotesIdentityCircle;
+}
+export interface BoardNotesAreaInterface extends CanvasPoints, ShapeProperty {
+  id: string;
+  data: BoardObjectInterface[];
+}
+
+export interface BoardNotesAreaPropsInterface extends BoardNotesAreaInterface {
+  onChange(id: string, data: BoardObjectInterface[]);
 }

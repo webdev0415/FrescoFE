@@ -1,0 +1,268 @@
+@import 'variables';
+
+.share-modal-container {
+  position: fixed;
+  top: 40px;
+  right: 0;
+  bottom: 40px;
+  width: 350px;
+  background-color: white;
+  padding: 20px;
+  z-index: 1000;
+
+  @media only screen and (max-width: 600px) {
+    width: 100%;
+    top: 0;
+    bottom: 0;
+  }
+
+  .share-modal-header {
+    display: inline-flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    height: 40px;
+
+    .share-modal-title {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      height: 40px;
+      gap: 10px;
+    }
+
+    .share-modal-close-icon {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      height: 40px;
+      width: 40px;
+
+      svg {
+        cursor: pointer;
+        &:hover {
+          color: $primary-color;
+        }
+      }
+    }
+  }
+
+  .share-modal-content {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+
+    .share-modal-tabs {
+      position: relative;
+      height: 40px;
+      width: 100%;
+      flex-shrink: 0;
+      display: inline-flex;
+      justify-content: flex-start;
+      align-items: center;
+
+      &:after {
+        position: absolute;
+        content: '';
+        width: 100%;
+        height: 2px;
+        background-color: #c4c4c4;
+        bottom: 0;
+        @media only screen and (max-width: 600px) {
+          height: 1px;
+        }
+      }
+
+      .share-modal-tab {
+        position: relative;
+        height: 100%;
+        padding-left: 10px;
+        padding-right: 10px;
+        background-color: white;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+
+        &:hover {
+          &:after {
+            position: absolute;
+            content: '';
+            width: 100%;
+            height: 2px;
+            background-color: $primary-color;
+            bottom: 0;
+            z-index: 1000;
+            @media only screen and (max-width: 600px) {
+              height: 1px;
+            }
+          }
+        }
+
+        &.active {
+          &:after {
+            position: absolute;
+            content: '';
+            width: 100%;
+            height: 2px;
+            background-color: $primary-color;
+            bottom: 0;
+            z-index: 1000;
+            @media only screen and (max-width: 600px) {
+              height: 1px;
+            }
+          }
+        }
+      }
+    }
+
+    .share-modal-tab-content {
+      width: 100%;
+      flex-grow: 1;
+
+      .input-group {
+        display: inline-flex;
+        justify-content: flex-start;
+        align-items: center;
+        width: 100%;
+        height: 40px;
+        gap: 10px;
+
+        &.my-1 {
+          margin-top: 16px;
+          margin-bottom: 16px;
+        }
+
+        input {
+          height: 100%;
+          flex-grow: 1;
+          border: 0;
+          background-color: $input-background-color;
+        }
+
+        .profile-section {
+          display: inline-flex;
+          justify-content: flex-start;
+          align-items: center;
+          flex-grow: 1;
+          gap: 10px;
+          .profile-image {
+            img {
+              width: 24px;
+              height: 24px;
+              border-radius: 50%;
+            }
+
+            .oval {
+              width: 24px;
+              height: 24px;
+              border-radius: 50%;
+              display: inline-flex;
+              justify-content: center;
+              align-items: center;
+              font-size: 12px;
+              color: white;
+              background-color: #d8d8d8;
+            }
+          }
+          .profile-content {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: flex-start;
+            .profile-title {
+              font-size: 14px;
+              font-weight: 600;
+            }
+            .profile-email {
+              font-size: 12px;
+            }
+          }
+        }
+
+        .btn {
+          width: 50px;
+          height: 100%;
+        }
+      }
+
+      .input-group-action {
+        width: 100%;
+        height: 40px;
+        position: relative;
+
+        &.my-1 {
+          margin-top: 16px;
+          margin-bottom: 16px;
+        }
+
+        input {
+          height: 100%;
+          width: 100%;
+          border: 0;
+          background-color: $input-background-color;
+        }
+
+        .btn {
+          position: absolute;
+          right: 0;
+          top: 0;
+          width: 40px;
+          height: 100%;
+          display: inline-flex;
+          justify-content: center;
+          align-items: center;
+          z-index: 1000;
+          color: #9B9B9B;
+          cursor: pointer;
+          background-color: $input-background-color;
+          &:hover {
+            color: $primary-color;
+          }
+
+        }
+      }
+
+      .message-input {
+        width: 100%;
+        height: 100px;
+        background-color: $input-background-color;
+        border: 0;
+        margin-top: 16px;
+        resize: none;
+      }
+
+      .inline-dropdown {
+        display: inline-flex;
+        justify-content: flex-start;
+        align-items: center;
+        width: 100%;
+        gap: 10px;
+      }
+
+      .share-modal-tab-content-footer {
+        position: absolute;
+        bottom: 20px;
+        width: 100%;
+
+        .share-modal-footer-actions {
+          display: inline-flex;
+          justify-content: flex-end;
+          align-items: center;
+          width: calc(100% - 40px);
+          .action-button {
+            height: 40px;
+            background-color: $primary-color;
+            color: white;
+            border-radius: 4px;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 80px;
+          }
+        }
+      }
+    }
+  }
+}
