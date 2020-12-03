@@ -38,7 +38,7 @@
           justify-content: center;
           align-items: center;
           border: 1px solid #f0f2f5;
-          background-color: rgba(0,0,0,0.1);
+          background-color: rgba(0, 0, 0, 0.1);
         }
       }
 
@@ -113,6 +113,23 @@
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
+
+          .tooltip {
+            display: none;
+            font-family: Palanquin sans-serif;
+            font-size: 13px;
+            line-height: 20px;
+            font-weight: bold;
+            margin-left: 10px; /* moves the tooltip to the right */
+            margin-top: -50px; /* moves it down */
+            position: fixed;
+            z-index: 1000;
+            background-color: antiquewhite
+          }
+        }
+
+        .card-title:hover .tooltip {
+          display: block;
         }
 
         .card-timestamp {
