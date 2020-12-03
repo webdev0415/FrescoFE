@@ -25,7 +25,7 @@ import {
 import socketIOClient from 'socket.io-client';
 import _ from 'lodash';
 import { defaultObjectState, fontNames } from './constants';
-import { Modal, Select } from 'antd';
+import { Dropdown, Menu, Modal, Select } from 'antd';
 import {
   EllipseTransform,
   LineTransform,
@@ -1344,7 +1344,29 @@ class DrawCanvas extends Component<Props, State> {
                 <VerticalLineIcon />
               </div>
               <div className="canvas-text-toolbar-item action-button">
-                <MoreIcon />
+                <Dropdown
+                  overlay={
+                    <Menu>
+                      <Menu.Item
+                        onClick={() => {
+                          this.deleteObject(
+                            { id: shapeObject.id, data: shapeObject },
+                            {
+                              emitEvent: true,
+                              saveCanvas: true,
+                              saveHistory: true,
+                            },
+                          );
+                        }}
+                      >
+                        <div>Delete</div>
+                      </Menu.Item>
+                    </Menu>
+                  }
+                  placement="bottomLeft"
+                >
+                  <MoreIcon />
+                </Dropdown>
               </div>
             </div>
           ))}
@@ -1436,7 +1458,29 @@ class DrawCanvas extends Component<Props, State> {
                 <VerticalLineIcon />
               </div>
               <div className="canvas-text-toolbar-item action-button">
-                <MoreIcon />
+                <Dropdown
+                  overlay={
+                    <Menu>
+                      <Menu.Item
+                        onClick={() => {
+                          this.deleteObject(
+                            { id: shapeObject.id, data: shapeObject },
+                            {
+                              emitEvent: true,
+                              saveCanvas: true,
+                              saveHistory: true,
+                            },
+                          );
+                        }}
+                      >
+                        <div>Delete</div>
+                      </Menu.Item>
+                    </Menu>
+                  }
+                  placement="bottomLeft"
+                >
+                  <MoreIcon />
+                </Dropdown>
               </div>
             </div>
           ))}
