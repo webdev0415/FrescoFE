@@ -26,6 +26,34 @@
 
       &.card-board-select {
         height: 229px;
+
+        &:not(:hover) {
+          .card-footer {
+            &.card-board-footer {
+              .card-board-action {
+                display: none;
+              }
+
+              .card-description {
+                display: none;
+              }
+            }
+          }
+        }
+
+        .card-footer {
+          &.card-board-footer {
+            position: absolute;
+            height: auto;
+            bottom: 0;
+
+            .card-board-action {
+              display: inline-flex;
+              justify-content: flex-end;
+              align-items: center;
+            }
+          }
+        }
       }
 
       .ant-skeleton-element {
@@ -62,27 +90,7 @@
         padding: 10px;
         gap: 5px;
 
-        &.card-board-footer {
-          position: absolute;
-          height: auto;
-          bottom: 0;
 
-          &:not(:hover) {
-            .card-board-action {
-              display: none;
-            }
-
-            .card-description {
-              display: none;
-            }
-          }
-
-          .card-board-action {
-            display: inline-flex;
-            justify-content: flex-end;
-            align-items: center;
-          }
-        }
 
         .card-action {
           position: absolute;
