@@ -26,7 +26,7 @@ function LineTransform(props: TransformShapeProps): JSX.Element {
         draggable={false}
         rotation={data.rotation}
         onMouseEnter={() => props.onMouseEnter(data.id)}
-        onMouseLeave={() => props.onMouseEnter(data.id)}
+        onMouseLeave={() => props.onMouseLeave(data.id)}
       />
     </React.Fragment>
   );

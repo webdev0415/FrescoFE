@@ -16,7 +16,7 @@ function StickyTransform(props: TransformShapeProps): JSX.Element {
         width={data.rect?.width as number}
         rotation={data.rotation}
         onMouseEnter={() => props.onMouseEnter(data.id)}
-        onMouseLeave={() => props.onMouseEnter(data.id)}
+        onMouseLeave={() => props.onMouseLeave(data.id)}
       >
         <Rect
           id={data.id + ':Rect'}

@@ -226,9 +226,7 @@ class DrawBoard extends PureComponent<Props, State> {
   };
 
   onMouseLeaveCanvasObject = id => {
-    if (this.state.hoverItem === id) {
-      this.setState({ hoverItem: id });
-    }
+    this.setState({ hoverItem: '' });
   };
 
   render() {

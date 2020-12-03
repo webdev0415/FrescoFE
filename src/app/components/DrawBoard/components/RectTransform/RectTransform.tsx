@@ -18,7 +18,7 @@ function RectTransform(props: TransformShapeProps): JSX.Element {
         rotation={data.rotation}
         {...data.shapeConfig}
         onMouseEnter={() => props.onMouseEnter(data.id)}
-        onMouseLeave={() => props.onMouseEnter(data.id)}
+        onMouseLeave={() => props.onMouseLeave(data.id)}
         stroke={data.id === props.selected ? '#000000' : undefined}
       />
     </React.Fragment>
