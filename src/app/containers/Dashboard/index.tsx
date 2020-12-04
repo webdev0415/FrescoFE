@@ -371,17 +371,24 @@ export const Dashboard = memo((props: Props) => {
               )}
               {canvasList.map((data, index) => (
                 <div className="cards-board" key={index}>
-                  <img
-                    alt="example"
-                    style={{
-                      border: '1px solid #f0f2f5',
-                      backgroundColor: 'white',
+                  <Link
+                    to={{
+                      pathname: `/canvas/${data.id}/canvas?organization=${orgId}`,
+                      state: { orgId },
                     }}
-                    src={
-                      data.path ||
-                      'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png'
-                    }
-                  />
+                  >
+                    <img
+                      alt="example"
+                      style={{
+                        border: '1px solid #f0f2f5',
+                        backgroundColor: 'white',
+                      }}
+                      src={
+                        data.path ||
+                        'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png'
+                      }
+                    />
+                  </Link>
 
                   <div className="card-footer">
                     <div className="card-action">
