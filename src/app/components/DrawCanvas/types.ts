@@ -102,6 +102,7 @@ export interface Props extends RouteChildrenProps<{ id: string }> {
   className: string;
   drawingTool: ShapeObjectType;
   zoomLevel: number;
+  title: string | null;
 }
 
 export interface State {

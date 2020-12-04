@@ -432,7 +432,10 @@ class DrawCanvas extends PureComponent<Props, State> {
 
   saveCanvas(): void {
     const data = this.getJsonData();
-    const canvas = { ...this.state.canvas };
+    const canvas = {
+      ...this.state.canvas,
+      name: this.props.title || this.state.canvas.name,
+    };
     if (!canvas.imageId) {
       delete canvas.imageId;
     }

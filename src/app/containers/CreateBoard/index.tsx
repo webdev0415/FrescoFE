@@ -157,6 +157,7 @@ export const CreateBoard = memo((props: RouteChildrenProps<{ id: string }>) => {
       const canvasTitleInput = document.getElementById(
         'canvas-title-input',
       ) as HTMLInputElement;
+      setTitle(canvasTitleInput.value);
       const objState = props.location.state as any;
       await Axios.request({
         method: 'PUT',
@@ -184,7 +185,6 @@ export const CreateBoard = memo((props: RouteChildrenProps<{ id: string }>) => {
     const canvasTitle = document.getElementById(
       'canvas-title',
     ) as HTMLDivElement;
-    console.log('canvasTitle.textContent', canvasTitle.textContent);
     setShowInputTitle(true);
     setImmediate(() => {
       const canvasTitleInput = document.getElementById(
@@ -213,6 +213,7 @@ export const CreateBoard = memo((props: RouteChildrenProps<{ id: string }>) => {
           className="canvas-body"
           drawingTool={drawingTool}
           zoomLevel={zoom / 100 + 1}
+          title={title}
           {...props}
         />
         <div className="canvas-header">
@@ -225,13 +226,12 @@ export const CreateBoard = memo((props: RouteChildrenProps<{ id: string }>) => {
                 onDoubleClick={handleDoubleClick}
                 className="canvas-header-title"
                 id="canvas-title"
-              >
-                My Customer Journey
-              </div>
+              ></div>
             ) : (
               <input
                 type="text"
                 id="canvas-title-input"
+                className="canvas-title-input"
                 onKeyDown={handleKeyDown}
               />
             )}
