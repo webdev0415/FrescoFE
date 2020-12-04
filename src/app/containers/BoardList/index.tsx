@@ -8,6 +8,7 @@ import { actions, reducer, sliceKey } from './slice';
 import { selectBoardList } from './selectors';
 import { Link } from 'react-router-dom';
 import { BoardApiService } from 'services/APIService/BoardsApi.service';
+import { Collaboration } from '../../components/Collaboration';
 
 interface BoardListProps {
   orgId: string;
@@ -90,7 +91,7 @@ export const BoardList = (props: BoardListProps) => {
                         <Menu.Item key="0">
                           <Link
                             to={{
-                              pathname: `/canvas/${item.id}/board`,
+                              pathname: `/board/${item.id}`,
                               state: { orgId: props.orgId },
                             }}
                           >
@@ -98,7 +99,7 @@ export const BoardList = (props: BoardListProps) => {
                           </Link>
                         </Menu.Item>
                         <Menu.Item key="1">
-                          <a href="http://www.taobao.com/">Action</a>
+                          <a href="#">Action</a>
                         </Menu.Item>
                         <Menu.Divider />
                         <Menu.Item
@@ -131,7 +132,7 @@ export const BoardList = (props: BoardListProps) => {
                 </div>
                 <div className="card-users">
                   <span className="material-icons">group</span>
-                  <span className="user-title"></span>
+                  <Collaboration users={item.users} />
                 </div>
               </div>
             </div>

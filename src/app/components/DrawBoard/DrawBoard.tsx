@@ -1,4 +1,4 @@
-import React, { Component, memo } from 'react';
+import React, { PureComponent } from 'react';
 import { Layer, Stage } from 'react-konva';
 import { v4 as uuidv4 } from 'uuid';
 import Konva from 'konva';
@@ -41,7 +41,7 @@ export enum BoardSocketEventEnum {
   DISCONNECT = 'disconnect',
 }
 
-class DrawBoard extends Component<Props, State> {
+class DrawBoard extends PureComponent<Props, State> {
   socket: SocketIOClient.Socket;
   state: State = {
     id: uuidv4(),
@@ -101,16 +101,6 @@ class DrawBoard extends Component<Props, State> {
     });
     this.getData();
     this.canvasWebSockets();
-  }
-
-  componentDidUpdate(
-    prevProps: Readonly<Props>,
-    prevState: Readonly<State>,
-    snapshot?: any,
-  ) {
-    if (JSON.stringify(this.props) !== JSON.stringify(prevProps)) {
-      // this.handleChangeCursor();
-    }
   }
 
   canvasWebSockets(): void {
@@ -313,7 +303,7 @@ class DrawBoard extends Component<Props, State> {
   uploadImage(): void {
     ImageUploadingService.imageUploadFromDataUrl(
       this.stageRef?.toDataURL({ pixelRatio: 1 }) as string,
-      this.props.match?.params.type as string,
+      'board',
     ).subscribe(image => {
       this.setState(
         {
@@ -332,7 +322,7 @@ class DrawBoard extends Component<Props, State> {
   updateImage(): void {
     ImageUploadingService.imageUpdateFromDataUrl(
       this.stageRef?.toDataURL({ pixelRatio: 1 }) as string,
-      this.props.match?.params.type as string,
+      'board',
       this.state.canvas.imageId,
     ).subscribe(image => {
       this.setState({
@@ -819,4 +809,4 @@ class DrawBoard extends Component<Props, State> {
   }
 }
 
-export default memo(DrawBoard);
+export default DrawBoard;
