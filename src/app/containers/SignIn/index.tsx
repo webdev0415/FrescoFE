@@ -134,16 +134,6 @@ export const SignIn = memo((props: Props) => {
             </div>
 
             <GoogleButton callback={loginGoogle} />
-
-            <Button
-              type="link"
-              onClick={() => {
-                history.push('/auth/register');
-              }}
-              style={{ float: 'right', marginRight: -15, marginTop: 10 }}
-            >
-              Create Account
-            </Button>
           </Form>
         </Card>
       </Div>
