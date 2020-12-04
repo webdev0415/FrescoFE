@@ -1,7 +1,6 @@
 import React, { memo, useEffect, useState } from 'react';
 import { RouteChildrenProps, useLocation } from 'react-router';
 import logoImg from 'assets/icons/logo-color.svg';
-import chatIcon from 'assets/icons/chat.svg';
 import { v4 as uuidv4 } from 'uuid';
 
 import { Button, Dropdown, Input, Menu, Slider, Switch } from 'antd';
@@ -27,8 +26,6 @@ import Axios from 'axios';
 import { useSelector } from 'react-redux';
 import { selectToken } from 'app/selectors';
 import { invitationType } from 'utils/constant';
-import { Chat } from 'app/components/Chat/Chat';
-import { MessagesApiService } from 'services/APIService/MessagesApi.service';
 
 interface IState {
   orgId?: any;
@@ -50,7 +47,6 @@ export const CreateBoard = memo(
     >(null);
     const [showSubTools, setShowSubTools] = useState<string>('');
     const [isShowShareModal, setIsShowShareModal] = useState(false);
-    const [chatModal, setChatModal] = useState(false);
     const [permission, setPermission] = useState(PERMISSION.EDITOR);
     const [linkInvitation, setLinkInvitation] = useState(Object);
     const history = useHistory();
@@ -58,8 +54,6 @@ export const CreateBoard = memo(
     const orgId = (location.state as IState)?.orgId;
     const token = useSelector(selectToken);
     const boardId = props?.match?.params?.id;
-    const [chatMessages, setChatMessages] = useState([]);
-
     useEffect(() => {
       document.addEventListener('click', event => {
         const target = event.target as Node;
@@ -79,18 +73,6 @@ export const CreateBoard = memo(
       if (shareIcon) {
         shareIcon.addEventListener('click', () => {
           setIsShowShareModal(true);
-        });
-      }
-
-      const chatIcon = document.getElementById('chat-icon') as HTMLDivElement;
-
-      if (chatIcon) {
-        chatIcon.addEventListener('click', () => {
-          setChatModal(true);
-          MessagesApiService.AllMessages(boardId).subscribe(data => {
-            console.log('data', data);
-            setChatMessages(data);
-          });
         });
       }
     }, [boardId]);
@@ -168,20 +150,9 @@ export const CreateBoard = memo(
     const _closeModal = () => {
       setIsShowShareModal(false);
     };
-
-    const hideChat = () => {
-      setChatModal(false);
-    };
-
     return (
       <div className="canvas-view">
         <div className="canvas-editor">
-          <Chat
-            open={chatModal}
-            hide={hideChat}
-            boardId={boardId}
-            messages={chatMessages}
-          />
           {isShowShareModal && (
             <ShareModal
               permission={permission}
@@ -248,13 +219,6 @@ export const CreateBoard = memo(
                   Publish
                 </span>
               </Dropdown.Button>
-              <Button
-                id="chat-icon"
-                className={`${chatModal ? 'active' : ''}`}
-                style={{ marginLeft: 16 }}
-              >
-                <img src={chatIcon} />
-              </Button>
               <Button id="share-icon" style={{ marginRight: 16 }}>
                 <ShareAltOutlined />
               </Button>

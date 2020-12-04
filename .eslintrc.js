@@ -14,7 +14,7 @@ module.exports = {
   ],
   plugins: ['prettier'],
   rules: {
-    'prettier/prettier': ['error', prettierOptions, { endOfLine: 'auto' }],
+    'prettier/prettier': ['error', prettierOptions],
   },
   overrides: [
     {
