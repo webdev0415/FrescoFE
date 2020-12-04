@@ -1,6 +1,7 @@
 import React, { memo, useEffect, useState } from 'react';
 import { RouteChildrenProps, useLocation } from 'react-router';
 import logoImg from 'assets/icons/logo-color.svg';
+import chatIcon from 'assets/icons/chat.svg';
 import { v4 as uuidv4 } from 'uuid';
 
 import { Button, Dropdown, Input, Menu, Slider, Switch } from 'antd';
@@ -26,6 +27,8 @@ import Axios from 'axios';
 import { useSelector } from 'react-redux';
 import { selectToken } from 'app/selectors';
 import { invitationType } from 'utils/constant';
+import { Chat } from 'app/components/Chat/Chat';
+import { MessagesApiService } from 'services/APIService/MessagesApi.service';
 
 interface IState {
   orgId?: any;
@@ -79,7 +82,6 @@ export const CreateBoard = memo((props: RouteChildrenProps<{ id: string }>) => {
       });
     }
 
-
     const chatIcon = document.getElementById('chat-icon') as HTMLDivElement;
     if (chatIcon) {
       chatIcon.addEventListener('click', () => {
@@ -91,7 +93,6 @@ export const CreateBoard = memo((props: RouteChildrenProps<{ id: string }>) => {
       });
     }
   }, [boardId]);
-
 
   const _getLinkInvitation = async () => {
     try {
@@ -166,7 +167,6 @@ export const CreateBoard = memo((props: RouteChildrenProps<{ id: string }>) => {
   const _closeModal = () => {
     setIsShowShareModal(false);
   };
-
 
   const hideChat = () => {
     setChatModal(false);
@@ -257,7 +257,6 @@ export const CreateBoard = memo((props: RouteChildrenProps<{ id: string }>) => {
               <img src={chatIcon} />
             </Button>
             <Button id="share-icon" style={{ marginRight: 16 }}>
-
               <ShareAltOutlined />
             </Button>
           </div>

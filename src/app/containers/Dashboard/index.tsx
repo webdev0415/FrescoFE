@@ -373,7 +373,7 @@ export const Dashboard = memo((props: Props) => {
                 <div className="cards-board" key={index}>
                   <Link
                     to={{
-                      pathname: `/canvas/${data.id}/canvas?organization=${orgId}`,
+                      pathname: `/canvas/${data.id}?organization=${orgId}`,
                       state: { orgId },
                     }}
                   >

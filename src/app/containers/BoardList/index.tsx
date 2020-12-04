@@ -78,7 +78,7 @@ export const BoardList = (props: BoardListProps) => {
             <div className="cards-board" key={index}>
               <Link
                 to={{
-                  pathname: `/canvas/${item.id}/board`,
+                  pathname: `/board/${item.id}`,
                   state: { orgId: props.orgId },
                 }}
               >
