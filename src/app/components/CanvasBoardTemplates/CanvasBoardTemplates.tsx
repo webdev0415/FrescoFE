@@ -147,7 +147,7 @@ export const CanvasBoardTemplates = memo((props: Props) => {
                           <Button
                             block
                             type="primary"
-                            icon={<PlusOutlined />}
+                            
                             loading={loadingCreateBoard === board.id}
                             onClick={() => handleCreateBoard(board.id)}
                           >
