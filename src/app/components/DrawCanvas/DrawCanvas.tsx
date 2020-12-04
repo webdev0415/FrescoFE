@@ -432,7 +432,10 @@ class DrawCanvas extends PureComponent<Props, State> {
 
   saveCanvas(): void {
     const data = this.getJsonData();
-    const canvas = { ...this.state.canvas };
+    const canvas = {
+      ...this.state.canvas,
+      name: this.props.title || this.state.canvas.name,
+    };
     if (!canvas.imageId) {
       delete canvas.imageId;
     }
@@ -453,9 +456,15 @@ class DrawCanvas extends PureComponent<Props, State> {
     const canvasTitle = document.getElementById(
       'canvas-title',
     ) as HTMLSpanElement;
+    const canvasTitleInput = document.getElementById(
+      'canvas-title-input',
+    ) as HTMLInputElement;
     CanvasApiService.getById(this.props.match?.params.id as string).subscribe(
       canvasData => {
         canvasTitle.innerText = canvasData.name;
+        if (canvasTitleInput) {
+          canvasTitleInput.value = canvasData.name;
+        }
         const canvasObjects = !!canvasData.data
           ? JSON.parse(canvasData.data)
           : [];

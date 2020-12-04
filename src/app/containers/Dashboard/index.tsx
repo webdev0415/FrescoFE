@@ -424,7 +424,14 @@ export const Dashboard = memo((props: Props) => {
                         </div>
                       </Dropdown>
                     </div>
-                    <div className="card-title">{data.name}</div>
+                    <div className="card-title">
+                      {data.name}
+                      {data && data.name && data.name.length >= 34 ? (
+                        <span className="tooltip">{data.name}</span>
+                      ) : (
+                        ''
+                      )}
+                    </div>
                     <div className="card-timestamp">
                       {data && data.createdAt
                         ? moment(data.createdAt).format('LLL')

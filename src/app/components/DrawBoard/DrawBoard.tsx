@@ -363,7 +363,10 @@ class DrawBoard extends PureComponent<Props, State> {
 
   saveBoard(): void {
     const data = this.getJsonData();
-    const canvas = { ...this.state.canvas };
+    const canvas = {
+      ...this.state.canvas,
+      name: this.props.title || this.state.canvas.name,
+    };
     if (!canvas.imageId) {
       delete canvas.imageId;
     }
@@ -388,9 +391,15 @@ class DrawBoard extends PureComponent<Props, State> {
     const canvasTitle = document.getElementById(
       'canvas-title',
     ) as HTMLSpanElement;
+    const canvasTitleInput = document.getElementById(
+      'canvas-title-input',
+    ) as HTMLInputElement;
     BoardApiService.getById(this.props.match?.params.id as string).subscribe(
       boardData => {
         canvasTitle.innerText = boardData.name;
+        if (canvasTitleInput) {
+          canvasTitleInput.value = boardData.name;
+        }
         const canvasObjects = !!boardData.data
           ? JSON.parse(boardData.data)
           : [];
