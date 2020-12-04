@@ -147,7 +147,6 @@ export const CanvasBoardTemplates = memo((props: Props) => {
                           <Button
                             block
                             type="primary"
-                            
                             loading={loadingCreateBoard === board.id}
                             onClick={() => handleCreateBoard(board.id)}
                           >

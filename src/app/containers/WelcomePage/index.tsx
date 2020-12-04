@@ -4,7 +4,7 @@
  *
  */
 
-import React, { memo, useEffect } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useSelector, useDispatch } from 'react-redux';
 import { Button, Card, Typography, Spin } from 'antd';
@@ -17,6 +17,9 @@ import { selectWelcomePage } from './selectors';
 import { welcomePageSaga } from './saga';
 import Auth from 'services/Auth';
 import { selectUser } from '../../selectors';
+import Axios from 'axios';
+
+import { OrganizationsApiService } from 'services/APIService/OrganizationsApi.service';
 
 interface Props {
   location: any;
@@ -47,8 +50,8 @@ export const WelcomePage = memo((props: Props) => {
   const dispatch = useDispatch();
   const { Title, Text } = Typography;
   const history = useHistory();
-
   const queryParams = new URLSearchParams(props.location.search);
+  const [userOrg, setUserOrg] = useState(false);
 
   useEffect(() => {
     if (token || !queryParams.get('accessToken')) return;
@@ -58,7 +61,11 @@ export const WelcomePage = memo((props: Props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   useEffect(() => {
-    console.log('User ', user);
+    OrganizationsApiService.list().subscribe(data => {
+      if (data.length > 0) {
+        setUserOrg(data[0].organizationName);
+      }
+    });
   }, [user]);
 
   const { loading } = welcomePage;
@@ -91,8 +98,8 @@ export const WelcomePage = memo((props: Props) => {
 
           <div style={{ textAlign: 'center', marginTop: 85 }}>
             <Text>
-              "{user?.email}" is here release the power of collaboration with
-              your team"
+              "{userOrg ? userOrg : user?.email}" is here release the power of
+              collaboration with your team
             </Text>
           </div>
 

@@ -105,6 +105,7 @@ const CanvasesList = (props: CanvasesListProps) => {
       </div>
 
       <h3 className="card-section-title">Custom Canvas</h3>
+
       <div className="card-grid">
         {canvasList.map((data, index) => (
           <div className="cards-board" key={index}>
