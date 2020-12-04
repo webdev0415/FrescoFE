@@ -48,6 +48,10 @@ export const CreateBoard = memo((props: RouteChildrenProps<{ id: string }>) => {
   const [isShowShareModal, setIsShowShareModal] = useState(false);
   const [permission, setPermission] = useState(PERMISSION.EDITOR);
   const [linkInvitation, setLinkInvitation] = useState(Object);
+
+  const [chatModal, setChatModal] = useState(false);
+  const [chatMessages, setChatMessages] = useState([]);
+
   const history = useHistory();
   const location = useLocation();
   const orgId = (location.state as IState)?.orgId;
@@ -74,7 +78,20 @@ export const CreateBoard = memo((props: RouteChildrenProps<{ id: string }>) => {
         setIsShowShareModal(true);
       });
     }
-  }, []);
+
+
+    const chatIcon = document.getElementById('chat-icon') as HTMLDivElement;
+    if (chatIcon) {
+      chatIcon.addEventListener('click', () => {
+        setChatModal(true);
+        MessagesApiService.AllMessages(boardId).subscribe(data => {
+          console.log('data', data);
+          setChatMessages(data);
+        });
+      });
+    }
+  }, [boardId]);
+
 
   const _getLinkInvitation = async () => {
     try {
@@ -150,9 +167,21 @@ export const CreateBoard = memo((props: RouteChildrenProps<{ id: string }>) => {
     setIsShowShareModal(false);
   };
 
+
+  const hideChat = () => {
+    setChatModal(false);
+  };
+
   return (
     <div className="canvas-view">
       <div className="canvas-editor">
+        <Chat
+          open={chatModal}
+          hide={hideChat}
+          boardId={boardId}
+          messages={chatMessages}
+        />
+
         {isShowShareModal && (
           <ShareModal
             permission={permission}
@@ -219,7 +248,16 @@ export const CreateBoard = memo((props: RouteChildrenProps<{ id: string }>) => {
                 Publish
               </span>
             </Dropdown.Button>
-            <Button id="share-icon" style={{ marginLeft: 30, marginRight: 16 }}>
+
+            <Button
+              id="chat-icon"
+              className={`${chatModal ? 'active' : ''}`}
+              style={{ marginLeft: 16 }}
+            >
+              <img src={chatIcon} />
+            </Button>
+            <Button id="share-icon" style={{ marginRight: 16 }}>
+
               <ShareAltOutlined />
             </Button>
           </div>
