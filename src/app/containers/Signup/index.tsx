@@ -220,15 +220,6 @@ export const Signup = memo((props: Props) => {
           >
             Sign Up
           </Button>
-          <Button
-            type="link"
-            onClick={() => {
-              history.push('/auth/login');
-            }}
-            style={{ float: 'right', marginRight: -15, marginTop: 10 }}
-          >
-            Sign in
-          </Button>
         </Form>
       </Card>
     </div>

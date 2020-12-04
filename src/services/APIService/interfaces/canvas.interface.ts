@@ -4,6 +4,8 @@ export interface CanvasInterface {
   data: string;
   categoryId: string;
   imageId?: string;
+  createdAt?: string;
+  users?: any[];
 }
 
 export interface CanvasResponseInterface extends CanvasInterface {

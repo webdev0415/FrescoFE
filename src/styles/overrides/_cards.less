@@ -26,6 +26,34 @@
 
       &.card-board-select {
         height: 229px;
+
+        &:not(:hover) {
+          .card-footer {
+            &.card-board-footer {
+              .card-board-action {
+                display: none;
+              }
+
+              .card-description {
+                display: none;
+              }
+            }
+          }
+        }
+
+        .card-footer {
+          &.card-board-footer {
+            position: absolute;
+            height: auto;
+            bottom: 0;
+
+            .card-board-action {
+              display: inline-flex;
+              justify-content: flex-end;
+              align-items: center;
+            }
+          }
+        }
       }
 
       .ant-skeleton-element {
@@ -38,7 +66,7 @@
           justify-content: center;
           align-items: center;
           border: 1px solid #f0f2f5;
-          background-color: rgba(0,0,0,0.1);
+          background-color: rgba(0, 0, 0, 0.1);
         }
       }
 
@@ -62,27 +90,7 @@
         padding: 10px;
         gap: 5px;
 
-        &.card-board-footer {
-          position: absolute;
-          height: auto;
-          bottom: 0;
 
-          &:not(:hover) {
-            .card-board-action {
-              display: none;
-            }
-
-            .card-description {
-              display: none;
-            }
-          }
-
-          .card-board-action {
-            display: inline-flex;
-            justify-content: flex-end;
-            align-items: center;
-          }
-        }
 
         .card-action {
           position: absolute;
@@ -109,7 +117,28 @@
           font-family: Palanquin sans-serif;
           font-size: 14px;
           line-height: 32px;
+          width: calc(100% - 30px);
           font-weight: bold;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+
+          .tooltip {
+            display: none;
+            font-family: Palanquin sans-serif;
+            font-size: 13px;
+            line-height: 20px;
+            font-weight: bold;
+            margin-left: 10px; /* moves the tooltip to the right */
+            margin-top: -50px; /* moves it down */
+            position: fixed;
+            z-index: 1000;
+            background-color: antiquewhite
+          }
+        }
+
+        .card-title:hover .tooltip {
+          display: block;
         }
 
         .card-timestamp {
@@ -133,6 +162,9 @@
           }
 
           .user-title {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
           }
         }
       }

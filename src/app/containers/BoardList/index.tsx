@@ -1,5 +1,6 @@
 import { Card, Col, Dropdown, Menu, Row, Skeleton, Typography } from 'antd';
 import React from 'react';
+import moment from 'moment';
 import { useDispatch, useSelector } from 'react-redux';
 import { useInjectReducer, useInjectSaga } from 'utils/redux-injectors';
 import { boardListSaga } from './saga';
@@ -7,6 +8,7 @@ import { actions, reducer, sliceKey } from './slice';
 import { selectBoardList } from './selectors';
 import { Link } from 'react-router-dom';
 import { BoardApiService } from 'services/APIService/BoardsApi.service';
+import { Collaboration } from '../../components/Collaboration';
 
 interface BoardListProps {
   orgId: string;
@@ -74,13 +76,20 @@ export const BoardList = (props: BoardListProps) => {
       {boardList.boardList.length && !boardList.loading
         ? boardList.boardList.map((item, index) => (
             <div className="cards-board" key={index}>
-              <img
-                alt="example"
-                src={
-                  item.path ||
-                  'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png'
-                }
-              />
+              <Link
+                to={{
+                  pathname: `/canvas/${item.id}/board`,
+                  state: { orgId: props.orgId },
+                }}
+              >
+                <img
+                  alt="example"
+                  src={
+                    item.path ||
+                    'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png'
+                  }
+                />
+              </Link>
               <div className="card-footer">
                 <div className="card-action">
                   <Dropdown
@@ -89,7 +98,7 @@ export const BoardList = (props: BoardListProps) => {
                         <Menu.Item key="0">
                           <Link
                             to={{
-                              pathname: `/canvas/${item.id}/board`,
+                              pathname: `/board/${item.id}`,
                               state: { orgId: props.orgId },
                             }}
                           >
@@ -97,7 +106,7 @@ export const BoardList = (props: BoardListProps) => {
                           </Link>
                         </Menu.Item>
                         <Menu.Item key="1">
-                          <a href="http://www.taobao.com/">Action</a>
+                          <a href="#">Action</a>
                         </Menu.Item>
                         <Menu.Divider />
                         <Menu.Item
@@ -115,11 +124,22 @@ export const BoardList = (props: BoardListProps) => {
                     </div>
                   </Dropdown>
                 </div>
-                <div className="card-title">QuestionPro Journey Map</div>
-                <div className="card-timestamp">Opened Oct 12, 2020</div>
+                <div className="card-title">
+                  {item.name}
+                  {item && item.name && item.name.length >= 34 ? (
+                    <span className="tooltip">{item.name}</span>
+                  ) : (
+                    ''
+                  )}
+                </div>
+                <div className="card-timestamp">
+                  {item && item.createdAt
+                    ? moment(item.createdAt).format('LLL')
+                    : ''}
+                </div>
                 <div className="card-users">
                   <span className="material-icons">group</span>
-                  <span className="user-title">{item.name}</span>
+                  <Collaboration users={item.users} />
                 </div>
               </div>
             </div>

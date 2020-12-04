@@ -19,8 +19,8 @@ const boardListSlice = createSlice({
       state.boardList = action.payload;
       state.loading = false;
     },
-    getBoardsFail(state, action: PayloadAction<any>) {
-      state.boardList = action.payload;
+    getBoardsFail(state) {
+      state.boardList = [];
       state.loading = false;
     },
     deleteBoard(state, action) {
