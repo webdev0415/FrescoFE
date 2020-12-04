@@ -74,13 +74,20 @@ export const BoardList = (props: BoardListProps) => {
       {boardList.boardList.length && !boardList.loading
         ? boardList.boardList.map((item, index) => (
             <div className="cards-board" key={index}>
-              <img
-                alt="example"
-                src={
-                  item.path ||
-                  'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png'
-                }
-              />
+              <Link
+                to={{
+                  pathname: `/canvas/${item.id}/board`,
+                  state: { orgId: props.orgId },
+                }}
+              >
+                <img
+                  alt="example"
+                  src={
+                    item.path ||
+                    'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png'
+                  }
+                />
+              </Link>
               <div className="card-footer">
                 <div className="card-action">
                   <Dropdown
