@@ -26,6 +26,34 @@
 
       &.card-board-select {
         height: 229px;
+
+        &:not(:hover) {
+          .card-footer {
+            &.card-board-footer {
+              .card-board-action {
+                display: none;
+              }
+
+              .card-description {
+                display: none;
+              }
+            }
+          }
+        }
+
+        .card-footer {
+          &.card-board-footer {
+            position: absolute;
+            height: auto;
+            bottom: 0;
+
+            .card-board-action {
+              display: inline-flex;
+              justify-content: flex-end;
+              align-items: center;
+            }
+          }
+        }
       }
 
       .ant-skeleton-element {
@@ -62,33 +90,13 @@
         padding: 10px;
         gap: 5px;
 
-        &.card-board-footer {
-          position: absolute;
-          height: auto;
-          bottom: 0;
 
-          &:not(:hover) {
-            .card-board-action {
-              display: none;
-            }
-
-            .card-description {
-              display: none;
-            }
-          }
-
-          .card-board-action {
-            display: inline-flex;
-            justify-content: flex-end;
-            align-items: center;
-          }
-        }
 
         .card-action {
           position: absolute;
           right: 0;
           top: 0;
-          transform: translate(12px, 5px);
+          transform: translate(-5px, 5px);
 
           .action-button {
             border-radius: 50%;
@@ -109,6 +117,7 @@
           font-family: Palanquin sans-serif;
           font-size: 14px;
           line-height: 32px;
+          width: calc(100% - 30px);
           font-weight: bold;
           white-space: nowrap;
           overflow: hidden;
@@ -153,6 +162,9 @@
           }
 
           .user-title {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
           }
         }
       }

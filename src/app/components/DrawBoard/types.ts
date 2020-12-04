@@ -87,8 +87,7 @@ export interface ObjectInterface extends PointsInterface {
   isLocked: boolean;
 }
 
-export interface Props
-  extends RouteChildrenProps<{ id: string; type: string }> {
+export interface Props extends RouteChildrenProps<{ id: string }> {
   className: string;
   drawingTool: ShapeObjectType;
   zoomLevel: number;

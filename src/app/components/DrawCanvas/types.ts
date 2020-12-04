@@ -98,8 +98,7 @@ export interface ObjectInterface extends PointsInterface {
   isEditable: boolean;
 }
 
-export interface Props
-  extends RouteChildrenProps<{ id: string; type: string }> {
+export interface Props extends RouteChildrenProps<{ id: string }> {
   className: string;
   drawingTool: ShapeObjectType;
   zoomLevel: number;

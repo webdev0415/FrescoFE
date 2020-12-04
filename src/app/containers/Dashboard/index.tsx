@@ -40,7 +40,8 @@ import {
 import { CanvasBoardTemplates } from '../../components/CanvasBoardTemplates';
 import { CanvasCategoryService } from '../../../services/APIService/CanvasCategory.service';
 import { BoardApiService } from 'services/APIService/BoardsApi.service';
-
+import { Collaboration } from '../../components/Collaboration';
+import moment from 'moment';
 const { TabPane } = Tabs;
 export const PERMISSION = {
   // ADMIN: 'admin',
@@ -128,7 +129,7 @@ export const Dashboard = memo((props: Props) => {
       data => {
         console.log(data);
         setLoadingCreateCanvas(false);
-        history.push(`/canvas/${data.id}/canvas`, { orgId });
+        history.push(`/canvas/${data.id}?organization=${orgId}`, { orgId });
       },
       error => {
         setLoadingCreateCanvas(false);
@@ -397,7 +398,7 @@ export const Dashboard = memo((props: Props) => {
                             <Menu.Item key="0">
                               <Link
                                 to={{
-                                  pathname: `/canvas/${data.id}/canvas?organization=${orgId}`,
+                                  pathname: `/canvas/${data.id}?organization=${orgId}`,
                                   state: { orgId },
                                 }}
                               >
@@ -405,7 +406,7 @@ export const Dashboard = memo((props: Props) => {
                               </Link>
                             </Menu.Item>
                             <Menu.Item key="1">
-                              <a href="http://www.taobao.com/">Action</a>
+                              <a href="#">Action</a>
                             </Menu.Item>
                             <Menu.Divider />
                             <Menu.Item
@@ -424,12 +425,14 @@ export const Dashboard = memo((props: Props) => {
                       </Dropdown>
                     </div>
                     <div className="card-title">{data.name}</div>
-                    <div className="card-timestamp">Opened Oct 12, 2020</div>
+                    <div className="card-timestamp">
+                      {data && data.createdAt
+                        ? moment(data.createdAt).format('LLL')
+                        : ''}
+                    </div>
                     <div className="card-users">
                       <span className="material-icons">group</span>
-                      <span className="user-title">
-                        Anup Surendan, JJ and 5+ collaborating
-                      </span>
+                      <Collaboration users={data.users} />
                     </div>
                   </div>
                 </div>
