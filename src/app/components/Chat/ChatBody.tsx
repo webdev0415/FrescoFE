@@ -10,7 +10,7 @@ interface IState {
 export const ChatBody = ({ messages }) => {
   return (
     <div className="chatBox-body">
-      {messages.messages.map((message, index) => {
+      {messages.map((message, index) => {
         return (
           <ChatMessage
             key={index}
