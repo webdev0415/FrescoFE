@@ -40,7 +40,8 @@ import {
 import { CanvasBoardTemplates } from '../../components/CanvasBoardTemplates';
 import { CanvasCategoryService } from '../../../services/APIService/CanvasCategory.service';
 import { BoardApiService } from 'services/APIService/BoardsApi.service';
-
+import { Collaboration } from '../../components/Collaboration';
+import moment from 'moment';
 const { TabPane } = Tabs;
 export const PERMISSION = {
   // ADMIN: 'admin',
@@ -417,12 +418,14 @@ export const Dashboard = memo((props: Props) => {
                       </Dropdown>
                     </div>
                     <div className="card-title">{data.name}</div>
-                    <div className="card-timestamp">Opened Oct 12, 2020</div>
+                    <div className="card-timestamp">
+                      {data && data.createdAt
+                        ? moment(data.createdAt).format('LLL')
+                        : ''}
+                    </div>
                     <div className="card-users">
                       <span className="material-icons">group</span>
-                      <span className="user-title">
-                        Anup Surendan, JJ and 5+ collaborating
-                      </span>
+                      <Collaboration users={data.users} />
                     </div>
                   </div>
                 </div>
