@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useState } from 'react';
+import React, { memo, useEffect, useRef, useState } from 'react';
 import { RouteChildrenProps, useLocation } from 'react-router';
 import logoImg from 'assets/icons/logo-color.svg';
 import { v4 as uuidv4 } from 'uuid';
@@ -54,6 +54,8 @@ export const CreateCanvas = (props: RouteChildrenProps<{ id: string }>) => {
     | null
   >(null);
   const [showSubTools, setShowSubTools] = useState<string>('');
+  const [showInputTitle, setShowInputTitle] = useState<boolean>(false);
+  const [title, setTitle] = useState<string | null>('');
   const [isShowShareModal, setIsShowShareModal] = useState(false);
   const [permission, setPermission] = useState(PERMISSION.EDITOR);
   const [linkInvitation, setLinkInvitation] = useState(Object);
@@ -61,7 +63,7 @@ export const CreateCanvas = (props: RouteChildrenProps<{ id: string }>) => {
   const orgId = (location.state as IState)?.orgId;
   const token = useSelector(selectToken);
   const canvasId = props?.match?.params?.id;
-
+  console.log('props1111111111', props);
   useEffect(() => {
     document.addEventListener('click', event => {
       const target = event.target as Node;
@@ -161,6 +163,49 @@ export const CreateCanvas = (props: RouteChildrenProps<{ id: string }>) => {
     setIsShowShareModal(false);
   };
 
+  const handleKeyDown = async event => {
+    if (event.key === 'Enter') {
+      const canvasTitleInput = document.getElementById(
+        'canvas-title-input',
+      ) as HTMLInputElement;
+      const objState = props.location.state as any;
+      await Axios.request({
+        method: 'PUT',
+        url: `${process.env.REACT_APP_BASE_URL}canvas/${canvasId}`,
+        data: {
+          name: canvasTitleInput.value,
+          orgId: objState.orgId,
+        },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setShowInputTitle(false);
+      setImmediate(() => {
+        const canvasTitle = document.getElementById(
+          'canvas-title',
+        ) as HTMLDivElement;
+        canvasTitle.innerText = canvasTitleInput.value || '';
+      });
+    }
+  };
+
+  const handleDoubleClick = _event => {
+    const canvasTitle = document.getElementById(
+      'canvas-title',
+    ) as HTMLDivElement;
+    console.log('canvasTitle.textContent', canvasTitle.textContent);
+    setShowInputTitle(true);
+    setImmediate(() => {
+      const canvasTitleInput = document.getElementById(
+        'canvas-title-input',
+      ) as HTMLInputElement;
+      canvasTitleInput.value = canvasTitle.textContent || '';
+      setTitle(canvasTitle.textContent);
+    });
+  };
+
   return (
     <div className="canvas-view">
       <div className="canvas-editor">
@@ -186,9 +231,21 @@ export const CreateCanvas = (props: RouteChildrenProps<{ id: string }>) => {
             <Link to={`/organization/${orgId}`} className="canvas-header-logo">
               <img src={logoImg} alt="logo" />
             </Link>
-            <div className="canvas-header-title" id="canvas-title">
-              My Customer Journey
-            </div>
+            {!showInputTitle ? (
+              <div
+                onDoubleClick={handleDoubleClick}
+                className="canvas-header-title"
+                id="canvas-title"
+              >
+                My Customer Journey
+              </div>
+            ) : (
+              <input
+                type="text"
+                id="canvas-title-input"
+                onKeyDown={handleKeyDown}
+              />
+            )}
             <div className="canvas-header-actions">
               <div className="canvas-header-action-item" id="undo-history">
                 <UndoIcon />

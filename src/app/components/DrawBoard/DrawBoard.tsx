@@ -388,9 +388,15 @@ class DrawBoard extends PureComponent<Props, State> {
     const canvasTitle = document.getElementById(
       'canvas-title',
     ) as HTMLSpanElement;
+    const canvasTitleInput = document.getElementById(
+      'canvas-title-input',
+    ) as HTMLInputElement;
     BoardApiService.getById(this.props.match?.params.id as string).subscribe(
       boardData => {
         canvasTitle.innerText = boardData.name;
+        if (canvasTitleInput) {
+          canvasTitleInput.value = boardData.name;
+        }
         const canvasObjects = !!boardData.data
           ? JSON.parse(boardData.data)
           : [];
