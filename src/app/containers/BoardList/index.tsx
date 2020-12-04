@@ -1,5 +1,6 @@
 import { Card, Col, Dropdown, Menu, Row, Skeleton, Typography } from 'antd';
 import React from 'react';
+import moment from 'moment';
 import { useDispatch, useSelector } from 'react-redux';
 import { useInjectReducer, useInjectSaga } from 'utils/redux-injectors';
 import { boardListSaga } from './saga';
@@ -122,11 +123,22 @@ export const BoardList = (props: BoardListProps) => {
                     </div>
                   </Dropdown>
                 </div>
-                <div className="card-title">QuestionPro Journey Map</div>
-                <div className="card-timestamp">Opened Oct 12, 2020</div>
+                <div className="card-title">
+                  {item.name}
+                  {item && item.name && item.name.length >= 34 ? (
+                    <span className="tooltip">{item.name}</span>
+                  ) : (
+                    ''
+                  )}
+                </div>
+                <div className="card-timestamp">
+                  {item && item.createdAt
+                    ? moment(item.createdAt).format('LLL')
+                    : ''}
+                </div>
                 <div className="card-users">
                   <span className="material-icons">group</span>
-                  <span className="user-title">{item.name}</span>
+                  <span className="user-title"></span>
                 </div>
               </div>
             </div>

@@ -1,6 +1,7 @@
 import React, { memo, useEffect, useState } from 'react';
 import { RouteChildrenProps, useLocation } from 'react-router';
 import logoImg from 'assets/icons/logo-color.svg';
+import chatIcon from 'assets/icons/chat.svg';
 import { v4 as uuidv4 } from 'uuid';
 
 import { Button, Dropdown, Input, Menu, Slider, Switch } from 'antd';
@@ -26,6 +27,8 @@ import Axios from 'axios';
 import { useSelector } from 'react-redux';
 import { selectToken } from 'app/selectors';
 import { invitationType } from 'utils/constant';
+import { Chat } from 'app/components/Chat/Chat';
+import { MessagesApiService } from 'services/APIService/MessagesApi.service';
 
 interface IState {
   orgId?: any;
@@ -47,6 +50,7 @@ export const CreateBoard = memo(
     >(null);
     const [showSubTools, setShowSubTools] = useState<string>('');
     const [isShowShareModal, setIsShowShareModal] = useState(false);
+    const [chatModal, setChatModal] = useState(false);
     const [permission, setPermission] = useState(PERMISSION.EDITOR);
     const [linkInvitation, setLinkInvitation] = useState(Object);
     const history = useHistory();
@@ -54,6 +58,8 @@ export const CreateBoard = memo(
     const orgId = (location.state as IState)?.orgId;
     const token = useSelector(selectToken);
     const boardId = props?.match?.params?.id;
+    const [chatMessages, setChatMessages] = useState([]);
+
     useEffect(() => {
       document.addEventListener('click', event => {
         const target = event.target as Node;
@@ -75,7 +81,19 @@ export const CreateBoard = memo(
           setIsShowShareModal(true);
         });
       }
-    }, []);
+
+      const chatIcon = document.getElementById('chat-icon') as HTMLDivElement;
+
+      if (chatIcon) {
+        chatIcon.addEventListener('click', () => {
+          setChatModal(true);
+          MessagesApiService.AllMessages(boardId).subscribe(data => {
+            console.log('data', data);
+            setChatMessages(data);
+          });
+        });
+      }
+    }, [boardId]);
 
     const _getLinkInvitation = async () => {
       try {
@@ -83,17 +101,23 @@ export const CreateBoard = memo(
         try {
           res = await Axios.request({
             method: 'GET',
-            url:
-              process.env.REACT_APP_BASE_URL +
-              `invitation-type/${boardId}/board-link`,
+            url: process.env.REACT_APP_BASE_URL + 'invitation-type',
             headers: {
               Authorization: `Bearer ${token}`,
+            },
+            params: {
+              typeId: boardId,
+              orgId: orgId,
+              type: invitationType.BOARD,
             },
           });
         } catch (e) {
           console.log(e);
         }
-        if (!res) {
+        if (res?.data?.length) {
+          setLinkInvitation(res.data[0]);
+          setPermission(res?.data[0]?.permission);
+        } else {
           const resCreated = await Axios.request({
             method: 'POST',
             url: process.env.REACT_APP_BASE_URL + 'invitation-type',
@@ -110,9 +134,6 @@ export const CreateBoard = memo(
           });
           setLinkInvitation(resCreated?.data);
           setPermission(resCreated?.data?.permission);
-        } else {
-          setLinkInvitation(res.data);
-          setPermission(res?.data?.permission);
         }
       } catch (error) {
         console.error(error.response);
@@ -148,9 +169,19 @@ export const CreateBoard = memo(
       setIsShowShareModal(false);
     };
 
+    const hideChat = () => {
+      setChatModal(false);
+    };
+
     return (
       <div className="canvas-view">
         <div className="canvas-editor">
+          <Chat
+            open={chatModal}
+            hide={hideChat}
+            boardId={boardId}
+            messages={chatMessages}
+          />
           {isShowShareModal && (
             <ShareModal
               permission={permission}
@@ -218,9 +249,13 @@ export const CreateBoard = memo(
                 </span>
               </Dropdown.Button>
               <Button
-                id="share-icon"
-                style={{ marginLeft: 30, marginRight: 16 }}
+                id="chat-icon"
+                className={`${chatModal ? 'active' : ''}`}
+                style={{ marginLeft: 16 }}
               >
+                <img src={chatIcon} />
+              </Button>
+              <Button id="share-icon" style={{ marginRight: 16 }}>
                 <ShareAltOutlined />
               </Button>
             </div>

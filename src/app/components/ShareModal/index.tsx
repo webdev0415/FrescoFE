@@ -57,7 +57,7 @@ export const ShareModal = ({
   useInjectReducer({ key: sliceKey, reducer: reducer });
   useInjectSaga({ key: sliceKey, saga: shareModalSaga });
   // console.log('linkInvitation', linkInvitation);
-  const baseClient = `${window.location.protocol}${window.location.hostname}:${window.location.port}/`;
+  const baseClient = window.location.origin;
 
   const [listEmailAndPermission, setListEmailAndPermission] = useState(
     [] as Array<EmailAndPermission>,
@@ -87,7 +87,7 @@ export const ShareModal = ({
   const _handleSelectEmail = (key, value) => {
     console.log(value, key);
     if (listEmailAndPermission.length >= MAX_EMAIL) {
-      alert.error('Can not invite more than 3 email at once!');
+      alert.error(`Can not invite more than ${MAX_EMAIL} email at once!`);
       return;
     }
     for (let index = 0; index < listEmailAndPermission.length; index++) {
@@ -339,10 +339,10 @@ export const ShareModal = ({
               <Input
                 bordered={false}
                 disabled
-                value={`${baseClient}invitation-type/verification/${linkInvitation.token}`}
+                value={`${baseClient}/invitation-type/verification/${linkInvitation.token}`}
               />
               <CopyToClipboard
-                text={`${baseClient}invitation-type/verification/${linkInvitation.token}`}
+                text={`${baseClient}/invitation-type/verification/${linkInvitation.token}`}
               >
                 <CopyOutlined style={{ color: 'gray' }} />
               </CopyToClipboard>
