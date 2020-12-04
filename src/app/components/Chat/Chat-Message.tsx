@@ -15,6 +15,7 @@ export const ChatMessage = ({ userName, userImg, message, logedUser }) => {
       <div className="chatBox-body-message-content">
         <p>{message}</p>
       </div>
+      <div className="chatBox-message-settings">...</div>
     </div>
   );
 };

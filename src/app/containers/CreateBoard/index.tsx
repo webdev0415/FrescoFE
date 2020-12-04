@@ -28,6 +28,7 @@ import { useSelector } from 'react-redux';
 import { selectToken } from 'app/selectors';
 import { invitationType } from 'utils/constant';
 import { Chat } from 'app/components/Chat/Chat';
+import { MessagesApiService } from 'services/APIService/MessagesApi.service';
 
 interface IState {
   orgId?: any;
@@ -57,6 +58,8 @@ export const CreateBoard = memo(
     const orgId = (location.state as IState)?.orgId;
     const token = useSelector(selectToken);
     const boardId = props?.match?.params?.id;
+    const [chatMessages, setChatMessages] = useState([]);
+
     useEffect(() => {
       document.addEventListener('click', event => {
         const target = event.target as Node;
@@ -84,9 +87,13 @@ export const CreateBoard = memo(
       if (chatIcon) {
         chatIcon.addEventListener('click', () => {
           setChatModal(true);
+          MessagesApiService.AllMessages(boardId).subscribe(data => {
+            console.log('data', data);
+            setChatMessages(data);
+          });
         });
       }
-    }, []);
+    }, [boardId]);
 
     const _getLinkInvitation = async () => {
       try {
@@ -169,7 +176,12 @@ export const CreateBoard = memo(
     return (
       <div className="canvas-view">
         <div className="canvas-editor">
-          <Chat open={chatModal} hide={hideChat} />
+          <Chat
+            open={chatModal}
+            hide={hideChat}
+            boardId={boardId}
+            messages={chatMessages}
+          />
           {isShowShareModal && (
             <ShareModal
               permission={permission}

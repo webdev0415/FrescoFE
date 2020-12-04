@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ChatHeader } from './ChatHeader';
 import './Chat.less';
 import { ChatBody } from './ChatBody';
@@ -8,12 +8,12 @@ interface IState {
   orgId?: any;
 }
 
-export const Chat = ({ open, hide }) => {
+export const Chat = ({ open, hide, messages, boardId }) => {
   return (
     <div className={`chatBox ${open ? 'active' : ''}`}>
       <ChatHeader hide={hide} />
-      <ChatBody />
-      <ChatFooter />
+      <ChatBody messages={messages} />
+      <ChatFooter boardId={boardId} />
     </div>
   );
 };
