@@ -6,18 +6,24 @@ interface IState {
   orgId?: any;
 }
 
-export const ChatBody = ({ messages }) => {
+export const ChatBody = ({ messages, user, setChatMessages }) => {
+  console.log('sdjfkljdslfsf', messages);
+  let logedUser = 'friend';
   return (
     <div className="chatBox-body">
       {messages.messages ? (
         messages.messages.map((message, index) => {
+          if (message.sender.id == user.id) {
+            logedUser = 'loged-user';
+          }
           return (
             <ChatMessage
               key={index}
               userName={message.sender.name}
               userImg={chatUser}
-              message={message.message}
-              logedUser={'friend'}
+              message={message}
+              logedUser={logedUser}
+              setChatMessages={setChatMessages}
             />
           );
         })

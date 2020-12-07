@@ -8,12 +8,27 @@ interface IState {
   orgId?: any;
 }
 
-export const Chat = ({ open, hide, messages, boardId }) => {
+export const Chat = ({
+  open,
+  hide,
+  messages,
+  boardId,
+  setChatMessages,
+  user,
+}) => {
   return (
     <div className={`chatBox ${open ? 'active' : ''}`}>
       <ChatHeader hide={hide} />
-      <ChatBody messages={messages} />
-      <ChatFooter boardId={boardId} />
+      <ChatBody
+        setChatMessages={setChatMessages}
+        user={user}
+        messages={messages}
+      />
+      <ChatFooter
+        boardId={boardId}
+        setChatMessages={setChatMessages}
+        user={user}
+      />
     </div>
   );
 };

@@ -5,14 +5,18 @@ interface IState {
   orgId?: any;
 }
 
-export const ChatFooter = ({ boardId }) => {
+export const ChatFooter = ({ boardId, user, setChatMessages }) => {
   const [message, setMessage] = useState('');
   const handleSubmit = evt => {
     evt.preventDefault();
     MessagesApiService.postMessage(message, boardId).subscribe(data => {
-      console.log(data);
       setMessage('');
     });
+    let newMessage = { message: message, sender: user };
+    setChatMessages(prevState => ({
+      ...prevState,
+      messages: [...prevState.messages, newMessage],
+    }));
   };
   return (
     <div className="chatBox-footer">

@@ -53,15 +53,15 @@ export const CreateBoard = memo((props: RouteChildrenProps<{ id: string }>) => {
   const [title, setTitle] = useState<string | null>('');
   const [permission, setPermission] = useState(PERMISSION.EDITOR);
   const [linkInvitation, setLinkInvitation] = useState(Object);
-
   const [chatModal, setChatModal] = useState(false);
   const [chatMessages, setChatMessages] = useState([]);
-
   const history = useHistory();
   const location = useLocation();
   const orgId = (location.state as IState)?.orgId;
   const token = useSelector(selectToken);
   const boardId = props?.match?.params?.id;
+  const [user, SetUser] = useState([]);
+
   useEffect(() => {
     document.addEventListener('click', event => {
       const target = event.target as Node;
@@ -74,7 +74,16 @@ export const CreateBoard = memo((props: RouteChildrenProps<{ id: string }>) => {
         }
       }
     });
-  }, []);
+    Axios.request({
+      method: 'GET',
+      url: process.env.REACT_APP_BASE_URL + 'auth/me',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }).then(response => {
+      SetUser(response.data);
+    });
+  }, [token]);
 
   useEffect(() => {
     const shareIcon = document.getElementById('share-icon') as HTMLDivElement;
@@ -221,10 +230,12 @@ export const CreateBoard = memo((props: RouteChildrenProps<{ id: string }>) => {
     <div className="canvas-view">
       <div className="canvas-editor">
         <Chat
+          setChatMessages={setChatMessages}
           open={chatModal}
           hide={hideChat}
           boardId={boardId}
           messages={chatMessages}
+          user={user}
         />
 
         {isShowShareModal && (
