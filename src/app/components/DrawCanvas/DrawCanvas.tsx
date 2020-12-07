@@ -93,6 +93,7 @@ class DrawCanvas extends PureComponent<Props, State> {
   layerRef: Konva.Layer | null = null;
 
   isItemFocused: boolean = false;
+  isItemChanging: boolean = false;
   isItemMoving: boolean = false;
   isDrawing: boolean = false;
   GUIDELINE_OFFSET = 5;
@@ -570,7 +571,7 @@ class DrawCanvas extends PureComponent<Props, State> {
   };
 
   handleMouseDown = e => {
-    if (this.props.drawingTool) {
+    if (this.props.drawingTool && !this.isItemChanging) {
       const position = e.target.getStage().getPointerPosition();
       const data: ObjectInterface = onMouseDown(
         { ...this.state.points },
@@ -587,6 +588,15 @@ class DrawCanvas extends PureComponent<Props, State> {
   };
 
   handleMouseMove = e => {
+    if (this.isItemChanging) {
+      this.isDrawing = false;
+      this.setState({
+        points: {
+          ...defaultObjectState,
+        },
+      });
+      return;
+    }
     if (this.isDrawing && this.props.drawingTool) {
       const position = e.target.getStage().getPointerPosition();
       const data: ObjectInterface = onMouseMove(
@@ -602,6 +612,14 @@ class DrawCanvas extends PureComponent<Props, State> {
   };
 
   handleMouseUp = e => {
+    if (this.isItemChanging) {
+      this.setState({
+        points: {
+          ...defaultObjectState,
+        },
+      });
+      return;
+    }
     if (this.isDrawing) {
       this.isDrawing = false;
       const position = e.target.getStage().getPointerPosition();
@@ -696,6 +714,8 @@ class DrawCanvas extends PureComponent<Props, State> {
       save: true,
     },
   ) {
+    this.isItemChanging = false;
+    this.isDrawing = false;
     if (options.saveHistory) {
       const historyItem = this.state.objects.find(item => item.id === data.id);
       if (historyItem) {
@@ -934,7 +954,7 @@ class DrawCanvas extends PureComponent<Props, State> {
       return;
     }
     this.drawGuides(guides);
-    var absPos = (target as Konva.Node).absolutePosition();
+    const absPos = (target as Konva.Node).absolutePosition();
     guides.forEach(lg => {
       switch (lg.snap) {
         case 'start': {
@@ -983,6 +1003,7 @@ class DrawCanvas extends PureComponent<Props, State> {
 
   handleChangeStart = (data: ObjectInterface) => {
     console.log(data);
+    this.isItemChanging = true;
     this.emitSocketEvent(BoardSocketEventEnum.LOCK, {
       ...data,
       isSelected: false,
@@ -993,7 +1014,6 @@ class DrawCanvas extends PureComponent<Props, State> {
   };
 
   render() {
-    console.log('props', this.props);
     return (
       <div className={this.props.className}>
         {this.state.objects
@@ -1612,7 +1632,8 @@ class DrawCanvas extends PureComponent<Props, State> {
 
             {(this.props.drawingTool === 'Text' ||
               this.props.drawingTool === 'Sticky') &&
-              this.isDrawing && (
+              this.isDrawing &&
+              !this.isItemChanging && (
                 <Group
                   x={this.state.points.x}
                   y={this.state.points.y}
@@ -1651,76 +1672,83 @@ class DrawCanvas extends PureComponent<Props, State> {
                 </Group>
               )}
 
-            {this.props.drawingTool === 'Star' && this.isDrawing && (
-              <Star
-                numPoints={this.state.points.star?.numPoints as number}
-                innerRadius={this.state.points.star?.innerRadius as number}
-                outerRadius={this.state.points.star?.outerRadius as number}
-                x={this.state.points.x}
-                y={this.state.points.y}
-                stroke="#000000"
-                dash={[10, 10]}
-                {...{
-                  shadowBlur: 10,
-                  shadowOpacity: 0.6,
-                  shadowOffsetX: 10,
-                  shadowOffsetY: 10,
-                }}
-              />
-            )}
-            {this.props.drawingTool === 'Triangle' && this.isDrawing && (
-              <Shape
-                x={this.state.points.x}
-                y={this.state.points.y}
-                sceneFunc={(context, shape) => {
-                  context.beginPath();
-                  context.moveTo(
-                    (this.state.points.triangle?.width as number) / 2,
-                    0,
-                  );
-                  context.lineTo(
-                    0,
-                    this.state.points.triangle?.height as number,
-                  );
-                  context.lineTo(
-                    this.state.points.triangle?.width as number,
-                    this.state.points.triangle?.height as number,
-                  );
-                  context.closePath();
-                  // (!) Konva specific method, it is very important
-                  context.fillStrokeShape(shape);
-                }}
-                stroke="#000000"
-                dash={[10, 10]}
-                {...{
-                  shadowBlur: 10,
-                  shadowOpacity: 0.6,
-                  shadowOffsetX: 10,
-                  shadowOffsetY: 10,
-                }}
-              />
-            )}
+            {this.props.drawingTool === 'Star' &&
+              this.isDrawing &&
+              !this.isItemChanging && (
+                <Star
+                  numPoints={this.state.points.star?.numPoints as number}
+                  innerRadius={this.state.points.star?.innerRadius as number}
+                  outerRadius={this.state.points.star?.outerRadius as number}
+                  x={this.state.points.x}
+                  y={this.state.points.y}
+                  stroke="#000000"
+                  dash={[10, 10]}
+                  {...{
+                    shadowBlur: 10,
+                    shadowOpacity: 0.6,
+                    shadowOffsetX: 10,
+                    shadowOffsetY: 10,
+                  }}
+                />
+              )}
+            {this.props.drawingTool === 'Triangle' &&
+              this.isDrawing &&
+              !this.isItemChanging && (
+                <Shape
+                  x={this.state.points.x}
+                  y={this.state.points.y}
+                  sceneFunc={(context, shape) => {
+                    context.beginPath();
+                    context.moveTo(
+                      (this.state.points.triangle?.width as number) / 2,
+                      0,
+                    );
+                    context.lineTo(
+                      0,
+                      this.state.points.triangle?.height as number,
+                    );
+                    context.lineTo(
+                      this.state.points.triangle?.width as number,
+                      this.state.points.triangle?.height as number,
+                    );
+                    context.closePath();
+                    // (!) Konva specific method, it is very important
+                    context.fillStrokeShape(shape);
+                  }}
+                  stroke="#000000"
+                  dash={[10, 10]}
+                  {...{
+                    shadowBlur: 10,
+                    shadowOpacity: 0.6,
+                    shadowOffsetX: 10,
+                    shadowOffsetY: 10,
+                  }}
+                />
+              )}
 
-            {this.props.drawingTool === 'Ellipse' && this.isDrawing && (
-              <Ellipse
-                x={this.state.points.x}
-                y={this.state.points.y}
-                radiusX={this.state.points.ellipse?.radiusX as number}
-                radiusY={this.state.points.ellipse?.radiusY as number}
-                stroke="#000000"
-                dash={[10, 10]}
-                {...{
-                  shadowBlur: 10,
-                  shadowOpacity: 0.6,
-                  shadowOffsetX: 10,
-                  shadowOffsetY: 10,
-                }}
-              />
-            )}
+            {this.props.drawingTool === 'Ellipse' &&
+              this.isDrawing &&
+              !this.isItemChanging && (
+                <Ellipse
+                  x={this.state.points.x}
+                  y={this.state.points.y}
+                  radiusX={this.state.points.ellipse?.radiusX as number}
+                  radiusY={this.state.points.ellipse?.radiusY as number}
+                  stroke="#000000"
+                  dash={[10, 10]}
+                  {...{
+                    shadowBlur: 10,
+                    shadowOpacity: 0.6,
+                    shadowOffsetX: 10,
+                    shadowOffsetY: 10,
+                  }}
+                />
+              )}
 
             {(this.props.drawingTool === 'Rect' ||
               this.props.drawingTool === 'RectRounded') &&
-              this.isDrawing && (
+              this.isDrawing &&
+              !this.isItemChanging && (
                 <Rect
                   x={this.state.points.x}
                   y={this.state.points.y}
@@ -1738,26 +1766,28 @@ class DrawCanvas extends PureComponent<Props, State> {
                 />
               )}
 
-            {this.props.drawingTool === 'Line' && this.isDrawing && (
-              <>
-                <Line
-                  x={this.state.points.x}
-                  y={this.state.points.y}
-                  points={(() => {
-                    const points: number[] = [];
-                    this.state.points.line?.forEach(point => {
-                      points.push(point.x);
-                      points.push(point.y);
-                    });
-                    return points;
-                  })()}
-                  stroke="#000000"
-                  strokeWidth={2}
-                  lineCap="round"
-                  lineJoin="round"
-                />
-              </>
-            )}
+            {this.props.drawingTool === 'Line' &&
+              this.isDrawing &&
+              !this.isItemChanging && (
+                <>
+                  <Line
+                    x={this.state.points.x}
+                    y={this.state.points.y}
+                    points={(() => {
+                      const points: number[] = [];
+                      this.state.points.line?.forEach(point => {
+                        points.push(point.x);
+                        points.push(point.y);
+                      });
+                      return points;
+                    })()}
+                    stroke="#000000"
+                    strokeWidth={2}
+                    lineCap="round"
+                    lineJoin="round"
+                  />
+                </>
+              )}
           </Layer>
         </Stage>
       </div>
