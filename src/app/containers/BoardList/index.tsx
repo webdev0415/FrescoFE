@@ -1,5 +1,5 @@
-import { Card, Col, Dropdown, Menu, Row, Skeleton, Typography } from 'antd';
-import React from 'react';
+import { Dropdown, Input, Menu, Skeleton } from 'antd';
+import React, { useState } from 'react';
 import moment from 'moment';
 import { useDispatch, useSelector } from 'react-redux';
 import { useInjectReducer, useInjectSaga } from 'utils/redux-injectors';
@@ -9,6 +9,7 @@ import { selectBoardList } from './selectors';
 import { Link } from 'react-router-dom';
 import { BoardApiService } from 'services/APIService/BoardsApi.service';
 import { Collaboration } from '../../components/Collaboration';
+import { LoadingOutlined, SaveOutlined } from '@ant-design/icons';
 
 interface BoardListProps {
   orgId: string;
@@ -17,6 +18,9 @@ interface BoardListProps {
 export const BoardList = (props: BoardListProps) => {
   useInjectReducer({ key: sliceKey, reducer: reducer });
   useInjectSaga({ key: sliceKey, saga: boardListSaga });
+  const [editBoardItem, setEditBoardItem] = useState('');
+  const [editName, setEditName] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const boardList = useSelector(selectBoardList);
   const dispatch = useDispatch();
@@ -41,9 +45,42 @@ export const BoardList = (props: BoardListProps) => {
     );
   };
 
+  const handleClickRename = (id: string) => {
+    setEditBoardItem(id);
+  };
+
+  const handleChangeName = (event: any) => {
+    setEditName(event.target.value);
+  };
+  const onSaveName = () => {
+    const id = editBoardItem;
+    const name = editName;
+    const item = boardList.boardList.find(i => i.id === id);
+    if (item) {
+      setLoading(true);
+      const data = {
+        ...item,
+        name: name,
+      };
+      BoardApiService.updateById(id, data).subscribe(
+        () => {
+          setLoading(false);
+          setEditName('');
+          setEditBoardItem('');
+          getBoards();
+        },
+        error => {
+          setLoading(false);
+          console.error(error);
+        },
+      );
+    }
+  };
+
   return (
     <div className="card-grid">
       {boardList.loading &&
+        !boardList.boardList.length &&
         Array(5)
           .fill(1)
           .map((item, index) => (
@@ -105,12 +142,15 @@ export const BoardList = (props: BoardListProps) => {
                             Edit
                           </Link>
                         </Menu.Item>
-                        <Menu.Item key="1">
-                          <a href="#">Action</a>
+                        <Menu.Item
+                          key="1"
+                          onClick={() => handleClickRename(item.id)}
+                        >
+                          Rename
                         </Menu.Item>
                         <Menu.Divider />
                         <Menu.Item
-                          key="3"
+                          key="2"
                           onClick={() => handleDeleteBoard(item.id)}
                         >
                           Delete
@@ -124,14 +164,37 @@ export const BoardList = (props: BoardListProps) => {
                     </div>
                   </Dropdown>
                 </div>
-                <div className="card-title">
-                  {item.name}
-                  {item && item.name && item.name.length >= 34 ? (
-                    <span className="tooltip">{item.name}</span>
-                  ) : (
-                    ''
-                  )}
-                </div>
+
+                {editBoardItem !== item.id && (
+                  <div className="card-title">
+                    {item.name}
+                    {item && item.name && item.name.length >= 34 ? (
+                      <span className="tooltip">{item.name}</span>
+                    ) : (
+                      ''
+                    )}
+                  </div>
+                )}
+                {editBoardItem === item.id && (
+                  <div className="card-title-input">
+                    <Input
+                      addonAfter={
+                        <>
+                          {!loading && (
+                            <SaveOutlined
+                              onClick={onSaveName}
+                              style={{ cursor: 'pointer' }}
+                            />
+                          )}
+
+                          {loading && <LoadingOutlined />}
+                        </>
+                      }
+                      defaultValue={item.name}
+                      onChange={handleChangeName}
+                    />
+                  </div>
+                )}
                 <div className="card-timestamp">
                   {item && item.createdAt
                     ? moment(item.createdAt).format('LLL')
