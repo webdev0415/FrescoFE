@@ -3,12 +3,12 @@ import {
   Ellipse,
   Group,
   Layer,
+  Line,
   Rect,
   Shape,
   Stage,
   Star,
   Text,
-  Line,
 } from 'react-konva';
 import { v4 as uuidv4 } from 'uuid';
 import Konva from 'konva';
@@ -49,7 +49,6 @@ import {
   VerticalLineIcon,
 } from '../CanvasIcons';
 import {
-  BoardApiService,
   CanvasApiService,
   ImageUploadingService,
 } from '../../../services/APIService';
@@ -1079,7 +1078,7 @@ class DrawCanvas extends PureComponent<Props, State> {
         {this.state.objects
           .filter(
             shapeObject =>
-              (shapeObject.type === 'Sticky' || shapeObject.type === 'Text') &&
+              shapeObject.type === 'Text' &&
               shapeObject.isEditing &&
               !this.isItemMoving,
           )
@@ -1136,7 +1135,7 @@ class DrawCanvas extends PureComponent<Props, State> {
         {this.state.objects
           .filter(
             shapeObject =>
-              (shapeObject.type === 'Sticky' || shapeObject.type === 'Text') &&
+              shapeObject.type === 'Text' &&
               shapeObject.isSelected &&
               !this.isItemMoving,
           )

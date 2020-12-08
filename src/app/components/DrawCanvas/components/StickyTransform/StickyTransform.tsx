@@ -163,13 +163,15 @@ function StickyTransform(props: Props): JSX.Element {
         draggable={!data.isLocked && data.isEditable}
         onTransformStart={() => onChangeStart(data)}
         // onTransform={onTransform}
-        onDblClick={() =>
-          onEdit({
-            ...data,
-            isEditing: true,
-            isSelected: true,
-          })
-        }
+        onDblClick={() => {
+          if (data.type === 'Text') {
+            onEdit({
+              ...data,
+              isEditing: true,
+              isSelected: true,
+            });
+          }
+        }}
         onTransformEnd={onTransformEnd}
         onDragStart={() => onChangeStart(data)}
         onDragMove={onDragMove}
