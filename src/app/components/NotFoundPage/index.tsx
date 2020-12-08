@@ -5,8 +5,8 @@ import { Helmet } from 'react-helmet-async';
 import { Button } from 'antd';
 
 export function NotFoundPage() {
-  const clearCache = () => {
-    window.location.reload(true);
+  const clearCacheAndRedirect = () => {
+    window.location.href = '/';
   };
   return (
     <>
@@ -23,7 +23,7 @@ export function NotFoundPage() {
           4
         </Title>
         <P>Page not found.</P>
-        {/*<Button onClick={clearCache}>Clear Cache</Button>*/}
+        <Button onClick={clearCacheAndRedirect}>Clear Browser Cache</Button>
       </Wrapper>
     </>
   );
