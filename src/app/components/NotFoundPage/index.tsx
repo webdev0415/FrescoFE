@@ -2,8 +2,12 @@ import React from 'react';
 import styled from 'styled-components/macro';
 import { P } from './P';
 import { Helmet } from 'react-helmet-async';
+import { Button } from 'antd';
 
 export function NotFoundPage() {
+  const clearCacheAndRedirect = () => {
+    window.location.href = '/';
+  };
   return (
     <>
       <Helmet>
@@ -19,6 +23,7 @@ export function NotFoundPage() {
           4
         </Title>
         <P>Page not found.</P>
+        <Button onClick={clearCacheAndRedirect}>Clear Browser Cache</Button>
       </Wrapper>
     </>
   );

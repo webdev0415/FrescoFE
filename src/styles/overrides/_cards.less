@@ -77,8 +77,17 @@
         width: 100%;
       }
 
+      &:not(:hover) {
+        .card-footer {
+          height: auto;
+          .card-timestamp,.card-users {
+            display: none;
+          }
+        }
+      }
+
       .card-footer {
-        position: relative;
+        position: absolute;
         width: 100%;
         height: 103px;
         background: #ffffff;
@@ -89,6 +98,9 @@
         justify-content: center;
         padding: 10px;
         gap: 5px;
+        bottom: 0;
+
+
 
 
 
@@ -111,6 +123,10 @@
               background-color: rgba(0, 0, 0, 0.04);
             }
           }
+        }
+
+        .card-title-input {
+          width: 100%;
         }
 
         .card-title {

@@ -60,14 +60,15 @@ const Header: React.FC<HeaderProps> = props => {
           width: '100%',
         }}
       >
-        <div
+        <a
           style={{
             textAlign: 'left',
             color: 'white',
           }}
+          href="/"
         >
           <img src={logoImg} alt="logo" />
-        </div>
+        </a>
         <div>{headerButton}</div>
         {props.isLogIn && (
           <div>

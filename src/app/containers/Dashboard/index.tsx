@@ -7,8 +7,13 @@
 import React, { memo, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useDispatch, useSelector } from 'react-redux';
-import { Button, Dropdown, Input, Menu, Select, Tabs, Skeleton } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
+import { Button, Dropdown, Input, Menu, Select, Skeleton, Tabs } from 'antd';
+import {
+  BarChartOutlined,
+  LoadingOutlined,
+  PlusOutlined,
+  SaveOutlined,
+} from '@ant-design/icons';
 import { Link, Redirect, useHistory } from 'react-router-dom';
 
 import { useInjectReducer, useInjectSaga } from 'utils/redux-injectors';
@@ -20,7 +25,6 @@ import { dashboardSaga } from './saga';
 import { actions as globalActions } from '../../slice';
 import dashboardIcon from 'assets/icons/dashboard.svg';
 import pageIcon from 'assets/icons/page.svg';
-import { BarChartOutlined } from '@ant-design/icons';
 
 // Components
 import { UserModal } from '../../components/UserModal';
@@ -39,9 +43,9 @@ import {
 } from '../../../services/APIService/interfaces';
 import { CanvasBoardTemplates } from '../../components/CanvasBoardTemplates';
 import { CanvasCategoryService } from '../../../services/APIService/CanvasCategory.service';
-import { BoardApiService } from 'services/APIService/BoardsApi.service';
 import { Collaboration } from '../../components/Collaboration';
 import moment from 'moment';
+
 const { TabPane } = Tabs;
 export const PERMISSION = {
   // ADMIN: 'admin',
@@ -54,6 +58,9 @@ interface Props {
 }
 
 export const Dashboard = memo((props: Props) => {
+  const defaultCanvasName = `Untitled Canvas, ${moment().format(
+    'DD/mm/yy, hh:mm A',
+  )}`;
   useInjectReducer({ key: sliceKey, reducer: reducer });
   useInjectSaga({ key: sliceKey, saga: dashboardSaga });
   const [organization, setOrganization] = useState<any>(null);
@@ -72,6 +79,10 @@ export const Dashboard = memo((props: Props) => {
   const [loadingCategoriesList, setLoadingCategoriesList] = useState(false);
   const [loadingCanvasList, setLoadingCanvasList] = useState(false);
 
+  const [editCanvasItem, setEditCanvasItem] = useState('');
+  const [editName, setEditName] = useState('');
+  const [loadingUpdateName, setLoadingUpdateName] = useState(false);
+
   const orgId = props?.match?.params?.id;
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -84,6 +95,9 @@ export const Dashboard = memo((props: Props) => {
 
   const token = useSelector(selectToken);
   const user = useSelector(selectUser);
+  useEffect(() => {
+    setCanvasName(defaultCanvasName);
+  }, [defaultCanvasName]);
 
   // const user = useSelector(selectUser);
   useEffect(() => {
@@ -252,6 +266,38 @@ export const Dashboard = memo((props: Props) => {
     return <Redirect to="/auth/login" />;
   }
 
+  const handleClickRename = (id: string) => {
+    setEditCanvasItem(id);
+  };
+
+  const handleChangeName = (event: any) => {
+    setEditName(event.target.value);
+  };
+  const onSaveName = () => {
+    const id = editCanvasItem;
+    const name = editName;
+    const item = canvasList.find(i => i.id === id);
+    if (item) {
+      setLoadingUpdateName(true);
+      const data = {
+        ...item,
+        name: name,
+      };
+      CanvasApiService.updateById(id, data).subscribe(
+        () => {
+          setLoadingUpdateName(false);
+          setEditName('');
+          setEditCanvasItem('');
+          getCanvasList();
+        },
+        error => {
+          setLoadingUpdateName(false);
+          console.error(error);
+        },
+      );
+    }
+  };
+
   return (
     <>
       <Helmet>
@@ -306,7 +352,7 @@ export const Dashboard = memo((props: Props) => {
               icon={<PlusOutlined />}
               onClick={() => {
                 setIsShowAddNewCanvas(true);
-                setCanvasName('');
+                setCanvasName(defaultCanvasName);
               }}
             >
               Create Canvas
@@ -323,7 +369,7 @@ export const Dashboard = memo((props: Props) => {
             >
               <Input
                 placeholder="Name"
-                name="name"
+                value={canvasName}
                 onChange={event => setCanvasName(event.currentTarget.value)}
                 style={{ width: 300, flexShrink: 0 }}
               />
@@ -405,8 +451,11 @@ export const Dashboard = memo((props: Props) => {
                                 Edit
                               </Link>
                             </Menu.Item>
-                            <Menu.Item key="1">
-                              <a href="#">Action</a>
+                            <Menu.Item
+                              key="1"
+                              onClick={() => handleClickRename(data.id)}
+                            >
+                              Rename
                             </Menu.Item>
                             <Menu.Divider />
                             <Menu.Item
@@ -424,14 +473,38 @@ export const Dashboard = memo((props: Props) => {
                         </div>
                       </Dropdown>
                     </div>
-                    <div className="card-title">
-                      {data.name}
-                      {data && data.name && data.name.length >= 34 ? (
-                        <span className="tooltip">{data.name}</span>
-                      ) : (
-                        ''
-                      )}
-                    </div>
+
+                    {editCanvasItem !== data.id && (
+                      <div className="card-title">
+                        {data.name}
+                        {data && data.name && data.name.length >= 34 ? (
+                          <span className="tooltip">{data.name}</span>
+                        ) : (
+                          ''
+                        )}
+                      </div>
+                    )}
+                    {editCanvasItem === data.id && (
+                      <div className="card-title-input">
+                        <Input
+                          addonAfter={
+                            <>
+                              {!loadingUpdateName && (
+                                <SaveOutlined
+                                  onClick={onSaveName}
+                                  style={{ cursor: 'pointer' }}
+                                />
+                              )}
+
+                              {loadingUpdateName && <LoadingOutlined />}
+                            </>
+                          }
+                          defaultValue={data.name}
+                          onChange={handleChangeName}
+                        />
+                      </div>
+                    )}
+
                     <div className="card-timestamp">
                       {data && data.createdAt
                         ? moment(data.createdAt).format('LLL')
@@ -445,6 +518,7 @@ export const Dashboard = memo((props: Props) => {
                 </div>
               ))}
               {loadingCanvasList &&
+                !canvasList.length &&
                 Array(5)
                   .fill(1)
                   .map((item, index) => (
