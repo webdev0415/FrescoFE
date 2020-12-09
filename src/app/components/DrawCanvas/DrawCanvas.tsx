@@ -32,6 +32,7 @@ import {
   RectTransform,
   StarTransform,
   StickyTransform,
+  TextTransform,
   TriangleTransform,
 } from './components';
 import {
@@ -1577,12 +1578,9 @@ class DrawCanvas extends PureComponent<Props, State> {
                     }}
                   />
                 );
-              } else if (
-                shapeObject.type === 'Text' ||
-                shapeObject.type === 'Sticky'
-              ) {
+              } else if (shapeObject.type === 'Text') {
                 return (
-                  <StickyTransform
+                  <TextTransform
                     key={shapeObject.id}
                     data={shapeObject}
                     onChangeStart={this.handleChangeStart}
@@ -1590,6 +1588,31 @@ class DrawCanvas extends PureComponent<Props, State> {
                     onEdit={data => {
                       this.updateShape(data);
                     }}
+                    onChange={data => {
+                      this.destroyGuides();
+                      this.updateShape(data, {
+                        saveHistory: true,
+                        emitEvent: true,
+                        save: true,
+                      });
+                    }}
+                    onSelect={() => {
+                      if (shapeObject.isEditable) {
+                        this.handleSelect(shapeObject);
+                      }
+                    }}
+                    onContextMenu={() => {
+                      this.handleContextMenu(shapeObject);
+                    }}
+                  />
+                );
+              } else if (shapeObject.type === 'Sticky') {
+                return (
+                  <StickyTransform
+                    key={shapeObject.id}
+                    data={shapeObject}
+                    onChangeStart={this.handleChangeStart}
+                    onChanging={this.handleChanging}
                     onChange={data => {
                       this.destroyGuides();
                       this.updateShape(data, {

@@ -19,6 +19,7 @@ import {
   RectTransform,
   StarTransform,
   StickyTransform,
+  TextTransform,
   TriangleTransform,
 } from './components';
 
@@ -645,12 +646,17 @@ class DrawBoard extends PureComponent<Props, State> {
                 return (
                   <TriangleTransform key={shapeObject.id} data={shapeObject} />
                 );
-              } else if (
-                shapeObject.type === 'Text' ||
-                shapeObject.type === 'Sticky'
-              ) {
+              } else if (shapeObject.type === 'Text') {
                 return (
-                  <StickyTransform key={shapeObject.id} data={shapeObject} />
+                  <TextTransform key={shapeObject.id} data={shapeObject} />
+                );
+              } else if (shapeObject.type === 'Sticky') {
+                return (
+                  <StickyTransform
+                    key={shapeObject.id}
+                    data={shapeObject}
+                    onChange={() => {}}
+                  />
                 );
               } else if (shapeObject.type === 'Line') {
                 return (

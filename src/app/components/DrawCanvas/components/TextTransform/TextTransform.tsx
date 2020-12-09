@@ -6,19 +6,20 @@ import {
   ObjectSnappingEdges,
   StickyProperty,
   TransformShapeProps,
-} from '../../../../components/DrawCanvas/types';
+} from '../../types';
 
 interface Props extends TransformShapeProps {
   onEdit(data: ObjectInterface): void;
 }
 
-function StickyTransform(props: TransformShapeProps): JSX.Element {
+function TextTransform(props: Props): JSX.Element {
   const {
     data,
     onSelect,
     onChange,
     onChanging,
     onChangeStart,
+    onEdit,
     onContextMenu,
   } = props;
   const shapeRef = useRef<Konva.Group>(null);
@@ -162,6 +163,13 @@ function StickyTransform(props: TransformShapeProps): JSX.Element {
         draggable={!data.isLocked && data.isEditable}
         onTransformStart={() => onChangeStart(data)}
         // onTransform={onTransform}
+        onDblClick={() => {
+          onEdit({
+            ...data,
+            isEditing: true,
+            isSelected: true,
+          });
+        }}
         onTransformEnd={onTransformEnd}
         onDragStart={() => onChangeStart(data)}
         onDragMove={onDragMove}
@@ -208,4 +216,4 @@ function StickyTransform(props: TransformShapeProps): JSX.Element {
   );
 }
 
-export default StickyTransform;
+export default TextTransform;

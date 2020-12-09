@@ -66,6 +66,19 @@ export interface StarProperties {
   numPoints: number;
 }
 
+export interface NotesIdentityCircle extends CanvasPoints {
+  radius: number;
+  fill: string;
+}
+
+export interface NotesInterface extends CanvasPoints, ShapeProperty {
+  id: string;
+  userId: string;
+  text: string;
+  fontSize: number;
+  circle: NotesIdentityCircle;
+}
+
 export interface PointsInterface extends CanvasPoints {
   textData?: StickyProperty;
   sticky?: StickyProperty;
@@ -74,6 +87,7 @@ export interface PointsInterface extends CanvasPoints {
   ellipse?: EllipseProperties;
   triangle?: TriangleProperties;
   line?: CanvasPoints[];
+  notes?: NotesInterface[];
   type: ShapeObjectType;
 }
 
@@ -126,4 +140,24 @@ export interface BoardEventInterface {
 export interface ObjectSocketInterface {
   id: string;
   data: ObjectInterface;
+}
+
+export interface BoardNotesIdentityCircle extends CanvasPoints {
+  radius: number;
+  fill: string;
+}
+export interface BoardObjectInterface extends CanvasPoints, ShapeProperty {
+  id: string;
+  userId: string;
+  fontSize: number;
+  text: string;
+  circle: BoardNotesIdentityCircle;
+}
+export interface BoardNotesAreaInterface extends CanvasPoints, ShapeProperty {
+  id: string;
+  data: BoardObjectInterface[];
+}
+
+export interface BoardNotesAreaPropsInterface extends BoardNotesAreaInterface {
+  onChange(id: string, data: BoardObjectInterface[]);
 }
