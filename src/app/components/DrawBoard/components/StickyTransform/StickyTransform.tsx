@@ -8,14 +8,12 @@ import {
 } from '../../../DrawBoard/types';
 
 function StickyTransform(props: TransformShapeProps): JSX.Element {
-  const { data, onSelect } = props;
+  const { data } = props;
 
   return (
     <>
       <Group
         id={data.id}
-        onClick={onSelect}
-        onTap={onSelect}
         x={data.x}
         y={data.y}
         height={data.rect?.height as number}

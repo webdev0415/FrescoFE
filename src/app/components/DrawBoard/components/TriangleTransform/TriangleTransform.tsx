@@ -3,14 +3,12 @@ import { Shape } from 'react-konva';
 import { TransformShapeProps } from '../../types';
 
 function TriangleTransform(props: TransformShapeProps): JSX.Element {
-  const { data, onSelect } = props;
+  const { data } = props;
 
   return (
     <React.Fragment>
       <Shape
         id={data.id}
-        onClick={onSelect}
-        onTap={onSelect}
         x={data.x}
         y={data.y}
         width={data.triangle?.width}

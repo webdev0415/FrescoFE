@@ -3,7 +3,7 @@ import { Text } from 'react-konva';
 import { TransformShapeProps } from '../../types';
 
 function TextTransform(props: TransformShapeProps): JSX.Element {
-  const { data, onSelect } = props;
+  const { data } = props;
 
   return (
     <React.Fragment>
@@ -13,8 +13,6 @@ function TextTransform(props: TransformShapeProps): JSX.Element {
         x={data.x}
         y={data.y}
         fillEnabled={true}
-        onClick={onSelect}
-        onTap={onSelect}
         {...data.textData}
         text={data.sticky?.text ? data.sticky?.text : 'Sticky notes area'}
         rotation={data.rotation}

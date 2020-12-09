@@ -3,13 +3,11 @@ import { Star } from 'react-konva';
 import { TransformShapeProps } from '../../types';
 
 function StarTransform(props: TransformShapeProps): JSX.Element {
-  const { data, onSelect } = props;
+  const { data } = props;
 
   return (
     <React.Fragment>
       <Star
-        onClick={onSelect}
-        onTap={onSelect}
         numPoints={5}
         x={data.x}
         y={data.y}

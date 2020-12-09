@@ -116,11 +116,6 @@ export interface FontInterface {
 
 export interface TransformShapeProps {
   data: ObjectInterface;
-  onChange(data: ObjectInterface): void;
-  onChanging(data: ObjectInterface): void;
-  onChangeStart(data: ObjectInterface): void;
-  onSelect(event: Konva.KonvaEventObject<MouseEvent>): void;
-  draggable?: boolean;
 }
 
 export interface BoardEventInterface {

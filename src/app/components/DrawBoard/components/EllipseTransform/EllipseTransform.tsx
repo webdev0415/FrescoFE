@@ -3,13 +3,11 @@ import { Ellipse } from 'react-konva';
 import { TransformShapeProps } from '../../types';
 
 function EllipseTransform(props: TransformShapeProps): JSX.Element {
-  const { data, onSelect } = props;
+  const { data } = props;
 
   return (
     <React.Fragment>
       <Ellipse
-        onClick={onSelect}
-        onTap={onSelect}
         x={data.x}
         y={data.y}
         radiusX={data.ellipse?.radiusX as number}

@@ -3,7 +3,7 @@ import { Line } from 'react-konva';
 import { TransformShapeProps } from '../../types';
 
 function LineTransform(props: TransformShapeProps): JSX.Element {
-  const { data, onSelect } = props;
+  const { data } = props;
 
   return (
     <React.Fragment>
@@ -23,8 +23,6 @@ function LineTransform(props: TransformShapeProps): JSX.Element {
         lineCap="round"
         lineJoin="round"
         id={data.id}
-        onClick={onSelect}
-        onTap={onSelect}
         rotation={data.rotation}
         opacity={1}
       />

@@ -3,14 +3,12 @@ import { Rect } from 'react-konva';
 import { TransformShapeProps } from '../../types';
 
 function RectTransform(props: TransformShapeProps): JSX.Element {
-  const { data, onSelect } = props;
+  const { data } = props;
 
   return (
     <React.Fragment>
       <Rect
         id={data.id}
-        onClick={onSelect}
-        onTap={onSelect}
         x={data.x}
         y={data.y}
         width={data.rect?.width as number}

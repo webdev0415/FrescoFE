@@ -627,118 +627,34 @@ class DrawBoard extends PureComponent<Props, State> {
                 shapeObject.type === 'RectRounded'
               ) {
                 return (
-                  <RectTransform
-                    key={shapeObject.id}
-                    data={shapeObject}
-                    onChangeStart={this.handleChangeStart}
-                    onChanging={this.handleChanging}
-                    onChange={data => {
-                      this.updateShape(data, {
-                        saveHistory: true,
-                        emitEvent: true,
-                      });
-                    }}
-                    onSelect={() => {
-                      this.handleSelect(shapeObject);
-                    }}
-                  />
+                  <RectTransform key={shapeObject.id} data={shapeObject} />
                 );
               } else if (shapeObject.type === 'Ellipse') {
                 return (
                   <>
-                    <EllipseTransform
-                      key={shapeObject.id}
-                      data={shapeObject}
-                      onChangeStart={this.handleChangeStart}
-                      onChanging={this.handleChanging}
-                      onChange={data => {
-                        this.updateShape(data, {
-                          saveHistory: true,
-                          emitEvent: true,
-                        });
-                      }}
-                      onSelect={() => {
-                        this.handleSelect(shapeObject);
-                      }}
-                    />
+                    <EllipseTransform key={shapeObject.id} data={shapeObject} />
                   </>
                 );
               } else if (shapeObject.type === 'Star') {
                 return (
                   <>
-                    <StarTransform
-                      key={shapeObject.id}
-                      data={shapeObject}
-                      onChangeStart={this.handleChangeStart}
-                      onChanging={this.handleChanging}
-                      onChange={data => {
-                        this.updateShape(data, {
-                          saveHistory: true,
-                          emitEvent: true,
-                        });
-                      }}
-                      onSelect={() => {
-                        this.handleSelect(shapeObject);
-                      }}
-                    />
+                    <StarTransform key={shapeObject.id} data={shapeObject} />
                   </>
                 );
               } else if (shapeObject.type === 'Triangle') {
                 return (
-                  <TriangleTransform
-                    key={shapeObject.id}
-                    data={shapeObject}
-                    onChangeStart={this.handleChangeStart}
-                    onChanging={this.handleChanging}
-                    onChange={data => {
-                      this.updateShape(data, {
-                        saveHistory: true,
-                        emitEvent: true,
-                      });
-                    }}
-                    onSelect={() => {
-                      this.handleSelect(shapeObject);
-                    }}
-                  />
+                  <TriangleTransform key={shapeObject.id} data={shapeObject} />
                 );
               } else if (
                 shapeObject.type === 'Text' ||
                 shapeObject.type === 'Sticky'
               ) {
                 return (
-                  <StickyTransform
-                    key={shapeObject.id}
-                    data={shapeObject}
-                    onChangeStart={this.handleChangeStart}
-                    onChanging={this.handleChanging}
-                    onChange={data => {
-                      this.updateShape(data, {
-                        saveHistory: true,
-                        emitEvent: true,
-                      });
-                    }}
-                    onSelect={() => {
-                      this.handleSelect(shapeObject);
-                    }}
-                  />
+                  <StickyTransform key={shapeObject.id} data={shapeObject} />
                 );
               } else if (shapeObject.type === 'Line') {
                 return (
-                  <LineTransform
-                    key={shapeObject.id}
-                    data={shapeObject}
-                    onChangeStart={this.handleChangeStart}
-                    onChanging={this.handleChanging}
-                    onChange={data => {
-                      this.updateShape(data, {
-                        saveHistory: true,
-                        emitEvent: true,
-                      });
-                    }}
-                    onSelect={() => {
-                      this.handleSelect(shapeObject);
-                    }}
-                  />
+                  <LineTransform key={shapeObject.id} data={shapeObject} />
                 );
               } else {
                 return <></>;
