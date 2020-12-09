@@ -48,19 +48,28 @@
   }
   &-body {
     margin-top: 16px;
-    overflow-y: scroll;
+    overflow-y: auto;
     height: calc(100% - 108px);
     padding-right: 15px;
+
     &-message {
       position: relative;
+      &:hover {
+        .chatBox-message-settings {
+          span {
+            display: block;
+          }
+        }
+      }
       .chatBox-message-settings {
         span {
           position: absolute;
           left: 5px;
-          bottom: 0;
+          bottom: -7px;
           transform: rotate(90deg);
           font-size: 22px;
           cursor: pointer;
+          display: none;
         }
         &-dropdown {
           display: none;
@@ -72,8 +81,9 @@
             padding: 0;
             list-style: none;
             position: absolute;
-            bottom: -38px;
+            bottom: -23px;
             z-index: 9999;
+            left: 13px;
             li {
               margin: 0 5px;
             }
@@ -104,6 +114,8 @@
           input {
             display: block;
             margin-left: 30%;
+            outline: none;
+            border: 1px solid #ddd;
           }
 
         }
@@ -124,6 +136,7 @@
         .chatBox-body-message-content {
           max-width: 320px;
           margin-left: 20px;
+         
         }
       }
     }

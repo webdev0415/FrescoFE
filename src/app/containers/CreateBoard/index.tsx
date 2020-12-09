@@ -54,13 +54,15 @@ export const CreateBoard = memo((props: RouteChildrenProps<{ id: string }>) => {
   const [permission, setPermission] = useState(PERMISSION.EDITOR);
   const [linkInvitation, setLinkInvitation] = useState(Object);
   const [chatModal, setChatModal] = useState(false);
-  const [chatMessages, setChatMessages] = useState([]);
+  const [chatMessages, setChatMessages] = useState<any>([]);
   const history = useHistory();
   const location = useLocation();
   const orgId = (location.state as IState)?.orgId;
   const token = useSelector(selectToken);
   const boardId = props?.match?.params?.id;
   const [user, SetUser] = useState([]);
+  const [messagesOffset, setMessagesOffset] = useState(0);
+  const [messagesLimit, setMessagesLimit] = useState(25);
 
   useEffect(() => {
     document.addEventListener('click', event => {
@@ -97,13 +99,34 @@ export const CreateBoard = memo((props: RouteChildrenProps<{ id: string }>) => {
     if (chatIcon) {
       chatIcon.addEventListener('click', () => {
         setChatModal(true);
-        MessagesApiService.AllMessages(boardId).subscribe(data => {
+        MessagesApiService.AllMessages(
+          boardId,
+          messagesOffset,
+          messagesLimit,
+        ).subscribe(data => {
           console.log('data', data);
           setChatMessages(data);
         });
       });
     }
-  }, [boardId]);
+  }, [boardId, messagesLimit, messagesOffset]);
+
+  useEffect(() => {
+    MessagesApiService.AllMessages(
+      boardId,
+      messagesOffset,
+      messagesLimit,
+    ).subscribe(data => {
+      console.log('data', data.messages);
+
+      setChatMessages(prevState => {
+        return {
+          ...prevState,
+          messages: [...(prevState.messages || []), ...data.messages],
+        };
+      });
+    });
+  }, [boardId, messagesLimit, messagesOffset]);
 
   const _getLinkInvitation = async () => {
     try {
@@ -230,12 +253,16 @@ export const CreateBoard = memo((props: RouteChildrenProps<{ id: string }>) => {
     <div className="canvas-view">
       <div className="canvas-editor">
         <Chat
+          messagesOffset={messagesOffset}
           setChatMessages={setChatMessages}
           open={chatModal}
           hide={hideChat}
           boardId={boardId}
           messages={chatMessages}
           user={user}
+          setMessagesOffset={setMessagesOffset}
+          setMessagesLimit={setMessagesLimit}
+          messagesLimit={messagesLimit}
         />
 
         {isShowShareModal && (

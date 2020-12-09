@@ -15,7 +15,13 @@ export const Chat = ({
   boardId,
   setChatMessages,
   user,
+  setMessagesOffset,
+  setMessagesLimit,
+  messagesLimit,
+  messagesOffset,
 }) => {
+  const [scroll, setScroll] = React.useState<null | HTMLElement>(null);
+
   return (
     <div className={`chatBox ${open ? 'active' : ''}`}>
       <ChatHeader hide={hide} />
@@ -23,11 +29,19 @@ export const Chat = ({
         setChatMessages={setChatMessages}
         user={user}
         messages={messages}
+        boardId={boardId}
+        setMessagesOffset={setMessagesOffset}
+        setMessagesLimit={setMessagesLimit}
+        messagesLimit={messagesLimit}
+        messagesOffset={messagesOffset}
+        scroll={scroll}
+        setScroll={setScroll}
       />
       <ChatFooter
         boardId={boardId}
         setChatMessages={setChatMessages}
         user={user}
+        scroll={scroll}
       />
     </div>
   );
