@@ -197,35 +197,6 @@ class DrawBoard extends PureComponent<Props, State> {
     }
   }
 
-  // deleteObject(
-  //   objectData: ObjectSocketInterface,
-  //   options: {
-  //     saveHistory?: boolean;
-  //     emitEvent?: boolean;
-  //     saveCanvas?: boolean;
-  //   } = {
-  //     saveHistory: false,
-  //     emitEvent: false,
-  //     saveCanvas: false,
-  //   },
-  // ): void {
-  //   if (options.emitEvent) {
-  //     this.emitSocketEvent(BoardSocketEventEnum.DELETE, objectData.data);
-  //   }
-  //   this.setState(
-  //     {
-  //       objects: this.state.objects.filter(
-  //         shapeObject => shapeObject.id !== objectData.data.id,
-  //       ),
-  //     },
-  //     () => {
-  //       if (options.saveCanvas) {
-  //         this.save();
-  //       }
-  //     },
-  //   );
-  // }
-
   emitSocketEvent(
     eventType: BoardSocketEventEnum,
     data: ObjectInterface,
@@ -634,7 +605,6 @@ class DrawBoard extends PureComponent<Props, State> {
   };
 
   render() {
-    console.log('this.state.selectedStickyData', this.state.selectedStickyData);
     return (
       <div className={this.props.className}>
         <Stage
@@ -741,9 +711,6 @@ class DrawBoard extends PureComponent<Props, State> {
                     data={shapeObject}
                     onChangeStart={this.handleChangeStart}
                     onChanging={this.handleChanging}
-                    onEdit={data => {
-                      this.setState({ selectedStickyData: data });
-                    }}
                     onChange={data => {
                       this.updateShape(data, {
                         saveHistory: true,
@@ -779,40 +746,6 @@ class DrawBoard extends PureComponent<Props, State> {
             })}
           </Layer>
         </Stage>
-        {!!this.state.selectedStickyData && (
-          <textarea
-            ref={this.textAreaRef}
-            style={{
-              ...this.state.selectedStickyData.textData,
-              position: 'absolute',
-              top: this.state.selectedStickyData?.y,
-              left: this.state.selectedStickyData?.x,
-              width: this.state.selectedStickyData.rect?.width,
-              height: this.state.selectedStickyData.rect?.height,
-              resize: 'none',
-              color: '#000000',
-              background: '#F5EDFE',
-              // borderRadius: this.state.selectedStickyData?.sticky?.cornerRadius,
-              padding: '15px 5px',
-              outline: 'none',
-            }}
-            onKeyDown={e => {
-              if (e.key === 'Enter' && this.state.selectedStickyData) {
-                this.updateObjectText(this.state.selectedStickyData.id, {
-                  ...this.state.selectedStickyData.sticky,
-                  text: this.textAreaRef.current?.value,
-                });
-                this.setState({
-                  selectedStickyData: null,
-                });
-              }
-            }}
-            // className="canvas-text-editor"
-            id="canvas-text-editor"
-            contentEditable="true"
-            defaultValue={this.state.selectedStickyData.sticky?.text}
-          ></textarea>
-        )}
       </div>
     );
   }
