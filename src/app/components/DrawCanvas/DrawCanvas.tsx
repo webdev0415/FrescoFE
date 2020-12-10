@@ -3,12 +3,12 @@ import {
   Ellipse,
   Group,
   Layer,
+  Line,
   Rect,
   Shape,
   Stage,
   Star,
   Text,
-  Line,
 } from 'react-konva';
 import { v4 as uuidv4 } from 'uuid';
 import Konva from 'konva';
@@ -32,6 +32,7 @@ import {
   RectTransform,
   StarTransform,
   StickyTransform,
+  TextTransform,
   TriangleTransform,
 } from './components';
 import {
@@ -49,7 +50,6 @@ import {
   VerticalLineIcon,
 } from '../CanvasIcons';
 import {
-  BoardApiService,
   CanvasApiService,
   ImageUploadingService,
 } from '../../../services/APIService';
@@ -1079,7 +1079,7 @@ class DrawCanvas extends PureComponent<Props, State> {
         {this.state.objects
           .filter(
             shapeObject =>
-              (shapeObject.type === 'Sticky' || shapeObject.type === 'Text') &&
+              shapeObject.type === 'Text' &&
               shapeObject.isEditing &&
               !this.isItemMoving,
           )
@@ -1136,7 +1136,7 @@ class DrawCanvas extends PureComponent<Props, State> {
         {this.state.objects
           .filter(
             shapeObject =>
-              (shapeObject.type === 'Sticky' || shapeObject.type === 'Text') &&
+              shapeObject.type === 'Text' &&
               shapeObject.isSelected &&
               !this.isItemMoving,
           )
@@ -1578,12 +1578,9 @@ class DrawCanvas extends PureComponent<Props, State> {
                     }}
                   />
                 );
-              } else if (
-                shapeObject.type === 'Text' ||
-                shapeObject.type === 'Sticky'
-              ) {
+              } else if (shapeObject.type === 'Text') {
                 return (
-                  <StickyTransform
+                  <TextTransform
                     key={shapeObject.id}
                     data={shapeObject}
                     onChangeStart={this.handleChangeStart}
@@ -1591,6 +1588,31 @@ class DrawCanvas extends PureComponent<Props, State> {
                     onEdit={data => {
                       this.updateShape(data);
                     }}
+                    onChange={data => {
+                      this.destroyGuides();
+                      this.updateShape(data, {
+                        saveHistory: true,
+                        emitEvent: true,
+                        save: true,
+                      });
+                    }}
+                    onSelect={() => {
+                      if (shapeObject.isEditable) {
+                        this.handleSelect(shapeObject);
+                      }
+                    }}
+                    onContextMenu={() => {
+                      this.handleContextMenu(shapeObject);
+                    }}
+                  />
+                );
+              } else if (shapeObject.type === 'Sticky') {
+                return (
+                  <StickyTransform
+                    key={shapeObject.id}
+                    data={shapeObject}
+                    onChangeStart={this.handleChangeStart}
+                    onChanging={this.handleChanging}
                     onChange={data => {
                       this.destroyGuides();
                       this.updateShape(data, {
