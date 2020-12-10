@@ -23,6 +23,7 @@ interface State {
 
 interface Props extends TransformShapeProps {
   onChange(data: ObjectInterface);
+  zoomLevel: number;
 }
 
 class StickyTransform extends PureComponent<Props, State> {
@@ -203,10 +204,12 @@ class StickyTransform extends PureComponent<Props, State> {
     ) as HTMLDivElement;
     p.contentEditable = 'true';
     Object.assign(p.style, {
-      left: (this.state.data?.x as number) + data.x + 'px',
-      top: (this.state.data?.y as number) + data.y + 'px',
-      width: data.width + 'px',
-      height: data.height + 'px',
+      left:
+        ((this.state.data?.x as number) + data.x) * this.props.zoomLevel + 'px',
+      top:
+        ((this.state.data?.y as number) + data.y) * this.props.zoomLevel + 'px',
+      width: data.width * this.props.zoomLevel + 'px',
+      height: data.height * this.props.zoomLevel + 'px',
       fontSize: data.fontSize + 'px',
     });
 
