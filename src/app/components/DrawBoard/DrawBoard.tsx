@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React, { Component, PureComponent } from 'react';
 import { Layer, Stage } from 'react-konva';
 import { v4 as uuidv4 } from 'uuid';
 import Konva from 'konva';
@@ -36,8 +36,7 @@ export enum BoardSocketEventEnum {
   DISCONNECT = 'disconnect',
 }
 
-class DrawBoard extends PureComponent<Props, State> {
-  socket: SocketIOClient.Socket;
+class DrawBoard extends Component<any, any> {
   state: State = {
     id: uuidv4(),
     objects: [],
@@ -61,17 +60,7 @@ class DrawBoard extends PureComponent<Props, State> {
   isItemMoving: boolean = false;
   isDrawing: boolean = false;
 
-  constructor(props) {
-    super(props);
-    const url = new URL(process.env.REACT_APP_BASE_URL as string);
-    url.pathname = 'board';
-    this.socket = socketIOClient(url.href, {
-      transports: ['websocket'],
-    });
-  }
-
   componentDidMount() {
-    console.log('dsadasdasda');
     document.addEventListener('keydown', event => {
       if (event.ctrlKey && event.key.toLowerCase() === 'y') {
         const redoHistory = document.getElementById(
@@ -99,50 +88,54 @@ class DrawBoard extends PureComponent<Props, State> {
   }
 
   canvasWebSockets(): void {
-    this.socket.on(BoardSocketEventEnum.CONNECT, () => {
-      console.log('Socket ' + BoardSocketEventEnum.CONNECT);
-      this.socket.emit(
-        BoardSocketEventEnum.JOIN_BOARD,
-        this.props.match?.params.id,
-      );
-    });
-    this.socket.on(BoardSocketEventEnum.CREATE, (event: string) => {
-      this.createObject(JSON.parse(event));
-    });
-    this.socket.on(BoardSocketEventEnum.JOIN_BOARD, (data: string) => {
-      console.log('Socket ' + BoardSocketEventEnum.JOIN_BOARD, data);
-    });
-    this.socket.on(BoardSocketEventEnum.LEAVE_BOARD, (data: string) => {
-      console.log('Socket ' + BoardSocketEventEnum.LEAVE_BOARD, data);
-    });
-    this.socket.on(BoardSocketEventEnum.UPDATE, (event: string) => {
-      this.updateObject(JSON.parse(event));
-    });
-    this.socket.on(BoardSocketEventEnum.MOVE, (event: string) => {
+    this.props.socketIoClient.on(
+      BoardSocketEventEnum.CREATE,
+      (event: string) => {
+        this.createObject(JSON.parse(event));
+      },
+    );
+    this.props.socketIoClient.on(
+      BoardSocketEventEnum.JOIN_BOARD,
+      (data: string) => {
+        // console.log('Socket ' + BoardSocketEventEnum.JOIN_BOARD, data);
+      },
+    );
+    this.props.socketIoClient.on(
+      BoardSocketEventEnum.LEAVE_BOARD,
+      (data: string) => {
+        // console.log('Socket ' + BoardSocketEventEnum.LEAVE_BOARD, data);
+      },
+    );
+    this.props.socketIoClient.on(
+      BoardSocketEventEnum.UPDATE,
+      (event: string) => {
+        this.updateObject(JSON.parse(event));
+      },
+    );
+    this.props.socketIoClient.on(BoardSocketEventEnum.MOVE, (event: string) => {
       console.log(BoardSocketEventEnum.MOVE, event);
       this.moveObject(JSON.parse(event));
     });
-    this.socket.on(BoardSocketEventEnum.LOCK, (event: string) => {
+    this.props.socketIoClient.on(BoardSocketEventEnum.LOCK, (event: string) => {
       console.log('Socket ' + BoardSocketEventEnum.LOCK, event);
       this.lockObject(JSON.parse(event));
     });
-    this.socket.on(BoardSocketEventEnum.UNLOCK, (event: string) => {
-      console.log('Socket ' + BoardSocketEventEnum.UNLOCK, event);
-    });
+    this.props.socketIoClient.on(
+      BoardSocketEventEnum.UNLOCK,
+      (event: string) => {
+        console.log('Socket ' + BoardSocketEventEnum.UNLOCK, event);
+      },
+    );
     // this.socket.on(BoardSocketEventEnum.DELETE, (event: string) => {
     //   console.log('Socket ' + BoardSocketEventEnum.DELETE, event);
     //   this.deleteObject(JSON.parse(event), { saveHistory: true });
     // });
-    this.socket.on(BoardSocketEventEnum.CREATE, (event: string) => {
-      console.log('Socket ' + BoardSocketEventEnum.CREATE, event);
-    });
-    this.socket.on(BoardSocketEventEnum.DISCONNECT, () => {
-      console.log('Socket ' + BoardSocketEventEnum.DISCONNECT);
-      this.socket.emit(
-        BoardSocketEventEnum.LEAVE_BOARD,
-        this.props.match?.params.id,
-      );
-    });
+    this.props.socketIoClient.on(
+      BoardSocketEventEnum.CREATE,
+      (event: string) => {
+        console.log('Socket ' + BoardSocketEventEnum.CREATE, event);
+      },
+    );
   }
 
   moveObject(objectData: ObjectSocketInterface): void {
@@ -203,7 +196,7 @@ class DrawBoard extends PureComponent<Props, State> {
         data: data,
       }),
     };
-    this.socket.emit(eventType, socketData);
+    this.props.socketIoClient.emit(eventType, socketData);
   }
 
   undoHistory(): void {
@@ -341,7 +334,7 @@ class DrawBoard extends PureComponent<Props, State> {
       data: data,
     }).subscribe(
       response => {
-        console.log(response);
+        // console.log(response);
       },
       error => {
         console.error(error);

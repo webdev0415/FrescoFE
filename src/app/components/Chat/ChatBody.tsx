@@ -1,11 +1,8 @@
 import React, { useRef, useEffect } from 'react';
-import { ChatMessage } from './Chat-Message';
+import { ChatMessage } from './ChatMessage';
 import chatUser from 'assets/icons/chat-user.svg';
 import moment from 'moment';
-
-interface IState {
-  orgId?: any;
-}
+import { useParams } from 'react-router-dom';
 
 export const ChatBody = ({
   messages,
@@ -17,6 +14,7 @@ export const ChatBody = ({
   messagesLimit,
   messagesOffset,
   scroll,
+  socketIoClient,
   setScroll,
 }) => {
   const messagesGroup = 120; //seconds
@@ -24,15 +22,64 @@ export const ChatBody = ({
   let messagesArr = [...(messages?.messages || [])];
 
   messagesArr?.reverse();
-
   const messagesRef = useRef<null | HTMLElement>(null);
   const scrollToBottom = () => {
     messagesRef?.current?.scrollIntoView({ behavior: 'smooth' });
   };
+  const { id: orgId } = useParams<any>();
+
+  useEffect(() => {
+    socketIoClient.on('connect', event => {
+      socketIoClient.emit('joinBoard', orgId);
+    });
+  }, [orgId, socketIoClient]);
+
+  useEffect(() => {
+    if (!Array.isArray(user)) {
+      socketIoClient.on('createMessage', data => {
+        if (data.sender.id !== user.id) {
+          setChatMessages(messages => {
+            if (data.sender.id !== user.id) {
+              return {
+                ...messages,
+                messages: [data, ...messages.messages],
+              };
+            }
+            return messages;
+          });
+        }
+      });
+
+      socketIoClient.on('updateMessage', data =>
+        setChatMessages(messages => {
+          return {
+            ...messages,
+            messages: messages.messages.map(message => {
+              if (message.id === data.id) {
+                return data;
+              }
+              return message;
+            }),
+          };
+        }),
+      );
+
+      socketIoClient.on('deleteMessage', data =>
+        setChatMessages(messages => {
+          return {
+            ...messages,
+            messages: messages.messages.filter(
+              message => message.id !== data.id,
+            ),
+          };
+        }),
+      );
+    }
+  }, [setChatMessages, socketIoClient, user]);
+
   useEffect(scrollToBottom, [messages]);
 
   useEffect(() => {
-    console.log('messages.length', messagesArr.length);
     if (scroll && messages && messagesArr.length <= 25) {
       // 35 items
       const heightBeforeRender = scroll.scrollHeight;
@@ -82,6 +129,9 @@ export const ChatBody = ({
     }
   };
 
+  if (Array.isArray(user)) {
+    return null;
+  }
   return (
     <div
       className="chatBox-body"
@@ -108,16 +158,13 @@ export const ChatBody = ({
           return (
             <ChatMessage
               key={message.id}
-              userName={message.sender.name}
+              userName={message.sender.name || message.sender.email}
               userImg={chatUser}
               message={message}
               logedUser={logedUser}
               setChatMessages={setChatMessages}
               boardId={boardId}
-              sameUser={
-                message?.sender?.id === messagesArr[index - 1]?.sender?.id &&
-                diff <= 2
-              }
+              sameUser={message?.sender?.id === user.id}
             />
           );
         })

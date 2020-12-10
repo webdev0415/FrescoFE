@@ -19,6 +19,7 @@ export const Chat = ({
   setMessagesLimit,
   messagesLimit,
   messagesOffset,
+  socketIoClient,
 }) => {
   const [scroll, setScroll] = React.useState<null | HTMLElement>(null);
 
@@ -28,6 +29,7 @@ export const Chat = ({
       <ChatBody
         setChatMessages={setChatMessages}
         user={user}
+        socketIoClient={socketIoClient}
         messages={messages}
         boardId={boardId}
         setMessagesOffset={setMessagesOffset}

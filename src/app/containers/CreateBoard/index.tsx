@@ -10,7 +10,6 @@ import {
   CopyOutlined,
   ShareAltOutlined,
 } from '@ant-design/icons';
-import { DrawCanvas } from '../../components/DrawCanvas';
 import {
   RedoIcon,
   UndoIcon,
@@ -29,7 +28,7 @@ import { selectToken } from 'app/selectors';
 import { invitationType } from 'utils/constant';
 import { Chat } from 'app/components/Chat/Chat';
 import { MessagesApiService } from 'services/APIService/MessagesApi.service';
-
+import socketIOClient from 'socket.io-client';
 interface IState {
   orgId?: any;
 }
@@ -63,6 +62,17 @@ export const CreateBoard = memo((props: RouteChildrenProps<{ id: string }>) => {
   const [user, SetUser] = useState([]);
   const [messagesOffset, setMessagesOffset] = useState(0);
   const [messagesLimit, setMessagesLimit] = useState(25);
+  const [socketClient, setSocketClient] = useState<any>(null);
+
+  useEffect(() => {
+    const url = new URL(process.env.REACT_APP_BASE_URL as string);
+    url.pathname = 'board';
+    setSocketClient(
+      socketIOClient(url.href, {
+        transports: ['websocket'],
+      }),
+    );
+  }, []);
 
   useEffect(() => {
     document.addEventListener('click', event => {
@@ -250,18 +260,21 @@ export const CreateBoard = memo((props: RouteChildrenProps<{ id: string }>) => {
   return (
     <div className="canvas-view">
       <div className="canvas-editor">
-        <Chat
-          messagesOffset={messagesOffset}
-          setChatMessages={setChatMessages}
-          open={chatModal}
-          hide={hideChat}
-          boardId={boardId}
-          messages={chatMessages}
-          user={user}
-          setMessagesOffset={setMessagesOffset}
-          setMessagesLimit={setMessagesLimit}
-          messagesLimit={messagesLimit}
-        />
+        {socketClient && (
+          <Chat
+            socketIoClient={socketClient}
+            messagesOffset={messagesOffset}
+            setChatMessages={setChatMessages}
+            open={chatModal}
+            hide={hideChat}
+            boardId={boardId}
+            messages={chatMessages}
+            user={user}
+            setMessagesOffset={setMessagesOffset}
+            setMessagesLimit={setMessagesLimit}
+            messagesLimit={messagesLimit}
+          />
+        )}
 
         {isShowShareModal && (
           <ShareModal
@@ -274,13 +287,16 @@ export const CreateBoard = memo((props: RouteChildrenProps<{ id: string }>) => {
             type={invitationType.BOARD}
           />
         )}
-        <DrawBoard
-          className="canvas-body"
-          drawingTool={drawingTool}
-          zoomLevel={zoom / 100 + 1}
-          title={title}
-          {...props}
-        />
+        {socketClient && (
+          <DrawBoard
+            socketIoClient={socketClient}
+            className="canvas-body"
+            drawingTool={drawingTool}
+            zoomLevel={zoom / 100 + 1}
+            title={title}
+            {...props}
+          />
+        )}
         <div className="canvas-header">
           <div className="canvas-header-left">
             <Link to={`/organization/${orgId}`} className="canvas-header-logo">
