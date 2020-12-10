@@ -54,13 +54,13 @@ class StickyTransform extends PureComponent<Props, State> {
       this.setState({ addNotesPlusIcon });
     });
 
-    document.addEventListener('keydown', this.onKeyEvent);
+    window.addEventListener('keydown', this.onKeyEvent);
     document.addEventListener('click', this.onClickEvent);
     this.setState({ data, notes });
   }
 
   componentWillUnmount() {
-    document.removeEventListener('keydown', this.onKeyEvent);
+    window.removeEventListener('keydown', this.onKeyEvent);
     document.removeEventListener('click', this.onClickEvent);
   }
 
@@ -79,14 +79,12 @@ class StickyTransform extends PureComponent<Props, State> {
   };
 
   onKeyEvent = (event: KeyboardEvent) => {
-    if (event.key === 'Backspace' && !this.state.editing) {
-      event.preventDefault();
-    }
-
     if (
       !!this.state.selected &&
+      !this.state.editing &&
       (event.key === 'Delete' || event.key === 'Backspace')
     ) {
+      event.preventDefault();
       this.handleRemoveNotes(this.state.selected);
     }
   };
@@ -343,7 +341,7 @@ class StickyTransform extends PureComponent<Props, State> {
                   width={item.width}
                   x={0}
                   y={0}
-                  text={item.text}
+                  text={item.text || 'Sticky notes'}
                   fontSize={item.fontSize}
                   align="center"
                   verticalAlign="middle"
