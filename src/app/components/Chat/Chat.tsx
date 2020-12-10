@@ -8,12 +8,43 @@ interface IState {
   orgId?: any;
 }
 
-export const Chat = ({ open, hide, messages, boardId }) => {
+export const Chat = ({
+  open,
+  hide,
+  messages,
+  boardId,
+  setChatMessages,
+  user,
+  setMessagesOffset,
+  setMessagesLimit,
+  messagesLimit,
+  messagesOffset,
+  socketIoClient,
+}) => {
+  const [scroll, setScroll] = React.useState<null | HTMLElement>(null);
+
   return (
     <div className={`chatBox ${open ? 'active' : ''}`}>
       <ChatHeader hide={hide} />
-      <ChatBody messages={messages} />
-      <ChatFooter boardId={boardId} />
+      <ChatBody
+        setChatMessages={setChatMessages}
+        user={user}
+        socketIoClient={socketIoClient}
+        messages={messages}
+        boardId={boardId}
+        setMessagesOffset={setMessagesOffset}
+        setMessagesLimit={setMessagesLimit}
+        messagesLimit={messagesLimit}
+        messagesOffset={messagesOffset}
+        scroll={scroll}
+        setScroll={setScroll}
+      />
+      <ChatFooter
+        boardId={boardId}
+        setChatMessages={setChatMessages}
+        user={user}
+        scroll={scroll}
+      />
     </div>
   );
 };
