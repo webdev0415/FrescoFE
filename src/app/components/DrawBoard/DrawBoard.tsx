@@ -2,13 +2,7 @@ import React, { PureComponent } from 'react';
 import { Layer, Stage } from 'react-konva';
 import { v4 as uuidv4 } from 'uuid';
 import Konva from 'konva';
-import {
-  ObjectInterface,
-  ObjectSocketInterface,
-  Props,
-  State,
-  StickyProperty,
-} from './types';
+import { ObjectInterface, ObjectSocketInterface, Props, State } from './types';
 import socketIOClient from 'socket.io-client';
 import _ from 'lodash';
 import { defaultObjectState } from './constants';
@@ -19,6 +13,7 @@ import {
   RectTransform,
   StarTransform,
   StickyTransform,
+  TextTransform,
   TriangleTransform,
 } from './components';
 
@@ -196,35 +191,6 @@ class DrawBoard extends PureComponent<Props, State> {
       this.addCanvasShape(objectData.data, { saveHistory: true });
     }
   }
-
-  // deleteObject(
-  //   objectData: ObjectSocketInterface,
-  //   options: {
-  //     saveHistory?: boolean;
-  //     emitEvent?: boolean;
-  //     saveCanvas?: boolean;
-  //   } = {
-  //     saveHistory: false,
-  //     emitEvent: false,
-  //     saveCanvas: false,
-  //   },
-  // ): void {
-  //   if (options.emitEvent) {
-  //     this.emitSocketEvent(BoardSocketEventEnum.DELETE, objectData.data);
-  //   }
-  //   this.setState(
-  //     {
-  //       objects: this.state.objects.filter(
-  //         shapeObject => shapeObject.id !== objectData.data.id,
-  //       ),
-  //     },
-  //     () => {
-  //       if (options.saveCanvas) {
-  //         this.save();
-  //       }
-  //     },
-  //   );
-  // }
 
   emitSocketEvent(
     eventType: BoardSocketEventEnum,
@@ -598,26 +564,6 @@ class DrawBoard extends PureComponent<Props, State> {
     );
   }
 
-  updateObjectText(id: string, data: StickyProperty): void {
-    const object = this.state.objects.find(item => item.id === id);
-    console.log('object', object);
-    if (object) {
-      this.updateShape(
-        {
-          ...object,
-          isEditing: false,
-          sticky: {
-            ...data,
-          },
-        },
-        {
-          saveHistory: true,
-          emitEvent: true,
-        },
-      );
-    }
-  }
-
   handleChanging = (data: ObjectInterface) => {
     // this.emitSocketEvent(BoardSocketEventEnum.MOVE, data);
   };
@@ -634,7 +580,6 @@ class DrawBoard extends PureComponent<Props, State> {
   };
 
   render() {
-    console.log('this.state.selectedStickyData', this.state.selectedStickyData);
     return (
       <div className={this.props.className}>
         <Stage
@@ -657,121 +602,44 @@ class DrawBoard extends PureComponent<Props, State> {
                 shapeObject.type === 'RectRounded'
               ) {
                 return (
-                  <RectTransform
-                    key={shapeObject.id}
-                    data={shapeObject}
-                    onChangeStart={this.handleChangeStart}
-                    onChanging={this.handleChanging}
-                    onChange={data => {
-                      this.updateShape(data, {
-                        saveHistory: true,
-                        emitEvent: true,
-                      });
-                    }}
-                    onSelect={() => {
-                      this.handleSelect(shapeObject);
-                    }}
-                  />
+                  <RectTransform key={shapeObject.id} data={shapeObject} />
                 );
               } else if (shapeObject.type === 'Ellipse') {
                 return (
                   <>
-                    <EllipseTransform
-                      key={shapeObject.id}
-                      data={shapeObject}
-                      onChangeStart={this.handleChangeStart}
-                      onChanging={this.handleChanging}
-                      onChange={data => {
-                        this.updateShape(data, {
-                          saveHistory: true,
-                          emitEvent: true,
-                        });
-                      }}
-                      onSelect={() => {
-                        this.handleSelect(shapeObject);
-                      }}
-                    />
+                    <EllipseTransform key={shapeObject.id} data={shapeObject} />
                   </>
                 );
               } else if (shapeObject.type === 'Star') {
                 return (
                   <>
-                    <StarTransform
-                      key={shapeObject.id}
-                      data={shapeObject}
-                      onChangeStart={this.handleChangeStart}
-                      onChanging={this.handleChanging}
-                      onChange={data => {
-                        this.updateShape(data, {
-                          saveHistory: true,
-                          emitEvent: true,
-                        });
-                      }}
-                      onSelect={() => {
-                        this.handleSelect(shapeObject);
-                      }}
-                    />
+                    <StarTransform key={shapeObject.id} data={shapeObject} />
                   </>
                 );
               } else if (shapeObject.type === 'Triangle') {
                 return (
-                  <TriangleTransform
-                    key={shapeObject.id}
-                    data={shapeObject}
-                    onChangeStart={this.handleChangeStart}
-                    onChanging={this.handleChanging}
-                    onChange={data => {
-                      this.updateShape(data, {
-                        saveHistory: true,
-                        emitEvent: true,
-                      });
-                    }}
-                    onSelect={() => {
-                      this.handleSelect(shapeObject);
-                    }}
-                  />
+                  <TriangleTransform key={shapeObject.id} data={shapeObject} />
                 );
-              } else if (
-                shapeObject.type === 'Text' ||
-                shapeObject.type === 'Sticky'
-              ) {
+              } else if (shapeObject.type === 'Text') {
+                return (
+                  <TextTransform key={shapeObject.id} data={shapeObject} />
+                );
+              } else if (shapeObject.type === 'Sticky') {
                 return (
                   <StickyTransform
                     key={shapeObject.id}
                     data={shapeObject}
-                    onChangeStart={this.handleChangeStart}
-                    onChanging={this.handleChanging}
-                    onEdit={data => {
-                      this.setState({ selectedStickyData: data });
-                    }}
                     onChange={data => {
                       this.updateShape(data, {
-                        saveHistory: true,
                         emitEvent: true,
+                        saveHistory: true,
                       });
-                    }}
-                    onSelect={() => {
-                      this.handleSelect(shapeObject);
                     }}
                   />
                 );
               } else if (shapeObject.type === 'Line') {
                 return (
-                  <LineTransform
-                    key={shapeObject.id}
-                    data={shapeObject}
-                    onChangeStart={this.handleChangeStart}
-                    onChanging={this.handleChanging}
-                    onChange={data => {
-                      this.updateShape(data, {
-                        saveHistory: true,
-                        emitEvent: true,
-                      });
-                    }}
-                    onSelect={() => {
-                      this.handleSelect(shapeObject);
-                    }}
-                  />
+                  <LineTransform key={shapeObject.id} data={shapeObject} />
                 );
               } else {
                 return <></>;
@@ -779,40 +647,6 @@ class DrawBoard extends PureComponent<Props, State> {
             })}
           </Layer>
         </Stage>
-        {!!this.state.selectedStickyData && (
-          <textarea
-            ref={this.textAreaRef}
-            style={{
-              ...this.state.selectedStickyData.textData,
-              position: 'absolute',
-              top: this.state.selectedStickyData?.y,
-              left: this.state.selectedStickyData?.x,
-              width: this.state.selectedStickyData.rect?.width,
-              height: this.state.selectedStickyData.rect?.height,
-              resize: 'none',
-              color: '#000000',
-              background: '#F5EDFE',
-              // borderRadius: this.state.selectedStickyData?.sticky?.cornerRadius,
-              padding: '15px 5px',
-              outline: 'none',
-            }}
-            onKeyDown={e => {
-              if (e.key === 'Enter' && this.state.selectedStickyData) {
-                this.updateObjectText(this.state.selectedStickyData.id, {
-                  ...this.state.selectedStickyData.sticky,
-                  text: this.textAreaRef.current?.value,
-                });
-                this.setState({
-                  selectedStickyData: null,
-                });
-              }
-            }}
-            // className="canvas-text-editor"
-            id="canvas-text-editor"
-            contentEditable="true"
-            defaultValue={this.state.selectedStickyData.sticky?.text}
-          ></textarea>
-        )}
       </div>
     );
   }

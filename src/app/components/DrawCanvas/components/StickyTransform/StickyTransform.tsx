@@ -12,14 +12,13 @@ interface Props extends TransformShapeProps {
   onEdit(data: ObjectInterface): void;
 }
 
-function StickyTransform(props: Props): JSX.Element {
+function StickyTransform(props: TransformShapeProps): JSX.Element {
   const {
     data,
     onSelect,
     onChange,
     onChanging,
     onChangeStart,
-    onEdit,
     onContextMenu,
   } = props;
   const shapeRef = useRef<Konva.Group>(null);
@@ -163,13 +162,6 @@ function StickyTransform(props: Props): JSX.Element {
         draggable={!data.isLocked && data.isEditable}
         onTransformStart={() => onChangeStart(data)}
         // onTransform={onTransform}
-        onDblClick={() =>
-          onEdit({
-            ...data,
-            isEditing: true,
-            isSelected: true,
-          })
-        }
         onTransformEnd={onTransformEnd}
         onDragStart={() => onChangeStart(data)}
         onDragMove={onDragMove}
