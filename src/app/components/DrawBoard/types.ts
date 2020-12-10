@@ -1,6 +1,5 @@
 import Konva from 'konva';
 import { RouteChildrenProps } from 'react-router';
-import { CanvasResponseInterface } from '../../../services/APIService/interfaces';
 
 export type ShapeObjectType =
   | 'Rect'
@@ -140,24 +139,4 @@ export interface BoardEventInterface {
 export interface ObjectSocketInterface {
   id: string;
   data: ObjectInterface;
-}
-
-export interface BoardNotesIdentityCircle extends CanvasPoints {
-  radius: number;
-  fill: string;
-}
-export interface BoardObjectInterface extends CanvasPoints, ShapeProperty {
-  id: string;
-  userId: string;
-  fontSize: number;
-  text: string;
-  circle: BoardNotesIdentityCircle;
-}
-export interface BoardNotesAreaInterface extends CanvasPoints, ShapeProperty {
-  id: string;
-  data: BoardObjectInterface[];
-}
-
-export interface BoardNotesAreaPropsInterface extends BoardNotesAreaInterface {
-  onChange(id: string, data: BoardObjectInterface[]);
 }

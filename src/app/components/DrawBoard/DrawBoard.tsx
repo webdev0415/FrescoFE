@@ -2,13 +2,7 @@ import React, { PureComponent } from 'react';
 import { Layer, Stage } from 'react-konva';
 import { v4 as uuidv4 } from 'uuid';
 import Konva from 'konva';
-import {
-  ObjectInterface,
-  ObjectSocketInterface,
-  Props,
-  State,
-  StickyProperty,
-} from './types';
+import { ObjectInterface, ObjectSocketInterface, Props, State } from './types';
 import socketIOClient from 'socket.io-client';
 import _ from 'lodash';
 import { defaultObjectState } from './constants';
@@ -570,26 +564,6 @@ class DrawBoard extends PureComponent<Props, State> {
     );
   }
 
-  updateObjectText(id: string, data: StickyProperty): void {
-    const object = this.state.objects.find(item => item.id === id);
-    console.log('object', object);
-    if (object) {
-      this.updateShape(
-        {
-          ...object,
-          isEditing: false,
-          sticky: {
-            ...data,
-          },
-        },
-        {
-          saveHistory: true,
-          emitEvent: true,
-        },
-      );
-    }
-  }
-
   handleChanging = (data: ObjectInterface) => {
     // this.emitSocketEvent(BoardSocketEventEnum.MOVE, data);
   };
@@ -655,7 +629,12 @@ class DrawBoard extends PureComponent<Props, State> {
                   <StickyTransform
                     key={shapeObject.id}
                     data={shapeObject}
-                    onChange={() => {}}
+                    onChange={data => {
+                      this.updateShape(data, {
+                        emitEvent: true,
+                        saveHistory: true,
+                      });
+                    }}
                   />
                 );
               } else if (shapeObject.type === 'Line') {

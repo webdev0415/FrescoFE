@@ -14,6 +14,8 @@ interface State {
   data?: ObjectInterface;
   notes: NotesInterface[];
   hovered: boolean;
+  editing: boolean;
+  selected: string;
   hoveredNotesItem: string;
   addNotesIcon: HTMLImageElement;
   addNotesPlusIcon: HTMLImageElement;
@@ -27,6 +29,8 @@ class StickyTransform extends PureComponent<Props, State> {
   state: State = {
     data: undefined,
     hovered: false,
+    editing: false,
+    selected: '',
     hoveredNotesItem: '',
     notes: [],
     addNotesIcon: document.createElement('img'),
@@ -49,7 +53,15 @@ class StickyTransform extends PureComponent<Props, State> {
     addNotesPlusIcon.addEventListener('load', e => {
       this.setState({ addNotesPlusIcon });
     });
+
+    document.addEventListener('keydown', this.onKeyEvent);
+    document.addEventListener('click', this.onClickEvent);
     this.setState({ data, notes });
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('keydown', this.onKeyEvent);
+    document.removeEventListener('click', this.onClickEvent);
   }
 
   componentDidUpdate(
@@ -61,6 +73,23 @@ class StickyTransform extends PureComponent<Props, State> {
       data: this.props.data,
     });
   }
+
+  onClickEvent = (event: MouseEvent) => {
+    this.setState({ selected: this.state.hoveredNotesItem });
+  };
+
+  onKeyEvent = (event: KeyboardEvent) => {
+    if (event.key === 'Backspace' && !this.state.editing) {
+      event.preventDefault();
+    }
+
+    if (
+      !!this.state.selected &&
+      (event.key === 'Delete' || event.key === 'Backspace')
+    ) {
+      this.handleRemoveNotes(this.state.selected);
+    }
+  };
 
   reshapeNotes(notes: NotesInterface[]): NotesInterface[] {
     let oldNotes: NotesInterface[] = [];
@@ -143,7 +172,7 @@ class StickyTransform extends PureComponent<Props, State> {
       width: 130,
       height: 130,
       fontSize: 14,
-      text: 'Sticky notes area',
+      text: 'Sticky notes',
       circle: {
         radius: 7,
         x: 12,
@@ -164,6 +193,7 @@ class StickyTransform extends PureComponent<Props, State> {
   };
 
   onEditNotes = (data: NotesInterface) => {
+    this.setState({ editing: true });
     const p = document.createElement('p');
     p.autofocus = true;
     p.innerText = data.text;
@@ -187,6 +217,7 @@ class StickyTransform extends PureComponent<Props, State> {
     });
 
     const changeValue = value => {
+      this.setState({ editing: false });
       if (value !== data.text) {
         this.updateState({
           ...(this.state.data as ObjectInterface),
@@ -300,7 +331,8 @@ class StickyTransform extends PureComponent<Props, State> {
                   opacity={0.8}
                   cornerRadius={4}
                   stroke={
-                    item.id === this.state.hoveredNotesItem
+                    item.id === this.state.hoveredNotesItem ||
+                    item.id === this.state.selected
                       ? '#000000'
                       : undefined
                   }
