@@ -45,12 +45,12 @@ export const ChatBody = ({
     }
   }, [scroll, messages, messagesArr.length]);
 
-  const handleScroll = heightBeforeRender => {
+  const handleScroll = ({ target }) => {
     // console.log(scroll?.scrollTop);
     if (scroll?.scrollTop === 0) {
       setMessagesLimit(messagesLimit + 10);
       setMessagesOffset(messagesOffset + 20);
-      scroll.scrollTop = heightBeforeRender;
+      scroll.scrollTop = target.clientHeight / 3;
       console.log('messages limit', messagesLimit);
       console.log('messagesOffset', messagesOffset);
     }

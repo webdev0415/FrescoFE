@@ -117,8 +117,6 @@ export const CreateBoard = memo((props: RouteChildrenProps<{ id: string }>) => {
       messagesOffset,
       messagesLimit,
     ).subscribe(data => {
-      console.log('data', data.messages);
-
       setChatMessages(prevState => {
         return {
           ...prevState,
