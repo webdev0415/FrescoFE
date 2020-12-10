@@ -622,6 +622,7 @@ class DrawBoard extends Component<any, any> {
                   <StickyTransform
                     key={shapeObject.id}
                     data={shapeObject}
+                    zoomLevel={this.props.zoomLevel}
                     onChange={data => {
                       this.updateShape(data, {
                         emitEvent: true,
