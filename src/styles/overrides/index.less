@@ -13,6 +13,21 @@
 @text-color: #4e4b5c;
 @input-placeholder-color: #9b9b9b;
 
+.notes-editable {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  border: 2px solid rgb(49 228 130);
+  z-index: 10000;
+  background-color: #FEF8BA;
+  margin: 0;
+  position: absolute;
+
+  &:focus {
+    outline: none;
+  }
+}
+
 .anticon-loading,
 .anticon-plus {
   transform: translate(0, -3px);
