@@ -7,7 +7,7 @@ import { PERMISSION } from 'app/containers/Dashboard';
 
 let documentBody;
 
-describe('<InviteMemberModal />', () => {
+describe('<ChatHeader />', () => {
   beforeEach(() => {
     const props = {
       hide: jest.fn(),
@@ -15,13 +15,10 @@ describe('<InviteMemberModal />', () => {
 
     documentBody = render(<ChatHeader {...props} />);
   });
-  it('button in', () => {
-    expect(documentBody).getByText('').toBeInTheDocument();
+  it('have element by text Live Chat', () => {
+    expect(documentBody.getByText('Live Chat')).toBeInTheDocument();
   });
-  it('img in', () => {
-    expect(documentBody.getByText('img')).toBeInTheDocument();
-  });
-  it('chatBox', () => {
-    expect(documentBody.getByText('chatBox')).toBeInTheDocument();
+  it('have action button', () => {
+    expect(documentBody.getByRole('button')).toBeInTheDocument();
   });
 });
