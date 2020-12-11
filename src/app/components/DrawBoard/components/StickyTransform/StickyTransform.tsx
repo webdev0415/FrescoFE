@@ -22,8 +22,9 @@ interface State {
 }
 
 interface Props extends TransformShapeProps {
-  onChange(data: ObjectInterface);
   zoomLevel: number;
+
+  onChange(data: ObjectInterface);
 }
 
 class StickyTransform extends PureComponent<Props, State> {
@@ -196,7 +197,7 @@ class StickyTransform extends PureComponent<Props, State> {
       return;
     }
     this.setState({ editing: true });
-    const p = document.createElement('p');
+    const p = document.createElement('div');
     p.className = 'notes-editable';
     p.innerText = data.text || 'Sticky Notes';
     const canvasEditor = document.querySelector<HTMLDivElement>(
@@ -212,6 +213,9 @@ class StickyTransform extends PureComponent<Props, State> {
       height: data.height * this.props.zoomLevel + 'px',
       fontSize: data.fontSize + 'px',
     });
+
+    canvasEditor.appendChild(p);
+    p.focus();
 
     const changeValue = value => {
       this.setState({ editing: false });
@@ -233,6 +237,7 @@ class StickyTransform extends PureComponent<Props, State> {
     };
 
     const onClickDocument = event => {
+      event.stopPropagation();
       if (!(event.target as HTMLElement).contains(p)) {
         changeValue(p.innerText.trim());
         canvasEditor.removeChild(p);
@@ -243,9 +248,6 @@ class StickyTransform extends PureComponent<Props, State> {
     setTimeout(() => {
       document.addEventListener('click', onClickDocument);
     }, 100);
-
-    canvasEditor.appendChild(p);
-    p.focus();
   };
 
   onMouseEnterNotes = (id: string) => {
