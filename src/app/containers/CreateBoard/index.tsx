@@ -1,7 +1,7 @@
 import React, { memo, useEffect, useState } from 'react';
 import { RouteChildrenProps, useLocation } from 'react-router';
 import logoImg from 'assets/icons/logo-color.svg';
-import chatIcon from 'assets/icons/chat.svg';
+import { ChatIcon, ShareIcon, CopyIcon } from 'assets/icons';
 import { v4 as uuidv4 } from 'uuid';
 
 import { Button, Dropdown, Input, Menu, Slider, Switch } from 'antd';
@@ -98,10 +98,13 @@ export const CreateBoard = memo((props: RouteChildrenProps<{ id: string }>) => {
   }, [token]);
 
   useEffect(() => {
-    const shareIcon = document.getElementById('share-icon') as HTMLDivElement;
+    const shareIcon = document.getElementById(
+      'share-icon-header',
+    ) as HTMLDivElement;
     if (shareIcon) {
       shareIcon.addEventListener('click', () => {
         setIsShowShareModal(true);
+        setChatModal(false);
       });
     }
 
@@ -109,6 +112,7 @@ export const CreateBoard = memo((props: RouteChildrenProps<{ id: string }>) => {
     if (chatIcon) {
       chatIcon.addEventListener('click', () => {
         setChatModal(true);
+        setIsShowShareModal(false);
         MessagesApiService.AllMessages(
           boardId,
           messagesOffset,
@@ -307,7 +311,7 @@ export const CreateBoard = memo((props: RouteChildrenProps<{ id: string }>) => {
                 onDoubleClick={handleDoubleClick}
                 className="canvas-header-title"
                 id="canvas-title"
-              ></div>
+              />
             ) : (
               <input
                 type="text"
@@ -341,7 +345,7 @@ export const CreateBoard = memo((props: RouteChildrenProps<{ id: string }>) => {
                   </div>
                   <div className="input-item">
                     <Input
-                      addonAfter={<CopyOutlined />}
+                      addonAfter={<CopyIcon className="icon-default" />}
                       defaultValue="https://example.org"
                     />
                   </div>
@@ -363,10 +367,14 @@ export const CreateBoard = memo((props: RouteChildrenProps<{ id: string }>) => {
               className={`${chatModal ? 'active' : ''}`}
               style={{ marginLeft: 16 }}
             >
-              <img src={chatIcon} />
+              <ChatIcon />
             </Button>
-            <Button id="share-icon" style={{ marginRight: 16 }}>
-              <ShareAltOutlined />
+            <Button
+              id="share-icon-header"
+              style={{ marginRight: 16 }}
+              className={`${isShowShareModal ? 'active' : ''}`}
+            >
+              <ShareIcon />
             </Button>
           </div>
         </div>

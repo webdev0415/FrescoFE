@@ -540,11 +540,17 @@
     }
   }
 }
-#share-icon {
+
+#share-icon-header {
   margin-right: 16px;
   background: transparent;
   border: none;
   padding-top: 0;
+
+  &.active {
+    border-bottom: 2px solid #9646f5;
+    background: white;
+  }
 }
 .ant-layout-footer {
   background: #eeeeee;
@@ -553,4 +559,13 @@
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.icon-default {
+  color: gray;
+  cursor: pointer;
+
+  &:hover {
+    color: #9646f5;
+  }
 }
