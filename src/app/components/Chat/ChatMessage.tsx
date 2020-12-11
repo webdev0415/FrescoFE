@@ -54,7 +54,7 @@ export const ChatMessage = ({
       <div
         className={`chatBox-message-settings  ${msgEditable ? 'editable' : ''}`}
       >
-        <span onClick={handleDropdown}>...</span>
+        {!msgEditable && <span onClick={handleDropdown}>...</span>}
         <div
           className={`chatBox-message-settings-dropdown ${
             msgSettings ? 'active' : ''

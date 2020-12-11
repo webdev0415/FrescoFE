@@ -51,7 +51,24 @@
     overflow-y: auto;
     height: calc(100% - 108px);
     padding-right: 15px;
-
+    &::-webkit-scrollbar {
+      width: 10px;
+    }
+    
+    /* Track */
+    &::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+    
+    /* Handle */
+    &::-webkit-scrollbar-thumb {
+      background: #9646f5;
+    }
+    
+    /* Handle on hover */
+    &::-webkit-scrollbar-thumb:hover {
+      background: #9646f5;
+    }
     &-user {
       height: 30px;
       display: flex;
@@ -147,6 +164,9 @@
         &.editable {
           p {
             display: none;
+          }
+          & > span:hover {
+            display: none !important;
           }
           form {
             display: flex;

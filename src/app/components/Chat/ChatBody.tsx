@@ -160,7 +160,7 @@ export const ChatBody = ({
             </div>
             {group.messages.map(message => (
               <ChatMessage
-                key={`${message.id} ${index}`}
+                key={`${message.id}-${index}`}
                 message={message}
                 logedUser={loggedUserMessageGroup}
                 setChatMessages={setChatMessages}
