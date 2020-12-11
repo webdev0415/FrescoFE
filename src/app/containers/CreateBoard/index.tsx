@@ -1,7 +1,7 @@
 import React, { memo, useEffect, useState } from 'react';
 import { RouteChildrenProps, useLocation } from 'react-router';
 import logoImg from 'assets/icons/logo-color.svg';
-import { ChatIcon, ShareIcon, GroupIcon } from 'assets/icons';
+import { ChatIcon, GroupIcon, ShareIcon } from 'assets/icons';
 import { v4 as uuidv4 } from 'uuid';
 
 import { Button, Slider } from 'antd';
@@ -15,6 +15,7 @@ import clsx from 'clsx';
 import { Link, useHistory } from 'react-router-dom';
 import DrawBoard from 'app/components/DrawBoard/DrawBoard';
 import { ShareModal } from 'app/components/ShareModal';
+import { CollaboratorModal } from 'app/components/CollaboratorModal';
 import { PERMISSION } from '../Dashboard';
 import Axios from 'axios';
 import { useSelector } from 'react-redux';
@@ -220,6 +221,7 @@ export const CreateBoard = memo((props: RouteChildrenProps<{ id: string }>) => {
 
   const _closeModal = () => {
     setIsShowShareModal(false);
+    setCollaboratorModal(false);
   };
 
   const handleKeyDown = async event => {
@@ -285,6 +287,23 @@ export const CreateBoard = memo((props: RouteChildrenProps<{ id: string }>) => {
             setMessagesOffset={setMessagesOffset}
             setMessagesLimit={setMessagesLimit}
             messagesLimit={messagesLimit}
+          />
+        )}
+
+        {collaboratorModal && (
+          <CollaboratorModal
+            closeModal={_closeModal}
+            collaborator={[
+              { id: uuidv4(), name: 'Jose', count: 43, color: '#4253AF' },
+              { id: uuidv4(), name: 'Abe Baz', count: 13, color: '#97C05C' },
+              {
+                id: uuidv4(),
+                name: 'Chuck Norris',
+                count: 19,
+                color: '#FE3834',
+              },
+              { id: uuidv4(), name: 'Clark Kent', count: 26, color: '#FFB830' },
+            ]}
           />
         )}
 
