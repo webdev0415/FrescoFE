@@ -3,7 +3,6 @@ import { Layer, Stage } from 'react-konva';
 import { v4 as uuidv4 } from 'uuid';
 import Konva from 'konva';
 import { ObjectInterface, ObjectSocketInterface, Props, State } from './types';
-import socketIOClient from 'socket.io-client';
 import _ from 'lodash';
 import { defaultObjectState } from './constants';
 
@@ -126,10 +125,6 @@ class DrawBoard extends Component<any, any> {
         console.log('Socket ' + BoardSocketEventEnum.UNLOCK, event);
       },
     );
-    // this.socket.on(BoardSocketEventEnum.DELETE, (event: string) => {
-    //   console.log('Socket ' + BoardSocketEventEnum.DELETE, event);
-    //   this.deleteObject(JSON.parse(event), { saveHistory: true });
-    // });
     this.props.socketIoClient.on(
       BoardSocketEventEnum.CREATE,
       (event: string) => {
@@ -322,7 +317,7 @@ class DrawBoard extends Component<any, any> {
 
   saveBoard(): void {
     const data = this.getJsonData();
-    const canvas = {
+    const canvas: any = {
       ...this.state.canvas,
       name: this.props.title || this.state.canvas.name,
     };

@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import chatUser from 'assets/icons/chat-user.svg';
 import { MessagesApiService } from 'services/APIService/MessagesApi.service';
 
 interface IState {
@@ -7,13 +6,10 @@ interface IState {
 }
 
 export const ChatMessage = ({
-  userName,
-  userImg,
   message,
   logedUser,
   setChatMessages,
   boardId,
-  sameUser,
 }) => {
   const [msgSettings, setMsgSettings] = useState(false);
   const [msgEditable, setMsgEditable] = useState(false);
@@ -53,9 +49,11 @@ export const ChatMessage = ({
   };
 
   let messageSettings;
-  if (logedUser === 'loged-user') {
+  if (logedUser) {
     messageSettings = (
-      <div className="chatBox-message-settings">
+      <div
+        className={`chatBox-message-settings  ${msgEditable ? 'editable' : ''}`}
+      >
         <span onClick={handleDropdown}>...</span>
         <div
           className={`chatBox-message-settings-dropdown ${
@@ -67,7 +65,9 @@ export const ChatMessage = ({
               <button onClick={editMessage}>Edit</button>
             </li>
             <li>
-              <button onClick={deleteMessage}>Delete</button>
+              <button onClick={deleteMessage} className="delete">
+                Delete
+              </button>
             </li>
           </ul>
         </div>
@@ -75,13 +75,7 @@ export const ChatMessage = ({
     );
   }
   return (
-    <div className={`chatBox-body-message ${logedUser}`}>
-      {!sameUser && (
-        <div className="chatBox-body-message-user">
-          <img src={userImg} alt="avatar" />
-          <span>{userName}</span>
-        </div>
-      )}
+    <div className={`chatBox-body-message ${logedUser ? 'my' : ''}`}>
       <div
         className={`chatBox-body-message-content ${
           msgEditable ? 'editable' : ''
