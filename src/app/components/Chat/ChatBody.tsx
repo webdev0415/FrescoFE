@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import { ChatMessage } from './ChatMessage';
+import ChatMessage from './ChatMessage';
 import chatUser from 'assets/icons/chat-user.svg';
 import moment from 'moment';
 import { useParams } from 'react-router-dom';

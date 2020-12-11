@@ -1,16 +1,11 @@
 import React, { useState } from 'react';
 import { MessagesApiService } from 'services/APIService/MessagesApi.service';
-
+import OutsideClickHandler from 'react-outside-click-handler';
 interface IState {
   orgId?: any;
 }
 
-export const ChatMessage = ({
-  message,
-  logedUser,
-  setChatMessages,
-  boardId,
-}) => {
+const ChatMessage = ({ message, logedUser, setChatMessages, boardId }: any) => {
   const [msgSettings, setMsgSettings] = useState(false);
   const [msgEditable, setMsgEditable] = useState(false);
   const [msg, setMsg] = useState(message.message);
@@ -74,24 +69,29 @@ export const ChatMessage = ({
       </div>
     );
   }
+
   return (
-    <div className={`chatBox-body-message ${logedUser ? 'my' : ''}`}>
-      <div
-        className={`chatBox-body-message-content ${
-          msgEditable ? 'editable' : ''
-        } `}
-      >
-        <p>{msg}</p>
-        <small></small>
-        <form onSubmit={submitEdit}>
-          <input
-            type="text"
-            value={editableMessage}
-            onChange={e => setEditableMessage(e.target.value)}
-          />
-        </form>
+    <OutsideClickHandler onOutsideClick={() => setMsgEditable(false)}>
+      <div className={`chatBox-body-message ${logedUser ? 'my' : ''}`}>
+        <div
+          className={`chatBox-body-message-content ${
+            msgEditable ? 'editable' : ''
+          } `}
+        >
+          <p>{msg}</p>
+          <small></small>
+          <form onSubmit={submitEdit}>
+            <input
+              type="text"
+              value={editableMessage}
+              onChange={e => setEditableMessage(e.target.value)}
+            />
+          </form>
+        </div>
+        {messageSettings}
       </div>
-      {messageSettings}
-    </div>
+    </OutsideClickHandler>
   );
 };
+
+export default ChatMessage;
