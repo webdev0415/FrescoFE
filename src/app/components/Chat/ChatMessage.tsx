@@ -1,20 +1,11 @@
 import React, { useState } from 'react';
-import chatUser from 'assets/icons/chat-user.svg';
 import { MessagesApiService } from 'services/APIService/MessagesApi.service';
-
+import OutsideClickHandler from 'react-outside-click-handler';
 interface IState {
   orgId?: any;
 }
 
-export const ChatMessage = ({
-  userName,
-  userImg,
-  message,
-  logedUser,
-  setChatMessages,
-  boardId,
-  sameUser,
-}) => {
+const ChatMessage = ({ message, logedUser, setChatMessages, boardId }: any) => {
   const [msgSettings, setMsgSettings] = useState(false);
   const [msgEditable, setMsgEditable] = useState(false);
   const [msg, setMsg] = useState(message.message);
@@ -53,10 +44,12 @@ export const ChatMessage = ({
   };
 
   let messageSettings;
-  if (logedUser === 'loged-user') {
+  if (logedUser) {
     messageSettings = (
-      <div className="chatBox-message-settings">
-        <span onClick={handleDropdown}>...</span>
+      <div
+        className={`chatBox-message-settings  ${msgEditable ? 'editable' : ''}`}
+      >
+        {!msgEditable && <span onClick={handleDropdown}>...</span>}
         <div
           className={`chatBox-message-settings-dropdown ${
             msgSettings ? 'active' : ''
@@ -67,37 +60,38 @@ export const ChatMessage = ({
               <button onClick={editMessage}>Edit</button>
             </li>
             <li>
-              <button onClick={deleteMessage}>Delete</button>
+              <button onClick={deleteMessage} className="delete">
+                Delete
+              </button>
             </li>
           </ul>
         </div>
       </div>
     );
   }
+
   return (
-    <div className={`chatBox-body-message ${logedUser}`}>
-      {!sameUser && (
-        <div className="chatBox-body-message-user">
-          <img src={userImg} alt="avatar" />
-          <span>{userName}</span>
+    <OutsideClickHandler onOutsideClick={() => setMsgEditable(false)}>
+      <div className={`chatBox-body-message ${logedUser ? 'my' : ''}`}>
+        <div
+          className={`chatBox-body-message-content ${
+            msgEditable ? 'editable' : ''
+          } `}
+        >
+          <p>{msg}</p>
+          <small></small>
+          <form onSubmit={submitEdit}>
+            <input
+              type="text"
+              value={editableMessage}
+              onChange={e => setEditableMessage(e.target.value)}
+            />
+          </form>
         </div>
-      )}
-      <div
-        className={`chatBox-body-message-content ${
-          msgEditable ? 'editable' : ''
-        } `}
-      >
-        <p>{msg}</p>
-        <small></small>
-        <form onSubmit={submitEdit}>
-          <input
-            type="text"
-            value={editableMessage}
-            onChange={e => setEditableMessage(e.target.value)}
-          />
-        </form>
+        {messageSettings}
       </div>
-      {messageSettings}
-    </div>
+    </OutsideClickHandler>
   );
 };
+
+export default ChatMessage;

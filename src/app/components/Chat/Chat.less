@@ -51,9 +51,50 @@
     overflow-y: auto;
     height: calc(100% - 108px);
     padding-right: 15px;
+    &::-webkit-scrollbar {
+      width: 10px;
+    }
+    
+    /* Track */
+    &::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+    
+    /* Handle */
+    &::-webkit-scrollbar-thumb {
+      background: #9646f5;
+    }
+    
+    /* Handle on hover */
+    &::-webkit-scrollbar-thumb:hover {
+      background: #9646f5;
+    }
+    &-user {
+      height: 30px;
+      display: flex;
+      align-items: center;
+      span {
+        margin-left: 5px;
+        font-size: 15px;
+      }
+      &.logged-user {
+        flex-direction: row-reverse;
+        span {
+          margin-right: 5px;
+          margin-left: 0;
+        }
+      }
+    }
 
     &-message {
       position: relative;
+      &.my {
+        text-align: right;
+        .chatBox-body-message-user {
+          display: flex;
+          justify-content: flex-end;
+        }
+      }
       &:hover {
         .chatBox-message-settings {
           span {
@@ -62,10 +103,12 @@
         }
       }
       .chatBox-message-settings {
+        position: relative;
+        bottom: 6px;
         span {
           position: absolute;
           left: 5px;
-          bottom: -7px;
+          bottom: -12px;
           transform: rotate(90deg);
           font-size: 22px;
           cursor: pointer;
@@ -87,6 +130,18 @@
             li {
               margin: 0 5px;
             }
+            button {
+              cursor: pointer;
+              background: #9646f5;
+              border: none;
+              padding: 1px 5px;
+              border-radius: 4px;
+              font-size: 13px;
+              color: white;
+            }
+            button.delete {
+              background-color: #949494;
+            }
           }
         }
       }
@@ -103,7 +158,6 @@
         }
       }
       &-content {
-        max-width: 262px;
         input {
           display: none;
         }
@@ -111,11 +165,23 @@
           p {
             display: none;
           }
-          input {
-            display: block;
-            margin-left: 30%;
-            outline: none;
-            border: 1px solid #ddd;
+          & > span:hover {
+            display: none !important;
+          }
+          form {
+            display: flex;
+            input {
+              width: 100%;
+              display: block;
+              outline: none;
+              border: 1px solid;
+              padding-top: 2px;
+              padding-left: 5px;
+              margin: 0 0 5px 0px;
+              border-radius: 4px;
+              font-size: 14px;
+              border-color: #a381cd;
+            }
           }
 
         }
@@ -124,7 +190,7 @@
           color: #4e4b5c;
           font-weight: 300;
           line-height: 20px;
-          margin-bottom: 16px;
+          margin-bottom: 2px;
         }
       }
       &.loged-user {
