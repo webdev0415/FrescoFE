@@ -312,6 +312,81 @@
         align-items: center;
         height: 100%;
 
+        .canvas-collaborators {
+          margin-right: 10px !important;
+          display: inline-flex !important;
+          align-items: center !important;
+          transform: rotateY(180deg);
+
+          .oval {
+            height: 28px !important;
+            width: 28px !important;
+            border-radius: 50% !important;
+            border: 1px solid white !important;
+            background-color: #9646f5;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 12px;
+            color: white;
+            transform: rotateY(-180deg);
+
+            &:not(:last-child) {
+              margin-right: -12px !important;
+            }
+          }
+
+          img {
+            height: 23px !important;
+            width: 23px !important;
+            border-radius: 50% !important;
+            border: 1px solid white !important;
+
+            &:not(:last-child) {
+              margin-right: -5px !important;
+            }
+          }
+        }
+
+        .canvas-header-actions {
+          display: inline-flex;
+          justify-content: center;
+          align-items: center;
+          height: 100%;
+          gap: 1px;
+
+          .canvas-header-action-item {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            width: 40px;
+            cursor: pointer;
+            color: #9b9b9b;
+            background-color: transparent;
+            border: 0 !important;
+            margin: 0 !important;
+            padding: 0 10px;
+
+
+            &:hover {
+              color: #9646f5;
+            }
+
+            &.active {
+              border-bottom: 2px solid #9646f5 !important;
+              background: white;
+            }
+          }
+
+          .d-sm-only {
+            display: none;
+            @media only screen and (max-width: 600px) {
+              display: inline-flex;
+            }
+          }
+        }
+
         .ant-btn-group.ant-dropdown-button {
           height: 30px;
 
@@ -541,17 +616,8 @@
   }
 }
 
-#share-icon-header {
-  margin-right: 16px;
-  background: transparent;
-  border: none;
-  padding-top: 0;
 
-  &.active {
-    border-bottom: 2px solid #9646f5;
-    background: white;
-  }
-}
+
 .ant-layout-footer {
   background: #eeeeee;
   height: 40px;

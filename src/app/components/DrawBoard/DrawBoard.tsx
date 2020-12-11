@@ -78,11 +78,6 @@ class DrawBoard extends Component<any, any> {
 
     this.redoHistory();
     this.undoHistory();
-
-    const saveCanvas = document.getElementById('save-canvas') as HTMLDivElement;
-    saveCanvas.addEventListener('click', () => {
-      this.save();
-    });
     this.getData();
     this.canvasWebSockets();
   }
