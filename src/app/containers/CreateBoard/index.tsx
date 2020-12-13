@@ -59,7 +59,10 @@ export const CreateBoard = memo((props: RouteChildrenProps<{ id: string }>) => {
   const [user, SetUser] = useState([]);
   const [messagesOffset, setMessagesOffset] = useState(0);
   const [messagesLimit, setMessagesLimit] = useState(25);
-  const [socketClient, setSocketClient] = useState<any>(null);
+  const [
+    socketClient,
+    setSocketClient,
+  ] = useState<SocketIOClient.Socket | null>(null);
 
   useEffect(() => {
     const url = new URL(process.env.REACT_APP_BASE_URL as string);
