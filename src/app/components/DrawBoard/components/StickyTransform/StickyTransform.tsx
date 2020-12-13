@@ -28,7 +28,7 @@ interface State {
 interface Props extends TransformShapeProps {
   zoomLevel: number;
   socketIoClient: SocketIOClient.Socket;
-
+  className: string;
   onChange(data: ObjectInterface);
 }
 
@@ -324,7 +324,7 @@ class StickyTransform extends PureComponent<Props, State> {
     p.className = 'notes-editable';
     p.innerText = data.text || 'Sticky Notes';
     const canvasEditor = document.querySelector<HTMLDivElement>(
-      '.konvajs-content',
+      '.' + this.props.className,
     ) as HTMLDivElement;
     p.contentEditable = 'true';
     Object.assign(p.style, {

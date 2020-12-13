@@ -220,8 +220,8 @@ class DrawBoard extends Component<Props, State> {
     return (
       <div className={this.props.className}>
         <Stage
-          width={window.innerWidth * this.props.zoomLevel}
-          height={(window.innerHeight - 80) * this.props.zoomLevel}
+          width={1900 * this.props.zoomLevel}
+          height={1200 * this.props.zoomLevel}
           className="canvas-body-content"
           ref={ref => (this.stageRef = ref)}
           // onMouseDown={this.handleMouseDown}
@@ -268,6 +268,7 @@ class DrawBoard extends Component<Props, State> {
                     data={shapeObject}
                     socketIoClient={this.props.socketIoClient}
                     zoomLevel={this.props.zoomLevel}
+                    className={this.props.className}
                     onChange={data => {
                       this.updateShape(data);
                     }}
