@@ -77,11 +77,6 @@ class DrawBoard extends Component<any, any> {
 
     this.redoHistory();
     this.undoHistory();
-
-    const saveCanvas = document.getElementById('save-canvas') as HTMLDivElement;
-    saveCanvas.addEventListener('click', () => {
-      this.save();
-    });
     this.getData();
     this.canvasWebSockets();
   }
@@ -617,6 +612,7 @@ class DrawBoard extends Component<any, any> {
                   <StickyTransform
                     key={shapeObject.id}
                     data={shapeObject}
+                    zoomLevel={this.props.zoomLevel}
                     onChange={data => {
                       this.updateShape(data, {
                         emitEvent: true,

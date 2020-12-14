@@ -22,6 +22,8 @@ interface State {
 }
 
 interface Props extends TransformShapeProps {
+  zoomLevel: number;
+
   onChange(data: ObjectInterface);
 }
 
@@ -191,28 +193,29 @@ class StickyTransform extends PureComponent<Props, State> {
   };
 
   onEditNotes = (data: NotesInterface) => {
+    if (this.state.editing) {
+      return;
+    }
     this.setState({ editing: true });
-    const p = document.createElement('p');
-    p.autofocus = true;
-    p.innerText = data.text;
+    const p = document.createElement('div');
+    p.className = 'notes-editable';
+    p.innerText = data.text || 'Sticky Notes';
     const canvasEditor = document.querySelector<HTMLDivElement>(
       '.konvajs-content',
     ) as HTMLDivElement;
     p.contentEditable = 'true';
     Object.assign(p.style, {
-      position: 'absolute',
-      left: (this.state.data?.x as number) + data.x + 'px',
-      top: (this.state.data?.y as number) + data.y + 'px',
-      width: data.width + 'px',
-      height: data.height + 'px',
+      left:
+        ((this.state.data?.x as number) + data.x) * this.props.zoomLevel + 'px',
+      top:
+        ((this.state.data?.y as number) + data.y) * this.props.zoomLevel + 'px',
+      width: data.width * this.props.zoomLevel + 'px',
+      height: data.height * this.props.zoomLevel + 'px',
       fontSize: data.fontSize + 'px',
-      display: 'inline-flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      zIndex: 10000,
-      marginBottom: 0,
-      backgroundColor: '#FEF8BA',
     });
+
+    canvasEditor.appendChild(p);
+    p.focus();
 
     const changeValue = value => {
       this.setState({ editing: false });
@@ -234,8 +237,9 @@ class StickyTransform extends PureComponent<Props, State> {
     };
 
     const onClickDocument = event => {
+      event.stopPropagation();
       if (!(event.target as HTMLElement).contains(p)) {
-        changeValue(p.innerText);
+        changeValue(p.innerText.trim());
         canvasEditor.removeChild(p);
         document.removeEventListener('click', onClickDocument);
       }
@@ -244,9 +248,6 @@ class StickyTransform extends PureComponent<Props, State> {
     setTimeout(() => {
       document.addEventListener('click', onClickDocument);
     }, 100);
-
-    p.focus();
-    canvasEditor.appendChild(p);
   };
 
   onMouseEnterNotes = (id: string) => {

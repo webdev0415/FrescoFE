@@ -1,22 +1,18 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { Fragment, useEffect, useState } from 'react';
-import {
-  CloseOutlined,
-  ShareAltOutlined,
-  CopyOutlined,
-  CaretDownFilled,
-} from '@ant-design/icons';
+import React, { Fragment, useState } from 'react';
+import { CaretDownFilled } from '@ant-design/icons';
 import {
   AutoComplete,
-  Dropdown,
-  Input,
-  Menu,
-  Tabs,
-  Select,
-  List,
+  Avatar,
   Button,
   Checkbox,
-  Avatar,
+  Dropdown,
+  Input,
+  List,
+  Menu,
+  message as alert,
+  Select,
+  Tabs,
 } from 'antd';
 import Text from 'antd/lib/typography/Text';
 import { PERMISSION } from 'app/containers/Dashboard';
@@ -28,7 +24,8 @@ import { useInjectReducer, useInjectSaga } from 'redux-injectors';
 import { shareModalSaga } from './saga';
 import { selectShareModal } from './selectors';
 import TextArea from 'antd/lib/input/TextArea';
-import { message as alert } from 'antd';
+import { CloseIcon, CopyIcon, ShareIcon } from 'assets/icons';
+
 const MAX_EMAIL = 3;
 const { Option } = Select;
 let timer;
@@ -113,7 +110,7 @@ export const ShareModal = ({
 
   const _sendInvitation = () => {
     if (!listEmailAndPermission.length) {
-      alert.error('Please select email befofe invite');
+      alert.error('Please select email before invite');
       return;
     }
     dispatch(
@@ -180,12 +177,12 @@ export const ShareModal = ({
               height: '100%',
             }}
           >
-            <ShareAltOutlined />
+            <ShareIcon />
             <Text style={{ marginLeft: 6, fontSize: 20, fontWeight: 400 }}>
               Share
             </Text>
           </div>
-          <CloseOutlined onClick={closeModal} />
+          <CloseIcon onClick={closeModal} className="icon-default" />
         </div>
         <Tabs
           defaultActiveKey="1"
@@ -344,7 +341,7 @@ export const ShareModal = ({
               <CopyToClipboard
                 text={`${baseClient}/invitation-type/verification/${linkInvitation.token}`}
               >
-                <CopyOutlined style={{ color: 'gray' }} />
+                <CopyIcon className="icon-default" />
               </CopyToClipboard>
             </div>
             <div

@@ -1,15 +1,10 @@
 import React, { memo, useEffect, useState } from 'react';
 import { RouteChildrenProps, useLocation } from 'react-router';
 import logoImg from 'assets/icons/logo-color.svg';
-import chatIcon from 'assets/icons/chat.svg';
+import { ChatIcon, GroupIcon, ShareIcon } from 'assets/icons';
 import { v4 as uuidv4 } from 'uuid';
 
-import { Button, Dropdown, Input, Menu, Slider, Switch } from 'antd';
-import {
-  CheckOutlined,
-  CopyOutlined,
-  ShareAltOutlined,
-} from '@ant-design/icons';
+import { Button, Slider } from 'antd';
 import {
   RedoIcon,
   UndoIcon,
@@ -17,10 +12,10 @@ import {
   ZoomOutIcon,
 } from '../../components/CanvasIcons';
 import clsx from 'clsx';
-import pageIcon from '../../../assets/icons/page.svg';
 import { Link, useHistory } from 'react-router-dom';
 import DrawBoard from 'app/components/DrawBoard/DrawBoard';
 import { ShareModal } from 'app/components/ShareModal';
+import { CollaboratorModal } from 'app/components/CollaboratorModal';
 import { PERMISSION } from '../Dashboard';
 import Axios from 'axios';
 import { useSelector } from 'react-redux';
@@ -29,6 +24,7 @@ import { invitationType } from 'utils/constant';
 import { Chat } from 'app/components/Chat/Chat';
 import { MessagesApiService } from 'services/APIService/MessagesApi.service';
 import socketIOClient from 'socket.io-client';
+
 interface IState {
   orgId?: any;
 }
@@ -53,6 +49,7 @@ export const CreateBoard = memo((props: RouteChildrenProps<{ id: string }>) => {
   const [permission, setPermission] = useState(PERMISSION.EDITOR);
   const [linkInvitation, setLinkInvitation] = useState(Object);
   const [chatModal, setChatModal] = useState(false);
+  const [collaboratorModal, setCollaboratorModal] = useState(false);
   const [chatMessages, setChatMessages] = useState<any>([]);
   const history = useHistory();
   const location = useLocation();
@@ -97,10 +94,24 @@ export const CreateBoard = memo((props: RouteChildrenProps<{ id: string }>) => {
   }, [token]);
 
   useEffect(() => {
-    const shareIcon = document.getElementById('share-icon') as HTMLDivElement;
+    const collaboratorIcon = document.getElementById(
+      'collaborator-icon',
+    ) as HTMLDivElement;
+    if (collaboratorIcon) {
+      collaboratorIcon.addEventListener('click', () => {
+        setCollaboratorModal(true);
+        setChatModal(false);
+        setIsShowShareModal(false);
+      });
+    }
+    const shareIcon = document.getElementById(
+      'share-icon-header',
+    ) as HTMLDivElement;
     if (shareIcon) {
       shareIcon.addEventListener('click', () => {
         setIsShowShareModal(true);
+        setChatModal(false);
+        setCollaboratorModal(false);
       });
     }
 
@@ -108,6 +119,8 @@ export const CreateBoard = memo((props: RouteChildrenProps<{ id: string }>) => {
     if (chatIcon) {
       chatIcon.addEventListener('click', () => {
         setChatModal(true);
+        setIsShowShareModal(false);
+        setCollaboratorModal(false);
         MessagesApiService.AllMessages(
           boardId,
           messagesOffset,
@@ -207,6 +220,7 @@ export const CreateBoard = memo((props: RouteChildrenProps<{ id: string }>) => {
 
   const _closeModal = () => {
     setIsShowShareModal(false);
+    setCollaboratorModal(false);
   };
 
   const handleKeyDown = async event => {
@@ -274,6 +288,23 @@ export const CreateBoard = memo((props: RouteChildrenProps<{ id: string }>) => {
           />
         )}
 
+        {collaboratorModal && (
+          <CollaboratorModal
+            closeModal={_closeModal}
+            collaborator={[
+              { id: uuidv4(), name: 'Jose', count: 43, color: '#4253AF' },
+              { id: uuidv4(), name: 'Abe Baz', count: 13, color: '#97C05C' },
+              {
+                id: uuidv4(),
+                name: 'Chuck Norris',
+                count: 19,
+                color: '#FE3834',
+              },
+              { id: uuidv4(), name: 'Clark Kent', count: 26, color: '#FFB830' },
+            ]}
+          />
+        )}
+
         {isShowShareModal && (
           <ShareModal
             permission={permission}
@@ -305,7 +336,7 @@ export const CreateBoard = memo((props: RouteChildrenProps<{ id: string }>) => {
                 onDoubleClick={handleDoubleClick}
                 className="canvas-header-title"
                 id="canvas-title"
-              ></div>
+              />
             ) : (
               <input
                 type="text"
@@ -324,48 +355,38 @@ export const CreateBoard = memo((props: RouteChildrenProps<{ id: string }>) => {
             </div>
           </div>
           <div className="canvas-header-right">
-            <Dropdown.Button
-              trigger={['click']}
-              overlay={
-                <Menu className="canvas-dropdown">
-                  <div className="dropdown-item">
-                    <CheckOutlined /> Published
-                  </div>
-                  <div className="dropdown-item">
-                    <img src={pageIcon} alt="page" /> Publish & Create Canvas
-                  </div>
-                  <div className="switch-item">
-                    Public URL <Switch defaultChecked />
-                  </div>
-                  <div className="input-item">
-                    <Input
-                      addonAfter={<CopyOutlined />}
-                      defaultValue="https://example.org"
-                    />
-                  </div>
-                </Menu>
-              }
-            >
-              <span
-                id="save-canvas"
-                onClick={() => {
-                  window.history.back();
-                }}
-              >
-                Publish
-              </span>
-            </Dropdown.Button>
+            <div className="canvas-collaborators">
+              <div className="oval">jj</div>
+              <div className="oval">AS</div>
+              <div className="oval">AB</div>
+            </div>
 
-            <Button
-              id="chat-icon"
-              className={`${chatModal ? 'active' : ''}`}
-              style={{ marginLeft: 16 }}
-            >
-              <img src={chatIcon} />
-            </Button>
-            <Button id="share-icon" style={{ marginRight: 16 }}>
-              <ShareAltOutlined />
-            </Button>
+            <div className="canvas-header-actions">
+              <Button
+                id="collaborator-icon"
+                className={clsx('canvas-header-action-item', {
+                  active: collaboratorModal,
+                })}
+              >
+                <GroupIcon />
+              </Button>
+              <Button
+                id="chat-icon"
+                className={clsx('canvas-header-action-item', {
+                  active: chatModal,
+                })}
+              >
+                <ChatIcon />
+              </Button>
+              <Button
+                id="share-icon-header"
+                className={clsx('canvas-header-action-item', {
+                  active: isShowShareModal,
+                })}
+              >
+                <ShareIcon />
+              </Button>
+            </div>
           </div>
         </div>
 
