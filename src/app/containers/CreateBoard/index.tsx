@@ -66,10 +66,8 @@ export const CreateBoard = memo((props: RouteChildrenProps<{ id: string }>) => {
   const [socketClient, setSocketClient] = useState<any>(null);
 
   useEffect(() => {
-    const url = new URL(process.env.REACT_APP_BASE_URL as string);
-    url.pathname = 'board';
     setSocketClient(
-      socketIOClient(url.href, {
+      socketIOClient(`${process.env.REACT_APP_BASE_URL}/board`, {
         transports: ['websocket'],
       }),
     );

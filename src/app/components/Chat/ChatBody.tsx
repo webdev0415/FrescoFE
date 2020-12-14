@@ -3,7 +3,7 @@ import ChatMessage from './ChatMessage';
 import chatUser from 'assets/icons/chat-user.svg';
 import moment from 'moment';
 import { useParams } from 'react-router-dom';
-
+import { v4 as uuidv4 } from 'uuid';
 export const ChatBody = ({
   messages,
   user,
@@ -89,7 +89,6 @@ export const ChatBody = ({
   }, [scroll, messages, messagesArr.length]);
 
   const handleScroll = ({ target }) => {
-    console.log(newMessagesBucket);
     if (
       scroll?.scrollTop === 0 &&
       newMessagesBucket &&
@@ -147,30 +146,28 @@ export const ChatBody = ({
     <div
       className="chatBox-body"
       onScroll={handleScroll}
-      ref={scroller => {
-        setScroll(scroller);
-      }}
+      ref={scroller => setScroll(scroller)}
     >
       {sortMessagesByGroups(messagesArr || []).map((group, index) => {
         const loggedUserMessageGroup =
           group.user.id === user.id ? 'logged-user' : '';
 
         return (
-          <>
+          <div key={`${index}-${uuidv4()}`}>
             <div className={`chatBox-body-user ${loggedUserMessageGroup}`}>
               <img src={chatUser} alt="avatar" />
               <span>{group.user.name || group.user.email}</span>
             </div>
-            {group.messages.map(message => (
+            {group.messages.map((message, index) => (
               <ChatMessage
-                key={`${message.id}-${index}`}
+                key={`${message.id}-${index}-${uuidv4()}`}
                 message={message}
                 logedUser={loggedUserMessageGroup}
                 setChatMessages={setChatMessages}
                 boardId={boardId}
               />
             ))}
-          </>
+          </div>
         );
       })}
     </div>
