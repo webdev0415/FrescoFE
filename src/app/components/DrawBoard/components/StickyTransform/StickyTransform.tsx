@@ -307,7 +307,7 @@ class StickyTransform extends PureComponent<Props, State> {
       width: 130,
       height: 130,
       fontSize: 14,
-      text: 'Sticky notes',
+      text: '',
       circle: {
         radius: 7,
         x: 12,
@@ -364,7 +364,7 @@ class StickyTransform extends PureComponent<Props, State> {
     this.setState({ editing: true });
     const p = document.createElement('div');
     p.className = 'notes-editable';
-    p.innerText = data.text || 'Sticky Notes';
+    p.innerText = data.text;
     const canvasEditor = document.querySelector<HTMLDivElement>(
       '.' + this.props.className,
     ) as HTMLDivElement;
