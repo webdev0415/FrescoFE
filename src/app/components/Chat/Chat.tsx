@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { ChatHeader } from './ChatHeader';
 import './Chat.less';
-import { ChatBody } from './ChatBody';
+import ChatBody from './ChatBody';
 import { ChatFooter } from './ChatFooter';
 
 interface IState {
@@ -16,10 +16,9 @@ export const Chat = ({
   setChatMessages,
   user,
   setMessagesOffset,
-  setMessagesLimit,
-  messagesLimit,
   messagesOffset,
   socketIoClient,
+  newMessagesBucket,
 }) => {
   const [scroll, setScroll] = React.useState<null | HTMLElement>(null);
 
@@ -33,11 +32,10 @@ export const Chat = ({
         messages={messages}
         boardId={boardId}
         setMessagesOffset={setMessagesOffset}
-        setMessagesLimit={setMessagesLimit}
-        messagesLimit={messagesLimit}
         messagesOffset={messagesOffset}
         scroll={scroll}
         setScroll={setScroll}
+        newMessagesBucket={newMessagesBucket}
       />
       <ChatFooter
         boardId={boardId}

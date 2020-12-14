@@ -3,21 +3,21 @@ import ChatMessage from './ChatMessage';
 import chatUser from 'assets/icons/chat-user.svg';
 import moment from 'moment';
 import { useParams } from 'react-router-dom';
+import { v4 as uuidv4 } from 'uuid';
 
-export const ChatBody = ({
+const ChatBody = ({
   messages,
   user,
   setChatMessages,
   boardId,
   setMessagesOffset,
-  setMessagesLimit,
-  messagesLimit,
   messagesOffset,
   scroll,
   socketIoClient,
   setScroll,
+  newMessagesBucket,
 }) => {
-  const messagesGroupDuration = 120; //seconds
+  const messagesGroupDuration = 120;
   let messagesArr = [...(messages?.messages || [])];
 
   messagesArr?.reverse();
@@ -36,6 +36,7 @@ export const ChatBody = ({
   useEffect(() => {
     if (!Array.isArray(user)) {
       socketIoClient.on('createMessage', data => {
+        console.log(111);
         if (data.sender.id !== user.id) {
           setChatMessages(messages => {
             if (data.sender.id !== user.id) {
@@ -90,9 +91,12 @@ export const ChatBody = ({
   }, [scroll, messages, messagesArr.length]);
 
   const handleScroll = ({ target }) => {
-    if (scroll?.scrollTop === 0) {
-      setMessagesLimit(messagesLimit + 10);
-      setMessagesOffset(messagesOffset + 20);
+    if (
+      scroll?.scrollTop === 0 &&
+      newMessagesBucket &&
+      newMessagesBucket.length
+    ) {
+      setMessagesOffset(messagesOffset + 25);
       scroll.scrollTop = target.clientHeight / 3;
     }
   };
@@ -144,32 +148,32 @@ export const ChatBody = ({
     <div
       className="chatBox-body"
       onScroll={handleScroll}
-      ref={scroller => {
-        setScroll(scroller);
-      }}
+      ref={scroller => setScroll(scroller)}
     >
       {sortMessagesByGroups(messagesArr || []).map((group, index) => {
         const loggedUserMessageGroup =
           group.user.id === user.id ? 'logged-user' : '';
 
         return (
-          <>
+          <div key={`${index}-${uuidv4()}`}>
             <div className={`chatBox-body-user ${loggedUserMessageGroup}`}>
               <img src={chatUser} alt="avatar" />
               <span>{group.user.name || group.user.email}</span>
             </div>
-            {group.messages.map(message => (
+            {group.messages.map((message, index) => (
               <ChatMessage
-                key={`${message.id}-${index}`}
+                key={`${message.id}-${index}-${uuidv4()}`}
                 message={message}
                 logedUser={loggedUserMessageGroup}
                 setChatMessages={setChatMessages}
                 boardId={boardId}
               />
             ))}
-          </>
+          </div>
         );
       })}
     </div>
   );
 };
+
+export default ChatBody;
