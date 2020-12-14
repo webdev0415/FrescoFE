@@ -54,6 +54,7 @@ import {
   ImageUploadingService,
 } from '../../../services/APIService';
 import { onMouseDown, onMouseMove, onMouseUp } from './utility';
+import { connect } from 'react-redux';
 
 export enum BoardSocketEventEnum {
   CREATE = 'create',
@@ -105,7 +106,7 @@ class DrawCanvas extends PureComponent<Props, State> {
     url.pathname = 'board';
     this.socket = socketIOClient(url.href, {
       transports: ['websocket'],
-      query: { token: '' },
+      query: { token: props.token },
     });
   }
 
@@ -1828,4 +1829,4 @@ class DrawCanvas extends PureComponent<Props, State> {
   }
 }
 
-export default DrawCanvas;
+export default connect(({ global: { token } }: any) => ({ token }))(DrawCanvas);
