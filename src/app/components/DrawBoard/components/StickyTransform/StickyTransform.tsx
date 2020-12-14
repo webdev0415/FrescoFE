@@ -1,7 +1,9 @@
 import React, { PureComponent } from 'react';
 import { Circle, Group, Image, Rect, Text } from 'react-konva';
 import { v4 } from 'uuid';
+import { Observable } from 'rxjs';
 import {
+  BoardSocketEventEnum,
   NotesInterface,
   ObjectInterface,
   TransformShapeProps,
@@ -9,8 +11,15 @@ import {
 
 import addNotesImage from 'assets/icons/add-notes.svg';
 import addNotesPlusImage from 'assets/icons/toolbar-plus-violet.svg';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import Auth from '../../../../../services/Auth';
+import {
+  CollaboratorColorAndCount,
+  collaboratorsService,
+} from '../../../../../services/CollaboratorsService';
 
 interface State {
+  id: string;
   data?: ObjectInterface;
   notes: NotesInterface[];
   hovered: boolean;
@@ -19,16 +28,27 @@ interface State {
   hoveredNotesItem: string;
   addNotesIcon: HTMLImageElement;
   addNotesPlusIcon: HTMLImageElement;
+  collaborators: CollaboratorColorAndCount;
+  userSelected: string[];
 }
 
 interface Props extends TransformShapeProps {
   zoomLevel: number;
+  socketIoClient: SocketIOClient.Socket;
+  className: string;
 
   onChange(data: ObjectInterface);
 }
 
+interface SocketData {
+  id: string;
+  noteId: string;
+  data: NotesInterface;
+}
+
 class StickyTransform extends PureComponent<Props, State> {
   state: State = {
+    id: v4(),
     data: undefined,
     hovered: false,
     editing: false,
@@ -37,6 +57,8 @@ class StickyTransform extends PureComponent<Props, State> {
     notes: [],
     addNotesIcon: document.createElement('img'),
     addNotesPlusIcon: document.createElement('img'),
+    collaborators: {},
+    userSelected: [],
   };
 
   componentDidMount() {
@@ -55,15 +77,115 @@ class StickyTransform extends PureComponent<Props, State> {
     addNotesPlusIcon.addEventListener('load', e => {
       this.setState({ addNotesPlusIcon });
     });
+    collaboratorsService.state.subscribe(value => {
+      const collaborators: CollaboratorColorAndCount = {};
+      const selected: string[] = [];
+      value.forEach(item => {
+        if (item.selected) {
+          selected.push(item.id);
+        }
+        collaborators[item.id] = {
+          count: item.count,
+          color: item.color,
+        };
+      });
+      this.setState({ collaborators, userSelected: selected });
+    });
 
     window.addEventListener('keydown', this.onKeyEvent);
     document.addEventListener('click', this.onClickEvent);
     this.setState({ data, notes });
+    this.canvasWebSockets();
+  }
+
+  RxFromSocketEvent(eventName: BoardSocketEventEnum): Observable<any> {
+    return new Observable(observer => {
+      this.props.socketIoClient.on(eventName, (data: string) => {
+        observer.next(data);
+      });
+    });
   }
 
   componentWillUnmount() {
     window.removeEventListener('keydown', this.onKeyEvent);
     document.removeEventListener('click', this.onClickEvent);
+    this.props.socketIoClient.emit(
+      BoardSocketEventEnum.LEAVE_BOARD,
+      this.props.data.id,
+    );
+  }
+
+  canvasWebSockets(): void {
+    this.props.socketIoClient.emit(
+      BoardSocketEventEnum.JOIN_BOARD,
+      this.props.data.id,
+    );
+
+    this.props.socketIoClient.on(
+      BoardSocketEventEnum.JOIN_BOARD,
+      (data: string) => {
+        console.log('Socket ' + BoardSocketEventEnum.JOIN_BOARD, data);
+      },
+    );
+
+    this.props.socketIoClient.on(BoardSocketEventEnum.CONNECT, () => {
+      console.log('Socket ' + BoardSocketEventEnum.CONNECT);
+    });
+    this.props.socketIoClient.on(BoardSocketEventEnum.DISCONNECT, () => {
+      console.log('Socket ' + BoardSocketEventEnum.DISCONNECT);
+    });
+    this.props.socketIoClient.on(
+      BoardSocketEventEnum.LEAVE_BOARD,
+      (data: string) => {
+        console.log('Socket ' + BoardSocketEventEnum.LEAVE_BOARD, data);
+      },
+    );
+
+    const notes_create$ = this.RxFromSocketEvent(BoardSocketEventEnum.CREATE);
+    const notes_update$ = this.RxFromSocketEvent(BoardSocketEventEnum.UPDATE);
+    const notes_delete$ = this.RxFromSocketEvent(BoardSocketEventEnum.DELETE);
+
+    notes_create$
+      .pipe(debounceTime(300), distinctUntilChanged())
+      .subscribe(event => {
+        const data = JSON.parse(event) as SocketData;
+        console.log('Socket ' + BoardSocketEventEnum.CREATE, data);
+        if (data.id !== this.state.id && this.props.data.id === data.noteId) {
+          this.onAddNotes(data.data);
+        }
+      });
+    notes_update$
+      .pipe(debounceTime(300), distinctUntilChanged())
+      .subscribe(event => {
+        const data = JSON.parse(event) as SocketData;
+        console.log('Socket ' + BoardSocketEventEnum.UPDATE, data);
+        if (data.id !== this.state.id && this.props.data.id === data.noteId) {
+          this.onUpdateNotes(data.data);
+        }
+      });
+    notes_delete$
+      .pipe(debounceTime(300), distinctUntilChanged())
+      .subscribe(event => {
+        const data = JSON.parse(event) as SocketData;
+        console.log('Socket ' + BoardSocketEventEnum.DELETE, data);
+        if (data.id !== this.state.id && this.props.data.id === data.noteId) {
+          this.onDeleteItem(data.data.id);
+        }
+      });
+  }
+
+  emitSocketEvent(eventType: BoardSocketEventEnum, data: NotesInterface): void {
+    const socketData = {
+      boardId: this.props.data.id,
+      data: JSON.stringify({
+        id: this.state.id,
+        noteId: this.props.data.id,
+        data: data,
+      }),
+    };
+    setTimeout(() => {
+      this.props.socketIoClient.emit(eventType, socketData);
+    }, 100);
   }
 
   componentDidUpdate(
@@ -157,40 +279,83 @@ class StickyTransform extends PureComponent<Props, State> {
     });
   }
 
-  handleAddNotes = () => {
-    let oldNotes: NotesInterface[] = [];
+  onAddNotes(data: NotesInterface): NotesInterface {
+    let notes: NotesInterface[] = [];
     if (this.state.notes.length) {
       this.state.notes.forEach(note => {
-        oldNotes.push(note);
+        notes.push(note);
       });
     }
-    oldNotes.push({
+    notes.push(data);
+    notes = notes.filter((item, index, arr) => {
+      const indexItem = arr.findIndex(i => i.id === item.id);
+      return indexItem === index;
+    });
+
+    const objects = this.state.data as ObjectInterface;
+    objects.notes = this.reshapeNotes(notes);
+    this.updateState(objects);
+    return data;
+  }
+
+  handleAddNotes = () => {
+    const note = this.onAddNotes({
       id: v4(),
-      userId: v4(),
+      userId: Auth.user.id,
       x: 150,
       y: 10,
       width: 130,
       height: 130,
       fontSize: 14,
-      text: 'Sticky notes',
+      text: '',
       circle: {
         radius: 7,
         x: 12,
         y: 12,
-        fill: '#000000',
+        fill: this.state.collaborators[Auth.user.id]
+          ? this.state.collaborators[Auth.user.id].color
+          : '#000000',
       },
     });
-    const data = this.state.data as ObjectInterface;
-    data.notes = this.reshapeNotes(oldNotes);
-    this.updateState(data);
+    this.emitSocketEvent(BoardSocketEventEnum.CREATE, note);
   };
 
-  handleRemoveNotes = (id: string) => {
+  onDeleteItem(id: string): NotesInterface {
     let oldNotes: NotesInterface[] = [...this.state.notes];
+    let note = oldNotes.find(i => i.id === id);
     const data = this.state.data as ObjectInterface;
     data.notes = this.reshapeNotes(oldNotes.filter(item => item.id !== id));
     this.updateState(data);
+    return note as NotesInterface;
+  }
+
+  handleRemoveNotes = (id: string) => {
+    const item = this.state.notes.find(
+      i => i.id === id && i.userId === Auth.user.id,
+    );
+    if (item) {
+      let note = this.onDeleteItem(id);
+      this.emitSocketEvent(BoardSocketEventEnum.DELETE, note as NotesInterface);
+    }
   };
+
+  onUpdateNotes(data: NotesInterface): void {
+    this.updateState({
+      ...(this.state.data as ObjectInterface),
+      notes: this.reshapeNotes(
+        this.state.notes.map(item => {
+          if (item.id === data.id) {
+            return {
+              ...item,
+              ...data,
+            };
+          } else {
+            return item;
+          }
+        }),
+      ),
+    });
+  }
 
   onEditNotes = (data: NotesInterface) => {
     if (this.state.editing) {
@@ -199,9 +364,9 @@ class StickyTransform extends PureComponent<Props, State> {
     this.setState({ editing: true });
     const p = document.createElement('div');
     p.className = 'notes-editable';
-    p.innerText = data.text || 'Sticky Notes';
+    p.innerText = data.text;
     const canvasEditor = document.querySelector<HTMLDivElement>(
-      '.konvajs-content',
+      '.' + this.props.className,
     ) as HTMLDivElement;
     p.contentEditable = 'true';
     Object.assign(p.style, {
@@ -220,18 +385,13 @@ class StickyTransform extends PureComponent<Props, State> {
     const changeValue = value => {
       this.setState({ editing: false });
       if (value !== data.text) {
-        this.updateState({
-          ...(this.state.data as ObjectInterface),
-          notes: this.state.notes.map(item => {
-            if (item.id === data.id) {
-              return {
-                ...item,
-                text: value,
-              };
-            } else {
-              return item;
-            }
-          }),
+        this.emitSocketEvent(BoardSocketEventEnum.UPDATE, {
+          ...data,
+          text: value,
+        });
+        this.onUpdateNotes({
+          ...data,
+          text: value,
         });
       }
     };
@@ -307,59 +467,68 @@ class StickyTransform extends PureComponent<Props, State> {
               )}
             </Group>
             {this.state.notes.map(item => (
-              <Group
-                key={item.id}
-                id={item.id}
-                x={item.x}
-                y={item.y}
-                height={item.height}
-                width={item.width}
-                onMouseEnter={() => {
-                  this.onMouseEnterNotes(item.id);
-                }}
-                onMouseLeave={() => {
-                  this.onMouseEnterNotes('');
-                }}
-              >
-                <Rect
-                  x={0}
-                  y={0}
-                  height={item.height}
-                  width={item.width}
-                  fill="#FEF8BA"
-                  opacity={0.8}
-                  cornerRadius={4}
-                  stroke={
-                    item.id === this.state.hoveredNotesItem ||
-                    item.id === this.state.selected
-                      ? '#000000'
-                      : undefined
-                  }
-                />
+              <>
+                {(!this.state.userSelected.length ||
+                  this.state.userSelected.includes(item.userId)) && (
+                  <Group
+                    key={item.id}
+                    id={item.id}
+                    x={item.x}
+                    y={item.y}
+                    height={item.height}
+                    width={item.width}
+                    onMouseEnter={() => {
+                      this.onMouseEnterNotes(item.id);
+                    }}
+                    onMouseLeave={() => {
+                      this.onMouseEnterNotes('');
+                    }}
+                  >
+                    <Rect
+                      x={0}
+                      y={0}
+                      height={item.height}
+                      width={item.width}
+                      fill="#FEF8BA"
+                      opacity={0.8}
+                      cornerRadius={4}
+                      stroke={
+                        item.id === this.state.hoveredNotesItem ||
+                        item.id === this.state.selected
+                          ? '#000000'
+                          : undefined
+                      }
+                    />
 
-                <Text
-                  height={item.height}
-                  width={item.width}
-                  x={0}
-                  y={0}
-                  text={item.text || 'Sticky notes'}
-                  fontSize={item.fontSize}
-                  align="center"
-                  verticalAlign="middle"
-                  onDblClick={() => {
-                    this.onEditNotes(item);
-                  }}
-                  onDblTap={() => {
-                    this.onEditNotes(item);
-                  }}
-                />
-                <Circle
-                  radius={item.circle.radius}
-                  x={item.circle.x}
-                  y={item.circle.y}
-                  fill={item.circle.fill}
-                />
-              </Group>
+                    <Text
+                      height={item.height}
+                      width={item.width}
+                      x={0}
+                      y={0}
+                      text={item.text || 'Sticky notes'}
+                      fontSize={item.fontSize}
+                      align="center"
+                      verticalAlign="middle"
+                      onDblClick={() => {
+                        if (item.userId === Auth.user.id) {
+                          this.onEditNotes(item);
+                        }
+                      }}
+                      onDblTap={() => {
+                        if (item.userId === Auth.user.id) {
+                          this.onEditNotes(item);
+                        }
+                      }}
+                    />
+                    <Circle
+                      radius={item.circle.radius}
+                      x={item.circle.x}
+                      y={item.circle.y}
+                      fill={item.circle.fill}
+                    />
+                  </Group>
+                )}
+              </>
             ))}
             {this.state.hovered &&
               !!this.state.notes.length &&

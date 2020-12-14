@@ -25,6 +25,7 @@ import { shareModalSaga } from './saga';
 import { selectShareModal } from './selectors';
 import TextArea from 'antd/lib/input/TextArea';
 import { CloseIcon, CopyIcon, ShareIcon } from 'assets/icons';
+import { isEmail } from 'class-validator';
 
 const MAX_EMAIL = 3;
 const { Option } = Select;
@@ -35,7 +36,7 @@ const { TabPane } = Tabs;
 interface EmailAndPermission {
   name: string;
   orgId: string;
-  toUserId: string;
+  toUserId?: string;
   toEmail: string;
   permission: string;
   typeId: string;
@@ -109,13 +110,25 @@ export const ShareModal = ({
   };
 
   const _sendInvitation = () => {
-    if (!listEmailAndPermission.length) {
-      alert.error('Please select email before invite');
-      return;
+    const emailListWithPermissions = listEmailAndPermission;
+    if (!emailListWithPermissions.length) {
+      if (!isEmail(textSearch)) {
+        alert.error('Please select email before invite');
+        return;
+      } else {
+        emailListWithPermissions.push({
+          name: textSearch,
+          orgId,
+          toEmail: textSearch,
+          permission: PERMISSION.EDITOR,
+          typeId,
+          type,
+        });
+      }
     }
     dispatch(
       actions.invitationRequest({
-        listEmailAndPermission,
+        listEmailAndPermission: emailListWithPermissions,
         token,
         messageInvite: message,
         isNoti,

@@ -1,6 +1,18 @@
+export interface Token {
+  accessToken: string;
+  expiresIn: number;
+}
+
+export interface User {
+  email: string;
+  id: string;
+  name: string;
+  role: string;
+}
+
 class Auth {
-  public token;
-  public user;
+  public token: Token | null;
+  public user: User;
 
   constructor() {
     const authInfo = localStorage.getItem('authInformation');

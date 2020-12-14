@@ -1,18 +1,36 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { CSSProperties, Fragment, useState } from 'react';
+import React, { CSSProperties, Fragment, useEffect, useState } from 'react';
 import Text from 'antd/lib/typography/Text';
 import { CloseIcon, GroupIcon, ToolbarStickyIcon } from 'assets/icons';
 import clsx from 'clsx';
+import {
+  CollaboratorInterface,
+  collaboratorsService,
+} from 'services/CollaboratorsService';
 
-export const CollaboratorModal = ({ closeModal, collaborator }) => {
-  const [selected, setSelected] = useState<any>([]);
+export const CollaboratorModal = ({ closeModal }) => {
+  const [collaborators, setCollaborators] = useState<CollaboratorInterface[]>(
+    [],
+  );
+
+  useEffect(() => {
+    collaboratorsService.state.subscribe(value => {
+      setCollaborators(value);
+    });
+  });
 
   const onSelect = (item: any) => {
-    if (selected.includes(item.id)) {
-      setSelected(selected.filter(i => i !== item.id));
-    } else {
-      setSelected([...selected, item.id]);
-    }
+    const data = collaborators.map(collaborator => {
+      if (collaborator.id === item.id) {
+        return {
+          ...collaborator,
+          selected: !collaborator.selected,
+        };
+      } else {
+        return collaborator;
+      }
+    });
+    collaboratorsService.update(data);
   };
   return (
     <Fragment>
@@ -64,17 +82,17 @@ export const CollaboratorModal = ({ closeModal, collaborator }) => {
         />
         <p>Select a collaborator to view its contributions </p>
         <div className="collaborators-list">
-          {collaborator.map(item => (
+          {collaborators.map(item => (
             <div
               className={clsx('collaborator-item', {
-                active: selected.includes(item.id),
+                active: item.selected,
               })}
               onClick={() => onSelect(item)}
               style={{ '--color': item.color } as CSSProperties}
             >
               <div className="collaborator-item-left">
                 <div className="identity-circle" />
-                <div className="collaborator-title">{item.name}</div>
+                <div className="collaborator-title">{item.email}</div>
               </div>
               <div className="collaborator-item-right">
                 <div className="collaborator-icon">

@@ -1,10 +1,13 @@
-import React, { Component, PureComponent } from 'react';
+import React, { Component } from 'react';
 import { Layer, Stage } from 'react-konva';
 import { v4 as uuidv4 } from 'uuid';
 import Konva from 'konva';
-import { ObjectInterface, ObjectSocketInterface, Props, State } from './types';
-import _ from 'lodash';
+import { ObjectInterface, Props, State } from './types';
 import { defaultObjectState } from './constants';
+import {
+  CollaboratorColorAndCount,
+  collaboratorsService,
+} from 'services/CollaboratorsService';
 
 import {
   EllipseTransform,
@@ -20,22 +23,8 @@ import {
   BoardApiService,
   ImageUploadingService,
 } from '../../../services/APIService';
-import { onMouseDown, onMouseMove, onMouseUp } from './utility';
 
-export enum BoardSocketEventEnum {
-  CREATE = 'create',
-  MOVE = 'move',
-  UPDATE = 'update',
-  DELETE = 'delete',
-  LOCK = 'lock',
-  UNLOCK = 'unlock',
-  JOIN_BOARD = 'joinBoard',
-  LEAVE_BOARD = 'leaveBoard',
-  CONNECT = 'connect',
-  DISCONNECT = 'disconnect',
-}
-
-class DrawBoard extends Component<any, any> {
+class DrawBoard extends Component<Props, State> {
   state: State = {
     id: uuidv4(),
     objects: [],
@@ -52,201 +41,15 @@ class DrawBoard extends Component<any, any> {
     },
     selectedStickyData: null,
   };
+
   stageRef: Konva.Stage | null = null;
   textAreaRef = React.createRef<HTMLTextAreaElement>();
-
   isItemFocused: boolean = false;
   isItemMoving: boolean = false;
   isDrawing: boolean = false;
 
   componentDidMount() {
-    document.addEventListener('keydown', event => {
-      if (event.ctrlKey && event.key.toLowerCase() === 'y') {
-        const redoHistory = document.getElementById(
-          'redo-history',
-        ) as HTMLDivElement;
-        redoHistory.click();
-      }
-      if (event.ctrlKey && event.key.toLowerCase() === 'z') {
-        const undoHistory = document.getElementById(
-          'undo-history',
-        ) as HTMLDivElement;
-        undoHistory.click();
-      }
-    });
-
-    this.redoHistory();
-    this.undoHistory();
     this.getData();
-    this.canvasWebSockets();
-  }
-
-  canvasWebSockets(): void {
-    this.props.socketIoClient.on(
-      BoardSocketEventEnum.CREATE,
-      (event: string) => {
-        this.createObject(JSON.parse(event));
-      },
-    );
-    this.props.socketIoClient.on(
-      BoardSocketEventEnum.JOIN_BOARD,
-      (data: string) => {
-        // console.log('Socket ' + BoardSocketEventEnum.JOIN_BOARD, data);
-      },
-    );
-    this.props.socketIoClient.on(
-      BoardSocketEventEnum.LEAVE_BOARD,
-      (data: string) => {
-        // console.log('Socket ' + BoardSocketEventEnum.LEAVE_BOARD, data);
-      },
-    );
-    this.props.socketIoClient.on(
-      BoardSocketEventEnum.UPDATE,
-      (event: string) => {
-        this.updateObject(JSON.parse(event));
-      },
-    );
-    this.props.socketIoClient.on(BoardSocketEventEnum.MOVE, (event: string) => {
-      console.log(BoardSocketEventEnum.MOVE, event);
-      this.moveObject(JSON.parse(event));
-    });
-    this.props.socketIoClient.on(BoardSocketEventEnum.LOCK, (event: string) => {
-      console.log('Socket ' + BoardSocketEventEnum.LOCK, event);
-      this.lockObject(JSON.parse(event));
-    });
-    this.props.socketIoClient.on(
-      BoardSocketEventEnum.UNLOCK,
-      (event: string) => {
-        console.log('Socket ' + BoardSocketEventEnum.UNLOCK, event);
-      },
-    );
-    this.props.socketIoClient.on(
-      BoardSocketEventEnum.CREATE,
-      (event: string) => {
-        console.log('Socket ' + BoardSocketEventEnum.CREATE, event);
-      },
-    );
-  }
-
-  moveObject(objectData: ObjectSocketInterface): void {
-    this.setState({
-      objects: this.state.objects.map(item => {
-        if (item.id === objectData.data.id) {
-          return {
-            ...item,
-            ...objectData.data,
-          };
-        } else {
-          return item;
-        }
-      }),
-    });
-    if (objectData.id !== this.state.id) {
-      this.updateShape(objectData.data, { saveHistory: true });
-    }
-  }
-
-  lockObject(objectData: ObjectSocketInterface): void {
-    if (objectData.id !== this.state.id) {
-      this.setState({
-        objects: this.state.objects.map(item => {
-          if (item.id === objectData.data.id) {
-            return {
-              ...item,
-              ...objectData.data,
-            };
-          } else {
-            return item;
-          }
-        }),
-      });
-    }
-  }
-
-  updateObject(objectData: ObjectSocketInterface): void {
-    if (objectData.id !== this.state.id) {
-      this.updateShape(objectData.data, { saveHistory: true });
-    }
-  }
-
-  createObject(objectData: ObjectSocketInterface): void {
-    if (objectData.id !== this.state.id) {
-      this.addCanvasShape(objectData.data, { saveHistory: true });
-    }
-  }
-
-  emitSocketEvent(
-    eventType: BoardSocketEventEnum,
-    data: ObjectInterface,
-  ): void {
-    const socketData = {
-      boardId: this.props.match?.params.id as string,
-      data: JSON.stringify({
-        id: this.state.id,
-        data: data,
-      }),
-    };
-    this.props.socketIoClient.emit(eventType, socketData);
-  }
-
-  undoHistory(): void {
-    const undoHistory = document.getElementById(
-      'undo-history',
-    ) as HTMLDivElement;
-    undoHistory.addEventListener('click', () => {
-      if (this.state.prevHistory.length) {
-        const nextHistory = JSON.parse(JSON.stringify(this.state.nextHistory));
-        const prevHistory = JSON.parse(JSON.stringify(this.state.prevHistory));
-        const historyItem = prevHistory.pop();
-        if (historyItem) {
-          nextHistory.unshift(historyItem);
-          this.setState({
-            nextHistory,
-            prevHistory,
-            objects: this.state.objects.map(item => {
-              if (item.id === historyItem.id) {
-                return {
-                  ...item,
-                  ...historyItem,
-                };
-              } else {
-                return item;
-              }
-            }),
-          });
-        }
-      }
-    });
-  }
-
-  redoHistory(): void {
-    const redoHistory = document.getElementById(
-      'redo-history',
-    ) as HTMLDivElement;
-    redoHistory.addEventListener('click', () => {
-      if (this.state.nextHistory.length) {
-        const nextHistory = JSON.parse(JSON.stringify(this.state.nextHistory));
-        const prevHistory = JSON.parse(JSON.stringify(this.state.prevHistory));
-        const historyItem = nextHistory.shift();
-        if (historyItem) {
-          prevHistory.push(historyItem);
-          this.setState({
-            nextHistory,
-            prevHistory,
-            objects: this.state.objects.map(item => {
-              if (item.id === historyItem.id) {
-                return {
-                  ...item,
-                  ...historyItem,
-                };
-              } else {
-                return item;
-              }
-            }),
-          });
-        }
-      }
-    });
   }
 
   uploadImage(): void {
@@ -292,6 +95,7 @@ class DrawBoard extends Component<any, any> {
   }
 
   save(): void {
+    this.updateCollaborators();
     this.saveImage();
     if (!!this.state.canvas.imageId) {
       this.saveBoard();
@@ -336,6 +140,27 @@ class DrawBoard extends Component<any, any> {
     this.getBoardObject();
   }
 
+  updateCollaborators = () => {
+    const collaborators: CollaboratorColorAndCount = {};
+    this.state.objects.forEach(item => {
+      if (item.notes) {
+        item.notes.forEach(note => {
+          if (collaborators.hasOwnProperty(note.userId)) {
+            collaborators[note.userId].color = note.circle.fill;
+            collaborators[note.userId].count =
+              collaborators[note.userId].count + 1;
+          } else {
+            collaborators[note.userId] = {
+              color: note.circle.fill,
+              count: 1,
+            };
+          }
+        });
+      }
+    });
+    collaboratorsService.patch(collaborators);
+  };
+
   getBoardObject(): void {
     const canvasTitle = document.getElementById(
       'canvas-title',
@@ -345,6 +170,18 @@ class DrawBoard extends Component<any, any> {
     ) as HTMLInputElement;
     BoardApiService.getById(this.props.match?.params.id as string).subscribe(
       boardData => {
+        collaboratorsService.update(
+          boardData.users.map(item => ({
+            color: collaboratorsService.getRandomColor(),
+            count: 0,
+            email: item.email,
+            id: item.id,
+            name: item.name,
+            role: item.role,
+            selected: false,
+          })),
+        );
+        console.log(boardData);
         canvasTitle.innerText = boardData.name;
         if (canvasTitleInput) {
           canvasTitleInput.value = boardData.name;
@@ -374,118 +211,6 @@ class DrawBoard extends Component<any, any> {
     );
   }
 
-  handleSelect = (data: ObjectInterface) => {
-    this.updateShape({
-      ...data,
-      isSelected: false,
-    });
-  };
-
-  handleMouseDown = e => {
-    if (this.props.drawingTool) {
-      const position = e.target.getStage().getPointerPosition();
-      const data: ObjectInterface = onMouseDown(
-        { ...this.state.points },
-        this.props.drawingTool,
-        position,
-      );
-
-      this.isDrawing = true;
-      this.setState({
-        points: _.cloneDeep(data),
-      });
-    }
-  };
-
-  handleMouseMove = e => {
-    if (this.isDrawing && this.props.drawingTool) {
-      const position = e.target.getStage().getPointerPosition();
-      const data: ObjectInterface = onMouseMove(
-        { ...this.state.points },
-        this.props.drawingTool,
-        position,
-      );
-
-      this.setState({
-        points: _.cloneDeep(data),
-      });
-    }
-  };
-
-  handleMouseUp = e => {
-    if (this.isDrawing) {
-      this.isDrawing = false;
-      const position = e.target.getStage().getPointerPosition();
-      const data = onMouseUp(
-        { ...this.state.points },
-        this.props.drawingTool,
-        position,
-      );
-      this.addCanvasShape(data, {
-        saveHistory: true,
-        emitEvent: true,
-      });
-
-      this.setState({
-        points: {
-          ...defaultObjectState,
-        },
-      });
-    } else {
-      const clickedOnEmpty = e.target === e.target.getStage();
-      if (clickedOnEmpty) {
-        this.setState({
-          objects: this.state.objects.map(item => ({
-            ...item,
-            isSelected: false,
-            isFocused: false,
-            isEditing: false,
-          })),
-        });
-      }
-    }
-  };
-
-  addCanvasShape = (
-    data: ObjectInterface,
-    options: { saveHistory?: boolean; emitEvent?: boolean } = {
-      saveHistory: false,
-      emitEvent: false,
-    },
-  ) => {
-    console.log('addCanvasShape', data, options);
-    if (options.saveHistory) {
-      this.updateHistory(JSON.parse(JSON.stringify(data)));
-    }
-    if (options.emitEvent) {
-      this.emitSocketEvent(BoardSocketEventEnum.CREATE, {
-        ...data,
-        isEditing: false,
-        isSelected: false,
-        isFocused: false,
-        isLocked: false,
-      });
-    }
-    this.setState(
-      {
-        objects: [
-          ...this.state.objects.map(shapeObject => ({
-            ...shapeObject,
-            isEditing: false,
-            isSelected: false,
-            isFocused: false,
-          })),
-          {
-            ..._.cloneDeep(data),
-          },
-        ],
-      },
-      () => {
-        this.save();
-      },
-    );
-  };
-
   updateHistory(data: ObjectInterface) {
     this.setState({
       prevHistory: [
@@ -496,37 +221,12 @@ class DrawBoard extends Component<any, any> {
     });
   }
 
-  updateShape(
-    data: ObjectInterface,
-    options: { saveHistory?: boolean; emitEvent?: boolean } = {
-      saveHistory: false,
-      emitEvent: false,
-    },
-  ) {
+  updateShape(data: ObjectInterface) {
     if (data.type !== 'Sticky') {
       return;
     }
-    if (options.saveHistory) {
-      const historyItem = this.state.objects.find(item => item.id === data.id);
-      if (historyItem) {
-        const history = JSON.parse(JSON.stringify(historyItem));
-        this.updateHistory({
-          ...history,
-        });
-      }
-    }
 
     const item = this.state.objects.find(item => item.id === data.id);
-    if (options.emitEvent) {
-      this.emitSocketEvent(BoardSocketEventEnum.UPDATE, {
-        ...item,
-        ...data,
-        isSelected: false,
-        isEditing: false,
-        isFocused: false,
-        isLocked: true,
-      });
-    }
     const objects = this.state.objects
       .filter(item => item.id !== data.id)
       .map(shapeObject => ({
@@ -547,32 +247,14 @@ class DrawBoard extends Component<any, any> {
     );
   }
 
-  handleChanging = (data: ObjectInterface) => {
-    // this.emitSocketEvent(BoardSocketEventEnum.MOVE, data);
-  };
-
-  handleChangeStart = (data: ObjectInterface) => {
-    console.log(data, 'handleChangeStart');
-    this.emitSocketEvent(BoardSocketEventEnum.LOCK, {
-      ...data,
-      isSelected: false,
-      isLocked: true,
-      isEditing: false,
-      isFocused: false,
-    });
-  };
-
   render() {
     return (
       <div className={this.props.className}>
         <Stage
-          width={window.innerWidth * this.props.zoomLevel}
-          height={(window.innerHeight - 80) * this.props.zoomLevel}
+          width={1900 * this.props.zoomLevel}
+          height={1200 * this.props.zoomLevel}
           className="canvas-body-content"
           ref={ref => (this.stageRef = ref)}
-          // onMouseDown={this.handleMouseDown}
-          // onMousemove={this.handleMouseMove}
-          // onMouseup={this.handleMouseUp}
           scale={{
             x: this.props.zoomLevel,
             y: this.props.zoomLevel,
@@ -612,12 +294,11 @@ class DrawBoard extends Component<any, any> {
                   <StickyTransform
                     key={shapeObject.id}
                     data={shapeObject}
+                    socketIoClient={this.props.socketIoClient}
                     zoomLevel={this.props.zoomLevel}
+                    className={this.props.className}
                     onChange={data => {
-                      this.updateShape(data, {
-                        emitEvent: true,
-                        saveHistory: true,
-                      });
+                      this.updateShape(data);
                     }}
                   />
                 );
