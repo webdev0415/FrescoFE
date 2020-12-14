@@ -61,7 +61,8 @@ export const CreateBoard = memo((props: RouteChildrenProps<{ id: string }>) => {
   const boardId = props?.match?.params?.id;
   const [user, SetUser] = useState([]);
   const [messagesOffset, setMessagesOffset] = useState(0);
-  const [messagesLimit, setMessagesLimit] = useState(25);
+  const [newMessageBucket, setNewMessageBucket] = useState(null);
+  const messagesLimit = 25;
   const [socketClient, setSocketClient] = useState<any>(null);
 
   useEffect(() => {
@@ -118,7 +119,7 @@ export const CreateBoard = memo((props: RouteChildrenProps<{ id: string }>) => {
         });
       });
     }
-  }, [boardId, messagesLimit, messagesOffset]);
+  }, [boardId, messagesOffset]);
 
   useEffect(() => {
     MessagesApiService.AllMessages(
@@ -126,6 +127,7 @@ export const CreateBoard = memo((props: RouteChildrenProps<{ id: string }>) => {
       messagesOffset,
       messagesLimit,
     ).subscribe(data => {
+      setNewMessageBucket(data.messages);
       setChatMessages(prevState => {
         return {
           ...prevState,
@@ -133,7 +135,7 @@ export const CreateBoard = memo((props: RouteChildrenProps<{ id: string }>) => {
         };
       });
     });
-  }, [boardId, messagesLimit, messagesOffset]);
+  }, [boardId, messagesOffset]);
 
   const _getLinkInvitation = async () => {
     try {
@@ -270,8 +272,7 @@ export const CreateBoard = memo((props: RouteChildrenProps<{ id: string }>) => {
             messages={chatMessages}
             user={user}
             setMessagesOffset={setMessagesOffset}
-            setMessagesLimit={setMessagesLimit}
-            messagesLimit={messagesLimit}
+            newMessagesBucket={newMessageBucket}
           />
         )}
 

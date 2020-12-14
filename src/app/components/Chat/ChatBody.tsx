@@ -10,14 +10,13 @@ export const ChatBody = ({
   setChatMessages,
   boardId,
   setMessagesOffset,
-  setMessagesLimit,
-  messagesLimit,
   messagesOffset,
   scroll,
   socketIoClient,
   setScroll,
+  newMessagesBucket,
 }) => {
-  const messagesGroupDuration = 120; //seconds
+  const messagesGroupDuration = 120;
   let messagesArr = [...(messages?.messages || [])];
 
   messagesArr?.reverse();
@@ -90,9 +89,13 @@ export const ChatBody = ({
   }, [scroll, messages, messagesArr.length]);
 
   const handleScroll = ({ target }) => {
-    if (scroll?.scrollTop === 0) {
-      setMessagesLimit(messagesLimit + 10);
-      setMessagesOffset(messagesOffset + 20);
+    console.log(newMessagesBucket);
+    if (
+      scroll?.scrollTop === 0 &&
+      newMessagesBucket &&
+      newMessagesBucket.length
+    ) {
+      setMessagesOffset(messagesOffset + 25);
       scroll.scrollTop = target.clientHeight / 3;
     }
   };
