@@ -69,9 +69,7 @@ export enum BoardSocketEventEnum {
 }
 
 class DrawCanvas extends PureComponent<Props, State> {
-  public socket = socketIOClient(`${process.env.REACT_APP_BASE_URL}/board`, {
-    transports: ['websocket'],
-  });
+  socket: SocketIOClient.Socket;
 
   state: State = {
     id: uuidv4(),
@@ -100,6 +98,16 @@ class DrawCanvas extends PureComponent<Props, State> {
   isItemMoving: boolean = false;
   isDrawing: boolean = false;
   GUIDELINE_OFFSET = 5;
+
+  constructor(props) {
+    super(props);
+    const url = new URL(process.env.REACT_APP_BASE_URL as string);
+    url.pathname = 'board';
+    this.socket = socketIOClient(url.href, {
+      transports: ['websocket'],
+      query: { token: '' },
+    });
+  }
 
   componentDidMount() {
     document.addEventListener('keydown', this.onKeyDown);
