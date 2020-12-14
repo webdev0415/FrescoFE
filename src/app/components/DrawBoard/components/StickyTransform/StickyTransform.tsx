@@ -29,6 +29,7 @@ interface State {
   addNotesIcon: HTMLImageElement;
   addNotesPlusIcon: HTMLImageElement;
   collaborators: CollaboratorColorAndCount;
+  userSelected: string[];
 }
 
 interface Props extends TransformShapeProps {
@@ -41,6 +42,7 @@ interface Props extends TransformShapeProps {
 
 interface SocketData {
   id: string;
+  noteId: string;
   data: NotesInterface;
 }
 
@@ -56,6 +58,7 @@ class StickyTransform extends PureComponent<Props, State> {
     addNotesIcon: document.createElement('img'),
     addNotesPlusIcon: document.createElement('img'),
     collaborators: {},
+    userSelected: [],
   };
 
   componentDidMount() {
@@ -76,13 +79,17 @@ class StickyTransform extends PureComponent<Props, State> {
     });
     collaboratorsService.state.subscribe(value => {
       const collaborators: CollaboratorColorAndCount = {};
+      const selected: string[] = [];
       value.forEach(item => {
+        if (item.selected) {
+          selected.push(item.id);
+        }
         collaborators[item.id] = {
           count: item.count,
           color: item.color,
         };
       });
-      this.setState({ collaborators });
+      this.setState({ collaborators, userSelected: selected });
     });
 
     window.addEventListener('keydown', this.onKeyEvent);
@@ -143,7 +150,7 @@ class StickyTransform extends PureComponent<Props, State> {
       .subscribe(event => {
         const data = JSON.parse(event) as SocketData;
         console.log('Socket ' + BoardSocketEventEnum.CREATE, data);
-        if (data.id !== this.state.id) {
+        if (data.id !== this.state.id && this.props.data.id === data.noteId) {
           this.onAddNotes(data.data);
         }
       });
@@ -152,7 +159,7 @@ class StickyTransform extends PureComponent<Props, State> {
       .subscribe(event => {
         const data = JSON.parse(event) as SocketData;
         console.log('Socket ' + BoardSocketEventEnum.UPDATE, data);
-        if (data.id !== this.state.id) {
+        if (data.id !== this.state.id && this.props.data.id === data.noteId) {
           this.onUpdateNotes(data.data);
         }
       });
@@ -161,7 +168,9 @@ class StickyTransform extends PureComponent<Props, State> {
       .subscribe(event => {
         const data = JSON.parse(event) as SocketData;
         console.log('Socket ' + BoardSocketEventEnum.DELETE, data);
-        this.onDeleteItem(data.data.id);
+        if (data.id !== this.state.id && this.props.data.id === data.noteId) {
+          this.onDeleteItem(data.data.id);
+        }
       });
   }
 
@@ -170,6 +179,7 @@ class StickyTransform extends PureComponent<Props, State> {
       boardId: this.props.data.id,
       data: JSON.stringify({
         id: this.state.id,
+        noteId: this.props.data.id,
         data: data,
       }),
     };
@@ -452,59 +462,64 @@ class StickyTransform extends PureComponent<Props, State> {
               )}
             </Group>
             {this.state.notes.map(item => (
-              <Group
-                key={item.id}
-                id={item.id}
-                x={item.x}
-                y={item.y}
-                height={item.height}
-                width={item.width}
-                onMouseEnter={() => {
-                  this.onMouseEnterNotes(item.id);
-                }}
-                onMouseLeave={() => {
-                  this.onMouseEnterNotes('');
-                }}
-              >
-                <Rect
-                  x={0}
-                  y={0}
-                  height={item.height}
-                  width={item.width}
-                  fill="#FEF8BA"
-                  opacity={0.8}
-                  cornerRadius={4}
-                  stroke={
-                    item.id === this.state.hoveredNotesItem ||
-                    item.id === this.state.selected
-                      ? '#000000'
-                      : undefined
-                  }
-                />
+              <>
+                {(!this.state.userSelected.length ||
+                  this.state.userSelected.includes(item.userId)) && (
+                  <Group
+                    key={item.id}
+                    id={item.id}
+                    x={item.x}
+                    y={item.y}
+                    height={item.height}
+                    width={item.width}
+                    onMouseEnter={() => {
+                      this.onMouseEnterNotes(item.id);
+                    }}
+                    onMouseLeave={() => {
+                      this.onMouseEnterNotes('');
+                    }}
+                  >
+                    <Rect
+                      x={0}
+                      y={0}
+                      height={item.height}
+                      width={item.width}
+                      fill="#FEF8BA"
+                      opacity={0.8}
+                      cornerRadius={4}
+                      stroke={
+                        item.id === this.state.hoveredNotesItem ||
+                        item.id === this.state.selected
+                          ? '#000000'
+                          : undefined
+                      }
+                    />
 
-                <Text
-                  height={item.height}
-                  width={item.width}
-                  x={0}
-                  y={0}
-                  text={item.text || 'Sticky notes'}
-                  fontSize={item.fontSize}
-                  align="center"
-                  verticalAlign="middle"
-                  onDblClick={() => {
-                    this.onEditNotes(item);
-                  }}
-                  onDblTap={() => {
-                    this.onEditNotes(item);
-                  }}
-                />
-                <Circle
-                  radius={item.circle.radius}
-                  x={item.circle.x}
-                  y={item.circle.y}
-                  fill={item.circle.fill}
-                />
-              </Group>
+                    <Text
+                      height={item.height}
+                      width={item.width}
+                      x={0}
+                      y={0}
+                      text={item.text || 'Sticky notes'}
+                      fontSize={item.fontSize}
+                      align="center"
+                      verticalAlign="middle"
+                      onDblClick={() => {
+                        this.onEditNotes(item);
+                      }}
+                      onDblTap={() => {
+                        this.onEditNotes(item);
+                      }}
+                    />
+                    <Circle
+                      radius={item.circle.radius}
+                      x={item.circle.x}
+                      y={item.circle.y}
+                      fill={item.circle.fill}
+                    />
+                  </Group>
+                )}
+              </>
             ))}
             {this.state.hovered &&
               !!this.state.notes.length &&
