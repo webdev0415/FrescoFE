@@ -24,6 +24,10 @@ import { invitationType } from 'utils/constant';
 import { Chat } from 'app/components/Chat/Chat';
 import { MessagesApiService } from 'services/APIService/MessagesApi.service';
 import socketIOClient from 'socket.io-client';
+import {
+  CollaboratorInterface,
+  collaboratorsService,
+} from '../../../services/CollaboratorsService';
 
 interface IState {
   orgId?: any;
@@ -50,6 +54,9 @@ export const CreateBoard = memo((props: RouteChildrenProps<{ id: string }>) => {
   const [linkInvitation, setLinkInvitation] = useState(Object);
   const [chatModal, setChatModal] = useState(false);
   const [collaboratorModal, setCollaboratorModal] = useState(false);
+  const [collaborators, setCollaborators] = useState<CollaboratorInterface[]>(
+    [],
+  );
   const [chatMessages, setChatMessages] = useState<any>([]);
   const history = useHistory();
   const location = useLocation();
@@ -72,6 +79,9 @@ export const CreateBoard = memo((props: RouteChildrenProps<{ id: string }>) => {
         transports: ['websocket'],
       }),
     );
+    collaboratorsService.state.subscribe(value => {
+      setCollaborators(value.slice(0, 3));
+    });
   }, []);
 
   useEffect(() => {
@@ -347,9 +357,11 @@ export const CreateBoard = memo((props: RouteChildrenProps<{ id: string }>) => {
           </div>
           <div className="canvas-header-right">
             <div className="canvas-collaborators">
-              <div className="oval">jj</div>
-              <div className="oval">AS</div>
-              <div className="oval">AB</div>
+              {collaborators.map(item => (
+                <div className="oval" key={item.id}>
+                  {item.email.slice(0, 2)}
+                </div>
+              ))}
             </div>
 
             <div className="canvas-header-actions">
