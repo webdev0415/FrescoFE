@@ -330,8 +330,13 @@ class StickyTransform extends PureComponent<Props, State> {
   }
 
   handleRemoveNotes = (id: string) => {
-    let note = this.onDeleteItem(id);
-    this.emitSocketEvent(BoardSocketEventEnum.DELETE, note as NotesInterface);
+    const item = this.state.notes.find(
+      i => i.id === id && i.userId === Auth.user.id,
+    );
+    if (item) {
+      let note = this.onDeleteItem(id);
+      this.emitSocketEvent(BoardSocketEventEnum.DELETE, note as NotesInterface);
+    }
   };
 
   onUpdateNotes(data: NotesInterface): void {
@@ -505,10 +510,14 @@ class StickyTransform extends PureComponent<Props, State> {
                       align="center"
                       verticalAlign="middle"
                       onDblClick={() => {
-                        this.onEditNotes(item);
+                        if (item.userId === Auth.user.id) {
+                          this.onEditNotes(item);
+                        }
                       }}
                       onDblTap={() => {
-                        this.onEditNotes(item);
+                        if (item.userId === Auth.user.id) {
+                          this.onEditNotes(item);
+                        }
                       }}
                     />
                     <Circle
