@@ -2,15 +2,12 @@ import React, { Component } from 'react';
 import { Layer, Stage } from 'react-konva';
 import { v4 as uuidv4 } from 'uuid';
 import Konva from 'konva';
-import {
-  BoardSocketEventEnum,
-  ObjectInterface,
-  ObjectSocketInterface,
-  Props,
-  State,
-} from './types';
-import _ from 'lodash';
+import { ObjectInterface, Props, State } from './types';
 import { defaultObjectState } from './constants';
+import {
+  CollaboratorColorAndCount,
+  collaboratorsService,
+} from 'services/CollaboratorsService';
 
 import {
   EllipseTransform,
@@ -98,6 +95,7 @@ class DrawBoard extends Component<Props, State> {
   }
 
   save(): void {
+    this.updateCollaborators();
     this.saveImage();
     if (!!this.state.canvas.imageId) {
       this.saveBoard();
@@ -142,6 +140,27 @@ class DrawBoard extends Component<Props, State> {
     this.getBoardObject();
   }
 
+  updateCollaborators = () => {
+    const collaborators: CollaboratorColorAndCount = {};
+    this.state.objects.forEach(item => {
+      if (item.notes) {
+        item.notes.forEach(note => {
+          if (collaborators.hasOwnProperty(note.userId)) {
+            collaborators[note.userId].color = note.circle.fill;
+            collaborators[note.userId].count =
+              collaborators[note.userId].count + 1;
+          } else {
+            collaborators[note.userId] = {
+              color: note.circle.fill,
+              count: 1,
+            };
+          }
+        });
+      }
+    });
+    collaboratorsService.patch(collaborators);
+  };
+
   getBoardObject(): void {
     const canvasTitle = document.getElementById(
       'canvas-title',
@@ -151,6 +170,18 @@ class DrawBoard extends Component<Props, State> {
     ) as HTMLInputElement;
     BoardApiService.getById(this.props.match?.params.id as string).subscribe(
       boardData => {
+        collaboratorsService.update(
+          boardData.users.map(item => ({
+            color: collaboratorsService.getRandomColor(),
+            count: 0,
+            email: item.email,
+            id: item.id,
+            name: item.name,
+            role: item.role,
+            selected: false,
+          })),
+        );
+        console.log(boardData);
         canvasTitle.innerText = boardData.name;
         if (canvasTitleInput) {
           canvasTitleInput.value = boardData.name;
@@ -224,9 +255,6 @@ class DrawBoard extends Component<Props, State> {
           height={1200 * this.props.zoomLevel}
           className="canvas-body-content"
           ref={ref => (this.stageRef = ref)}
-          // onMouseDown={this.handleMouseDown}
-          // onMousemove={this.handleMouseMove}
-          // onMouseup={this.handleMouseUp}
           scale={{
             x: this.props.zoomLevel,
             y: this.props.zoomLevel,

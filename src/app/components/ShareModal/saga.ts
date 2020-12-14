@@ -28,7 +28,7 @@ export function* searchEmail(action) {
 export function* invitation(action) {
   const { payload } = action;
   const { listEmailAndPermission, token, messageInvite, isNoti } = payload;
-  console.log('payload', payload);
+  console.log('payload', payload, listEmailAndPermission);
   try {
     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
     const response = yield axios.post('invitation/type-email', {

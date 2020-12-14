@@ -1447,8 +1447,8 @@ class DrawCanvas extends PureComponent<Props, State> {
           ))}
 
         <Stage
-          width={window.innerWidth * this.props.zoomLevel}
-          height={(window.innerHeight - 80) * this.props.zoomLevel}
+          width={1900 * this.props.zoomLevel}
+          height={1200 * this.props.zoomLevel}
           className="canvas-body-content"
           ref={ref => (this.stageRef = ref)}
           onMouseDown={this.handleMouseDown}

@@ -12,6 +12,11 @@ import {
 import addNotesImage from 'assets/icons/add-notes.svg';
 import addNotesPlusImage from 'assets/icons/toolbar-plus-violet.svg';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import Auth from '../../../../../services/Auth';
+import {
+  CollaboratorColorAndCount,
+  collaboratorsService,
+} from '../../../../../services/CollaboratorsService';
 
 interface State {
   id: string;
@@ -23,12 +28,14 @@ interface State {
   hoveredNotesItem: string;
   addNotesIcon: HTMLImageElement;
   addNotesPlusIcon: HTMLImageElement;
+  collaborators: CollaboratorColorAndCount;
 }
 
 interface Props extends TransformShapeProps {
   zoomLevel: number;
   socketIoClient: SocketIOClient.Socket;
   className: string;
+
   onChange(data: ObjectInterface);
 }
 
@@ -48,6 +55,7 @@ class StickyTransform extends PureComponent<Props, State> {
     notes: [],
     addNotesIcon: document.createElement('img'),
     addNotesPlusIcon: document.createElement('img'),
+    collaborators: {},
   };
 
   componentDidMount() {
@@ -65,6 +73,16 @@ class StickyTransform extends PureComponent<Props, State> {
     addNotesPlusIcon.src = addNotesPlusImage;
     addNotesPlusIcon.addEventListener('load', e => {
       this.setState({ addNotesPlusIcon });
+    });
+    collaboratorsService.state.subscribe(value => {
+      const collaborators: CollaboratorColorAndCount = {};
+      value.forEach(item => {
+        collaborators[item.id] = {
+          count: item.count,
+          color: item.color,
+        };
+      });
+      this.setState({ collaborators });
     });
 
     window.addEventListener('keydown', this.onKeyEvent);
@@ -102,6 +120,13 @@ class StickyTransform extends PureComponent<Props, State> {
         console.log('Socket ' + BoardSocketEventEnum.JOIN_BOARD, data);
       },
     );
+
+    this.props.socketIoClient.on(BoardSocketEventEnum.CONNECT, () => {
+      console.log('Socket ' + BoardSocketEventEnum.CONNECT);
+    });
+    this.props.socketIoClient.on(BoardSocketEventEnum.DISCONNECT, () => {
+      console.log('Socket ' + BoardSocketEventEnum.DISCONNECT);
+    });
     this.props.socketIoClient.on(
       BoardSocketEventEnum.LEAVE_BOARD,
       (data: string) => {
@@ -266,7 +291,7 @@ class StickyTransform extends PureComponent<Props, State> {
   handleAddNotes = () => {
     const note = this.onAddNotes({
       id: v4(),
-      userId: v4(),
+      userId: Auth.user.id,
       x: 150,
       y: 10,
       width: 130,
@@ -277,7 +302,9 @@ class StickyTransform extends PureComponent<Props, State> {
         radius: 7,
         x: 12,
         y: 12,
-        fill: '#000000',
+        fill: this.state.collaborators[Auth.user.id]
+          ? this.state.collaborators[Auth.user.id].color
+          : '#000000',
       },
     });
     this.emitSocketEvent(BoardSocketEventEnum.CREATE, note);

@@ -292,22 +292,7 @@ export const CreateBoard = memo((props: RouteChildrenProps<{ id: string }>) => {
           />
         )}
 
-        {collaboratorModal && (
-          <CollaboratorModal
-            closeModal={_closeModal}
-            collaborator={[
-              { id: uuidv4(), name: 'Jose', count: 43, color: '#4253AF' },
-              { id: uuidv4(), name: 'Abe Baz', count: 13, color: '#97C05C' },
-              {
-                id: uuidv4(),
-                name: 'Chuck Norris',
-                count: 19,
-                color: '#FE3834',
-              },
-              { id: uuidv4(), name: 'Clark Kent', count: 26, color: '#FFB830' },
-            ]}
-          />
-        )}
+        {collaboratorModal && <CollaboratorModal closeModal={_closeModal} />}
 
         {isShowShareModal && (
           <ShareModal
@@ -320,6 +305,7 @@ export const CreateBoard = memo((props: RouteChildrenProps<{ id: string }>) => {
             type={invitationType.BOARD}
           />
         )}
+
         {socketClient && (
           <DrawBoard
             socketIoClient={socketClient}
@@ -330,6 +316,7 @@ export const CreateBoard = memo((props: RouteChildrenProps<{ id: string }>) => {
             {...props}
           />
         )}
+
         <div className="canvas-header">
           <div className="canvas-header-left">
             <Link to={`/organization/${orgId}`} className="canvas-header-logo">

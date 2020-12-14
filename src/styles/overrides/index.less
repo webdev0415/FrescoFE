@@ -368,7 +368,6 @@
             margin: 0 !important;
             padding: 0 10px;
 
-
             &:hover {
               color: #9646f5;
             }
@@ -616,8 +615,6 @@
   }
 }
 
-
-
 .ant-layout-footer {
   background: #eeeeee;
   height: 40px;
@@ -635,7 +632,6 @@
     color: #9646f5;
   }
 }
-
 
 .collaborators-list {
   display: flex;
@@ -656,7 +652,8 @@
     padding: 5px;
     cursor: pointer;
 
-    &:hover, &.active {
+    &:hover,
+    &.active {
       &:after {
         position: absolute;
         content: '';
@@ -674,12 +671,14 @@
       justify-content: center;
       align-items: center;
       gap: 5px;
+
       .identity-circle {
         width: 20px;
         height: 20px;
         border-radius: 50%;
         background-color: var(--color);
       }
+
       .collaborator-title {
         font-size: 16px;
       }
@@ -689,6 +688,7 @@
       display: inline-flex;
       justify-content: center;
       align-items: center;
+
       .collaborator-icon {
         color: var(--color);
       }
@@ -697,7 +697,5 @@
         font-size: 16px;
       }
     }
-
-
   }
 }
