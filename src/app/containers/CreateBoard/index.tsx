@@ -70,6 +70,7 @@ export const CreateBoard = connect(({ global: { token } }: any) => ({ token }))(
     const [newMessageBucket, setNewMessageBucket] = useState(null);
     const messagesLimit = 25;
     const [socketClient, setSocketClient] = useState<any>(null);
+    const [messagesOnLoad, setMessagesOnLoad] = useState<Boolean>(false);
 
     useEffect(() => {
       collaboratorsService.state.subscribe(value => {
@@ -89,6 +90,13 @@ export const CreateBoard = connect(({ global: { token } }: any) => ({ token }))(
         }),
       );
     }, [props.token]);
+
+    useEffect(() => {
+      if (!chatModal) {
+        setMessagesOffset(0);
+        setChatMessages([]);
+      }
+    }, [chatModal]);
 
     useEffect(() => {
       document.addEventListener('click', event => {
@@ -137,6 +145,7 @@ export const CreateBoard = connect(({ global: { token } }: any) => ({ token }))(
 
       const chatIcon = document.getElementById('chat-icon') as HTMLDivElement;
       if (chatIcon) {
+        setMessagesOnLoad(true);
         chatIcon.addEventListener('click', () => {
           setChatModal(true);
           setIsShowShareModal(false);
@@ -146,6 +155,7 @@ export const CreateBoard = connect(({ global: { token } }: any) => ({ token }))(
             messagesOffset,
             messagesLimit,
           ).subscribe(data => {
+            setMessagesOnLoad(false);
             setChatMessages(data);
           });
         });
@@ -153,11 +163,13 @@ export const CreateBoard = connect(({ global: { token } }: any) => ({ token }))(
     }, [boardId, messagesOffset]);
 
     useEffect(() => {
+      setMessagesOnLoad(true);
       MessagesApiService.AllMessages(
         boardId,
         messagesOffset,
         messagesLimit,
       ).subscribe(data => {
+        setMessagesOnLoad(false);
         setNewMessageBucket(data.messages);
         setChatMessages(prevState => {
           return {
@@ -302,6 +314,7 @@ export const CreateBoard = connect(({ global: { token } }: any) => ({ token }))(
               hide={hideChat}
               boardId={boardId}
               messages={chatMessages}
+              messagesOnLoad={messagesOnLoad}
               user={user}
               setMessagesOffset={setMessagesOffset}
               newMessagesBucket={newMessageBucket}
