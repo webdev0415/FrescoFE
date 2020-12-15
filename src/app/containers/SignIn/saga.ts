@@ -18,6 +18,7 @@ export function* signIn(action) {
     message.success('Logged in successfully.');
     history.push('/auth/welcome-page');
     Auth.setToken(response?.data?.token?.accessToken);
+    Auth.update();
 
     // check if have invitation type
     const tokenVerifyJson = localStorage.getItem('tokenVerify');

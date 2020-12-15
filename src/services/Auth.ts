@@ -23,6 +23,15 @@ class Auth {
     this.user = authInfo ? JSON.parse(authInfo || '{}').user : null;
   }
 
+  update(): void {
+    const authInfo = localStorage.getItem('authInformation');
+
+    this.token = authInfo
+      ? JSON.parse(authInfo || '{}').token.accessToken
+      : null;
+    this.user = authInfo ? JSON.parse(authInfo || '{}').user : null;
+  }
+
   isLogged() {
     return !!this.token;
   }

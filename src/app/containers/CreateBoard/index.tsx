@@ -74,7 +74,7 @@ export const CreateBoard = connect(({ global: { token } }: any) => ({ token }))(
 
     useEffect(() => {
       collaboratorsService.state.subscribe(value => {
-        setCollaborators(value.slice(0, 3));
+        setCollaborators(value);
       });
     }, []);
 
@@ -377,7 +377,10 @@ export const CreateBoard = connect(({ global: { token } }: any) => ({ token }))(
             </div>
             <div className="canvas-header-right">
               <div className="canvas-collaborators">
-                {collaborators.map(item => (
+                {collaborators.length > 3 && (
+                  <div className="oval count">+{collaborators.length - 3}</div>
+                )}
+                {collaborators.slice(0, 3).map(item => (
                   <div className="oval">
                     {item.email.slice(0, 2).toUpperCase()}
                   </div>
