@@ -4,14 +4,11 @@ import './Chat.less';
 import ChatBody from './ChatBody';
 import { ChatFooter } from './ChatFooter';
 
-interface IState {
-  orgId?: any;
-}
-
 export const Chat = ({
   open,
   hide,
   messages,
+  messagesOnLoad,
   boardId,
   setChatMessages,
   user,
@@ -30,10 +27,12 @@ export const Chat = ({
         user={user}
         socketIoClient={socketIoClient}
         messages={messages}
+        messagesOnLoad={messagesOnLoad}
         boardId={boardId}
         setMessagesOffset={setMessagesOffset}
         messagesOffset={messagesOffset}
         scroll={scroll}
+        open={open}
         setScroll={setScroll}
         newMessagesBucket={newMessagesBucket}
       />

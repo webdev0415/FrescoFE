@@ -15,6 +15,8 @@ const ChatBody = ({
   scroll,
   socketIoClient,
   setScroll,
+  open,
+  messagesOnLoad,
   newMessagesBucket,
 }) => {
   const messagesGroupDuration = 120;
@@ -34,9 +36,14 @@ const ChatBody = ({
   }, [orgId, socketIoClient]);
 
   useEffect(() => {
+    if (scroll) {
+      scroll.scrollTop = scroll.scrollHeight;
+    }
+  }, [open, scroll]);
+
+  useEffect(() => {
     if (!Array.isArray(user)) {
       socketIoClient.on('createMessage', data => {
-        console.log(111);
         if (data.sender.id !== user.id) {
           setChatMessages(messages => {
             if (data.sender.id !== user.id) {
@@ -91,13 +98,15 @@ const ChatBody = ({
   }, [scroll, messages, messagesArr.length]);
 
   const handleScroll = ({ target }) => {
-    if (
-      scroll?.scrollTop === 0 &&
-      newMessagesBucket &&
-      newMessagesBucket.length
-    ) {
-      setMessagesOffset(messagesOffset + 25);
-      scroll.scrollTop = target.clientHeight / 3;
+    if (target.scrollTop < 50 && !messagesOnLoad) {
+      if (
+        scroll?.scrollTop === 0 &&
+        newMessagesBucket &&
+        newMessagesBucket.length
+      ) {
+        setMessagesOffset(messagesOffset + 25);
+        scroll.scrollTop = target.clientHeight / 3;
+      }
     }
   };
 
