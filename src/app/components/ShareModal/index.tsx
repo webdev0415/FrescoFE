@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { CaretDownFilled } from '@ant-design/icons';
 import {
   AutoComplete,
@@ -26,6 +26,8 @@ import { selectShareModal } from './selectors';
 import TextArea from 'antd/lib/input/TextArea';
 import { CloseIcon, CopyIcon, ShareIcon } from 'assets/icons';
 import { isEmail } from 'class-validator';
+import { ReactMultiEmail } from 'react-multi-email';
+import 'react-multi-email/style.css';
 
 const MAX_EMAIL = 3;
 const { Option } = Select;
@@ -34,7 +36,7 @@ let timer;
 const { TabPane } = Tabs;
 
 interface EmailAndPermission {
-  name: string;
+  name?: string;
   orgId: string;
   toUserId?: string;
   toEmail: string;
@@ -60,6 +62,7 @@ export const ShareModal = ({
   const [listEmailAndPermission, setListEmailAndPermission] = useState(
     [] as Array<EmailAndPermission>,
   );
+  const [emails, setEmails] = useState<string[]>([]);
   const [textSearch, setTextSearch] = useState('');
   const [message, setMessage] = useState('');
   const [isNoti, setIsNoti] = useState(false);
@@ -67,6 +70,18 @@ export const ShareModal = ({
   const dispatch = useDispatch();
   const token = useSelector(selectToken);
   const { listEmail } = useSelector(selectShareModal);
+
+  // useEffect(() => {
+  //   setListEmailAndPermission(
+  //     emails.map(email => ({
+  //       orgId,
+  //       toEmail: email,
+  //       permission: PERMISSION.EDITOR,
+  //       typeId,
+  //       type,
+  //     })),
+  //   );
+  // }, [emails]);
 
   const _handleSearch = (value: string) => {
     setTextSearch(value);
@@ -110,21 +125,16 @@ export const ShareModal = ({
   };
 
   const _sendInvitation = () => {
-    const emailListWithPermissions = listEmailAndPermission;
+    const emailListWithPermissions = emails.map(email => ({
+      orgId,
+      toEmail: email,
+      permission: PERMISSION.EDITOR,
+      typeId,
+      type,
+    }));
     if (!emailListWithPermissions.length) {
-      if (!isEmail(textSearch)) {
-        alert.error('Please select email before invite');
-        return;
-      } else {
-        emailListWithPermissions.push({
-          name: textSearch,
-          orgId,
-          toEmail: textSearch,
-          permission: PERMISSION.EDITOR,
-          typeId,
-          type,
-        });
-      }
+      alert.error('Please enter Email Address to invite');
+      return;
     }
     dispatch(
       actions.invitationRequest({
@@ -136,6 +146,7 @@ export const ShareModal = ({
     );
     setTextSearch('');
     setListEmailAndPermission([]);
+    setEmails([]);
     setIsNoti(false);
     setMessage('');
   };
@@ -207,28 +218,63 @@ export const ShareModal = ({
             <div
               style={{
                 paddingBottom: 1,
-                backgroundColor: 'gray',
                 marginBottom: 10,
               }}
             >
-              <AutoComplete
-                bordered={false}
-                style={{
-                  width: '100%',
-                  backgroundColor: '#eeeeee',
+              <ReactMultiEmail
+                placeholder="placeholder"
+                emails={emails}
+                onChange={(_emails: string[]) => {
+                  setEmails(_emails);
                 }}
-                onSearch={_handleSearch}
-                value={textSearch}
-                placeholder="Write name or email"
-                onSelect={_handleSelectEmail}
-              >
-                {listEmail?.map(item => (
-                  <Option key={item.id} value={item.email} name={item.name}>
-                    {item.email}
-                  </Option>
-                ))}
-              </AutoComplete>
+                validateEmail={email => {
+                  return isEmail(email); // return boolean
+                }}
+                getLabel={(
+                  email: string,
+                  index: number,
+                  removeEmail: (index: number) => void,
+                ) => {
+                  return (
+                    <div
+                      data-tag
+                      key={index}
+                      style={{ backgroundColor: '#e4e4e4' }}
+                    >
+                      {email}
+                      <span data-tag-handle onClick={() => removeEmail(index)}>
+                        ×
+                      </span>
+                    </div>
+                  );
+                }}
+              />
             </div>
+            {/*<div*/}
+            {/*  style={{*/}
+            {/*    paddingBottom: 1,*/}
+            {/*    backgroundColor: 'gray',*/}
+            {/*    marginBottom: 10,*/}
+            {/*  }}*/}
+            {/*>*/}
+            {/*  <AutoComplete*/}
+            {/*    bordered={false}*/}
+            {/*    style={{*/}
+            {/*      width: '100%',*/}
+            {/*      backgroundColor: '#eeeeee',*/}
+            {/*    }}*/}
+            {/*    onSearch={_handleSearch}*/}
+            {/*    value={textSearch}*/}
+            {/*    placeholder="Write name or email"*/}
+            {/*    onSelect={_handleSelectEmail}*/}
+            {/*  >*/}
+            {/*    {listEmail?.map(item => (*/}
+            {/*      <Option key={item.id} value={item.email} name={item.name}>*/}
+            {/*        {item.email}*/}
+            {/*      </Option>*/}
+            {/*    ))}*/}
+            {/*  </AutoComplete>*/}
+            {/*</div>*/}
             {listEmailAndPermission.length ? (
               <List
                 dataSource={listEmailAndPermission}

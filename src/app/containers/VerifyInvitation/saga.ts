@@ -3,6 +3,7 @@ import { message } from 'antd';
 import { http } from 'services/APIService/http-instance';
 import { actions } from './slice';
 import { actions as globalActions } from '../../slice';
+import Auth from '../../../services/Auth';
 // import { actions as globalActions } from '../../slice';
 
 export function* verifyInvitation(action) {
@@ -21,6 +22,7 @@ export function* verifyInvitation(action) {
       });
       yield put(globalActions.setAuthInformation(res.data));
       localStorage.setItem('authInformation', JSON.stringify(res.data));
+      Auth.update();
       message.success('Logged in successfully.');
       history.push('/auth/welcome-page');
     } else {
