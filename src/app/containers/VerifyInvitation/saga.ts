@@ -1,6 +1,6 @@
 import { all, put, takeLatest } from 'redux-saga/effects';
 import { message } from 'antd';
-import axios from 'axios';
+import { http } from 'services/APIService/http-instance';
 import { actions } from './slice';
 import { actions as globalActions } from '../../slice';
 // import { actions as globalActions } from '../../slice';
@@ -10,10 +10,10 @@ export function* verifyInvitation(action) {
   const { history, token } = payload;
   // console.log('payload', token);
   try {
-    const response = yield axios.get(`invitation/check/${token}`);
+    const response = yield http.get(`invitation/check/${token}`);
     // console.log('response', response);
     if (response?.data?.toUserId) {
-      const res = yield axios.post('invitation/verify', {
+      const res = yield http.post('invitation/verify', {
         orgId: response.data.orgId,
         token: response.data.token,
         permission: response.data.permission,

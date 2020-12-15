@@ -134,6 +134,7 @@ export const ShareModal = ({
         isNoti,
       }),
     );
+    setTextSearch('');
     setListEmailAndPermission([]);
     setIsNoti(false);
     setMessage('');
