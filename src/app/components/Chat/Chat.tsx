@@ -17,7 +17,7 @@ export const Chat = ({
   socketIoClient,
   newMessagesBucket,
   setChatNotification,
-  loadingMessages
+  loadingMessages,
 }) => {
   const [scroll, setScroll] = React.useState<null | HTMLElement>(null);
   return (

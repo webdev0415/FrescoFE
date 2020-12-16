@@ -7,7 +7,6 @@ import { v4 as uuidv4 } from 'uuid';
 import chatArrow from 'assets/icons/arrow.png';
 import ScrollNumber from 'antd/lib/badge/ScrollNumber';
 
-
 const ChatBody = ({
   messages,
   user,
@@ -22,9 +21,8 @@ const ChatBody = ({
   messagesOnLoad,
   newMessagesBucket,
   setChatNotification,
-  loadingMessages
+  loadingMessages,
 }) => {
-
   const messagesGroupDuration = 120;
   let messagesArr = [...(messages?.messages || [])];
   const heightBeforeRender = scroll?.scrollHeight;
@@ -49,14 +47,13 @@ const ChatBody = ({
     }
   }, [open, scroll]);
 
-
   const getNewMessagesIcon = () => {
     if (scroll) {
-      if (scroll.scrollHeight - scroll.scrollTop > (scroll.offsetHeight + 50)) {
+      if (scroll.scrollHeight - scroll.scrollTop > scroll.offsetHeight + 50) {
         setScrollToBottomIcon('active');
       }
     }
-  }
+  };
 
   useEffect(() => {
     if (!Array.isArray(user)) {
@@ -65,7 +62,7 @@ const ChatBody = ({
           setChatMessages(messages => {
             getNewMessagesIcon();
             if (!open) {
-              setChatNotification(true)
+              setChatNotification(true);
             }
             if (data.sender.id !== user.id) {
               return {
@@ -103,7 +100,15 @@ const ChatBody = ({
         }),
       );
     }
-  }, [setChatMessages, socketIoClient, user, scroll, open]);
+  }, [
+    setChatMessages,
+    socketIoClient,
+    user,
+    scroll,
+    open,
+    getNewMessagesIcon,
+    setChatNotification,
+  ]);
 
   useEffect(scrollToBottom, [messages]);
 
@@ -120,16 +125,13 @@ const ChatBody = ({
 
   const handleToBottom = () => {
     if (scroll) {
-      scroll.scrollTop = scroll.scrollHeight + heightBeforeRender
+      scroll.scrollTop = scroll.scrollHeight + heightBeforeRender;
     }
     setScrollToBottomIcon('');
-    setChatNotification(false)
-  }
+    setChatNotification(false);
+  };
 
   const handleScroll = ({ target }) => {
-
-
-
     if (target.scrollTop < 50 && !messagesOnLoad) {
       if (
         scroll?.scrollTop === 0 &&
@@ -185,14 +187,18 @@ const ChatBody = ({
     return groups;
   };
 
-
   return (
     <div
       className={`chatBox-body`}
       onScroll={handleScroll}
       ref={scroller => setScroll(scroller)}
     >
-      <div className="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+      <div className="lds-ellipsis">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
       <div className={`chatBox-body-new-message ${scrollToBottomIcon}`}>
         <button onClick={() => handleToBottom()}>
           <img src={chatArrow} />
@@ -202,12 +208,19 @@ const ChatBody = ({
         const loggedUserMessageGroup =
           group.user.id === user.id ? 'logged-user' : '';
 
-        console.log('group', group)
+        console.log('group', group);
         return (
           <div key={`${index}-${uuidv4()}`}>
             <div className={`chatBox-body-user ${loggedUserMessageGroup}`}>
               <img src={chatUser} alt="avatar" />
-              <p className='user-block'> <span>{group.user.name || group.user.email}</span> <span className='chatBox-body-user-time'> {moment(group.messages[0].createdAt).format('HH:MM')} </span></p>
+              <p className="user-block">
+                {' '}
+                <span>{group.user.name || group.user.email}</span>{' '}
+                <span className="chatBox-body-user-time">
+                  {' '}
+                  {moment(group.messages[0].createdAt).format('HH:MM')}{' '}
+                </span>
+              </p>
             </div>
             {group.messages.map((message, index) => (
               <ChatMessage

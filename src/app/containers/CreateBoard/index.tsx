@@ -376,13 +376,13 @@ export const CreateBoard = connect(({ global: { token } }: any) => ({ token }))(
                   id="canvas-title"
                 />
               ) : (
-                  <input
-                    type="text"
-                    id="canvas-title-input"
-                    className="canvas-title-input"
-                    onKeyDown={handleKeyDown}
-                  />
-                )}
+                <input
+                  type="text"
+                  id="canvas-title-input"
+                  className="canvas-title-input"
+                  onKeyDown={handleKeyDown}
+                />
+              )}
               <div className="canvas-header-actions">
                 <div className="canvas-header-action-item" id="undo-history">
                   <UndoIcon />
@@ -414,7 +414,11 @@ export const CreateBoard = connect(({ global: { token } }: any) => ({ token }))(
                     active: chatModal,
                   })}
                 >
-                  <span className={`chat-notification ${chatNotification ? 'active' : ''}`}></span>
+                  <span
+                    className={`chat-notification ${
+                      chatNotification ? 'active' : ''
+                    }`}
+                  ></span>
                   <ChatIcon />
                 </Button>
                 <Button
