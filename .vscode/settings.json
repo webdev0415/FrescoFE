@@ -9,7 +9,7 @@
   "javascript.updateImportsOnFileMove.enabled": "always",
   "vsicons.projectDetection.autoReload": true,
   "[typescriptreact]": {
-    "editor.defaultFormatter": "vscode.typescript-language-features"
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[javascript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
