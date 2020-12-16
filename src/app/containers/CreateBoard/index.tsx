@@ -71,6 +71,8 @@ export const CreateBoard = connect(({ global: { token } }: any) => ({ token }))(
     const messagesLimit = 25;
     const [socketClient, setSocketClient] = useState<any>(null);
     const [messagesOnLoad, setMessagesOnLoad] = useState<Boolean>(false);
+    const [chatNotification, setChatNotification] = useState(false);
+    const [loadingMessages, setLoadingMessages] = useState(false);
 
     useEffect(() => {
       collaboratorsService.state.subscribe(value => {
@@ -148,6 +150,7 @@ export const CreateBoard = connect(({ global: { token } }: any) => ({ token }))(
         setMessagesOnLoad(true);
         chatIcon.addEventListener('click', () => {
           setChatModal(true);
+          setChatNotification(false);
           setIsShowShareModal(false);
           setCollaboratorModal(false);
           if (chatMessages.length < 1) {
@@ -166,6 +169,7 @@ export const CreateBoard = connect(({ global: { token } }: any) => ({ token }))(
 
     useEffect(() => {
       setMessagesOnLoad(true);
+      setLoadingMessages(true);
       MessagesApiService.AllMessages(
         boardId,
         messagesOffset,
@@ -173,6 +177,7 @@ export const CreateBoard = connect(({ global: { token } }: any) => ({ token }))(
       ).subscribe(data => {
         setMessagesOnLoad(false);
         setNewMessageBucket(data.messages);
+        setLoadingMessages(false);
         setChatMessages(prevState => {
           return {
             ...prevState,
@@ -302,6 +307,7 @@ export const CreateBoard = connect(({ global: { token } }: any) => ({ token }))(
 
     const hideChat = () => {
       setChatModal(false);
+      setIsShowShareModal(false);
     };
 
     return (
@@ -320,6 +326,8 @@ export const CreateBoard = connect(({ global: { token } }: any) => ({ token }))(
               user={user}
               setMessagesOffset={setMessagesOffset}
               newMessagesBucket={newMessageBucket}
+              setChatNotification={setChatNotification}
+              loadingMessages={loadingMessages}
             />
           )}
 
@@ -404,6 +412,11 @@ export const CreateBoard = connect(({ global: { token } }: any) => ({ token }))(
                     active: chatModal,
                   })}
                 >
+                  <span
+                    className={`chat-notification ${
+                      chatNotification ? 'active' : ''
+                    }`}
+                  ></span>
                   <ChatIcon />
                 </Button>
                 <Button

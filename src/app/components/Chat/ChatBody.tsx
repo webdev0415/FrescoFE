@@ -4,6 +4,8 @@ import chatUser from 'assets/icons/chat-user.svg';
 import moment from 'moment';
 import { useParams } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
+import chatArrow from 'assets/icons/arrow.png';
+import ScrollNumber from 'antd/lib/badge/ScrollNumber';
 
 const ChatBody = ({
   messages,
@@ -18,12 +20,16 @@ const ChatBody = ({
   open,
   messagesOnLoad,
   newMessagesBucket,
+  setChatNotification,
+  loadingMessages,
 }) => {
   const messagesGroupDuration = 120;
   let messagesArr = [...(messages?.messages || [])];
+  const heightBeforeRender = scroll?.scrollHeight;
 
   messagesArr?.reverse();
   const messagesRef = useRef<null | HTMLElement>(null);
+  const [scrollToBottomIcon, setScrollToBottomIcon] = React.useState('');
   const scrollToBottom = () => {
     messagesRef?.current?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -41,11 +47,23 @@ const ChatBody = ({
     }
   }, [open, scroll]);
 
+  const getNewMessagesIcon = () => {
+    if (scroll) {
+      if (scroll.scrollHeight - scroll.scrollTop > scroll.offsetHeight + 50) {
+        setScrollToBottomIcon('active');
+      }
+    }
+  };
+
   useEffect(() => {
     if (!Array.isArray(user)) {
       socketIoClient.on('createMessage', data => {
         if (data.sender.id !== user.id) {
           setChatMessages(messages => {
+            getNewMessagesIcon();
+            if (!open) {
+              setChatNotification(true);
+            }
             if (data.sender.id !== user.id) {
               return {
                 ...messages,
@@ -82,7 +100,15 @@ const ChatBody = ({
         }),
       );
     }
-  }, [setChatMessages, socketIoClient, user]);
+  }, [
+    setChatMessages,
+    socketIoClient,
+    user,
+    scroll,
+    open,
+    getNewMessagesIcon,
+    setChatNotification,
+  ]);
 
   useEffect(scrollToBottom, [messages]);
 
@@ -96,6 +122,14 @@ const ChatBody = ({
       }, 120);
     }
   }, [scroll, messages, messagesArr.length]);
+
+  const handleToBottom = () => {
+    if (scroll) {
+      scroll.scrollTop = scroll.scrollHeight + heightBeforeRender;
+    }
+    setScrollToBottomIcon('');
+    setChatNotification(false);
+  };
 
   const handleScroll = ({ target }) => {
     if (target.scrollTop < 50 && !messagesOnLoad) {
@@ -155,19 +189,38 @@ const ChatBody = ({
 
   return (
     <div
-      className="chatBox-body"
+      className={`chatBox-body`}
       onScroll={handleScroll}
       ref={scroller => setScroll(scroller)}
     >
+      <div className="lds-ellipsis">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+      <div className={`chatBox-body-new-message ${scrollToBottomIcon}`}>
+        <button onClick={() => handleToBottom()}>
+          <img src={chatArrow} />
+        </button>
+      </div>
       {sortMessagesByGroups(messagesArr || []).map((group, index) => {
         const loggedUserMessageGroup =
           group.user.id === user.id ? 'logged-user' : '';
 
+        console.log('group', group);
         return (
           <div key={`${index}-${uuidv4()}`}>
             <div className={`chatBox-body-user ${loggedUserMessageGroup}`}>
               <img src={chatUser} alt="avatar" />
-              <span>{group.user.name || group.user.email}</span>
+              <p className="user-block">
+                {' '}
+                <span>{group.user.name || group.user.email}</span>{' '}
+                <span className="chatBox-body-user-time">
+                  {' '}
+                  {moment(group.messages[0].createdAt).format('HH:MM')}{' '}
+                </span>
+              </p>
             </div>
             {group.messages.map((message, index) => (
               <ChatMessage
@@ -176,6 +229,7 @@ const ChatBody = ({
                 logedUser={loggedUserMessageGroup}
                 setChatMessages={setChatMessages}
                 boardId={boardId}
+                time={message.createdAt}
               />
             ))}
           </div>

@@ -16,9 +16,10 @@ export const Chat = ({
   messagesOffset,
   socketIoClient,
   newMessagesBucket,
+  setChatNotification,
+  loadingMessages,
 }) => {
   const [scroll, setScroll] = React.useState<null | HTMLElement>(null);
-
   return (
     <div className={`chatBox ${open ? 'active' : ''}`}>
       <ChatHeader hide={hide} />
@@ -34,7 +35,9 @@ export const Chat = ({
         scroll={scroll}
         open={open}
         setScroll={setScroll}
+        setChatNotification={setChatNotification}
         newMessagesBucket={newMessagesBucket}
+        loadingMessages={loadingMessages}
       />
       <ChatFooter
         boardId={boardId}
