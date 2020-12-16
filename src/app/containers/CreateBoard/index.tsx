@@ -150,17 +150,19 @@ export const CreateBoard = connect(({ global: { token } }: any) => ({ token }))(
           setChatModal(true);
           setIsShowShareModal(false);
           setCollaboratorModal(false);
-          MessagesApiService.AllMessages(
-            boardId,
-            messagesOffset,
-            messagesLimit,
-          ).subscribe(data => {
-            setMessagesOnLoad(false);
-            setChatMessages(data);
-          });
+          if (chatMessages.length < 1) {
+            MessagesApiService.AllMessages(
+              boardId,
+              messagesOffset,
+              messagesLimit,
+            ).subscribe(data => {
+              setMessagesOnLoad(false);
+              setChatMessages(data);
+            });
+          }
         });
       }
-    }, [boardId, messagesOffset]);
+    }, [boardId, chatMessages.length, messagesOffset]);
 
     useEffect(() => {
       setMessagesOnLoad(true);
