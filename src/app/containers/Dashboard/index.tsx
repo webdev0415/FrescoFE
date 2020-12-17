@@ -101,6 +101,10 @@ export const Dashboard = memo((props: Props) => {
     setCanvasName(defaultCanvasName);
   }, [defaultCanvasName]);
 
+  useEffect(() => {
+    document.title = 'Dashboard';
+  }, []);
+
   // const user = useSelector(selectUser);
   useEffect(() => {
     console.log(dashboard);

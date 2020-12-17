@@ -466,6 +466,7 @@ class DrawCanvas extends PureComponent<Props, State> {
     CanvasApiService.getById(this.props.match?.params.id as string).subscribe(
       canvasData => {
         canvasTitle.innerText = canvasData.name;
+        document.title = canvasData.name;
         if (canvasTitleInput) {
           canvasTitleInput.value = canvasData.name;
         }
