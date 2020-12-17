@@ -13,6 +13,7 @@ import {
 } from '../../../services/APIService/interfaces';
 import { useHistory } from 'react-router-dom';
 import moment from 'moment';
+import clsx from 'clsx';
 
 const { TabPane } = Tabs;
 

@@ -235,6 +235,7 @@ class StickyTransform extends PureComponent<Props, State> {
 
     const height: number = this.state.data?.rect?.height as number;
     const width: number = this.state.data?.rect?.width as number;
+    this.maxSquare = Math.min(height, width);
     const squaresInRectangle = new SquaresInRectangle({
       spacing: this.spacing,
       height: height,
@@ -280,60 +281,6 @@ class StickyTransform extends PureComponent<Props, State> {
       return newItem;
     });
 
-    // if (notes.length) {
-    //   if (notes.length <= 2) {
-    //     let x = spacing;
-    //     let y = spacing;
-    //     oldNotes = notes.map(item => {
-    //       const height: number =
-    //         (this.state.data?.rect?.height as number) - spacing * 2;
-    //       const width: number =
-    //         ((this.state.data?.rect?.width as number) - spacing * 3) / 2;
-    //       const newItem = {
-    //         ...item,
-    //         x: x,
-    //         y: y,
-    //         width: width,
-    //         height: height,
-    //         fontSize: 14,
-    //         circle: {
-    //           ...item.circle,
-    //           radius: 7,
-    //           x: 12,
-    //           y: 12,
-    //         },
-    //       };
-    //       x = y === spacing ? x + width + spacing : x;
-    //       return newItem;
-    //     });
-    //   } else {
-    //     let x = spacing;
-    //     let y = spacing;
-    //     oldNotes = notes.map(item => {
-    //       const height: number =
-    //         ((this.state.data?.rect?.height as number) - spacing * 3) / 2;
-    //       const width: number =
-    //         ((this.state.data?.rect?.width as number) - spacing * 5) / 4;
-    //       const newItem = {
-    //         ...item,
-    //         x: x,
-    //         y: y,
-    //         width: width,
-    //         height: height,
-    //         fontSize: 8,
-    //         circle: {
-    //           ...item.circle,
-    //           radius: 3,
-    //           x: 7,
-    //           y: 7,
-    //         },
-    //       };
-    //       x = y === spacing ? x : x + width + spacing;
-    //       y = y === spacing ? y + height + spacing : spacing;
-    //       return newItem;
-    //     });
-    //   }
-    // }
     return oldNotes;
   }
 
