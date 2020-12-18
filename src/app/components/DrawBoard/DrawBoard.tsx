@@ -183,6 +183,7 @@ class DrawBoard extends Component<Props, State> {
         );
         console.log(boardData);
         canvasTitle.innerText = boardData.name;
+        document.title = boardData.name;
         if (canvasTitleInput) {
           canvasTitleInput.value = boardData.name;
         }

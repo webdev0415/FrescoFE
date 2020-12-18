@@ -17,6 +17,8 @@ import {
   CollaboratorColorAndCount,
   collaboratorsService,
 } from '../../../../../services/CollaboratorsService';
+import { SquaresInRectangle } from '../../../../../utils/squares-in-rectangle';
+import { not } from 'rxjs/internal-compatibility';
 
 interface State {
   id: string;
@@ -30,6 +32,7 @@ interface State {
   addNotesPlusIcon: HTMLImageElement;
   collaborators: CollaboratorColorAndCount;
   userSelected: string[];
+  maxCount: number;
 }
 
 interface Props extends TransformShapeProps {
@@ -59,13 +62,27 @@ class StickyTransform extends PureComponent<Props, State> {
     addNotesPlusIcon: document.createElement('img'),
     collaborators: {},
     userSelected: [],
+    maxCount: 0,
   };
+
+  spacing: number = 10;
+  minSquare: number = 50;
+  maxSquare: number = 200;
 
   componentDidMount() {
     const data: ObjectInterface = this.props.data;
     let notes: NotesInterface[] = [];
     if (this.props.data.notes) {
       notes = this.props.data.notes;
+      const squaresInRectangle = new SquaresInRectangle({
+        spacing: this.spacing,
+        height: data.rect?.height as number,
+        width: data.rect?.width as number,
+        count: notes.length,
+        max: this.maxSquare,
+        min: this.minSquare,
+      });
+      this.setState({ maxCount: squaresInRectangle.maxCount });
     }
     const addNotesIcon: HTMLImageElement = document.createElement('img');
     addNotesIcon.src = addNotesImage;
@@ -215,61 +232,55 @@ class StickyTransform extends PureComponent<Props, State> {
 
   reshapeNotes(notes: NotesInterface[]): NotesInterface[] {
     let oldNotes: NotesInterface[] = [];
-    const spacing = 10;
-    if (notes.length) {
-      if (notes.length <= 2) {
-        let x = spacing;
-        let y = spacing;
-        oldNotes = notes.map(item => {
-          const height: number =
-            (this.state.data?.rect?.height as number) - spacing * 2;
-          const width: number =
-            ((this.state.data?.rect?.width as number) - spacing * 3) / 2;
-          const newItem = {
-            ...item,
-            x: x,
-            y: y,
-            width: width,
-            height: height,
-            fontSize: 14,
-            circle: {
-              ...item.circle,
-              radius: 7,
-              x: 12,
-              y: 12,
-            },
-          };
-          x = y === spacing ? x + width + spacing : x;
-          return newItem;
-        });
-      } else {
-        let x = spacing;
-        let y = spacing;
-        oldNotes = notes.map(item => {
-          const height: number =
-            ((this.state.data?.rect?.height as number) - spacing * 3) / 2;
-          const width: number =
-            ((this.state.data?.rect?.width as number) - spacing * 5) / 4;
-          const newItem = {
-            ...item,
-            x: x,
-            y: y,
-            width: width,
-            height: height,
-            fontSize: 8,
-            circle: {
-              ...item.circle,
-              radius: 3,
-              x: 7,
-              y: 7,
-            },
-          };
-          x = y === spacing ? x : x + width + spacing;
-          y = y === spacing ? y + height + spacing : spacing;
-          return newItem;
-        });
+
+    const height: number = this.state.data?.rect?.height as number;
+    const width: number = this.state.data?.rect?.width as number;
+    this.maxSquare = Math.min(height, width);
+    const squaresInRectangle = new SquaresInRectangle({
+      spacing: this.spacing,
+      height: height,
+      width: width,
+      count: notes.length,
+      max: this.maxSquare,
+      min: this.minSquare,
+    });
+    this.setState({ maxCount: squaresInRectangle.maxCount });
+    let x = 0;
+    let y = 0;
+
+    oldNotes = notes.map((item, index) => {
+      if (x === 0) {
+        x += this.spacing;
       }
-    }
+      if (y === 0) {
+        y += this.spacing;
+      }
+      if (x + squaresInRectangle.square + this.spacing > width) {
+        x = this.spacing;
+        y += squaresInRectangle.square + this.spacing;
+      }
+      const circleRadius = Math.max(
+        3,
+        Math.trunc(squaresInRectangle.square / 10) / 2,
+      );
+      const newItem = {
+        ...item,
+        x: x,
+        y: y,
+        width: squaresInRectangle.square,
+        height: squaresInRectangle.square,
+        fontSize: Math.trunc(squaresInRectangle.square / 10),
+        circle: {
+          ...item.circle,
+          radius: circleRadius,
+          x: Math.ceil(Math.trunc(circleRadius) + circleRadius),
+          y: Math.ceil(Math.trunc(circleRadius) + circleRadius),
+        },
+      };
+      x += squaresInRectangle.square + this.spacing;
+      return newItem;
+    });
+
     return oldNotes;
   }
 
@@ -532,7 +543,7 @@ class StickyTransform extends PureComponent<Props, State> {
             ))}
             {this.state.hovered &&
               !!this.state.notes.length &&
-              this.state.notes.length < 8 && (
+              this.state.notes.length < this.state.maxCount && (
                 <Image
                   image={this.state.addNotesPlusIcon}
                   x={(this.state.data.rect?.width as number) - 24}

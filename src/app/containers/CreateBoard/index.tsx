@@ -29,6 +29,7 @@ import {
   CollaboratorInterface,
   collaboratorsService,
 } from '../../../services/CollaboratorsService';
+import { Helmet } from 'react-helmet-async';
 
 interface IState {
   orgId?: any;

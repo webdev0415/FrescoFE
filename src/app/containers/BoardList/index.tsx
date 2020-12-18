@@ -10,6 +10,7 @@ import { Link } from 'react-router-dom';
 import { BoardApiService } from 'services/APIService/BoardsApi.service';
 import { Collaboration } from '../../components/Collaboration';
 import { LoadingOutlined, SaveOutlined } from '@ant-design/icons';
+import clsx from 'clsx';
 
 interface BoardListProps {
   orgId: string;
@@ -21,6 +22,8 @@ export const BoardList = (props: BoardListProps) => {
   const [editBoardItem, setEditBoardItem] = useState('');
   const [editName, setEditName] = useState('');
   const [loading, setLoading] = useState(false);
+  const [visibleBoardMenu, setVisibleBoardMenu] = useState('');
+  const [hoveredBoard, setHoveredBoard] = useState('');
 
   const boardList = useSelector(selectBoardList);
   const dispatch = useDispatch();
@@ -112,7 +115,19 @@ export const BoardList = (props: BoardListProps) => {
           ))}
       {boardList.boardList.length && !boardList.loading
         ? boardList.boardList.map((item, index) => (
-            <div className="cards-board" key={index}>
+            <div
+              className={clsx('cards-board', {
+                active:
+                  hoveredBoard === item.id || visibleBoardMenu === item.id,
+              })}
+              key={index}
+              onMouseEnter={() => {
+                setHoveredBoard(item.id);
+              }}
+              onMouseLeave={() => {
+                setHoveredBoard('');
+              }}
+            >
               <Link
                 to={{
                   pathname: `/board/${item.id}`,
@@ -130,6 +145,13 @@ export const BoardList = (props: BoardListProps) => {
               <div className="card-footer">
                 <div className="card-action">
                   <Dropdown
+                    onVisibleChange={visible => {
+                      if (visible) {
+                        setVisibleBoardMenu(item.id);
+                      } else {
+                        setVisibleBoardMenu('');
+                      }
+                    }}
                     overlay={
                       <Menu>
                         <Menu.Item key="0">
