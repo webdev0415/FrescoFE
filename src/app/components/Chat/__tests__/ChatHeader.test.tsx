@@ -1,24 +1,17 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import '@testing-library/jest-dom';
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { ChatHeader } from '../ChatHeader';
 import '../../../../../__mocks__/matchMedia.mock';
-import { PERMISSION } from 'app/containers/Dashboard';
-
-let documentBody;
 
 describe('<ChatHeader />', () => {
-  beforeEach(() => {
-    const props = {
-      hide: jest.fn(),
-    };
-
-    documentBody = render(<ChatHeader {...props} />);
-  });
-  it('have element by text Live Chat', () => {
-    expect(documentBody.getByText('Live Chat')).toBeInTheDocument();
-  });
+  const props = {
+    hide: jest.fn(),
+  };
+  const root = document.createElement('div');
+  ReactDOM.render(<ChatHeader {...props} />, root);
   it('have action button', () => {
-    expect(documentBody.getByRole('button')).toBeInTheDocument();
+    expect(root.querySelector('button')).toBeTruthy();
   });
 });
