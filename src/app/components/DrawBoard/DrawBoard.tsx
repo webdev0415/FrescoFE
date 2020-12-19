@@ -40,6 +40,7 @@ class DrawBoard extends Component<Props, State> {
       imageId: '',
     },
     selectedStickyData: null,
+    zoomLevel: 1,
   };
 
   stageRef: Konva.Stage | null = null;
@@ -50,6 +51,25 @@ class DrawBoard extends Component<Props, State> {
 
   componentDidMount() {
     this.getData();
+    this.setState({ zoomLevel: this.props.zoomLevel });
+  }
+
+  componentDidUpdate(
+    prevProps: Readonly<Props>,
+    prevState: Readonly<State>,
+    snapshot?: any,
+  ) {
+    if (
+      this.state.zoomLevel === prevState.zoomLevel &&
+      this.state.zoomLevel !== this.props.zoomLevel
+    ) {
+      console.log(
+        'componentDidUpdate',
+        this.state.zoomLevel,
+        this.props.zoomLevel,
+      );
+      this.setState({ zoomLevel: this.props.zoomLevel });
+    }
   }
 
   uploadImage(): void {
@@ -248,20 +268,73 @@ class DrawBoard extends Component<Props, State> {
     );
   }
 
+  onWheel = (e: any) => {
+    const scaleBy = 1.05;
+    const stage = e.target.getStage();
+    const oldScale = stage.scaleX();
+    const mousePointTo = {
+      x: stage.getPointerPosition().x / oldScale - stage.x() / oldScale,
+      y: stage.getPointerPosition().y / oldScale - stage.y() / oldScale,
+    };
+
+    const newScale = Math.max(
+      1,
+      Math.min(2, e.evt.deltaY > 0 ? oldScale * scaleBy : oldScale / scaleBy),
+    );
+    const newZoomLevel = Math.max(
+      0,
+      Math.min(100, Math.trunc(newScale * 100 - 100)),
+    );
+    const zoomIn = newScale > oldScale;
+    const zoomOut = newScale < oldScale;
+
+    if (zoomIn || zoomOut) {
+      const scrollTo = {
+        left: mousePointTo.x * (newScale - 1),
+        top: mousePointTo.y * (newScale - 1),
+      };
+
+      this.setState({ zoomLevel: newZoomLevel / 100 + 1 }, () => {
+        // console.log({
+        //   scaleBy,
+        //   oldScale,
+        //   mousePointTo,
+        //   newScale,
+        //   zoom: newScale * 100 - 100,
+        //   newZoomLevel,
+        //   scrollTo,
+        // });
+        const canvasBody = document.querySelector('.canvas-body-content');
+        if (canvasBody) {
+          canvasBody.scrollTo({
+            left: scrollTo.left,
+            top: scrollTo.top,
+          });
+        }
+        this.props.onZoom(newZoomLevel);
+      });
+    }
+  };
+
   render() {
     return (
       <div className={this.props.className}>
         <Stage
-          width={1900 * this.props.zoomLevel}
-          height={1200 * this.props.zoomLevel}
+          width={1900 * this.state.zoomLevel}
+          height={1200 * this.state.zoomLevel}
           className="canvas-body-content"
+          style={{
+            overflow: 'hidden',
+          }}
           ref={ref => (this.stageRef = ref)}
           scale={{
-            x: this.props.zoomLevel,
-            y: this.props.zoomLevel,
+            x: this.state.zoomLevel,
+            y: this.state.zoomLevel,
           }}
+          onWheel={this.onWheel}
+          key={'Stage'}
         >
-          <Layer>
+          <Layer key={'Layer'}>
             {this.state.objects.map(shapeObject => {
               if (
                 shapeObject.type === 'Rect' ||
@@ -296,7 +369,7 @@ class DrawBoard extends Component<Props, State> {
                     key={shapeObject.id}
                     data={shapeObject}
                     socketIoClient={this.props.socketIoClient}
-                    zoomLevel={this.props.zoomLevel}
+                    zoomLevel={this.state.zoomLevel}
                     className={this.props.className}
                     onChange={data => {
                       this.updateShape(data);

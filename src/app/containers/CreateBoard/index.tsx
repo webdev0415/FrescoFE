@@ -352,6 +352,9 @@ export const CreateBoard = connect(({ global: { token } }: any) => ({ token }))(
               drawingTool={drawingTool}
               zoomLevel={zoom / 100 + 1}
               title={title}
+              onZoom={level => {
+                setZoom(level);
+              }}
               {...props}
             />
           )}

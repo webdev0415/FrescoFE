@@ -1,23 +1,22 @@
-import React from 'react';
-import { Ellipse } from 'react-konva';
+import React, { memo } from 'react';
+import { Ellipse, Rect } from 'react-konva';
 import { TransformShapeProps } from '../../types';
 
 function EllipseTransform(props: TransformShapeProps): JSX.Element {
   const { data } = props;
 
   return (
-    <React.Fragment>
-      <Ellipse
-        x={data.x}
-        y={data.y}
-        radiusX={data.ellipse?.radiusX as number}
-        radiusY={data.ellipse?.radiusY as number}
-        rotation={data.rotation}
-        {...data.shapeConfig}
-        opacity={data.isLocked ? 0.5 : 0.8}
-      />
-    </React.Fragment>
+    <Ellipse
+      key={data.id}
+      x={data.x}
+      y={data.y}
+      radiusX={data.ellipse?.radiusX as number}
+      radiusY={data.ellipse?.radiusY as number}
+      rotation={data.rotation}
+      {...data.shapeConfig}
+      opacity={data.isLocked ? 0.5 : 0.8}
+    />
   );
 }
 
-export default EllipseTransform;
+export default memo(EllipseTransform);
