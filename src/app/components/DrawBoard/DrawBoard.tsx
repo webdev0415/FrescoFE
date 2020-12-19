@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { Layer, Stage } from 'react-konva';
 import { v4 as uuidv4 } from 'uuid';
 import Konva from 'konva';
@@ -24,7 +24,7 @@ import {
   ImageUploadingService,
 } from '../../../services/APIService';
 
-class DrawBoard extends Component<Props, State> {
+class DrawBoard extends PureComponent<Props, State> {
   state: State = {
     id: uuidv4(),
     objects: [],
@@ -48,6 +48,12 @@ class DrawBoard extends Component<Props, State> {
   isItemFocused: boolean = false;
   isItemMoving: boolean = false;
   isDrawing: boolean = false;
+
+  isClicked: boolean = false;
+  startX: number = 0;
+  startY: number = 0;
+  scrollLeft: number = 0;
+  scrollTop: number = 0;
 
   componentDidMount() {
     this.getData();
@@ -316,6 +322,59 @@ class DrawBoard extends Component<Props, State> {
     }
   };
 
+  onMouseDown = (evt: Konva.KonvaEventObject<MouseEvent>) => {
+    this.isClicked = true;
+    const canvasBody = document.querySelector(
+      '.canvas-body-content',
+    ) as HTMLDivElement;
+    const stage = evt.target.getStage();
+    const position = stage?.getPointerPosition();
+    this.startX = evt.evt.pageX - canvasBody.offsetLeft;
+    this.startY = evt.evt.pageY - canvasBody.offsetTop;
+    this.scrollLeft = canvasBody.scrollLeft;
+    this.scrollTop = canvasBody.scrollTop;
+    canvasBody.style.cursor = 'all-scroll';
+    console.log(this.scrollLeft, this.scrollTop);
+  };
+  onMouseUp = (evt: Konva.KonvaEventObject<MouseEvent>) => {
+    this.isClicked = false;
+    const canvasBody = document.querySelector(
+      '.canvas-body-content',
+    ) as HTMLDivElement;
+    const stage = evt.target.getStage();
+    const position = stage?.getPointerPosition();
+    this.startX = evt.evt.pageX - canvasBody.offsetLeft;
+    this.startY = evt.evt.pageY - canvasBody.offsetTop;
+    this.scrollLeft = canvasBody.scrollLeft;
+    this.scrollTop = canvasBody.scrollTop;
+    canvasBody.style.cursor = 'auto';
+  };
+  onMouseMove = (evt: Konva.KonvaEventObject<MouseEvent>) => {
+    const stage = evt.target.getStage();
+    const position = stage?.getPointerPosition();
+    if (this.isClicked) {
+      const mousePointTo = {
+        x: (position?.x as number) - (stage?.x() as number),
+        y: (position?.y as number) - (stage?.y() as number),
+      };
+      const canvasBody = document.querySelector(
+        '.canvas-body-content',
+      ) as HTMLDivElement;
+      const x = evt.evt.pageX - canvasBody.offsetLeft;
+      const y = evt.evt.pageY - canvasBody.offsetTop;
+      const walkX = x - this.startX;
+      const walkY = y - this.startY;
+      if (x > 5 || y > 5) {
+        canvasBody.scrollTo({
+          left: this.scrollLeft - walkX,
+          top: this.scrollTop - walkY,
+        });
+      }
+
+      console.log({ position, mousePointTo, walkX, walkY, x, y });
+    }
+  };
+
   render() {
     return (
       <div className={this.props.className}>
@@ -326,6 +385,9 @@ class DrawBoard extends Component<Props, State> {
           style={{
             overflow: 'hidden',
           }}
+          onMouseDown={this.onMouseDown}
+          onMouseUp={this.onMouseUp}
+          onMouseMove={this.onMouseMove}
           ref={ref => (this.stageRef = ref)}
           scale={{
             x: this.state.zoomLevel,
