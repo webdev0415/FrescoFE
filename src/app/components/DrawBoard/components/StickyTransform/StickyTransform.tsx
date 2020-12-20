@@ -440,6 +440,7 @@ class StickyTransform extends PureComponent<Props, State> {
       <>
         {!!this.state.data && (
           <Group
+            key={this.state.data.id}
             id={this.state.data.id}
             x={this.state.data.x}
             y={this.state.data.y}
@@ -449,12 +450,14 @@ class StickyTransform extends PureComponent<Props, State> {
             onMouseLeave={this.onMouseLeaveNotesArea}
           >
             <Group
+              key={this.state.data.id + 'Main-add-Group'}
               x={0}
               y={0}
               height={this.state.data.rect?.height}
               width={this.state.data.rect?.width}
             >
               <Rect
+                key={this.state.data.id + 'Main-add-Rect'}
                 x={0}
                 y={0}
                 height={this.state.data.rect?.height}
@@ -464,6 +467,7 @@ class StickyTransform extends PureComponent<Props, State> {
               />
               {this.state.hovered && !this.state.notes.length && (
                 <Image
+                  key={this.state.data.id + 'Main-add-Image'}
                   image={this.state.addNotesIcon}
                   x={(this.state.data.rect?.width as number) / 2 - 58 / 2}
                   y={(this.state.data.rect?.height as number) / 2 - 36 / 2}
@@ -496,6 +500,7 @@ class StickyTransform extends PureComponent<Props, State> {
                     }}
                   >
                     <Rect
+                      key={item.id + 'Rect'}
                       x={0}
                       y={0}
                       height={item.height}
@@ -512,6 +517,7 @@ class StickyTransform extends PureComponent<Props, State> {
                     />
 
                     <Text
+                      key={item.id + 'Text'}
                       height={item.height}
                       width={item.width}
                       x={0}
@@ -532,6 +538,7 @@ class StickyTransform extends PureComponent<Props, State> {
                       }}
                     />
                     <Circle
+                      key={item.id + 'Circle'}
                       radius={item.circle.radius}
                       x={item.circle.x}
                       y={item.circle.y}
@@ -545,6 +552,7 @@ class StickyTransform extends PureComponent<Props, State> {
               !!this.state.notes.length &&
               this.state.notes.length < this.state.maxCount && (
                 <Image
+                  key={this.state.data.id + 'Add-Image'}
                   image={this.state.addNotesPlusIcon}
                   x={(this.state.data.rect?.width as number) - 24}
                   y={(this.state.data.rect?.height as number) - 24}

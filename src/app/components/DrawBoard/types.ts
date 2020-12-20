@@ -106,6 +106,7 @@ export interface Props extends RouteChildrenProps<{ id: string }> {
   drawingTool: ShapeObjectType;
   zoomLevel: number;
   title: string | null;
+  onZoom(zoom: number);
 }
 
 export interface State {
@@ -121,6 +122,7 @@ export interface State {
     imageId: string;
   };
   selectedStickyData: ObjectInterface | null;
+  zoomLevel: number;
 }
 
 export interface FontInterface {
