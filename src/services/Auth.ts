@@ -11,7 +11,7 @@ export interface User {
 }
 
 class Auth {
-  public token: Token | null;
+  public token: string | null;
   public user: User;
 
   constructor() {
@@ -43,6 +43,7 @@ class Auth {
   getToken() {
     return this.token;
   }
+
   getUser() {
     return this.user;
   }

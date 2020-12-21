@@ -1,6 +1,6 @@
-import { Observable, Subscriber } from 'rxjs';
+import { Observable } from 'rxjs';
 import { http } from './http-instance';
-import { MessagesInterface } from './interfaces/MessagesInterface';
+import { MessagesInterface } from './interfaces';
 
 export class MessagesApiService {
   static AllMessages(id, offset, limit): any {
@@ -12,6 +12,7 @@ export class MessagesApiService {
         })
         .then(response => {
           subscriber.next(response.data);
+          subscriber.complete();
         })
         .catch(error => {
           subscriber.error(error.data);
@@ -32,6 +33,7 @@ export class MessagesApiService {
         })
         .then(response => {
           subscriber.next(response.data);
+          subscriber.complete();
         })
         .catch(error => {
           subscriber.error(error.data);
@@ -48,6 +50,7 @@ export class MessagesApiService {
         })
         .then(response => {
           subscriber.next(response.data);
+          subscriber.complete();
         })
         .catch(error => {
           subscriber.error(error.data);
@@ -68,6 +71,7 @@ export class MessagesApiService {
         })
         .then(response => {
           subscriber.next(response.data);
+          subscriber.complete();
         })
         .catch(error => {
           subscriber.error(error.data);

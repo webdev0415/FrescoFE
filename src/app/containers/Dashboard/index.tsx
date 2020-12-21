@@ -86,12 +86,7 @@ export const Dashboard = memo((props: Props) => {
   const [visibleCanvasMenu, setVisibleCanvasMenu] = useState('');
   const [hoveredCanvas, setHoveredCanvas] = useState('');
   const orgId = props?.match?.params?.id;
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const dashboard = useSelector(selectDashboard);
-  // console.log('dashboard', dashboard);
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const dispatch = useDispatch();
   const history = useHistory();
 

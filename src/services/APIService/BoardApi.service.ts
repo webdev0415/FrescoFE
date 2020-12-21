@@ -1,9 +1,5 @@
 import { Observable } from 'rxjs';
-import {
-  BoardInterface,
-  BoardRequestInterface,
-  CanvasInterface,
-} from './interfaces';
+import { BoardInterface, BoardRequestInterface } from './interfaces';
 import { http } from './http-instance';
 
 export class BoardApiService {
@@ -24,6 +20,7 @@ export class BoardApiService {
         });
     });
   }
+
   static getById(id: string): Observable<BoardInterface> {
     return new Observable<BoardInterface>(observer => {
       http
@@ -40,6 +37,7 @@ export class BoardApiService {
         });
     });
   }
+
   static deleteById(
     id: string,
     data: {
@@ -64,6 +62,7 @@ export class BoardApiService {
         });
     });
   }
+
   static getByOrganizationId(orgId: string): Observable<BoardInterface[]> {
     return new Observable<BoardInterface[]>(observer => {
       http
@@ -80,6 +79,7 @@ export class BoardApiService {
         });
     });
   }
+
   static updateById(
     id: string,
     data: BoardRequestInterface,

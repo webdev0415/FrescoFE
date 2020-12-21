@@ -1,6 +1,6 @@
 import { http } from './http-instance';
 import { Observable } from 'rxjs';
-import { OrganizationInterface } from './interfaces/Organization.interface';
+import { OrganizationInterface } from './interfaces';
 
 export class OrganizationsApiService {
   static list(): Observable<OrganizationInterface> {
@@ -12,6 +12,7 @@ export class OrganizationsApiService {
         })
         .then(response => {
           subscriber.next(response.data);
+          subscriber.complete();
         })
         .catch(error => {
           subscriber.error(error.response);

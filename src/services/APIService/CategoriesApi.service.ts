@@ -1,9 +1,6 @@
 import { Observable } from 'rxjs';
 import { http } from './http-instance';
-import {
-  CategoryInterface,
-  CategoryResponseInterface,
-} from './interfaces/category.interface';
+import { CategoryInterface, CategoryResponseInterface } from './interfaces';
 
 export class CategoriesApiService {
   static create(
