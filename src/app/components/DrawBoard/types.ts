@@ -101,10 +101,12 @@ export interface ObjectInterface extends PointsInterface {
 }
 
 export interface Props extends RouteChildrenProps<{ id: string }> {
+  socketIoClient: SocketIOClient.Socket;
   className: string;
   drawingTool: ShapeObjectType;
   zoomLevel: number;
   title: string | null;
+  onZoom(zoom: number);
 }
 
 export interface State {
@@ -120,6 +122,7 @@ export interface State {
     imageId: string;
   };
   selectedStickyData: ObjectInterface | null;
+  zoomLevel: number;
 }
 
 export interface FontInterface {
@@ -139,4 +142,17 @@ export interface BoardEventInterface {
 export interface ObjectSocketInterface {
   id: string;
   data: ObjectInterface;
+}
+
+export enum BoardSocketEventEnum {
+  CREATE = 'create',
+  MOVE = 'move',
+  UPDATE = 'update',
+  DELETE = 'delete',
+  LOCK = 'lock',
+  UNLOCK = 'unlock',
+  JOIN_BOARD = 'joinBoard',
+  LEAVE_BOARD = 'leaveBoard',
+  CONNECT = 'connect',
+  DISCONNECT = 'disconnect',
 }

@@ -1,10 +1,13 @@
-import React, { Component, PureComponent } from 'react';
+import React, { PureComponent } from 'react';
 import { Layer, Stage } from 'react-konva';
 import { v4 as uuidv4 } from 'uuid';
 import Konva from 'konva';
-import { ObjectInterface, ObjectSocketInterface, Props, State } from './types';
-import _ from 'lodash';
+import { ObjectInterface, Props, State } from './types';
 import { defaultObjectState } from './constants';
+import {
+  CollaboratorColorAndCount,
+  collaboratorsService,
+} from 'services/CollaboratorsService';
 
 import {
   EllipseTransform,
@@ -20,22 +23,8 @@ import {
   BoardApiService,
   ImageUploadingService,
 } from '../../../services/APIService';
-import { onMouseDown, onMouseMove, onMouseUp } from './utility';
 
-export enum BoardSocketEventEnum {
-  CREATE = 'create',
-  MOVE = 'move',
-  UPDATE = 'update',
-  DELETE = 'delete',
-  LOCK = 'lock',
-  UNLOCK = 'unlock',
-  JOIN_BOARD = 'joinBoard',
-  LEAVE_BOARD = 'leaveBoard',
-  CONNECT = 'connect',
-  DISCONNECT = 'disconnect',
-}
-
-class DrawBoard extends Component<any, any> {
+class DrawBoard extends PureComponent<Props, State> {
   state: State = {
     id: uuidv4(),
     objects: [],
@@ -51,202 +40,42 @@ class DrawBoard extends Component<any, any> {
       imageId: '',
     },
     selectedStickyData: null,
+    zoomLevel: 1,
   };
+
   stageRef: Konva.Stage | null = null;
   textAreaRef = React.createRef<HTMLTextAreaElement>();
-
   isItemFocused: boolean = false;
   isItemMoving: boolean = false;
   isDrawing: boolean = false;
 
+  isClicked: boolean = false;
+  startX: number = 0;
+  startY: number = 0;
+  scrollLeft: number = 0;
+  scrollTop: number = 0;
+
   componentDidMount() {
-    document.addEventListener('keydown', event => {
-      if (event.ctrlKey && event.key.toLowerCase() === 'y') {
-        const redoHistory = document.getElementById(
-          'redo-history',
-        ) as HTMLDivElement;
-        redoHistory.click();
-      }
-      if (event.ctrlKey && event.key.toLowerCase() === 'z') {
-        const undoHistory = document.getElementById(
-          'undo-history',
-        ) as HTMLDivElement;
-        undoHistory.click();
-      }
-    });
-
-    this.redoHistory();
-    this.undoHistory();
     this.getData();
-    this.canvasWebSockets();
+    this.setState({ zoomLevel: this.props.zoomLevel });
   }
 
-  canvasWebSockets(): void {
-    this.props.socketIoClient.on(
-      BoardSocketEventEnum.CREATE,
-      (event: string) => {
-        this.createObject(JSON.parse(event));
-      },
-    );
-    this.props.socketIoClient.on(
-      BoardSocketEventEnum.JOIN_BOARD,
-      (data: string) => {
-        // console.log('Socket ' + BoardSocketEventEnum.JOIN_BOARD, data);
-      },
-    );
-    this.props.socketIoClient.on(
-      BoardSocketEventEnum.LEAVE_BOARD,
-      (data: string) => {
-        // console.log('Socket ' + BoardSocketEventEnum.LEAVE_BOARD, data);
-      },
-    );
-    this.props.socketIoClient.on(
-      BoardSocketEventEnum.UPDATE,
-      (event: string) => {
-        this.updateObject(JSON.parse(event));
-      },
-    );
-    this.props.socketIoClient.on(BoardSocketEventEnum.MOVE, (event: string) => {
-      console.log(BoardSocketEventEnum.MOVE, event);
-      this.moveObject(JSON.parse(event));
-    });
-    this.props.socketIoClient.on(BoardSocketEventEnum.LOCK, (event: string) => {
-      console.log('Socket ' + BoardSocketEventEnum.LOCK, event);
-      this.lockObject(JSON.parse(event));
-    });
-    this.props.socketIoClient.on(
-      BoardSocketEventEnum.UNLOCK,
-      (event: string) => {
-        console.log('Socket ' + BoardSocketEventEnum.UNLOCK, event);
-      },
-    );
-    this.props.socketIoClient.on(
-      BoardSocketEventEnum.CREATE,
-      (event: string) => {
-        console.log('Socket ' + BoardSocketEventEnum.CREATE, event);
-      },
-    );
-  }
-
-  moveObject(objectData: ObjectSocketInterface): void {
-    this.setState({
-      objects: this.state.objects.map(item => {
-        if (item.id === objectData.data.id) {
-          return {
-            ...item,
-            ...objectData.data,
-          };
-        } else {
-          return item;
-        }
-      }),
-    });
-    if (objectData.id !== this.state.id) {
-      this.updateShape(objectData.data, { saveHistory: true });
+  componentDidUpdate(
+    prevProps: Readonly<Props>,
+    prevState: Readonly<State>,
+    snapshot?: any,
+  ) {
+    if (
+      this.state.zoomLevel === prevState.zoomLevel &&
+      this.state.zoomLevel !== this.props.zoomLevel
+    ) {
+      console.log(
+        'componentDidUpdate',
+        this.state.zoomLevel,
+        this.props.zoomLevel,
+      );
+      this.setState({ zoomLevel: this.props.zoomLevel });
     }
-  }
-
-  lockObject(objectData: ObjectSocketInterface): void {
-    if (objectData.id !== this.state.id) {
-      this.setState({
-        objects: this.state.objects.map(item => {
-          if (item.id === objectData.data.id) {
-            return {
-              ...item,
-              ...objectData.data,
-            };
-          } else {
-            return item;
-          }
-        }),
-      });
-    }
-  }
-
-  updateObject(objectData: ObjectSocketInterface): void {
-    if (objectData.id !== this.state.id) {
-      this.updateShape(objectData.data, { saveHistory: true });
-    }
-  }
-
-  createObject(objectData: ObjectSocketInterface): void {
-    if (objectData.id !== this.state.id) {
-      this.addCanvasShape(objectData.data, { saveHistory: true });
-    }
-  }
-
-  emitSocketEvent(
-    eventType: BoardSocketEventEnum,
-    data: ObjectInterface,
-  ): void {
-    const socketData = {
-      boardId: this.props.match?.params.id as string,
-      data: JSON.stringify({
-        id: this.state.id,
-        data: data,
-      }),
-    };
-    this.props.socketIoClient.emit(eventType, socketData);
-  }
-
-  undoHistory(): void {
-    const undoHistory = document.getElementById(
-      'undo-history',
-    ) as HTMLDivElement;
-    undoHistory.addEventListener('click', () => {
-      if (this.state.prevHistory.length) {
-        const nextHistory = JSON.parse(JSON.stringify(this.state.nextHistory));
-        const prevHistory = JSON.parse(JSON.stringify(this.state.prevHistory));
-        const historyItem = prevHistory.pop();
-        if (historyItem) {
-          nextHistory.unshift(historyItem);
-          this.setState({
-            nextHistory,
-            prevHistory,
-            objects: this.state.objects.map(item => {
-              if (item.id === historyItem.id) {
-                return {
-                  ...item,
-                  ...historyItem,
-                };
-              } else {
-                return item;
-              }
-            }),
-          });
-        }
-      }
-    });
-  }
-
-  redoHistory(): void {
-    const redoHistory = document.getElementById(
-      'redo-history',
-    ) as HTMLDivElement;
-    redoHistory.addEventListener('click', () => {
-      if (this.state.nextHistory.length) {
-        const nextHistory = JSON.parse(JSON.stringify(this.state.nextHistory));
-        const prevHistory = JSON.parse(JSON.stringify(this.state.prevHistory));
-        const historyItem = nextHistory.shift();
-        if (historyItem) {
-          prevHistory.push(historyItem);
-          this.setState({
-            nextHistory,
-            prevHistory,
-            objects: this.state.objects.map(item => {
-              if (item.id === historyItem.id) {
-                return {
-                  ...item,
-                  ...historyItem,
-                };
-              } else {
-                return item;
-              }
-            }),
-          });
-        }
-      }
-    });
   }
 
   uploadImage(): void {
@@ -292,6 +121,7 @@ class DrawBoard extends Component<any, any> {
   }
 
   save(): void {
+    this.updateCollaborators();
     this.saveImage();
     if (!!this.state.canvas.imageId) {
       this.saveBoard();
@@ -336,6 +166,27 @@ class DrawBoard extends Component<any, any> {
     this.getBoardObject();
   }
 
+  updateCollaborators = () => {
+    const collaborators: CollaboratorColorAndCount = {};
+    this.state.objects.forEach(item => {
+      if (item.notes) {
+        item.notes.forEach(note => {
+          if (collaborators.hasOwnProperty(note.userId)) {
+            collaborators[note.userId].color = note.circle.fill;
+            collaborators[note.userId].count =
+              collaborators[note.userId].count + 1;
+          } else {
+            collaborators[note.userId] = {
+              color: note.circle.fill,
+              count: 1,
+            };
+          }
+        });
+      }
+    });
+    collaboratorsService.patch(collaborators);
+  };
+
   getBoardObject(): void {
     const canvasTitle = document.getElementById(
       'canvas-title',
@@ -345,7 +196,20 @@ class DrawBoard extends Component<any, any> {
     ) as HTMLInputElement;
     BoardApiService.getById(this.props.match?.params.id as string).subscribe(
       boardData => {
+        collaboratorsService.update(
+          boardData.users.map(item => ({
+            color: collaboratorsService.getRandomColor(),
+            count: 0,
+            email: item.email,
+            id: item.id,
+            name: item.name,
+            role: item.role,
+            selected: false,
+          })),
+        );
+        console.log(boardData);
         canvasTitle.innerText = boardData.name;
+        document.title = boardData.name;
         if (canvasTitleInput) {
           canvasTitleInput.value = boardData.name;
         }
@@ -374,118 +238,6 @@ class DrawBoard extends Component<any, any> {
     );
   }
 
-  handleSelect = (data: ObjectInterface) => {
-    this.updateShape({
-      ...data,
-      isSelected: false,
-    });
-  };
-
-  handleMouseDown = e => {
-    if (this.props.drawingTool) {
-      const position = e.target.getStage().getPointerPosition();
-      const data: ObjectInterface = onMouseDown(
-        { ...this.state.points },
-        this.props.drawingTool,
-        position,
-      );
-
-      this.isDrawing = true;
-      this.setState({
-        points: _.cloneDeep(data),
-      });
-    }
-  };
-
-  handleMouseMove = e => {
-    if (this.isDrawing && this.props.drawingTool) {
-      const position = e.target.getStage().getPointerPosition();
-      const data: ObjectInterface = onMouseMove(
-        { ...this.state.points },
-        this.props.drawingTool,
-        position,
-      );
-
-      this.setState({
-        points: _.cloneDeep(data),
-      });
-    }
-  };
-
-  handleMouseUp = e => {
-    if (this.isDrawing) {
-      this.isDrawing = false;
-      const position = e.target.getStage().getPointerPosition();
-      const data = onMouseUp(
-        { ...this.state.points },
-        this.props.drawingTool,
-        position,
-      );
-      this.addCanvasShape(data, {
-        saveHistory: true,
-        emitEvent: true,
-      });
-
-      this.setState({
-        points: {
-          ...defaultObjectState,
-        },
-      });
-    } else {
-      const clickedOnEmpty = e.target === e.target.getStage();
-      if (clickedOnEmpty) {
-        this.setState({
-          objects: this.state.objects.map(item => ({
-            ...item,
-            isSelected: false,
-            isFocused: false,
-            isEditing: false,
-          })),
-        });
-      }
-    }
-  };
-
-  addCanvasShape = (
-    data: ObjectInterface,
-    options: { saveHistory?: boolean; emitEvent?: boolean } = {
-      saveHistory: false,
-      emitEvent: false,
-    },
-  ) => {
-    console.log('addCanvasShape', data, options);
-    if (options.saveHistory) {
-      this.updateHistory(JSON.parse(JSON.stringify(data)));
-    }
-    if (options.emitEvent) {
-      this.emitSocketEvent(BoardSocketEventEnum.CREATE, {
-        ...data,
-        isEditing: false,
-        isSelected: false,
-        isFocused: false,
-        isLocked: false,
-      });
-    }
-    this.setState(
-      {
-        objects: [
-          ...this.state.objects.map(shapeObject => ({
-            ...shapeObject,
-            isEditing: false,
-            isSelected: false,
-            isFocused: false,
-          })),
-          {
-            ..._.cloneDeep(data),
-          },
-        ],
-      },
-      () => {
-        this.save();
-      },
-    );
-  };
-
   updateHistory(data: ObjectInterface) {
     this.setState({
       prevHistory: [
@@ -496,37 +248,12 @@ class DrawBoard extends Component<any, any> {
     });
   }
 
-  updateShape(
-    data: ObjectInterface,
-    options: { saveHistory?: boolean; emitEvent?: boolean } = {
-      saveHistory: false,
-      emitEvent: false,
-    },
-  ) {
+  updateShape(data: ObjectInterface) {
     if (data.type !== 'Sticky') {
       return;
     }
-    if (options.saveHistory) {
-      const historyItem = this.state.objects.find(item => item.id === data.id);
-      if (historyItem) {
-        const history = JSON.parse(JSON.stringify(historyItem));
-        this.updateHistory({
-          ...history,
-        });
-      }
-    }
 
     const item = this.state.objects.find(item => item.id === data.id);
-    if (options.emitEvent) {
-      this.emitSocketEvent(BoardSocketEventEnum.UPDATE, {
-        ...item,
-        ...data,
-        isSelected: false,
-        isEditing: false,
-        isFocused: false,
-        isLocked: true,
-      });
-    }
     const objects = this.state.objects
       .filter(item => item.id !== data.id)
       .map(shapeObject => ({
@@ -547,38 +274,129 @@ class DrawBoard extends Component<any, any> {
     );
   }
 
-  handleChanging = (data: ObjectInterface) => {
-    // this.emitSocketEvent(BoardSocketEventEnum.MOVE, data);
+  onWheel = (e: any) => {
+    const scaleBy = 1.05;
+    const stage = e.target.getStage();
+    const oldScale = stage.scaleX();
+    const mousePointTo = {
+      x: stage.getPointerPosition().x / oldScale - stage.x() / oldScale,
+      y: stage.getPointerPosition().y / oldScale - stage.y() / oldScale,
+    };
+
+    const newScale = Math.max(
+      1,
+      Math.min(2, e.evt.deltaY > 0 ? oldScale * scaleBy : oldScale / scaleBy),
+    );
+    const newZoomLevel = Math.max(
+      0,
+      Math.min(100, Math.trunc(newScale * 100 - 100)),
+    );
+    const zoomIn = newScale > oldScale;
+    const zoomOut = newScale < oldScale;
+
+    if (zoomIn || zoomOut) {
+      const scrollTo = {
+        left: mousePointTo.x * (newScale - 1),
+        top: mousePointTo.y * (newScale - 1),
+      };
+
+      this.setState({ zoomLevel: newZoomLevel / 100 + 1 }, () => {
+        // console.log({
+        //   scaleBy,
+        //   oldScale,
+        //   mousePointTo,
+        //   newScale,
+        //   zoom: newScale * 100 - 100,
+        //   newZoomLevel,
+        //   scrollTo,
+        // });
+        const canvasBody = document.querySelector('.canvas-body-content');
+        if (canvasBody) {
+          canvasBody.scrollTo({
+            left: scrollTo.left,
+            top: scrollTo.top,
+          });
+        }
+        this.props.onZoom(newZoomLevel);
+      });
+    }
   };
 
-  handleChangeStart = (data: ObjectInterface) => {
-    console.log(data, 'handleChangeStart');
-    this.emitSocketEvent(BoardSocketEventEnum.LOCK, {
-      ...data,
-      isSelected: false,
-      isLocked: true,
-      isEditing: false,
-      isFocused: false,
-    });
+  onMouseDown = (evt: Konva.KonvaEventObject<MouseEvent>) => {
+    this.isClicked = true;
+    const canvasBody = document.querySelector(
+      '.canvas-body-content',
+    ) as HTMLDivElement;
+    const stage = evt.target.getStage();
+    const position = stage?.getPointerPosition();
+    this.startX = evt.evt.pageX - canvasBody.offsetLeft;
+    this.startY = evt.evt.pageY - canvasBody.offsetTop;
+    this.scrollLeft = canvasBody.scrollLeft;
+    this.scrollTop = canvasBody.scrollTop;
+    canvasBody.style.cursor = 'all-scroll';
+    console.log(this.scrollLeft, this.scrollTop);
+  };
+  onMouseUp = (evt: Konva.KonvaEventObject<MouseEvent>) => {
+    this.isClicked = false;
+    const canvasBody = document.querySelector(
+      '.canvas-body-content',
+    ) as HTMLDivElement;
+    const stage = evt.target.getStage();
+    const position = stage?.getPointerPosition();
+    this.startX = evt.evt.pageX - canvasBody.offsetLeft;
+    this.startY = evt.evt.pageY - canvasBody.offsetTop;
+    this.scrollLeft = canvasBody.scrollLeft;
+    this.scrollTop = canvasBody.scrollTop;
+    canvasBody.style.cursor = 'auto';
+  };
+  onMouseMove = (evt: Konva.KonvaEventObject<MouseEvent>) => {
+    const stage = evt.target.getStage();
+    const position = stage?.getPointerPosition();
+    if (this.isClicked) {
+      const mousePointTo = {
+        x: (position?.x as number) - (stage?.x() as number),
+        y: (position?.y as number) - (stage?.y() as number),
+      };
+      const canvasBody = document.querySelector(
+        '.canvas-body-content',
+      ) as HTMLDivElement;
+      const x = evt.evt.pageX - canvasBody.offsetLeft;
+      const y = evt.evt.pageY - canvasBody.offsetTop;
+      const walkX = x - this.startX;
+      const walkY = y - this.startY;
+      if (x > 5 || y > 5) {
+        canvasBody.scrollTo({
+          left: this.scrollLeft - walkX,
+          top: this.scrollTop - walkY,
+        });
+      }
+
+      console.log({ position, mousePointTo, walkX, walkY, x, y });
+    }
   };
 
   render() {
     return (
       <div className={this.props.className}>
         <Stage
-          width={window.innerWidth * this.props.zoomLevel}
-          height={(window.innerHeight - 80) * this.props.zoomLevel}
+          width={1900 * this.state.zoomLevel}
+          height={1200 * this.state.zoomLevel}
           className="canvas-body-content"
-          ref={ref => (this.stageRef = ref)}
-          // onMouseDown={this.handleMouseDown}
-          // onMousemove={this.handleMouseMove}
-          // onMouseup={this.handleMouseUp}
-          scale={{
-            x: this.props.zoomLevel,
-            y: this.props.zoomLevel,
+          style={{
+            overflow: 'hidden',
           }}
+          onMouseDown={this.onMouseDown}
+          onMouseUp={this.onMouseUp}
+          onMouseMove={this.onMouseMove}
+          ref={ref => (this.stageRef = ref)}
+          scale={{
+            x: this.state.zoomLevel,
+            y: this.state.zoomLevel,
+          }}
+          onWheel={this.onWheel}
+          key={'Stage'}
         >
-          <Layer>
+          <Layer key={'Layer'}>
             {this.state.objects.map(shapeObject => {
               if (
                 shapeObject.type === 'Rect' ||
@@ -612,12 +430,11 @@ class DrawBoard extends Component<any, any> {
                   <StickyTransform
                     key={shapeObject.id}
                     data={shapeObject}
-                    zoomLevel={this.props.zoomLevel}
+                    socketIoClient={this.props.socketIoClient}
+                    zoomLevel={this.state.zoomLevel}
+                    className={this.props.className}
                     onChange={data => {
-                      this.updateShape(data, {
-                        emitEvent: true,
-                        saveHistory: true,
-                      });
+                      this.updateShape(data);
                     }}
                   />
                 );

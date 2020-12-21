@@ -45,6 +45,7 @@ import { CanvasBoardTemplates } from '../../components/CanvasBoardTemplates';
 import { CanvasCategoryService } from '../../../services/APIService/CanvasCategory.service';
 import { Collaboration } from '../../components/Collaboration';
 import moment from 'moment';
+import clsx from 'clsx';
 
 const { TabPane } = Tabs;
 export const PERMISSION = {
@@ -82,7 +83,8 @@ export const Dashboard = memo((props: Props) => {
   const [editCanvasItem, setEditCanvasItem] = useState('');
   const [editName, setEditName] = useState('');
   const [loadingUpdateName, setLoadingUpdateName] = useState(false);
-
+  const [visibleCanvasMenu, setVisibleCanvasMenu] = useState('');
+  const [hoveredCanvas, setHoveredCanvas] = useState('');
   const orgId = props?.match?.params?.id;
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -98,6 +100,10 @@ export const Dashboard = memo((props: Props) => {
   useEffect(() => {
     setCanvasName(defaultCanvasName);
   }, [defaultCanvasName]);
+
+  useEffect(() => {
+    document.title = 'Dashboard';
+  }, []);
 
   // const user = useSelector(selectUser);
   useEffect(() => {
@@ -416,7 +422,20 @@ export const Dashboard = memo((props: Props) => {
                 </h3>
               )}
               {canvasList.map((data, index) => (
-                <div className="cards-board" key={index}>
+                <div
+                  className={clsx('cards-board ', {
+                    active:
+                      hoveredCanvas === data.id ||
+                      visibleCanvasMenu === data.id,
+                  })}
+                  key={index}
+                  onMouseEnter={() => {
+                    setHoveredCanvas(data.id);
+                  }}
+                  onMouseLeave={() => {
+                    setHoveredCanvas('');
+                  }}
+                >
                   <Link
                     to={{
                       pathname: `/canvas/${data.id}?organization=${orgId}`,
@@ -436,9 +455,16 @@ export const Dashboard = memo((props: Props) => {
                     />
                   </Link>
 
-                  <div className="card-footer">
-                    <div className="card-action">
+                  <div className="card-footer card-board-footer">
+                    <div className="card-action card-board-action">
                       <Dropdown
+                        onVisibleChange={visible => {
+                          if (visible) {
+                            setVisibleCanvasMenu(data.id);
+                          } else {
+                            setVisibleCanvasMenu('');
+                          }
+                        }}
                         overlay={
                           <Menu>
                             <Menu.Item key="0">

@@ -70,7 +70,7 @@ describe('Draw Sticky On Canvas', () => {
       },
       sticky: {
         ...defaultTextProperties,
-        text: 'Sticky notes area',
+        text: '',
         backgroundColor: '#f5ecfd',
       },
     });

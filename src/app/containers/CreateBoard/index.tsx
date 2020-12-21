@@ -25,6 +25,11 @@ import { Chat } from 'app/components/Chat/Chat';
 import { MessagesApiService } from 'services/APIService/MessagesApi.service';
 import socketIOClient from 'socket.io-client';
 import { connect } from 'react-redux';
+import {
+  CollaboratorInterface,
+  collaboratorsService,
+} from '../../../services/CollaboratorsService';
+import { Helmet } from 'react-helmet-async';
 
 interface IState {
   orgId?: any;
@@ -52,6 +57,9 @@ export const CreateBoard = connect(({ global: { token } }: any) => ({ token }))(
     const [linkInvitation, setLinkInvitation] = useState(Object);
     const [chatModal, setChatModal] = useState(false);
     const [collaboratorModal, setCollaboratorModal] = useState(false);
+    const [collaborators, setCollaborators] = useState<CollaboratorInterface[]>(
+      [],
+    );
     const [chatMessages, setChatMessages] = useState<any>([]);
     const history = useHistory();
     const location = useLocation();
@@ -66,6 +74,12 @@ export const CreateBoard = connect(({ global: { token } }: any) => ({ token }))(
     const [messagesOnLoad, setMessagesOnLoad] = useState<Boolean>(false);
     const [chatNotification, setChatNotification] = useState(false);
     const [loadingMessages, setLoadingMessages] = useState(false);
+
+    useEffect(() => {
+      collaboratorsService.state.subscribe(value => {
+        setCollaborators(value);
+      });
+    }, []);
 
     useEffect(() => {
       const url = new URL(process.env.REACT_APP_BASE_URL as string);
@@ -318,27 +332,7 @@ export const CreateBoard = connect(({ global: { token } }: any) => ({ token }))(
             />
           )}
 
-          {collaboratorModal && (
-            <CollaboratorModal
-              closeModal={_closeModal}
-              collaborator={[
-                { id: uuidv4(), name: 'Jose', count: 43, color: '#4253AF' },
-                { id: uuidv4(), name: 'Abe Baz', count: 13, color: '#97C05C' },
-                {
-                  id: uuidv4(),
-                  name: 'Chuck Norris',
-                  count: 19,
-                  color: '#FE3834',
-                },
-                {
-                  id: uuidv4(),
-                  name: 'Clark Kent',
-                  count: 26,
-                  color: '#FFB830',
-                },
-              ]}
-            />
-          )}
+          {collaboratorModal && <CollaboratorModal closeModal={_closeModal} />}
 
           {isShowShareModal && (
             <ShareModal
@@ -358,6 +352,9 @@ export const CreateBoard = connect(({ global: { token } }: any) => ({ token }))(
               drawingTool={drawingTool}
               zoomLevel={zoom / 100 + 1}
               title={title}
+              onZoom={level => {
+                setZoom(level);
+              }}
               {...props}
             />
           )}
@@ -394,9 +391,14 @@ export const CreateBoard = connect(({ global: { token } }: any) => ({ token }))(
             </div>
             <div className="canvas-header-right">
               <div className="canvas-collaborators">
-                <div className="oval">jj</div>
-                <div className="oval">AS</div>
-                <div className="oval">AB</div>
+                {collaborators.length > 3 && (
+                  <div className="oval count">+{collaborators.length - 3}</div>
+                )}
+                {collaborators.slice(0, 3).map(item => (
+                  <div className="oval">
+                    {item.email.slice(0, 2).toUpperCase()}
+                  </div>
+                ))}
               </div>
 
               <div className="canvas-header-actions">

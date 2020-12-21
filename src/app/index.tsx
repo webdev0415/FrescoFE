@@ -99,7 +99,11 @@ function AppComponent(props) {
         />
         <PrivateRoute exact path="/board/:id" component={CreateBoard} />
         <PrivateRoute exact path="/canvas/:id" component={CreateCanvas} />
-        <Route exact path="/invite/:token" component={VerifyInvitation} />
+        <Route
+          exact
+          path="/invitation/check/:token"
+          component={VerifyInvitation}
+        />
         <Route
           exact
           path="/invitation-type/verification/:token"

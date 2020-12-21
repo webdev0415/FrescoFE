@@ -6,7 +6,11 @@ interface IState {
   orgId?: any;
 }
 
-export const ChatHeader = ({ hide }) => {
+interface ChatHeaderProps {
+  hide();
+}
+
+export const ChatHeader: React.FC<ChatHeaderProps> = ({ hide }) => {
   return (
     <div className="chatBox-header">
       <div
@@ -17,7 +21,11 @@ export const ChatHeader = ({ hide }) => {
         <span className="chatBox-header-title">Live Chat</span>
       </div>
       <div>
-        <button onClick={() => hide()} className="chatBox-header-close">
+        <button
+          role="button"
+          onClick={() => hide()}
+          className="chatBox-header-close"
+        >
           <CloseIcon className="icon-default" />
         </button>
       </div>

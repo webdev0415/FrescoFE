@@ -70,7 +70,7 @@ describe('Draw Text On Canvas', () => {
       },
       sticky: {
         ...defaultTextProperties,
-        text: 'Type something here',
+        text: '',
       },
     });
   });

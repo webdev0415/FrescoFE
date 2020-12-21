@@ -4,6 +4,7 @@ import axios from 'axios';
 
 import { actions } from './slice';
 import { actions as globalActions } from '../../slice';
+import Auth from '../../../services/Auth';
 
 export function* signUpForInvitation(action) {
   try {
@@ -14,6 +15,7 @@ export function* signUpForInvitation(action) {
     message.success(`You're registered successfully.`);
     yield put(globalActions.setAuthInformation(response.data));
     localStorage.setItem('authInformation', JSON.stringify(response.data));
+    Auth.update();
     history.push('/auth/welcome-page');
   } catch (error) {
     if (error.response.status === 409) {

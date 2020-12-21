@@ -466,6 +466,7 @@ class DrawCanvas extends PureComponent<Props, State> {
     CanvasApiService.getById(this.props.match?.params.id as string).subscribe(
       canvasData => {
         canvasTitle.innerText = canvasData.name;
+        document.title = canvasData.name;
         if (canvasTitleInput) {
           canvasTitleInput.value = canvasData.name;
         }
@@ -1450,8 +1451,8 @@ class DrawCanvas extends PureComponent<Props, State> {
           ))}
 
         <Stage
-          width={window.innerWidth * this.props.zoomLevel}
-          height={(window.innerHeight - 80) * this.props.zoomLevel}
+          width={1900 * this.props.zoomLevel}
+          height={1200 * this.props.zoomLevel}
           className="canvas-body-content"
           ref={ref => (this.stageRef = ref)}
           onMouseDown={this.handleMouseDown}
