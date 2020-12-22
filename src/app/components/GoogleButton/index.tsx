@@ -1,13 +1,15 @@
 import React from 'react';
 import { Button, Image } from 'antd';
 
-export const GoogleButton = ({ callback }) => {
-  const login = () => {
-    callback();
-  };
+interface Props {
+  callback(): void;
+}
+
+export const GoogleButton = (props: Props) => {
+  const { callback } = props;
 
   return (
-    <Button type="default" block onClick={login}>
+    <Button type="default" block onClick={callback}>
       <Image
         width={25}
         height={25}

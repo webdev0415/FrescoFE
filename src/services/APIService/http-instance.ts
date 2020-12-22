@@ -5,10 +5,13 @@ export const http = Axios.create({
   baseURL: process.env.REACT_APP_BASE_URL,
 });
 
-http.interceptors.request.use((config: AxiosRequestConfig) => {
-  if (Auth.getToken()) {
-    config.headers.Authorization = `Bearer ${Auth.getToken()}`;
+export function httpRequestInterceptor(config: AxiosRequestConfig) {
+  const token = Auth.getToken();
+  if (!!token) {
+    config.headers.Authorization = `Bearer ${token}`;
   }
 
   return config;
-});
+}
+
+http.interceptors.request.use(httpRequestInterceptor);

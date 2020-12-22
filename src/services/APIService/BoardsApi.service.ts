@@ -1,9 +1,6 @@
 import { Observable } from 'rxjs';
 import { http } from './http-instance';
-import {
-  BoardInterface,
-  BoardResponseInterface,
-} from './interfaces/Board.interface';
+import { BoardInterface, BoardResponseInterface } from './interfaces';
 
 export class BoardApiService {
   static create(data: BoardInterface): Observable<BoardResponseInterface> {
