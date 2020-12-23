@@ -5,3 +5,4 @@ export * from './BoardApi.service';
 export * from './CanvasCategory.service';
 export * from './http-instance';
 export * from './CategoriesApi.service';
+export * from './MessagesApi.service';

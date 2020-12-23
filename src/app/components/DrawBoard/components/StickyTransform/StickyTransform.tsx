@@ -67,7 +67,7 @@ class StickyTransform extends PureComponent<Props, State> {
 
   spacing: number = 10;
   minSquare: number = 50;
-  maxSquare: number = 200;
+  maxSquare: number = 110;
 
   componentDidMount() {
     const data: ObjectInterface = this.props.data;
@@ -235,7 +235,7 @@ class StickyTransform extends PureComponent<Props, State> {
 
     const height: number = this.state.data?.rect?.height as number;
     const width: number = this.state.data?.rect?.width as number;
-    this.maxSquare = Math.min(height, width);
+    // this.maxSquare = Math.min(height, width);
     const squaresInRectangle = new SquaresInRectangle({
       spacing: this.spacing,
       height: height,

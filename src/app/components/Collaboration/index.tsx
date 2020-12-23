@@ -11,7 +11,9 @@ export const Collaboration = memo((props: Props) => {
 
   return (
     <Fragment>
-      <span className="user-title">{users?.join(' + ') || ''}</span>
+      <span className="user-title" role="users">
+        {users?.join(' + ') || ''}
+      </span>
     </Fragment>
   );
 });

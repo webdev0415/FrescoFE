@@ -165,6 +165,7 @@ export const BoardList = (props: BoardListProps) => {
                           </Link>
                         </Menu.Item>
                         <Menu.Item
+                          role="rename-menu"
                           key="1"
                           onClick={() => handleClickRename(item.id)}
                         >
@@ -173,6 +174,7 @@ export const BoardList = (props: BoardListProps) => {
                         <Menu.Divider />
                         <Menu.Item
                           key="2"
+                          role="delete-menu"
                           onClick={() => handleDeleteBoard(item.id)}
                         >
                           Delete

@@ -5,7 +5,6 @@ import { Button } from 'antd';
 interface Props {
   loading: boolean;
   board: CanvasResponseInterface;
-
   onSelect(id: string);
 }
 
@@ -14,9 +13,6 @@ export const CanvasBoardTemplateItem: React.FC<Props> = (
 ): JSX.Element => {
   const { loading, board, onSelect } = props;
 
-  const onClick = () => {
-    onSelect(board.id);
-  };
   return (
     <div className="cards-board card-board-select" key={board.id}>
       <img
@@ -40,7 +36,9 @@ export const CanvasBoardTemplateItem: React.FC<Props> = (
           <Button
             block={true}
             loading={loading}
-            onClick={onClick}
+            onClick={() => {
+              onSelect(board.id);
+            }}
             type="primary"
           >
             Select
