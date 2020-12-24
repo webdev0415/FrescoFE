@@ -2,22 +2,14 @@ import React, { Fragment } from 'react';
 import { useSelector } from 'react-redux';
 import { selectUser } from '../../selectors';
 import {
-  LogoutOutlined,
   GlobalOutlined,
+  LogoutOutlined,
   UserAddOutlined,
 } from '@ant-design/icons';
 import { Col, Row } from 'antd';
 
 export const UserModal = ({ logOut, showInvite, organization }) => {
   const user = useSelector(selectUser);
-
-  const handleLogOut = () => {
-    logOut();
-  };
-
-  const handleInvite = () => {
-    showInvite();
-  };
 
   return (
     <Fragment>
@@ -77,7 +69,9 @@ export const UserModal = ({ logOut, showInvite, organization }) => {
                 </p>
               )}
 
-              <p style={{ marginBottom: 0 }}>{user?.email}</p>
+              <p data-testid="user-email" style={{ marginBottom: 0 }}>
+                {user?.email}
+              </p>
               <button style={{ margin: '0.5rem 0 1rem 0' }}>Settings</button>
             </Col>
           </Row>
@@ -118,7 +112,8 @@ export const UserModal = ({ logOut, showInvite, organization }) => {
                 }}
               />
               <span
-                onClick={() => handleInvite()}
+                data-testid="invite-people"
+                onClick={() => showInvite()}
                 style={{ marginLeft: '1rem', cursor: 'pointer' }}
               >
                 Invite people
@@ -128,6 +123,7 @@ export const UserModal = ({ logOut, showInvite, organization }) => {
         </div>
 
         <div
+          data-testid="user-logout"
           style={{
             width: '90%',
             margin: 'auto',
@@ -135,7 +131,7 @@ export const UserModal = ({ logOut, showInvite, organization }) => {
             height: '2rem',
             lineHeight: '2rem',
           }}
-          onClick={() => handleLogOut()}
+          onClick={() => logOut()}
         >
           <LogoutOutlined
             style={{

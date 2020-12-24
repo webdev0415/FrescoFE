@@ -1,9 +1,10 @@
 import React from 'react';
 import '@testing-library/jest-dom';
-import { render, RenderResult } from '@testing-library/react';
+import { fireEvent, render, RenderResult } from '@testing-library/react';
 import { InviteMemberModal } from '..';
 import '../../../../../__mocks__/matchMedia.mock';
 import { PERMISSION } from 'app/containers/Dashboard';
+
 let documentBody: RenderResult;
 
 describe('<InviteMemberModal />', () => {
@@ -37,5 +38,9 @@ describe('<InviteMemberModal />', () => {
   });
   it('shows permissions editor ', () => {
     expect(documentBody.getByText(PERMISSION.EDITOR)).toBeInTheDocument();
+  });
+  it('fire Event Copy ', () => {
+    const node = documentBody.getByRole('copy-button');
+    fireEvent.click(node);
   });
 });

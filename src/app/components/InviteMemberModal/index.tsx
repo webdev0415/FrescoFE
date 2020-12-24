@@ -68,6 +68,7 @@ export const InviteMemberModal = ({
                   }}
                   defaultValue={PERMISSION.EDITOR}
                   onChange={value => handleChangePermission(value)}
+                  data-testid="input-select"
                 >
                   {/* <Option value={PERMISSION.ADMIN}>{PERMISSION.ADMIN}</Option> */}
                   <Option value={PERMISSION.EDITOR}>{PERMISSION.EDITOR}</Option>
@@ -88,7 +89,11 @@ export const InviteMemberModal = ({
               </Col>
 
               <Col xs={4} xl={4}>
-                <Button type="primary" onClick={() => copyLink()}>
+                <Button
+                  role="copy-button"
+                  type="primary"
+                  onClick={() => copyLink()}
+                >
                   Copy
                 </Button>
               </Col>
