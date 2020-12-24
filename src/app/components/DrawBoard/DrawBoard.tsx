@@ -75,6 +75,13 @@ class DrawBoard extends PureComponent<Props, State> {
         this.props.zoomLevel,
       );
       this.setState({ zoomLevel: this.props.zoomLevel });
+      const canvasBody = document.querySelector(
+        '.canvas-body-content',
+      ) as HTMLDivElement;
+      if (canvasBody) {
+        canvasBody.style.width = 1900 * this.state.zoomLevel + 'px';
+        canvasBody.style.height = 1200 * this.state.zoomLevel + 'px';
+      }
     }
   }
 

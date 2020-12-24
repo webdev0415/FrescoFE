@@ -213,6 +213,34 @@ class StickyTransform extends PureComponent<Props, State> {
     this.setState({
       data: this.props.data,
     });
+
+    if (this.props.zoomLevel !== prevProps.zoomLevel) {
+      const editable = document.querySelector(`[data-id]`) as HTMLDivElement;
+      if (editable) {
+        const notesAreaId = editable.dataset.id;
+        const noteId = editable.id;
+        if (notesAreaId === this.state.data?.id) {
+          const data = this.state.notes.find(item => {
+            return item.id === noteId;
+          });
+
+          if (data) {
+            Object.assign(editable.style, {
+              left:
+                ((this.state.data?.x as number) + data.x) *
+                  this.props.zoomLevel +
+                'px',
+              top:
+                ((this.state.data?.y as number) + data.y) *
+                  this.props.zoomLevel +
+                'px',
+              width: data.width * this.props.zoomLevel + 'px',
+              height: data.height * this.props.zoomLevel + 'px',
+            });
+          }
+        }
+      }
+    }
   }
 
   onClickEvent = (event: MouseEvent) => {
@@ -376,8 +404,10 @@ class StickyTransform extends PureComponent<Props, State> {
     const p = document.createElement('div');
     p.className = 'notes-editable';
     p.innerText = data.text;
+    p.id = data.id;
+    p.setAttribute('data-id', this.state.data?.id as string);
     const canvasEditor = document.querySelector<HTMLDivElement>(
-      '.' + this.props.className,
+      '.konvajs-content',
     ) as HTMLDivElement;
     p.contentEditable = 'true';
     Object.assign(p.style, {
