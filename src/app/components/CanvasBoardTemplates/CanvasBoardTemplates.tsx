@@ -1,19 +1,16 @@
 import React, { memo, useEffect, useState } from 'react';
 import { Button, Input, Tabs } from 'antd';
-import { CloseOutlined, PlusOutlined } from '@ant-design/icons';
-import { CanvasCategoryService } from '../../../services/APIService/CanvasCategory.service';
-import { zip } from 'rxjs';
+import { CloseOutlined } from '@ant-design/icons';
 import {
   BoardApiService,
   CanvasApiService,
-} from '../../../services/APIService';
-import {
   CanvasCategoryInterface,
+  CanvasCategoryService,
   CanvasResponseInterface,
-} from '../../../services/APIService/interfaces';
+} from '../../../services/APIService';
+import { zip } from 'rxjs';
 import { useHistory } from 'react-router-dom';
 import moment from 'moment';
-import clsx from 'clsx';
 
 const { TabPane } = Tabs;
 
@@ -37,11 +34,8 @@ export const CanvasBoardTemplates = memo((props: Props) => {
   const [boardName, setBoardName] = useState(defaultBoardName);
   const [loadingCreateBoard, setLoadingCreateBoard] = useState('');
   const [activeKey, setActiveKey] = useState('');
-  const [state, setState] = useState<State>({
-    boards: [],
-    categories: [],
-    loading: false,
-  });
+  const [boards, setBoards] = useState<CanvasResponseInterface[]>([]);
+  const [categories, setCategories] = useState<CanvasCategoryInterface[]>([]);
 
   const history = useHistory();
 
@@ -69,34 +63,17 @@ export const CanvasBoardTemplates = memo((props: Props) => {
   };
 
   useEffect(() => {
-    setState({
-      ...state,
-      loading: true,
+    CanvasCategoryService.list().subscribe(data => {
+      setCategories(data);
     });
-    zip(
-      CanvasCategoryService.list(),
-      CanvasApiService.getByOrganizationId(props.orgId),
-    ).subscribe(
-      ([categories, boards]) => {
-        if (categories.length) {
-          setActiveKey(categories[0].id);
-        }
-        setState({
-          categories,
-          boards,
-          loading: false,
-        });
-      },
-      error => {
-        setState({
-          ...state,
-          loading: false,
-        });
-        console.error(error);
-      },
-    );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    CanvasApiService.getByOrganizationId(props.orgId).subscribe(data => {
+      setBoards(data);
+    });
   }, [props.orgId]);
+
   return (
     <div className="create-board-view">
       <div className="form-view">
@@ -116,11 +93,11 @@ export const CanvasBoardTemplates = memo((props: Props) => {
           setActiveKey(key);
         }}
       >
-        {state.categories.map(category => (
+        {categories.map(category => (
           <TabPane tab={category.name} key={category.id}>
             <div className="card-section">
               <div className="card-grid">
-                {state.boards
+                {boards
                   .filter(board => board.categoryId === category.id)
                   .map(board => (
                     <div
