@@ -33,12 +33,15 @@ export const ChatFooter = ({ boardId, user, setChatMessages, scroll }) => {
     <div className="chatBox-footer">
       <form onSubmit={handleSubmit}>
         <input
+          role="input-message"
           value={message}
           onChange={e => setMessage(e.target.value)}
           type="text"
           placeholder="Write a message"
         />
-        <button type="submit">Send</button>
+        <button role="button" type="submit">
+          Send
+        </button>
       </form>
     </div>
   );

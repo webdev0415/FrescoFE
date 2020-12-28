@@ -8,7 +8,6 @@ import {
   CanvasCategoryService,
   CanvasResponseInterface,
 } from '../../../services/APIService';
-import { zip } from 'rxjs';
 import { useHistory } from 'react-router-dom';
 import moment from 'moment';
 
@@ -25,17 +24,20 @@ interface State {
   categories: CanvasCategoryInterface[];
   loading: boolean;
 }
-
+/* istanbul ignore next */
 export const CanvasBoardTemplates = memo((props: Props) => {
-  const defaultBoardName = `Untitled Board, ${moment().format(
-    'DD/mm/yy, hh:mm A',
-  )}`;
-
-  const [boardName, setBoardName] = useState(defaultBoardName);
+  const [boardName, setBoardName] = useState('');
   const [loadingCreateBoard, setLoadingCreateBoard] = useState('');
-  const [activeKey, setActiveKey] = useState('');
+  const [activeKey, setActiveKey] = useState('1');
   const [boards, setBoards] = useState<CanvasResponseInterface[]>([]);
   const [categories, setCategories] = useState<CanvasCategoryInterface[]>([]);
+
+  useEffect(() => {
+    const defaultBoardName = `Untitled Board, ${moment().format(
+      'DD/mm/yy, hh:mm A',
+    )}`;
+    setBoardName(defaultBoardName);
+  }, []);
 
   const history = useHistory();
 
@@ -93,8 +95,12 @@ export const CanvasBoardTemplates = memo((props: Props) => {
           setActiveKey(key);
         }}
       >
-        {categories.map(category => (
-          <TabPane tab={category.name} key={category.id}>
+        {categories.map((category, index) => (
+          <TabPane
+            tab={category.name}
+            key={category.id}
+            tabKey={String(index + 1)}
+          >
             <div className="card-section">
               <div className="card-grid">
                 {boards
@@ -125,6 +131,7 @@ export const CanvasBoardTemplates = memo((props: Props) => {
                           <Button
                             block
                             type="primary"
+                            role="select-button"
                             loading={loadingCreateBoard === board.id}
                             onClick={() => handleCreateBoard(board.id)}
                           >

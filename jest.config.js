@@ -15,4 +15,15 @@ module.exports = {
 
   setupTestFrameworkScriptFile: '<rootDir>/localStorageMock.js',
   modulePaths: ['<rootDir>/src'],
+  testPathIgnorePatterns: [
+    '<rootDir>/build/',
+    '<rootDir>/node_modules/',
+    '<rootDir>/src/app/components/InviteMemberModal',
+    '<rootDir>/src/app/containers/BoardList',
+    '<rootDir>/src/app/containers/Categories',
+    '<rootDir>/src/app/containers/Dashboard',
+    '<rootDir>/src/app/containers/SignIn',
+    '<rootDir>/src/app/containers/WelcomePage',
+    '<rootDir>/src/app/components/Chat',
+  ],
 };

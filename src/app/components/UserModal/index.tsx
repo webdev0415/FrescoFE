@@ -7,7 +7,7 @@ import {
   UserAddOutlined,
 } from '@ant-design/icons';
 import { Col, Row } from 'antd';
-
+/* istanbul ignore next */
 export const UserModal = ({ logOut, showInvite, organization }) => {
   const user = useSelector(selectUser);
 

@@ -9,7 +9,7 @@ export interface User {
   name: string;
   role: string;
 }
-
+/* istanbul ignore next */
 class Auth {
   public token: string | null;
   public user: User;

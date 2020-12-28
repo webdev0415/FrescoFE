@@ -1,6 +1,11 @@
 import React from 'react';
 import '@testing-library/jest-dom';
-import { fireEvent, render, RenderResult } from '@testing-library/react';
+import {
+  fireEvent,
+  render,
+  RenderResult,
+  waitFor,
+} from '@testing-library/react';
 import { CanvasBoardTemplates } from '..';
 import { act } from 'react-dom/test-utils';
 import { Observable } from 'rxjs';
@@ -15,35 +20,35 @@ import { AxiosRequestConfig } from 'axios';
 
 jest.mock('../../../../services/APIService/http-instance');
 
-// jest.spyOn(BoardApiService, 'getByOrganizationId').mockImplementation(() => {
-//   return new Observable<BoardInterface[]>(subscriber => {
-//     subscriber.next([
-//       {
-//         id: 'string',
-//         createdUserId: 'string',
-//         path: 'string',
-//         users: [],
-//         name: 'string',
-//         categoryId: 'string',
-//         data: 'string',
-//         imageId: 'string',
-//         orgId: 'string',
-//       },
-//     ]);
-//   });
-// });
-//
-// jest.spyOn(CanvasCategoryService, 'list').mockImplementation(() => {
-//   return new Observable<CanvasCategoryInterface[]>(subscriber => {
-//     subscriber.next([
-//       {
-//         id: 'string',
-//         name: 'string',
-//       },
-//     ]);
-//     subscriber.complete();
-//   });
-// });
+jest.spyOn(BoardApiService, 'getByOrganizationId').mockImplementation(() => {
+  return new Observable<BoardInterface[]>(subscriber => {
+    subscriber.next([
+      {
+        id: 'string',
+        createdUserId: 'string',
+        path: 'string',
+        users: [],
+        name: 'string',
+        categoryId: 'string',
+        data: 'string',
+        imageId: 'string',
+        orgId: 'string',
+      },
+    ]);
+  });
+});
+
+jest.spyOn(CanvasCategoryService, 'list').mockImplementation(() => {
+  return new Observable<CanvasCategoryInterface[]>(subscriber => {
+    subscriber.next([
+      {
+        id: 'string',
+        name: 'string',
+      },
+    ]);
+    subscriber.complete();
+  });
+});
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
@@ -57,6 +62,14 @@ jest.mock('react-router-dom', () => ({
 }));
 
 let documentBody: RenderResult;
+
+const delay = (ms: number) => {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      resolve();
+    }, ms);
+  });
+};
 
 describe('<CanvasBoardTemplates />', () => {
   beforeEach(() => {
@@ -95,20 +108,22 @@ describe('<CanvasBoardTemplates />', () => {
     );
     act(() => {
       documentBody = render(
-        <CanvasBoardTemplates orgId="12" onClose={jest.fn()} />,
+        <CanvasBoardTemplates orgId="string" onClose={jest.fn()} />,
       );
     });
   });
   it('CanvasBoardTemplates Render Test', () => {
-    act(() => {
+    act(async () => {
       expect(documentBody.getByText('Cancel')).toBeInTheDocument();
     });
   });
-  // it(' Click Event', () => {
-  //   act(() => {
-  //     console.log(documentBody);
-  //     const node = documentBody.getByText('Select');
-  //     fireEvent.click(node);
-  //   });
-  // });
+  it(' Click Event', () => {
+    act(async () => {
+      await delay(3000);
+      console.log(documentBody);
+      const node = documentBody.getByRole('select-button');
+      console.log(documentBody);
+      // fireEvent.click(node);
+    });
+  });
 });
