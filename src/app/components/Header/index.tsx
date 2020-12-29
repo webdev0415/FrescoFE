@@ -6,7 +6,7 @@ import './Header.less';
 interface HeaderProps {
   isLogIn?: boolean;
 }
-
+/* istanbul ignore next */
 const Header: React.FC<HeaderProps> = props => {
   const history = useHistory();
   const currentUrl = history.location.pathname;

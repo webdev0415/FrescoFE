@@ -3,7 +3,10 @@ import '@testing-library/jest-dom';
 import '../../../../../__mocks__/matchMedia.mock';
 import { fireEvent, render, RenderResult } from '@testing-library/react';
 import { BoardList } from '..';
-import { useSelector } from 'react-redux';
+import { Provider } from 'react-redux';
+import { configureAppStore } from '../../../../store/configureStore';
+import { BrowserRouter } from 'react-router-dom';
+import { act } from 'react-dom/test-utils';
 
 let documentBody: RenderResult;
 
@@ -28,21 +31,55 @@ jest.mock('react-redux', () => ({
     };
   }),
 }));
+
 describe('<BoardList />', () => {
   beforeEach(() => {
     const props = {
       orgId: '',
     };
+    const initialState = {};
+    const store = configureAppStore();
+    store.dispatch = jest.fn();
 
-    documentBody = render(<BoardList {...props} />);
+    documentBody = render(
+      <Provider store={store}>
+        <BrowserRouter>
+          <BoardList {...props} />
+        </BrowserRouter>
+      </Provider>,
+    );
   });
 
-  // it('On Click Delete Menu Called ', () => {
-  //   const node = documentBody.getByRole('delete-menu');
-  //   fireEvent.click(node);
-  // });
+  it('On Click Delete Menu Called ', () => {
+    let actionButton;
+    const node = documentBody.getByRole('cart-action');
+    act(() => {
+      actionButton = node.querySelector('.action-button');
+      expect(actionButton).toBeDefined();
+      fireEvent.click(actionButton);
+    });
+
+    act(() => {
+      const deleteButton = documentBody.getByRole('delete-menu');
+      fireEvent.click(deleteButton);
+    });
+    act(() => {
+      const renameButton = documentBody.getByRole('rename-menu');
+      fireEvent.click(renameButton);
+    });
+  });
+
   // it('On Click Rename Menu Called ', () => {
-  //   const node = documentBody.getByRole('rename-menu');
-  //   fireEvent.click(node);
+  //   let actionButton;
+  //   const node = documentBody.getByRole('cart-action');
+  //   act(() => {
+  //     actionButton = node.querySelector('.action-button');
+  //     expect(actionButton).toBeDefined();
+  //     fireEvent.click(actionButton);
+  //   });
+  //   act(() => {
+  //     const renameButton = documentBody.getByRole('rename-menu');
+  //     fireEvent.click(renameButton);
+  //   });
   // });
 });

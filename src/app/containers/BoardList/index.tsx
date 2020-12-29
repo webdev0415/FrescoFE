@@ -65,6 +65,7 @@ export const BoardList = (props: BoardListProps) => {
         ...item,
         name: name,
       };
+
       BoardApiService.updateById(id, data).subscribe(
         () => {
           setLoading(false);
@@ -143,7 +144,7 @@ export const BoardList = (props: BoardListProps) => {
                 />
               </Link>
               <div className="card-footer">
-                <div className="card-action">
+                <div className="card-action" role="cart-action">
                   <Dropdown
                     onVisibleChange={visible => {
                       if (visible) {

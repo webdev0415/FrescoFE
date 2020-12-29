@@ -1,26 +1,38 @@
-import ReactDOM from 'react-dom';
 import React from 'react';
 import '@testing-library/jest-dom';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, RenderResult } from '@testing-library/react';
 import { ChatFooter } from '../ChatFooter';
 import '../../../../../__mocks__/matchMedia.mock';
-import { PERMISSION } from 'app/containers/Dashboard';
+import { act } from 'react-dom/test-utils';
 
-let documentBody;
+let documentBody: RenderResult;
 
 describe('<ChatFooter />', () => {
-  const root = document.createElement('div');
-  const props = {
-    boardId: 'board-id',
-    user: jest.fn(),
-    setChatMessages: jest.fn(),
-    scroll: null,
-  };
-  ReactDOM.render(<ChatFooter {...props} />, root);
+  beforeEach(() => {
+    act(() => {
+      const props = {
+        boardId: 'board-id',
+        user: jest.fn(),
+        setChatMessages: jest.fn(),
+        scroll: null,
+      };
+      documentBody = render(<ChatFooter {...props} />);
+    });
+  });
+
   it('have action button', () => {
-    expect(root.querySelector('button')).toBeTruthy();
+    expect(documentBody.getByRole('button')).toBeTruthy();
   });
   it('have text are', () => {
-    expect(root.querySelector('input')).toBeTruthy();
+    expect(documentBody.getByRole('input-message')).toBeTruthy();
+  });
+  it('have text Changed', () => {
+    const node = documentBody.getByRole('input-message');
+    fireEvent.change(node, { target: { value: '$23.0' } });
+  });
+
+  it('have action Clicked', () => {
+    const button = documentBody.getByRole('button');
+    fireEvent.click(button);
   });
 });

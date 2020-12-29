@@ -4,6 +4,7 @@ import '../../../../../__mocks__/matchMedia.mock';
 import { fireEvent, render, RenderResult } from '@testing-library/react';
 import { UserModal } from '..';
 import { initialState } from '../../../slice';
+import { useSelector } from 'react-redux';
 
 let documentBody: RenderResult;
 
@@ -11,16 +12,22 @@ jest.mock('react-redux', () => ({
   ...jest.requireActual('react-redux'),
   useSelector: jest.fn(() => {
     return {
-      token: 'null',
-      user: {
-        id: 'string',
-        name: 'string',
-        email: 'string',
-        role: 'string',
-      },
+      id: 'string',
+      name: 'string',
+      email: 'string',
+      role: 'string',
     };
   }),
 }));
+
+// (useSelector as jest.Mock).mockImplementation(() => {
+//   return {
+//     id: 'string',
+//     name: 'string',
+//     email: 'string',
+//     role: 'string',
+//   };
+// });
 describe('<UserModal />', () => {
   beforeEach(() => {
     const props = {
@@ -38,7 +45,9 @@ describe('<UserModal />', () => {
     expect(documentBody.getByText('My Organization')).toBeInTheDocument();
   });
   it('shows My Organization User Modal ', () => {
-    expect(documentBody.getByTestId('user-email').textContent).toBeDefined();
+    expect(documentBody.getByTestId('user-email').textContent).toEqual(
+      'string',
+    );
   });
   it('On Click Logout Called ', () => {
     const node = documentBody.getByTestId('user-logout');
