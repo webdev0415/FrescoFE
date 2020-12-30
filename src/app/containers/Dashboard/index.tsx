@@ -27,8 +27,8 @@ import {
   Billing,
   Workspace,
   AddPerson,
-  GroupIcon,
   Teams,
+  Logout
 } from 'assets/icons';
 import { BarChartOutlined } from '@ant-design/icons';
 import ToggleMenu from '../../components/ToggleMenu';
@@ -99,9 +99,14 @@ const StyledBoardDetailedToggleMenuContainer = styled.div`
     flex: 5;
   }
   .logout {
+    cursor: pointer;
     flex: 1;
     display: flex;
     align-items: center;
+    padding-left: 20px;
+    svg {
+      margin-right: 10px;
+    }
   }
 `;
 
@@ -139,12 +144,6 @@ export const Dashboard = memo((props: Props) => {
   const [loadingCreateCanvas, setLoadingCreateCanvas] = useState(false);
   const [loadingCategoriesList, setLoadingCategoriesList] = useState(false);
   const [loadingCanvasList, setLoadingCanvasList] = useState(false);
-
-  const [editCanvasItem, setEditCanvasItem] = useState('');
-  const [editName, setEditName] = useState('');
-  const [loadingUpdateName, setLoadingUpdateName] = useState(false);
-  const [visibleCanvasMenu, setVisibleCanvasMenu] = useState('');
-  const [hoveredCanvas, setHoveredCanvas] = useState('');
   const orgId = props?.match?.params?.id;
 
   const tabsContainerRef = useRef<any>(null);
@@ -370,6 +369,9 @@ export const Dashboard = memo((props: Props) => {
               <div
                 className="title divided"
                 onClick={() => setInvitePeopleToggleMenu(true)}
+                style={{
+                  cursor: "pointer"
+                }}
               >
                 QuestionPro
               </div>
@@ -393,7 +395,13 @@ export const Dashboard = memo((props: Props) => {
                   Help
                 </Item>
               </List>
-              <div className="logout">Log out</div>
+              <div
+                className="logout"
+                onClick={() => handleLogOut()}
+              >
+                <Logout />
+                Log out  
+              </div>
             </StyledBoardDetailedToggleMenuContainer>
           </ToggleMenu>
           <ToggleMenu
@@ -458,38 +466,6 @@ export const Dashboard = memo((props: Props) => {
     return <Redirect to="/auth/login" />;
   }
 
-  const handleClickRename = (id: string) => {
-    setEditCanvasItem(id);
-  };
-
-  const handleChangeName = (event: any) => {
-    setEditName(event.target.value);
-  };
-  const onSaveName = () => {
-    const id = editCanvasItem;
-    const name = editName;
-    const item = canvasList.find(i => i.id === id);
-    if (item) {
-      setLoadingUpdateName(true);
-      const data = {
-        ...item,
-        name: name,
-      };
-      CanvasApiService.updateById(id, data).subscribe(
-        () => {
-          setLoadingUpdateName(false);
-          setEditName('');
-          setEditCanvasItem('');
-          getCanvasList();
-        },
-        error => {
-          setLoadingUpdateName(false);
-          console.error(error);
-        },
-      );
-    }
-  };
-
   return (
     <>
       <Helmet>
@@ -531,22 +507,23 @@ export const Dashboard = memo((props: Props) => {
                 onClose={() => setAddNewBoard(false)}
               />
             ) : (
-              <div className="card-section">
-                <Button
-                  type="primary"
-                  icon={<PlusOutlined />}
-                  onClick={() => setAddNewBoard(true)}
-                >
-                  New Board
+                <div className="card-section">
+                  <Button
+                    type="primary"
+                    icon={<PlusOutlined />}
+                    onClick={() => setAddNewBoard(true)}
+                  >
+                    New Board
                 </Button>
-                <h3 className="dashboard__tab-title">My Boards</h3>
+                  <h3 className="dashboard__tab-title">My Boards</h3>
 
-                {organization && <BoardList orgId={organization.orgId} />}
-              </div>
-            )}
+                  {organization && <BoardList orgId={organization.orgId} />}
+                </div>
+              )}
           </TabPane>
           <TabPane
             disabled
+            key="2"
             tab={<TeamMenu offsetContainerRef={tabsContainerRef} />}
           />
           <TabPane tab={<DashboardIcon />} key="3">
@@ -606,7 +583,6 @@ export const Dashboard = memo((props: Props) => {
                   Create Canvas
                 </Button>
               </div>
-
               <h3 className="card-section-title">Custom Canvas</h3>
               <div className="card-grid">
                 {!loadingCanvasList && !canvasList.length && (
@@ -621,63 +597,71 @@ export const Dashboard = memo((props: Props) => {
                   </h3>
                 )}
                 {canvasList.map((data, index) => (
-                  <div className="cards-board" key={index}>
-                    <img
-                      alt="example"
-                      style={{
-                        border: '1px solid #f0f2f5',
-                        backgroundColor: 'white',
-                      }}
-                      src={
-                        data.path ||
-                        'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png'
-                      }
-                    />
+                  <Link
+                    to={{
+                      pathname: `/canvas/${data.id}?organization=${data.orgId}`,
+                      state: { orgId: data.orgId }
+                    }}
+                  >
+                    <div className="cards-board" key={index}>
+                      <img
+                        alt="example"
+                        style={{
+                          border: '1px solid #f0f2f5',
+                          backgroundColor: 'white',
+                        }}
+                        src={
+                          data.path ||
+                          'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png'
+                        }
+                      />
 
-                    <div className="card-footer">
-                      <div className="card-action">
-                        <Dropdown
-                          overlay={
-                            <Menu>
-                              <Menu.Item key="0">
-                                <Link
-                                  to={{
-                                    pathname: `/canvas/${data.id}/canvas?organization=${orgId}`,
-                                    state: { orgId },
-                                  }}
-                                >
-                                  Edit
+                      <div className="card-footer">
+                        <div className="card-action">
+                          <Dropdown
+                            overlay={
+                              <Menu>
+                                <Menu.Item key="0">
+                                  <Link
+                                    to={{
+                                      pathname: `/canvas/${data.id}/canvas?organization=${orgId}`,
+                                      state: { orgId },
+                                    }}
+                                  >
+                                    Edit
                                 </Link>
+                                </Menu.Item>
+                                <Menu.Item key="1">
+                                  <a href="#">Action</a>
+                                </Menu.Item>
+                                <Menu.Divider />
+                                <Menu.Item
+                                  key="3"
+                                  onClick={() => handleDeleteCanvas(data.id)}
+                                >
+                                  Delete
                               </Menu.Item>
-                              <Menu.Item key="1">
-                                <a href="#">Action</a>
-                              </Menu.Item>
-                              <Menu.Divider />
-                              <Menu.Item
-                                key="3"
-                                onClick={() => handleDeleteCanvas(data.id)}
-                              >
-                                Delete
-                              </Menu.Item>
-                            </Menu>
-                          }
-                          trigger={['click']}
-                        >
-                          <div className="action-button">
-                            <span className="material-icons">more_vert</span>
-                          </div>
-                        </Dropdown>
-                      </div>
-                      <div className="card-title">{data.name}</div>
-                      <div className="card-timestamp">Opened Oct 12, 2020</div>
-                      <div className="card-users">
-                        <span className="material-icons">group</span>
-                        <span className="user-title">
-                          Anup Surendan, JJ and 5+ collaborating
+                              </Menu>
+                            }
+                            trigger={['click']}
+                          >
+                            <div className="action-button">
+                              <span className="material-icons">more_vert</span>
+                            </div>
+                          </Dropdown>
+                        </div>
+                        <div className="card-title">{data.name}</div>
+                        <div className="card-timestamp">Opened Oct 12, 2020</div>
+                        <div className="card-users">
+                          <span className="material-icons">group</span>
+                          <span className="user-title">
+                            Anup Surendan, JJ and 5+ collaborating
                         </span>
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  </Link>
+
                 ))}
                 {loadingCanvasList &&
                   Array(5)
@@ -712,28 +696,30 @@ export const Dashboard = memo((props: Props) => {
               </div>
             </div>
           </TabPane>
-          {user && user.role === 'ADMIN' && (
-            <TabPane tab={<BarChartOutlined />} key="3">
-              <div className="card-section">
-                <Button
-                  type="primary"
-                  icon={<PlusOutlined />}
-                  onClick={() => {
-                    setModalOpen(true);
-                  }}
-                >
-                  New Category
-                </Button>
-                <h3 className="dashboard__tab-title">Categories</h3>
-                <Categories
-                  visible={isModalOpen}
-                  onCancel={() => {
-                    setModalOpen(false);
-                  }}
-                />
-              </div>
-            </TabPane>
-          )}
+          {
+            user && user.role === 'ADMIN' && (
+              <TabPane tab={<BarChartOutlined />} key="4">
+                <div className="card-section">
+                  <Button
+                    type="primary"
+                    icon={<PlusOutlined />}
+                    onClick={() => {
+                      setModalOpen(true);
+                    }}
+                  >
+                    New Category
+                  </Button>
+                  <h3 className="dashboard__tab-title">Categories</h3>
+                  <Categories
+                    visible={isModalOpen}
+                    onCancel={() => {
+                      setModalOpen(false);
+                    }}
+                  />
+                </div>
+              </TabPane>
+            )
+          }
         </Tabs>
       </div>
 

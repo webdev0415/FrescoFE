@@ -7,7 +7,7 @@
 import React, { memo, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useSelector, useDispatch } from 'react-redux';
-import { Button, Card, Typography, Spin } from 'antd';
+import { Button, Card, Typography, Spin, Input } from 'antd';
 import styled from 'styled-components/macro';
 import { useHistory } from 'react-router-dom';
 
@@ -15,9 +15,7 @@ import { useInjectReducer, useInjectSaga } from 'utils/redux-injectors';
 import { reducer, sliceKey, actions } from './slice';
 import { selectWelcomePage } from './selectors';
 import { welcomePageSaga } from './saga';
-import Auth from 'services/Auth';
 import { selectUser } from '../../selectors';
-import Axios from 'axios';
 
 import { OrganizationsApiService } from 'services/APIService/OrganizationsApi.service';
 
@@ -52,6 +50,8 @@ export const WelcomePage = memo((props: Props) => {
   const history = useHistory();
   const queryParams = new URLSearchParams(props.location.search);
   const [userOrg, setUserOrg] = useState(false);
+  const [workspaceName, setWorkspaceName] = useState<string>("");
+
 
   useEffect(() => {
     if (token || !queryParams.get('accessToken')) return;
@@ -91,32 +91,38 @@ export const WelcomePage = memo((props: Props) => {
       </Helmet>
 
       <Div>
-        <Card bodyStyle={{ padding: '24px 92px 68px 92px' }}>
+        <Card style={{
+          width: '400px'
+        }}>
           <Title style={{ textAlign: 'center', color: '#5D2E8C' }} level={3}>
-            Welcome to Fresco
+            Welcome to Fresco 
           </Title>
-
-          <div style={{ textAlign: 'center', marginTop: 85 }}>
+          <div style={{ textAlign: 'center', marginTop: 45 }}>
             <Text>
-              "{userOrg ? userOrg : user?.email}" is here release the power of
-              collaboration with your team
+              But before we get started
             </Text>
           </div>
-
-          <div style={{ textAlign: 'center', marginTop: 128 }}>
-            <Text>Leo, John and 56 others are using Fresco</Text>
+          <div style={{marginTop: 20}}>
+            <Input
+              placeholder="Workspace Name"
+              title="Workspace Name"
+              value={workspaceName}
+              onChange={({ target: { value } }) => setWorkspaceName(value)}
+            />
           </div>
-
+          <div style={{ textAlign: 'center', marginTop: 128, fontSize: '12px' }}>
+            <Text>Workspace URL: frescopad.com/{workspaceName}</Text>
+          </div>
           <Button
             type="primary"
             htmlType="submit"
             block
-            style={{ background: '9646f5', marginTop: 39 }}
+            style={{ background: '9646f5', marginTop: 29 }}
             onClick={() => {
               history.push('/');
             }}
           >
-            Let's Start
+            Continue
           </Button>
         </Card>
       </Div>

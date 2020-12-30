@@ -105,57 +105,63 @@ const CanvasesList = (props: CanvasesListProps) => {
       </div>
 
       <h3 className="card-section-title">Custom Canvas</h3>
-
       <div className="card-grid">
         {canvasList.map((data, index) => (
-          <div className="cards-board" key={index}>
-            <img
-              alt="example"
-              src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
-            />
+          <Link
+            to={{
+              pathname: `/canvas/${data.id}?organization=${data.orgId}`,
+              state: { orgId: data.orgId }
+            }}
+          >
+            <div className="cards-board" key={index}>
+              <img
+                alt="example"
+                src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
+              />
 
-            <div className="card-footer">
-              <div className="card-action">
-                <Dropdown
-                  overlay={
-                    <Menu>
-                      <Menu.Item key="0">
-                        <Link to={`/canvas/${data.orgId}/${data.id}`}>
-                          Edit
-                        </Link>
-                      </Menu.Item>
-                      <Menu.Item key="1">
-                        <a href="http://www.taobao.com/">Action</a>
-                      </Menu.Item>
-                      <Menu.Divider />
-                      <Menu.Item
-                        key="3"
-                        onClick={() => handleDeleteCanvas(data.id)}
-                      >
-                        Delete
-                      </Menu.Item>
-                    </Menu>
-                  }
-                  trigger={['click']}
-                >
-                  <div className="action-button">
-                    <span className="material-icons">more_vert</span>
-                  </div>
-                </Dropdown>
-              </div>
-              <div className="card-title">{data.name}</div>
-              <div className="card-timestamp">Opened Oct 12, 2020</div>
-              <div className="card-users">
-                <span className="material-icons">group</span>
-                <span className="user-title">
-                  Anup Surendan, JJ and 5+ collaborating
-                </span>
+              <div className="card-footer">
+                <div className="card-action">
+                  <Dropdown
+                    overlay={
+                      <Menu>
+                        <Menu.Item key="0">
+                          <Link to={`/canvas/${data.orgId}/${data.id}`}>
+                            Edit
+                          </Link>
+                        </Menu.Item>
+                        <Menu.Item key="1">
+                          <a href="http://www.taobao.com/">Action</a>
+                        </Menu.Item>
+                        <Menu.Divider />
+                        <Menu.Item
+                          key="3"
+                          onClick={() => handleDeleteCanvas(data.id)}
+                        >
+                          Delete
+                        </Menu.Item>
+                      </Menu>
+                    }
+                    trigger={['click']}
+                  >
+                    <div className="action-button">
+                      <span className="material-icons">more_vert</span>
+                    </div>
+                  </Dropdown>
+                </div>
+                <div className="card-title">{data.name}</div>
+                <div className="card-timestamp">Opened Oct 12, 2020</div>
+                <div className="card-users">
+                  <span className="material-icons">group</span>
+                  <span className="user-title">
+                    Anup Surendan, JJ and 5+ collaborating
+                  </span>
+                </div>
               </div>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
-    </div>
+    </div >
   );
 };
 export default CanvasesList;

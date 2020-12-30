@@ -69,7 +69,7 @@ const ToggleMenu = (props: PropsInterface) => {
 
   useEffect(() => {
     calcEndPosition(offsetContainerRef.current);
-  }, [calcEndPosition, isOpen, offsetContainerRef]);
+  }, [isOpen]);
 
   return createPortal(
     <StyledContainer

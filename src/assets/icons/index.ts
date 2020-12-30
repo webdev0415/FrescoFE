@@ -40,3 +40,4 @@ export { ReactComponent as Person } from './person.svg';
 export { ReactComponent as Workspace } from './workspace.svg';
 export { ReactComponent as AddPerson } from './add-person.svg';
 export { ReactComponent as Teams } from './teams.svg';
+export { ReactComponent as Logout } from './log-out.svg';
