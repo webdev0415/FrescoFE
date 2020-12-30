@@ -214,7 +214,6 @@ class DrawBoard extends PureComponent<Props, State> {
             selected: false,
           })),
         );
-        console.log(boardData);
         canvasTitle.innerText = boardData.name;
         document.title = boardData.name;
         if (canvasTitleInput) {
@@ -223,6 +222,7 @@ class DrawBoard extends PureComponent<Props, State> {
         const canvasObjects = !!boardData.data
           ? JSON.parse(boardData.data)
           : [];
+
         this.setState(
           {
             objects: canvasObjects,
@@ -341,7 +341,6 @@ class DrawBoard extends PureComponent<Props, State> {
     this.scrollLeft = canvasBody.scrollLeft;
     this.scrollTop = canvasBody.scrollTop;
     canvasBody.style.cursor = 'all-scroll';
-    console.log(this.scrollLeft, this.scrollTop);
   };
   onMouseUp = (evt: Konva.KonvaEventObject<MouseEvent>) => {
     this.isClicked = false;
@@ -377,8 +376,6 @@ class DrawBoard extends PureComponent<Props, State> {
           top: this.scrollTop - walkY,
         });
       }
-
-      console.log({ position, mousePointTo, walkX, walkY, x, y });
     }
   };
 

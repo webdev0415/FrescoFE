@@ -13,7 +13,7 @@ const { Content } = Layout;
 const AuthLayout: React.FC<AuthLayoutProps> = props => {
   return (
     <Layout>
-      <Header isLogIn={Auth.isLogged()} />
+      {/* <Header isLogIn={Auth.isLogged()} /> */}
       <Content>{props.children}</Content>
     </Layout>
   );

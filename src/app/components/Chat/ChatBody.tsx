@@ -207,8 +207,6 @@ const ChatBody = ({
       {sortMessagesByGroups(messagesArr || []).map((group, index) => {
         const loggedUserMessageGroup =
           group.user.id === user.id ? 'logged-user' : '';
-
-        console.log('group', group);
         return (
           <div key={`${index}-${uuidv4()}`}>
             <div className={`chatBox-body-user ${loggedUserMessageGroup}`}>
