@@ -7,7 +7,7 @@ import React, { memo, useEffect, useRef, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useDispatch, useSelector } from 'react-redux';
 import { Button, Dropdown, Input, Menu, Select, Skeleton, Tabs } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
+import { PlusOutlined, SaveOutlined, LoadingOutlined } from '@ant-design/icons';
 import { Link, Redirect, useHistory } from 'react-router-dom';
 
 import { useInjectReducer, useInjectSaga } from 'utils/redux-injectors';
@@ -144,6 +144,10 @@ export const Dashboard = memo((props: Props) => {
   const [loadingCreateCanvas, setLoadingCreateCanvas] = useState(false);
   const [loadingCategoriesList, setLoadingCategoriesList] = useState(false);
   const [loadingCanvasList, setLoadingCanvasList] = useState(false);
+  const [editCanvasItem, setEditCanvasItem] = useState('');
+  const [editName, setEditName] = useState('');
+  const [hoveredBoard, setHoveredBoard] = useState('');
+  const [loadingUpdateName, setLoadingUpdateName] = useState(false);
   const orgId = props?.match?.params?.id;
 
   const tabsContainerRef = useRef<any>(null);
@@ -400,7 +404,7 @@ export const Dashboard = memo((props: Props) => {
                 onClick={() => handleLogOut()}
               >
                 <Logout />
-                Log out  
+                Log out
               </div>
             </StyledBoardDetailedToggleMenuContainer>
           </ToggleMenu>
@@ -466,6 +470,38 @@ export const Dashboard = memo((props: Props) => {
     return <Redirect to="/auth/login" />;
   }
 
+  const handleClickRename = (id: string) => {
+    setEditCanvasItem(id);
+  };
+
+  const handleChangeName = (event: any) => {
+    setEditName(event.target.value);
+  };
+  const onSaveName = () => {
+    const id = editCanvasItem;
+    const name = editName;
+    const item = canvasList.find(i => i.id === id);
+    if (item) {
+      setLoadingUpdateName(true);
+      const data = {
+        ...item,
+        name: name,
+      };
+      CanvasApiService.updateById(id, data).subscribe(
+        () => {
+          setLoadingUpdateName(false);
+          setEditName('');
+          setEditCanvasItem('');
+          getCanvasList();
+        },
+        error => {
+          setLoadingUpdateName(false);
+          console.error(error);
+        },
+      );
+    }
+  };
+
   return (
     <>
       <Helmet>
@@ -516,7 +552,6 @@ export const Dashboard = memo((props: Props) => {
                     New Board
                 </Button>
                   <h3 className="dashboard__tab-title">My Boards</h3>
-
                   {organization && <BoardList orgId={organization.orgId} />}
                 </div>
               )}
@@ -597,13 +632,22 @@ export const Dashboard = memo((props: Props) => {
                   </h3>
                 )}
                 {canvasList.map((data, index) => (
-                  <Link
-                    to={{
-                      pathname: `/canvas/${data.id}?organization=${data.orgId}`,
-                      state: { orgId: data.orgId }
+                  <div
+                    className={`cards-board ${hoveredBoard === data.id ? 'active' : ''}`}
+                    key={index}
+                    onMouseEnter={() => {
+                      setHoveredBoard(data.id);
+                    }}
+                    onMouseLeave={() => {
+                      setHoveredBoard('');
                     }}
                   >
-                    <div className="cards-board" key={index}>
+                    <Link
+                      to={{
+                        pathname: `/canvas/${data.id}?organization=${orgId}`,
+                        state: { orgId },
+                      }}
+                    >
                       <img
                         alt="example"
                         style={{
@@ -615,53 +659,84 @@ export const Dashboard = memo((props: Props) => {
                           'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png'
                         }
                       />
-
-                      <div className="card-footer">
-                        <div className="card-action">
-                          <Dropdown
-                            overlay={
-                              <Menu>
-                                <Menu.Item key="0">
-                                  <Link
-                                    to={{
-                                      pathname: `/canvas/${data.id}/canvas?organization=${orgId}`,
-                                      state: { orgId },
-                                    }}
-                                  >
-                                    Edit
-                                </Link>
-                                </Menu.Item>
-                                <Menu.Item key="1">
-                                  <a href="#">Action</a>
-                                </Menu.Item>
-                                <Menu.Divider />
-                                <Menu.Item
-                                  key="3"
-                                  onClick={() => handleDeleteCanvas(data.id)}
+                    </Link>
+                    <div className="card-footer">
+                      <div className="card-action">
+                        <Dropdown
+                          overlay={
+                            <Menu>
+                              <Menu.Item key="0">
+                                <Link
+                                  to={{
+                                    pathname: `/canvas/${data.id}?organization=${orgId}`,
+                                    state: { orgId },
+                                  }}
                                 >
-                                  Delete
+                                  Edit
+                              </Link>
                               </Menu.Item>
-                              </Menu>
+                              <Menu.Item
+                                key="1"
+                                onClick={() => handleClickRename(data.id)}
+                              >
+                                Rename
+                            </Menu.Item>
+                              <Menu.Divider />
+                              <Menu.Item
+                                key="3"
+                                onClick={() => handleDeleteCanvas(data.id)}
+                              >
+                                Delete
+                            </Menu.Item>
+                            </Menu>
+                          }
+                          trigger={['click']}
+                        >
+                          <div className="action-button">
+                            <span className="material-icons">more_vert</span>
+                          </div>
+                        </Dropdown>
+                      </div>
+                      {editCanvasItem !== data.id && (
+                        <div className="card-title">
+                          {data.name}
+                          {data && data.name && data.name.length >= 34 ? (
+                            <span className="tooltip">{data.name}</span>
+                          ) : (
+                              ''
+                            )}
+                        </div>
+                      )}
+                      {editCanvasItem === data.id && (
+                        <div className="card-title-input">
+                          <Input
+                            addonAfter={
+                              <>
+                                {!loadingUpdateName && (
+                                  <SaveOutlined
+                                    onClick={onSaveName}
+                                    style={{ cursor: 'pointer' }}
+                                  />
+                                )}
+                                {loadingUpdateName && <LoadingOutlined />}
+                              </>
                             }
-                            trigger={['click']}
-                          >
-                            <div className="action-button">
-                              <span className="material-icons">more_vert</span>
-                            </div>
-                          </Dropdown>
+                            defaultValue={data.name}
+                            onChange={handleChangeName}
+                          />
                         </div>
-                        <div className="card-title">{data.name}</div>
-                        <div className="card-timestamp">Opened Oct 12, 2020</div>
-                        <div className="card-users">
-                          <span className="material-icons">group</span>
-                          <span className="user-title">
-                            Anup Surendan, JJ and 5+ collaborating
-                        </span>
-                        </div>
+                      )}
+                      <div className="card-timestamp">
+                        {data && data.createdAt
+                          ? moment(data.createdAt).format('LLL')
+                          : ''}
+                      </div>
+                      <div className="card-users">
+                        <span className="material-icons">group</span>
+                        <Collaboration users={data.users} />
                       </div>
                     </div>
-                  </Link>
-
+                  </div>
                 ))}
                 {loadingCanvasList &&
                   Array(5)
