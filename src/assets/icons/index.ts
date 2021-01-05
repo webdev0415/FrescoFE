@@ -31,3 +31,13 @@ export { ReactComponent as ToolbarVerticalLineIcon } from './toolbar-vertical-li
 export { ReactComponent as UndoIcon } from './undo.svg';
 export { ReactComponent as ZoomInIcon } from './zoom-in.svg';
 export { ReactComponent as ZoomOutIcon } from './zoom-out.svg';
+export { ReactComponent as ChevronLeft } from './chevron-left.svg';
+export { ReactComponent as Billing } from './billing.svg';
+export { ReactComponent as Exit } from './exit.svg';
+export { ReactComponent as NotificationBell } from './notification-bell.svg';
+export { ReactComponent as QuestionMark } from './questionMark.svg';
+export { ReactComponent as Person } from './person.svg';
+export { ReactComponent as Workspace } from './workspace.svg';
+export { ReactComponent as AddPerson } from './add-person.svg';
+export { ReactComponent as Teams } from './teams.svg';
+export { ReactComponent as Logout } from './log-out.svg';

@@ -6,7 +6,7 @@
 
 import React, { memo, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { Form, Input, Button, Card, Typography, Modal, message } from 'antd';
+import { Form, Input, Button, Card, Typography, Modal, message, Col, Row } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 // import styled from 'styled-components/macro';
@@ -67,7 +67,6 @@ export const Signup = memo((props: Props) => {
           loading: false,
           error: 'Confirmation Failed to Send',
         });
-        console.log(error.response);
         message.error(error.message);
       });
   };
@@ -139,13 +138,35 @@ export const Signup = memo((props: Props) => {
           onFinish={onFinish}
           onFinishFailed={onFinishFailed}
         >
-          {/* <Form.Item
-            label="Username"
-            name="name"
-            rules={[{ required: true, message: 'Please input your Name!' }]}
-          >
-            <Input />
-          </Form.Item> */}
+          <Row>
+            <Col lg={11}>
+              <Form.Item
+                label="First Name"
+                name="firstName"
+                hasFeedback
+              >
+                <Input
+                  onChange={event => {
+                    setEmail(event.target.value);
+                  }}
+                />
+              </Form.Item>
+            </Col>
+            <Col lg={2}></Col>
+            <Col lg={11}>
+              <Form.Item
+                  label="Last Name"
+                  name="lastName"
+                  hasFeedback
+                >
+                  <Input
+                    onChange={event => {
+                      setEmail(event.target.value);
+                    }}
+                  />
+                </Form.Item>
+            </Col>
+          </Row>
           <Form.Item
             label="Work Email"
             name="email"
@@ -164,10 +185,10 @@ export const Signup = memo((props: Props) => {
               }}
             />
           </Form.Item>
-
           <Form.Item
             label="Password"
             name="password"
+            help="Your password should be at least 8 characters"
             rules={[
               { required: true, message: 'Please input your password!' },
               ({ getFieldValue }) => ({
@@ -185,34 +206,17 @@ export const Signup = memo((props: Props) => {
           >
             <Input.Password />
           </Form.Item>
-
-          <Form.Item
-            name="confirm"
-            label="Confirm Password"
-            dependencies={['password']}
-            hasFeedback
-            rules={[
-              {
-                required: true,
-                message: 'Please confirm your password!',
-              },
-              ({ getFieldValue }) => ({
-                validator(rule, value) {
-                  if (!value || getFieldValue('password') === value) {
-                    return Promise.resolve();
-                  }
-                  return Promise.reject(
-                    'The two passwords that you entered do not match!',
-                  );
-                },
-              }),
-            ]}
+          <div
+            style={{
+              margin: '10px 0',
+              padding: '0 15px',
+              boxSizing: 'border-box',
+              textAlign: 'center'
+            }}
           >
-            <Input.Password />
-          </Form.Item>
-
+            By creating an account, you agree to our  User Terms and Privacy Policy.
+          </div>
           <Button
-            style={{ marginTop: 20 }}
             type="primary"
             htmlType="submit"
             loading={loading}
