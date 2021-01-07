@@ -28,7 +28,7 @@ import {
   Workspace,
   AddPerson,
   Teams,
-  Logout
+  Logout,
 } from 'assets/icons';
 import { BarChartOutlined } from '@ant-design/icons';
 import ToggleMenu from '../../components/ToggleMenu';
@@ -36,7 +36,8 @@ import styled from 'styled-components';
 // Components
 import { UserModal } from '../../components/UserModal';
 import Axios from 'axios';
-import { InviteMemberModal } from '../../components/InviteMemberModal';
+import { InviteMemberModal } from '../../components/InviteMemberModal/Loadable';
+import { MyProfileModal } from '../../components/MyProfileModal/Loadable';
 import './styles.less';
 import { BoardList } from '../BoardList';
 import { Categories } from '../Categories';
@@ -132,6 +133,7 @@ export const Dashboard = memo((props: Props) => {
   );
   const [isShowUserModal, setIsShowUserModal] = useState(false);
   const [isShowInvitationModal, setIsShowInvitationModal] = useState(false);
+  const [isShowMyProfileModal, setIsShowMyProfileModal] = useState(false);
   const [email, setEmail] = useState('');
   const [permission, setPermission] = useState(PERMISSION.EDITOR);
   const [isModalOpen, setModalOpen] = useState(false);
@@ -160,6 +162,7 @@ export const Dashboard = memo((props: Props) => {
 
   const token = useSelector(selectToken);
   const user = useSelector(selectUser);
+  console.log('user', user);
   useEffect(() => {
     setCanvasName(defaultCanvasName);
   }, [defaultCanvasName]);
@@ -167,7 +170,6 @@ export const Dashboard = memo((props: Props) => {
   useEffect(() => {
     document.title = 'Dashboard';
   }, []);
-
   // const user = useSelector(selectUser);
   useEffect(() => {
     if (!!dashboard.linkInvitation) {
@@ -289,6 +291,14 @@ export const Dashboard = memo((props: Props) => {
       });
     }
   }, []);
+  const showInviteModal = () => {
+    console.log('invitation modal');
+    setIsShowInvitationModal(true);
+  };
+  const showMyProfileModal = () => {
+    console.log('myprofile modal');
+    setIsShowMyProfileModal(true);
+  };
 
   const getCanvasList = React.useCallback(() => {
     setLoadingCanvasList(true);
@@ -374,13 +384,13 @@ export const Dashboard = memo((props: Props) => {
                 className="title divided"
                 onClick={() => setInvitePeopleToggleMenu(true)}
                 style={{
-                  cursor: "pointer"
+                  cursor: 'pointer',
                 }}
               >
                 QuestionPro
               </div>
               <List className="divided">
-                <Item>
+                <Item onClick={showMyProfileModal}>
                   <span className="icon">
                     <Person />
                   </span>
@@ -399,10 +409,7 @@ export const Dashboard = memo((props: Props) => {
                   Help
                 </Item>
               </List>
-              <div
-                className="logout"
-                onClick={() => handleLogOut()}
-              >
+              <div className="logout" onClick={() => handleLogOut()}>
                 <Logout />
                 Log out
               </div>
@@ -420,7 +427,7 @@ export const Dashboard = memo((props: Props) => {
           >
             <StyledBoardFeaturesContainer>
               <List className="divided">
-                <Item>
+                <Item onClick={showInviteModal}>
                   <span className="icon">
                     <AddPerson />
                   </span>
@@ -543,18 +550,18 @@ export const Dashboard = memo((props: Props) => {
                 onClose={() => setAddNewBoard(false)}
               />
             ) : (
-                <div className="card-section">
-                  <Button
-                    type="primary"
-                    icon={<PlusOutlined />}
-                    onClick={() => setAddNewBoard(true)}
-                  >
-                    New Board
+              <div className="card-section">
+                <Button
+                  type="primary"
+                  icon={<PlusOutlined />}
+                  onClick={() => setAddNewBoard(true)}
+                >
+                  New Board
                 </Button>
-                  <h3 className="dashboard__tab-title">My Boards</h3>
-                  {organization && <BoardList orgId={organization.orgId} />}
-                </div>
-              )}
+                <h3 className="dashboard__tab-title">My Boards</h3>
+                {organization && <BoardList orgId={organization.orgId} />}
+              </div>
+            )}
           </TabPane>
           <TabPane
             disabled
@@ -633,7 +640,9 @@ export const Dashboard = memo((props: Props) => {
                 )}
                 {canvasList.map((data, index) => (
                   <div
-                    className={`cards-board ${hoveredBoard === data.id ? 'active' : ''}`}
+                    className={`cards-board ${
+                      hoveredBoard === data.id ? 'active' : ''
+                    }`}
                     key={index}
                     onMouseEnter={() => {
                       setHoveredBoard(data.id);
@@ -673,21 +682,21 @@ export const Dashboard = memo((props: Props) => {
                                   }}
                                 >
                                   Edit
-                              </Link>
+                                </Link>
                               </Menu.Item>
                               <Menu.Item
                                 key="1"
                                 onClick={() => handleClickRename(data.id)}
                               >
                                 Rename
-                            </Menu.Item>
+                              </Menu.Item>
                               <Menu.Divider />
                               <Menu.Item
                                 key="3"
                                 onClick={() => handleDeleteCanvas(data.id)}
                               >
                                 Delete
-                            </Menu.Item>
+                              </Menu.Item>
                             </Menu>
                           }
                           trigger={['click']}
@@ -703,8 +712,8 @@ export const Dashboard = memo((props: Props) => {
                           {data && data.name && data.name.length >= 34 ? (
                             <span className="tooltip">{data.name}</span>
                           ) : (
-                              ''
-                            )}
+                            ''
+                          )}
                         </div>
                       )}
                       {editCanvasItem === data.id && (
@@ -771,30 +780,28 @@ export const Dashboard = memo((props: Props) => {
               </div>
             </div>
           </TabPane>
-          {
-            user && user.role === 'ADMIN' && (
-              <TabPane tab={<BarChartOutlined />} key="4">
-                <div className="card-section">
-                  <Button
-                    type="primary"
-                    icon={<PlusOutlined />}
-                    onClick={() => {
-                      setModalOpen(true);
-                    }}
-                  >
-                    New Category
-                  </Button>
-                  <h3 className="dashboard__tab-title">Categories</h3>
-                  <Categories
-                    visible={isModalOpen}
-                    onCancel={() => {
-                      setModalOpen(false);
-                    }}
-                  />
-                </div>
-              </TabPane>
-            )
-          }
+          {user && user.role === 'ADMIN' && (
+            <TabPane tab={<BarChartOutlined />} key="4">
+              <div className="card-section">
+                <Button
+                  type="primary"
+                  icon={<PlusOutlined />}
+                  onClick={() => {
+                    setModalOpen(true);
+                  }}
+                >
+                  New Category
+                </Button>
+                <h3 className="dashboard__tab-title">Categories</h3>
+                <Categories
+                  visible={isModalOpen}
+                  onCancel={() => {
+                    setModalOpen(false);
+                  }}
+                />
+              </div>
+            </TabPane>
+          )}
         </Tabs>
       </div>
 
@@ -810,6 +817,14 @@ export const Dashboard = memo((props: Props) => {
           handleChangePermission={_handleChangePermission}
         />
       )}
+      {isShowMyProfileModal && (
+        <MyProfileModal
+          onCancel={() => setIsShowMyProfileModal(false)}
+          loading={dashboard.loading}
+          useremail={user && user.email}
+        />
+      )}
+
       {renderTeamsToggleMenu()}
     </>
   );

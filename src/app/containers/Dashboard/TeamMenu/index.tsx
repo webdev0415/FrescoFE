@@ -3,6 +3,7 @@ import StyledContainer from './StyledContainer';
 import StyledMenuContainer from './StyledMenuContainer';
 import { GroupIcon, ChevronLeft } from '../../../../assets/icons';
 import ToggleMenu from '../../../components/ToggleMenu';
+import { CreateTeamModal } from '../../../components/CreateTeamModal/Loadable';
 import { List, Item } from 'app/components/List';
 
 interface PropsInterface {
@@ -14,6 +15,20 @@ const Team = (props: PropsInterface) => {
   const boardsListMenuRef = useRef(null);
   const boardDetailedMenuRef = useRef(null);
   const [isBoardMenuOpen, setIsBoardMenuOpen] = useState<Boolean>(false);
+
+  const [isShowCreateTeamModal, setIsShowCreateTeamModal] = useState<Boolean>(
+    false,
+  );
+  const [teams, setTeams] = useState<any[]>([]);
+
+  const handleCreateNewTeam = (newTeam: any) => {
+    setTeams(oldTeamsArray => [...oldTeamsArray, newTeam]);
+    setIsShowCreateTeamModal(false);
+  };
+
+  const renderTeams = () => {
+    return teams.map(item => <Item>{item.teamname}</Item>);
+  };
 
   if (offsetContainerRef.current) {
     antTabsNavWrapRef.current = offsetContainerRef.current.querySelector(
@@ -40,14 +55,24 @@ const Team = (props: PropsInterface) => {
             <List>
               <Item disabledItem className="space-between">
                 New Team
-                <span className="icon">+</span>
+                <span
+                  className="icon"
+                  onClick={() => setIsShowCreateTeamModal(true)}
+                >
+                  +
+                </span>
               </Item>
-              <Item activeItem>Design</Item>
-              <Item>Business</Item>
-              <Item>Developers</Item>
+              {renderTeams()}
             </List>
           </StyledMenuContainer>
         </ToggleMenu>
+
+        {isShowCreateTeamModal && (
+          <CreateTeamModal
+            onCancel={() => setIsShowCreateTeamModal(false)}
+            onCreateNewTeam={handleCreateNewTeam}
+          />
+        )}
       </>
     );
   }
