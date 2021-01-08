@@ -300,6 +300,9 @@ export const Dashboard = memo((props: Props) => {
   const showMyProfileModal = () => {
     setIsShowMyProfileModal(true);
   };
+  const showTeamMembersModal = () => {
+    setIsShowTeamMembersModal(true);
+  };
 
   const showTeamMembersModal = () => {
     setIsShowTeamMembersModal(true);
@@ -827,6 +830,12 @@ export const Dashboard = memo((props: Props) => {
           onCancel={() => setIsShowMyProfileModal(false)}
           loading={dashboard.loading}
           useremail={user && user.email}
+        />
+      )}
+      {isShowTeamMembersModal && (
+        <TeamMembersModal
+          onCancel={() => setIsShowTeamMembersModal(false)}
+          loading={dashboard.loading}
         />
       )}
 
