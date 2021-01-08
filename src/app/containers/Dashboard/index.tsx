@@ -38,6 +38,7 @@ import { UserModal } from '../../components/UserModal';
 import Axios from 'axios';
 import { InviteMemberModal } from '../../components/InviteMemberModal/Loadable';
 import { MyProfileModal } from '../../components/MyProfileModal/Loadable';
+import { TeamMembersModal } from '../../components/TeamMembersModal/Loadable';
 import './styles.less';
 import { BoardList } from '../BoardList';
 import { Categories } from '../Categories';
@@ -134,6 +135,7 @@ export const Dashboard = memo((props: Props) => {
   const [isShowUserModal, setIsShowUserModal] = useState(false);
   const [isShowInvitationModal, setIsShowInvitationModal] = useState(false);
   const [isShowMyProfileModal, setIsShowMyProfileModal] = useState(false);
+  const [isShowTeamMembersModal, setIsShowTeamMembersModal] = useState(false);
   const [email, setEmail] = useState('');
   const [permission, setPermission] = useState(PERMISSION.EDITOR);
   const [isModalOpen, setModalOpen] = useState(false);
@@ -299,6 +301,9 @@ export const Dashboard = memo((props: Props) => {
     console.log('myprofile modal');
     setIsShowMyProfileModal(true);
   };
+  const showTeamMembersModal = () => {
+    setIsShowTeamMembersModal(true);
+  };
 
   const getCanvasList = React.useCallback(() => {
     setLoadingCanvasList(true);
@@ -441,7 +446,7 @@ export const Dashboard = memo((props: Props) => {
                   </span>
                   Workspace
                 </Item>
-                <Item>
+                <Item onClick={showTeamMembersModal}>
                   <span className="icon">
                     <Person />
                   </span>
@@ -822,6 +827,12 @@ export const Dashboard = memo((props: Props) => {
           onCancel={() => setIsShowMyProfileModal(false)}
           loading={dashboard.loading}
           useremail={user && user.email}
+        />
+      )}
+      {isShowTeamMembersModal && (
+        <TeamMembersModal
+          onCancel={() => setIsShowTeamMembersModal(false)}
+          loading={dashboard.loading}
         />
       )}
 
