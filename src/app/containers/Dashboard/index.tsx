@@ -38,6 +38,7 @@ import { UserModal } from '../../components/UserModal';
 import Axios from 'axios';
 import { InviteMemberModal } from '../../components/InviteMemberModal/Loadable';
 import { MyProfileModal } from '../../components/MyProfileModal/Loadable';
+import { CreateWorkspaceModal } from '../../components/CreateWorkspaceModal/Loadable';
 import { TeamMembersModal } from '../../components/TeamMembersModal/Loadable';
 import './styles.less';
 import { BoardList } from '../BoardList';
@@ -136,11 +137,16 @@ export const Dashboard = memo((props: Props) => {
   const [isShowInvitationModal, setIsShowInvitationModal] = useState(false);
   const [isShowMyProfileModal, setIsShowMyProfileModal] = useState(false);
   const [isShowTeamMembersModal, setIsShowTeamMembersModal] = useState(false);
+  const [
+    isShowWorkspaceCreatingModal,
+    setIsShowWorkspaceCreatingModal,
+  ] = useState(false);
   const [email, setEmail] = useState('');
   const [permission, setPermission] = useState(PERMISSION.EDITOR);
   const [isModalOpen, setModalOpen] = useState(false);
   const [canvasName, setCanvasName] = useState('');
   const [categories, setCategories] = useState<CanvasCategoryInterface[]>([]);
+  const [workspaces, setWorkspaces] = useState<string[]>(['John Wick']);
   const [categoryId, setCategoryId] = useState('');
   const [canvasList, setCanvasList] = useState<CanvasResponseInterface[]>([]);
   const [showAddNewBoard, setAddNewBoard] = useState(false);
@@ -164,7 +170,6 @@ export const Dashboard = memo((props: Props) => {
 
   const token = useSelector(selectToken);
   const user = useSelector(selectUser);
-  console.log('user', user);
   useEffect(() => {
     setCanvasName(defaultCanvasName);
   }, [defaultCanvasName]);
@@ -189,7 +194,6 @@ export const Dashboard = memo((props: Props) => {
     })
       .then(response => {
         setOrganization(response.data);
-        console.log('response.data', response.data);
       })
       .catch(error => {
         console.error(error.response);
@@ -213,7 +217,6 @@ export const Dashboard = memo((props: Props) => {
 
     CanvasApiService.create(data).subscribe(
       data => {
-        console.log(data);
         setLoadingCreateCanvas(false);
         history.push(`/canvas/${data.id}?organization=${orgId}`, { orgId });
       },
@@ -294,11 +297,9 @@ export const Dashboard = memo((props: Props) => {
     }
   }, []);
   const showInviteModal = () => {
-    console.log('invitation modal');
     setIsShowInvitationModal(true);
   };
   const showMyProfileModal = () => {
-    console.log('myprofile modal');
     setIsShowMyProfileModal(true);
   };
   const showTeamMembersModal = () => {
@@ -345,6 +346,20 @@ export const Dashboard = memo((props: Props) => {
     history.push('/auth/login');
   };
 
+  const handleCreateWorkspace = (workspace: string) => {
+    setWorkspaces(oldWorkspacesArray => [...oldWorkspacesArray, workspace]);
+    setIsShowWorkspaceCreatingModal(false);
+  };
+
+  const renderWorkspaces = () => {
+    return workspaces.map(item => (
+      <Avatar
+        style={{ marginBottom: 10 }}
+        fullName={item}
+        onClick={() => setIsTeamDetailedMenuOpen(true)}
+      />
+    ));
+  };
   const renderTeamsToggleMenu = () => {
     if (tabsContainerRef.current) {
       return (
@@ -364,11 +379,18 @@ export const Dashboard = memo((props: Props) => {
             onOutsideClick={() => setIsToggleMenuOpen(false)}
           >
             <TeamsToggleMenuStyledContainer>
-              <Avatar
+              {/*<Avatar
                 fullName="John Wick"
                 onClick={() => setIsTeamDetailedMenuOpen(true)}
               />
-              <Fab size={35}>+</Fab>
+              <Fab size={35} onClick={() => setIsShowWorkspaceCreatingModal(true)}>+</Fab>*/}
+              <div>{renderWorkspaces()}</div>
+              <Fab
+                size={35}
+                onClick={() => setIsShowWorkspaceCreatingModal(true)}
+              >
+                +
+              </Fab>
             </TeamsToggleMenuStyledContainer>
           </ToggleMenu>
           <ToggleMenu
@@ -835,7 +857,12 @@ export const Dashboard = memo((props: Props) => {
           loading={dashboard.loading}
         />
       )}
-
+      {isShowWorkspaceCreatingModal && (
+        <CreateWorkspaceModal
+          onCancel={() => setIsShowWorkspaceCreatingModal(false)}
+          onCreateWorkspace={handleCreateWorkspace}
+        />
+      )}
       {renderTeamsToggleMenu()}
     </>
   );

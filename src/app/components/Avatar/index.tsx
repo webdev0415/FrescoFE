@@ -11,10 +11,12 @@ const UserAvatar = (props: PropsInterface & any) => {
 
   return (
     <StyledContainer {...rest}>
-      {fullName
-        .split(' ')
-        .map(n => n[0])
-        .join('')}
+      {fullName.split(' ').length >= 2
+        ? fullName
+            .split(' ')
+            .map(n => n[0])
+            .join('')
+        : fullName.slice(0, 1).toUpperCase()}
     </StyledContainer>
   );
 };
