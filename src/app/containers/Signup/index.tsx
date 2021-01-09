@@ -6,7 +6,17 @@
 
 import React, { memo, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { Form, Input, Button, Card, Typography, Modal, message, Col, Row } from 'antd';
+import {
+  Form,
+  Input,
+  Button,
+  Card,
+  Typography,
+  Modal,
+  message,
+  Col,
+  Row,
+} from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 // import styled from 'styled-components/macro';
@@ -140,11 +150,7 @@ export const Signup = memo((props: Props) => {
         >
           <Row>
             <Col lg={11}>
-              <Form.Item
-                label="First Name"
-                name="firstName"
-                hasFeedback
-              >
+              <Form.Item label="First Name" name="firstName" hasFeedback>
                 <Input
                   onChange={event => {
                     setEmail(event.target.value);
@@ -154,17 +160,13 @@ export const Signup = memo((props: Props) => {
             </Col>
             <Col lg={2}></Col>
             <Col lg={11}>
-              <Form.Item
-                  label="Last Name"
-                  name="lastName"
-                  hasFeedback
-                >
-                  <Input
-                    onChange={event => {
-                      setEmail(event.target.value);
-                    }}
-                  />
-                </Form.Item>
+              <Form.Item label="Last Name" name="lastName" hasFeedback>
+                <Input
+                  onChange={event => {
+                    setEmail(event.target.value);
+                  }}
+                />
+              </Form.Item>
             </Col>
           </Row>
           <Form.Item
@@ -173,7 +175,7 @@ export const Signup = memo((props: Props) => {
             rules={[
               {
                 type: 'email',
-                message: 'The input is not valid E-mail!',
+                message: 'Please enter a valid email address!',
               },
               { required: true, message: 'Please input your email address!' },
             ]}
@@ -211,17 +213,13 @@ export const Signup = memo((props: Props) => {
               margin: '10px 0',
               padding: '0 15px',
               boxSizing: 'border-box',
-              textAlign: 'center'
+              textAlign: 'center',
             }}
           >
-            By creating an account, you agree to our  User Terms and Privacy Policy.
+            By creating an account, you agree to our User Terms and Privacy
+            Policy.
           </div>
-          <Button
-            type="primary"
-            htmlType="submit"
-            loading={loading}
-            block
-          >
+          <Button type="primary" htmlType="submit" loading={loading} block>
             Sign Up
           </Button>
         </Form>
