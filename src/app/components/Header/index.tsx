@@ -45,7 +45,7 @@ const Header: React.FC<HeaderProps> = props => {
         justifyContent: 'center',
         alignItems: 'center',
         width: '100%',
-        height: '55px',
+        height: '56px',
         backgroundColor: '#5D2E8C',
         padding: '0 16px',
         zIndex: 100,
