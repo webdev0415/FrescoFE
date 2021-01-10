@@ -423,12 +423,12 @@ export const Dashboard = memo((props: Props) => {
                   </span>
                   My Profile
                 </Item>
-                <Item>
+                {/*<Item>
                   <span className="icon">
                     <NotificationBell />
                   </span>
                   Notifications
-                </Item>
+                </Item>*/}
                 <Item>
                   <span className="icon">
                     <QuestionMark />
