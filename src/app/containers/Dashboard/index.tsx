@@ -61,7 +61,7 @@ import { List, Item } from 'app/components/List';
 
 const { TabPane } = Tabs;
 export const PERMISSION = {
-  EDITOR: 'editor',
+  EDITOR: 'edit',
   VIEW: 'view',
 };
 

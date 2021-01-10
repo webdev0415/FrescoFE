@@ -152,7 +152,6 @@ export const ShareModal = ({
   };
 
   const _changePermissionPeople = ({ key, index }) => {
-    console.log(key, index);
     const listEmailAndPermissionTemp = [...listEmailAndPermission];
     listEmailAndPermissionTemp[index] = {
       ...listEmailAndPermissionTemp[index],
@@ -424,7 +423,7 @@ export const ShareModal = ({
                 trigger={['click']}
               >
                 <div style={{ display: 'inline-flex', alignItems: 'center' }}>
-                  <Text>Anyone with the link have permission {permission}</Text>
+                  <Text>Anyone with the link can {permission}</Text>
                   <CaretDownFilled style={{ padding: 10 }} />
                 </div>
               </Dropdown>
