@@ -61,7 +61,7 @@ import { List, Item } from 'app/components/List';
 
 const { TabPane } = Tabs;
 export const PERMISSION = {
-  EDITOR: 'editor',
+  EDITOR: 'edit',
   VIEW: 'view',
 };
 
@@ -423,12 +423,12 @@ export const Dashboard = memo((props: Props) => {
                   </span>
                   My Profile
                 </Item>
-                <Item>
+                {/*<Item>
                   <span className="icon">
                     <NotificationBell />
                   </span>
                   Notifications
-                </Item>
+                </Item>*/}
                 <Item>
                   <span className="icon">
                     <QuestionMark />

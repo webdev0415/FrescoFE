@@ -376,10 +376,10 @@ export const CreateBoard = connect(({ global: { token } }: any) => ({ token }))(
               )}
               <div className="canvas-header-actions">
                 <div className="canvas-header-action-item" id="undo-history">
-                  <UndoIcon style={{ color: '#9646f5' }} />
+                  <UndoIcon style={{ color: '#9646f5' }}/>
                 </div>
                 <div className="canvas-header-action-item" id="redo-history">
-                  <RedoIcon style={{ color: '#9646f5' }} />
+                  <RedoIcon style={{ color: '#9646f5' }}/>
                 </div>
               </div>
             </div>
