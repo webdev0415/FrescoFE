@@ -103,7 +103,7 @@ export const SignIn = memo((props: Props) => {
                 { required: true, message: 'Please input your email address!' },
                 {
                   type: 'email',
-                  message: 'The input is not valid E-mail!',
+                  message: 'Please enter a valid email address!',
                 },
               ]}
               hasFeedback
