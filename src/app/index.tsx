@@ -23,6 +23,7 @@ import { SignIn } from './containers/SignIn/Loadable';
 import { EmailConfirmation } from './containers/EmailConfirmation';
 import { CheckEmailView } from './containers/CheckEmailView/Loadable';
 import { WelcomePage } from './containers/WelcomePage';
+import { WorkspaceSettings } from './containers/WorkspaceSettings';
 import { SelectOrganizationPage } from './containers/SelectOrganizationPage';
 import { actions } from './slice';
 
@@ -114,6 +115,7 @@ function AppComponent(props) {
           path="/create-org"
           component={SelectOrganizationPage}
         />
+        <GuestRoute exact path="/workspace/:id" component={WorkspaceSettings} />
         <PrivateRoute component={NotFoundPage} />
         <GuestRoute component={NotFoundPage} />
       </Switch>

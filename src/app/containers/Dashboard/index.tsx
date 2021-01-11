@@ -351,6 +351,10 @@ export const Dashboard = memo((props: Props) => {
     setIsShowWorkspaceCreatingModal(false);
   };
 
+  const gotoWorkspaceSettingsPage = () => {
+    history.push('/workspace/1');
+  };
+
   const renderWorkspaces = () => {
     return workspaces.map(item => (
       <Avatar
@@ -379,11 +383,6 @@ export const Dashboard = memo((props: Props) => {
             onOutsideClick={() => setIsToggleMenuOpen(false)}
           >
             <TeamsToggleMenuStyledContainer>
-              {/*<Avatar
-                fullName="John Wick"
-                onClick={() => setIsTeamDetailedMenuOpen(true)}
-              />
-              <Fab size={35} onClick={() => setIsShowWorkspaceCreatingModal(true)}>+</Fab>*/}
               <div>{renderWorkspaces()}</div>
               <Fab
                 size={35}
@@ -462,7 +461,7 @@ export const Dashboard = memo((props: Props) => {
                 </Item>
               </List>
               <List className="divided">
-                <Item>
+                <Item onClick={gotoWorkspaceSettingsPage}>
                   <span className="icon">
                     <Workspace />
                   </span>
