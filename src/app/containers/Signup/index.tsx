@@ -173,7 +173,7 @@ export const Signup = memo((props: Props) => {
             rules={[
               {
                 type: 'email',
-                message: 'The input is not valid E-mail!',
+                message: 'Please enter a valid email address!',
               },
               { required: true, message: 'Please input your email address!' },
             ]}

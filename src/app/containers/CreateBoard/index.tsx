@@ -364,7 +364,7 @@ export const CreateBoard = connect(({ global: { token } }: any) => ({ token }))(
                 to={`/organization/${orgId}`}
                 className="canvas-header-logo"
               >
-                <img src={logoImg} alt="logo" />
+                <img src={logoImg} style={{ color: '#9646f5' }} alt="logo" />
               </Link>
               {!showInputTitle ? (
                 <div
@@ -382,10 +382,10 @@ export const CreateBoard = connect(({ global: { token } }: any) => ({ token }))(
               )}
               <div className="canvas-header-actions">
                 <div className="canvas-header-action-item" id="undo-history">
-                  <UndoIcon />
+                  <UndoIcon style={{ color: '#9646f5' }}/>
                 </div>
                 <div className="canvas-header-action-item" id="redo-history">
-                  <RedoIcon />
+                  <RedoIcon style={{ color: '#9646f5' }}/>
                 </div>
               </div>
             </div>
