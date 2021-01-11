@@ -16,7 +16,16 @@ export function* signIn(action) {
     yield put(globalActions.setAuthInformation(response.data));
     localStorage.setItem('authInformation', JSON.stringify(response.data));
     message.success('Logged in successfully.');
-    history.push('/auth/welcome-page');
+
+    axios.get('organization').then((response) => {
+      if (response.data.length > 0) {
+        history.push('/');
+      } else {
+        history.push('/auth/welcome-page');
+      }
+    });
+
+
     Auth.setToken(response?.data?.token?.accessToken);
     Auth.update();
 
@@ -27,7 +36,7 @@ export function* signIn(action) {
       try {
         axios.defaults.headers.common[
           'Authorization'
-        ] = `Bearer ${response?.data?.token?.accessToken}`;
+          ] = `Bearer ${response?.data?.token?.accessToken}`;
         const res = yield axios.post('invitation-type/request', {
           token: JSON.parse(tokenVerifyJson).tokenVerify,
           history,

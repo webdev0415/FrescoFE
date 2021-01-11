@@ -15,9 +15,11 @@ import { useInjectReducer, useInjectSaga } from 'utils/redux-injectors';
 import { reducer, sliceKey, actions } from './slice';
 import { selectWelcomePage } from './selectors';
 import { welcomePageSaga } from './saga';
-import { selectUser } from '../../selectors';
+import { selectToken, selectUser } from '../../selectors';
 
 import { OrganizationsApiService } from 'services/APIService/OrganizationsApi.service';
+import { selectSelectOrganizationPage } from '../SelectOrganizationPage/selectors';
+import axios from 'axios';
 
 interface Props {
   location: any;
@@ -40,7 +42,8 @@ export const WelcomePage = memo((props: Props) => {
   const welcomePage = useSelector(selectWelcomePage);
   const user = useSelector(selectUser);
 
-  let token = null;
+  let token = useSelector(selectToken);
+
   if (authInfo && authInfo.token && authInfo.token.accessToken) {
     token = authInfo.token.accessToken;
   }
@@ -51,7 +54,44 @@ export const WelcomePage = memo((props: Props) => {
   const queryParams = new URLSearchParams(props.location.search);
   const [userOrg, setUserOrg] = useState(false);
   const [workspaceName, setWorkspaceName] = useState<string>("");
+  const selectOrganizationPage = useSelector(selectSelectOrganizationPage);
+  const [uniqueError, setUniqueError] = useState(false);
 
+
+ const  string_to_slug = (str) => {
+    str = str.replace(/^\s+|\s+$/g, ''); // trim
+    str = str.toLowerCase();
+
+    // remove accents, swap ñ for n, etc
+    let from = "àáäâèéëêìíïîòóöôùúüûñç·/_,:;";
+    let to = "aaaaeeeeiiiioooouuuunc------";
+    for (let i = 0, l = from.length; i < l; i++) {
+      str = str.replace(new RegExp(from.charAt(i), 'g'), to.charAt(i));
+    }
+
+    str = str.replace(/[^a-z0-9 -]/g, '') // remove invalid chars
+      .replace(/\s+/g, '-') // collapse whitespace and replace by -
+      .replace(/-+/g, '-'); // collapse dashes
+
+    return str;
+  }
+
+  const createWorkspace = () => {
+
+
+    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    axios.post('organization/', {
+      name: workspaceName,
+      fName: '0',
+      lName: '0',
+      slug: string_to_slug(workspaceName),
+    }).then((response) => {
+      history.push('/')
+    }).catch((err) => {
+     console.log(err.response.data.message)
+      setUniqueError(err.response.data.message)
+    })
+  }
 
   useEffect(() => {
     if (token || !queryParams.get('accessToken')) return;
@@ -95,7 +135,7 @@ export const WelcomePage = memo((props: Props) => {
           width: '400px'
         }}>
           <Title style={{ textAlign: 'center', color: '#5D2E8C' }} level={3}>
-            Welcome to Fresco 
+            Welcome to Fresco
           </Title>
           <div style={{ textAlign: 'center', marginTop: 45 }}>
             <Text>
@@ -110,17 +150,19 @@ export const WelcomePage = memo((props: Props) => {
               onChange={({ target: { value } }) => setWorkspaceName(value)}
             />
           </div>
+          <div>
+            <Text style={{textAlign: 'center', display: 'block', marginTop: '15px'}}>{uniqueError}</Text>
+          </div>
           <div style={{ textAlign: 'center', marginTop: 128, fontSize: '12px' }}>
-            <Text>Workspace URL: frescopad.com/{workspaceName}</Text>
+            <Text>Workspace URL: frescopad.com/{string_to_slug(workspaceName)}</Text>
           </div>
           <Button
             type="primary"
             htmlType="submit"
             block
             style={{ background: '9646f5', marginTop: 29 }}
-            onClick={() => {
-              history.push('/');
-            }}
+            loading={selectOrganizationPage.loading}
+            onClick={createWorkspace}
           >
             Continue
           </Button>
