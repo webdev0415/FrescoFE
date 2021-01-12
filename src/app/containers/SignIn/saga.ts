@@ -17,9 +17,13 @@ export function* signIn(action) {
     localStorage.setItem('authInformation', JSON.stringify(response.data));
     message.success('Logged in successfully.');
 
+
+    axios.defaults.headers.common[
+      'Authorization'
+      ] = `Bearer ${response?.data?.token?.accessToken}`;
     axios.get('organization').then((response) => {
       if (response.data.length > 0) {
-        history.push('/');
+        history.push(`/organization/${response.data[0].orgId}`);
       } else {
         history.push('/auth/welcome-page');
       }

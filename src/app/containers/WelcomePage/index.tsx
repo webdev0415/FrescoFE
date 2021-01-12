@@ -151,7 +151,7 @@ export const WelcomePage = memo((props: Props) => {
             />
           </div>
           <div>
-            <Text style={{textAlign: 'center', display: 'block', marginTop: '15px'}}>{uniqueError}</Text>
+            <Text style={{textAlign: 'center', display: 'block', marginTop: '15px', color: 'red'}}>{uniqueError}</Text>
           </div>
           <div style={{ textAlign: 'center', marginTop: 128, fontSize: '12px' }}>
             <Text>Workspace URL: frescopad.com/{string_to_slug(workspaceName)}</Text>
