@@ -262,7 +262,6 @@ export const CreateBoard = connect(({ global: { token } }: any) => ({ token }))(
     };
 
     const handleKeyDown = async event => {
-      setShowInputTitle(false);
       const canvasTitleInput = document.getElementById(
         'canvas-title-input',
       ) as HTMLInputElement;
@@ -285,6 +284,7 @@ export const CreateBoard = connect(({ global: { token } }: any) => ({ token }))(
         ) as HTMLDivElement;
         canvasTitle.innerText = canvasTitleInput.value || '';
       });
+      setShowInputTitle(false);
     };
 
     const handleDoubleClick = _event => {
