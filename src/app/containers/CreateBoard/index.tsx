@@ -12,7 +12,7 @@ import {
   ZoomOutIcon,
 } from '../../components/CanvasIcons';
 import clsx from 'clsx';
-import { Link, useHistory } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import DrawBoard from 'app/components/DrawBoard/DrawBoard';
 import { ShareModal } from 'app/components/ShareModal';
 import { CollaboratorModal } from 'app/components/CollaboratorModal';
@@ -29,7 +29,6 @@ import {
   CollaboratorInterface,
   collaboratorsService,
 } from '../../../services/CollaboratorsService';
-import { Helmet } from 'react-helmet-async';
 
 interface IState {
   orgId?: any;
@@ -61,7 +60,6 @@ export const CreateBoard = connect(({ global: { token } }: any) => ({ token }))(
       [],
     );
     const [chatMessages, setChatMessages] = useState<any>([]);
-    const history = useHistory();
     const location = useLocation();
     const orgId = (location.state as IState)?.orgId;
     const token = useSelector(selectToken);
@@ -264,32 +262,29 @@ export const CreateBoard = connect(({ global: { token } }: any) => ({ token }))(
     };
 
     const handleKeyDown = async event => {
-      if (event.key === 'Enter') {
-        const canvasTitleInput = document.getElementById(
-          'canvas-title-input',
-        ) as HTMLInputElement;
-        setTitle(canvasTitleInput.value);
-        const objState = props.location.state as any;
-        await Axios.request({
-          method: 'PUT',
-          url: `${process.env.REACT_APP_BASE_URL}board/${boardId}`,
-          data: {
-            name: canvasTitleInput.value,
-            orgId: objState.orgId,
-          },
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        setShowInputTitle(false);
-        setImmediate(() => {
-          const canvasTitle = document.getElementById(
-            'canvas-title',
-          ) as HTMLDivElement;
-          canvasTitle.innerText = canvasTitleInput.value || '';
-        });
-      }
+      setShowInputTitle(false);
+      const canvasTitleInput = document.getElementById(
+        'canvas-title-input',
+      ) as HTMLInputElement;
+      setTitle(canvasTitleInput.value);
+      const objState = props.location.state as any;
+      await Axios.request({
+        method: 'PUT',
+        url: `${process.env.REACT_APP_BASE_URL}board/${boardId}`,
+        data: {
+          name: canvasTitleInput.value,
+          orgId: objState.orgId,
+        },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setImmediate(() => {
+        const canvasTitle = document.getElementById(
+          'canvas-title',
+        ) as HTMLDivElement;
+        canvasTitle.innerText = canvasTitleInput.value || '';
+      });
     };
 
     const handleDoubleClick = _event => {
@@ -377,15 +372,15 @@ export const CreateBoard = connect(({ global: { token } }: any) => ({ token }))(
                   type="text"
                   id="canvas-title-input"
                   className="canvas-title-input"
-                  onKeyDown={handleKeyDown}
+                  onBlur={handleKeyDown}
                 />
               )}
               <div className="canvas-header-actions">
                 <div className="canvas-header-action-item" id="undo-history">
-                  <UndoIcon style={{ color: '#9646f5' }}/>
+                  <UndoIcon style={{ color: '#9646f5' }} />
                 </div>
                 <div className="canvas-header-action-item" id="redo-history">
-                  <RedoIcon style={{ color: '#9646f5' }}/>
+                  <RedoIcon style={{ color: '#9646f5' }} />
                 </div>
               </div>
             </div>
