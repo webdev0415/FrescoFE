@@ -163,7 +163,7 @@ export const CreateCanvas = (props: RouteChildrenProps<{ id: string }>) => {
   };
 
   const handleKeyDown = async event => {
-    if (event.key === 'Enter') {
+    setShowInputTitle(false);
       const canvasTitleInput = document.getElementById(
         'canvas-title-input',
       ) as HTMLInputElement;
@@ -181,14 +181,14 @@ export const CreateCanvas = (props: RouteChildrenProps<{ id: string }>) => {
         },
       });
 
-      setShowInputTitle(false);
+      
       setImmediate(() => {
         const canvasTitle = document.getElementById(
           'canvas-title',
         ) as HTMLDivElement;
         canvasTitle.innerText = canvasTitleInput.value || '';
       });
-    }
+
   };
 
   const handleDoubleClick = _event => {
@@ -242,7 +242,7 @@ export const CreateCanvas = (props: RouteChildrenProps<{ id: string }>) => {
                 type="text"
                 id="canvas-title-input"
                 className="canvas-title-input"
-                onKeyDown={handleKeyDown}
+                onBlur={handleKeyDown}
               />
             )}
             <div className="canvas-header-actions">

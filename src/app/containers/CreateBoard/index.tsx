@@ -12,7 +12,7 @@ import {
   ZoomOutIcon,
 } from '../../components/CanvasIcons';
 import clsx from 'clsx';
-import { Link, useHistory } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import DrawBoard from 'app/components/DrawBoard/DrawBoard';
 import { ShareModal } from 'app/components/ShareModal';
 import { CollaboratorModal } from 'app/components/CollaboratorModal';
@@ -61,7 +61,6 @@ export const CreateBoard = connect(({ global: { token } }: any) => ({ token }))(
       [],
     );
     const [chatMessages, setChatMessages] = useState<any>([]);
-    const history = useHistory();
     const location = useLocation();
     const orgId = (location.state as IState)?.orgId;
     const token = useSelector(selectToken);
@@ -264,7 +263,7 @@ export const CreateBoard = connect(({ global: { token } }: any) => ({ token }))(
     };
 
     const handleKeyDown = async event => {
-      if (event.key === 'Enter') {
+      setShowInputTitle(false);
         const canvasTitleInput = document.getElementById(
           'canvas-title-input',
         ) as HTMLInputElement;
@@ -282,14 +281,12 @@ export const CreateBoard = connect(({ global: { token } }: any) => ({ token }))(
           },
         });
 
-        setShowInputTitle(false);
         setImmediate(() => {
           const canvasTitle = document.getElementById(
             'canvas-title',
           ) as HTMLDivElement;
           canvasTitle.innerText = canvasTitleInput.value || '';
         });
-      }
     };
 
     const handleDoubleClick = _event => {
@@ -377,7 +374,7 @@ export const CreateBoard = connect(({ global: { token } }: any) => ({ token }))(
                   type="text"
                   id="canvas-title-input"
                   className="canvas-title-input"
-                  onKeyDown={handleKeyDown}
+                  onBlur={handleKeyDown}
                 />
               )}
               <div className="canvas-header-actions">
