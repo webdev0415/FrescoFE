@@ -12,6 +12,8 @@ import {
 } from 'antd';
 import { PERMISSION } from 'app/containers/Dashboard';
 import ImgCrop from 'antd-img-crop';
+import './styles.less';
+
 let timer;
 
 const { Option } = Select;
@@ -69,8 +71,8 @@ export const MyProfileModal = ({ onCancel, loading, useremail }) => {
         <div style={{ width: '90%', margin: 'auto' }}>
           <p style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>My Profile</p>
           <Form layout="vertical">
-            <Row>
-              <Col xs={8} xl={8}>
+            <Row style={{ alignItems: 'center', marginBottom: '24px' }}>
+              <Col xs={8} xl={8} style={{ marginTop: '24px' }}>
                 <Form.Item
                   name="firstname"
                   rules={[
@@ -84,7 +86,7 @@ export const MyProfileModal = ({ onCancel, loading, useremail }) => {
                 </Form.Item>
               </Col>
               <Col xs={1} xl={1}></Col>
-              <Col xs={8} xl={8}>
+              <Col xs={8} xl={8} style={{ marginTop: '24px' }}>
                 <Form.Item
                   name="lasttname"
                   rules={[
@@ -109,12 +111,17 @@ export const MyProfileModal = ({ onCancel, loading, useremail }) => {
                 </ImgCrop>
               </Col>
             </Row>
-            <Form.Item label="Email" name="useremail">
-              <Input placeholder={useremail} disabled={true} />
-            </Form.Item>
-            <Form.Item label="About Me" name="aboutme">
-              <Input.TextArea rows={5} />
-            </Form.Item>
+            <Row>
+              <Col xs={17} xl={17}>
+                <Form.Item label="Email" name="useremail">
+                  <Input placeholder={useremail} disabled={true} />
+                </Form.Item>
+                <Form.Item label="About Me" name="aboutme">
+                  <Input.TextArea rows={5} />
+                </Form.Item>
+              </Col>
+              <Col xs={7} xl={7}></Col>
+            </Row>
             <Form.Item style={{ textAlign: 'right' }}>
               <Button type="primary" htmlType="submit" loading={loading}>
                 Save Changes
