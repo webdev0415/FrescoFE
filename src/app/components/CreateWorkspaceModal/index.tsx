@@ -56,7 +56,7 @@ export const CreateWorkspaceModal = ({ onCancel, onCreateWorkspace }) => {
             <div
               style={{ textAlign: 'center', marginTop: 128, fontSize: '12px' }}
             >
-              <Text>Workspace URL: frescopad.com/{workspaceName}</Text>
+              <Text>Workspace URL: frescopad.com/{workspaceName.replace(/ /g, "-")}</Text>
             </div>
 
             <Button
