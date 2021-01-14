@@ -33,6 +33,6 @@ export interface RootState {
   verifyInvitationType?: VerifyInvitationTypeState;
   shareModal?: ShareModalState;
   createTeamModal?: CreateTeamModalState;
-  myProfileModal?: MyProfileModalState;
+  myProfile?: MyProfileModalState;
   // [INSERT NEW REDUCER KEY ABOVE] < Needed for generating containers seamlessly
 }

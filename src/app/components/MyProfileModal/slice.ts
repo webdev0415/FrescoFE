@@ -4,11 +4,12 @@ import { ContainerState } from './types';
 
 // The initial state of the ListOrg container
 export const initialState: ContainerState = {
+  myProfile: null,
   loading: false,
 };
 
 const myProfileModalSlice = createSlice({
-  name: 'myProfileModal',
+  name: 'myProfile',
   initialState,
   reducers: {
     updateProfileRequest(state, action: PayloadAction<any>) {
@@ -24,15 +25,16 @@ const myProfileModalSlice = createSlice({
       state.loading = false;
     },
 
-    uploadAvatarRequest(state, action: PayloadAction<any>) {
+    getProfileDataRequest(state, action: PayloadAction<any>) {
       state.loading = true;
     },
 
-    uploadAvatarSuccess(state, action: PayloadAction<any>) {
+    getProfileDataSuccess(state, action: PayloadAction<any>) {
+      state.myProfile = action.payload;
       state.loading = false;
     },
 
-    uploadAvatarError(state, action: PayloadAction<any>) {
+    getProfileDataError(state, action: PayloadAction<any>) {
       state.loading = false;
     },
   },
