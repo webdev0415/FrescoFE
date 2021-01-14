@@ -29,17 +29,16 @@ export function* updateProfile(action) {
   }
 }
 
-export function* uploadAvatar(action) {
+export function* getProfile(action) {
   const { payload } = action;
   const { token } = payload;
   try {
     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-    const response = yield axios.post('upload/image/avatar');
-    yield put(actions.uploadAvatarSuccess(response.data));
-    message.success('Uploaded the avatar image successfully.');
+    const response = yield axios.get('users/me');
+    yield put(actions.getProfileDataSuccess(response.data));
   } catch (error) {
     yield put(
-      actions.uploadAvatarError({
+      actions.getProfileDataError({
         message: error.message,
         status: error.response.status,
       }),
@@ -51,6 +50,6 @@ export function* uploadAvatar(action) {
 export function* updateProfileSaga() {
   yield all([
     takeLatest(actions.updateProfileRequest.type, updateProfile),
-    takeLatest(actions.uploadAvatarRequest.type, uploadAvatar),
+    takeLatest(actions.getProfileDataRequest.type, getProfile),
   ]);
 }

@@ -1,15 +1,5 @@
-import React, { Fragment } from 'react';
-import {
-  Modal,
-  Form,
-  Input,
-  Button,
-  Upload,
-  Row,
-  Col,
-  Select,
-  AutoComplete,
-} from 'antd';
+import React, { Fragment, useEffect } from 'react';
+import { Modal, Form, Input, Button, Upload, Row, Col, Select } from 'antd';
 import { useInjectReducer, useInjectSaga } from 'utils/redux-injectors';
 import { useDispatch, useSelector } from 'react-redux';
 import { actions, reducer, sliceKey } from './slice';
@@ -18,6 +8,8 @@ import { PERMISSION } from 'app/containers/Dashboard';
 import ImgCrop from 'antd-img-crop';
 import './styles.less';
 import { selectToken } from 'app/selectors';
+import { selectMyProfileModal } from './selectors';
+import axios from 'axios';
 
 let timer;
 
@@ -27,15 +19,48 @@ export const MyProfileModal = ({ onCancel, loading, useremail }) => {
   useInjectReducer({ key: sliceKey, reducer: reducer });
   useInjectSaga({ key: sliceKey, saga: updateProfileSaga });
 
+  const [form] = Form.useForm();
+
   const [previewVisible, setPreviewVisible] = React.useState(false);
   const [previewImage, setPreviewImage] = React.useState('');
   const [previewTitle, setPreviewTitle] = React.useState('');
+  const [avatarUrl, setAvatarUrl] = React.useState('');
 
-  const initList = [];
+  const initList: any[] = [];
   const [fileList, setFileList] = React.useState(initList);
 
   const token = useSelector(selectToken);
+  const myProfileSelector = useSelector(selectMyProfileModal);
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (token) {
+      dispatch(
+        actions.getProfileDataRequest({
+          token,
+        }),
+      );
+    }
+  }, [dispatch, token]);
+
+  useEffect(() => {
+    if (myProfileSelector?.myProfile) {
+      const myProfile = myProfileSelector?.myProfile;
+      form.setFieldsValue({
+        firstname: myProfile.firstName,
+        lastname: myProfile.lastName,
+        email: myProfile.email,
+        aboutme: myProfile.about,
+      });
+      const uploadedAvatarFile = {
+        uid: '-1',
+        name: 'xxx.png',
+        status: 'done',
+        url: myProfile.avatar,
+      };
+      setFileList([uploadedAvatarFile]);
+    }
+  }, [form, myProfileSelector]);
 
   const handleOnCancel = () => {
     onCancel();
@@ -71,8 +96,30 @@ export const MyProfileModal = ({ onCancel, loading, useremail }) => {
     console.log('Failed:', errorInfo);
   };
 
-  const uploadAvatar = () => {
-    dispatch(actions.updateProfileRequest({ token }));
+  const uploadAvatar = async ({ onSuccess, onError, file }) => {
+    const fmData = new FormData();
+    const config = {
+      headers: {
+        'content-type': 'multipart/form-data',
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
+    fmData.append('file', file);
+    try {
+      const res = await axios.post(
+        'https://frescobe.herokuapp.com/upload/image/avatar',
+        fmData,
+        config,
+      );
+
+      onSuccess('ok');
+      form.setFieldsValue({
+        avatar: res.data.path,
+      });
+    } catch (err) {
+      onError({ err });
+    }
   };
 
   return (
@@ -84,6 +131,7 @@ export const MyProfileModal = ({ onCancel, loading, useremail }) => {
             layout="vertical"
             onFinish={onFinish}
             onFinishFailed={onFinishFailed}
+            form={form}
           >
             <Row style={{ alignItems: 'center', marginBottom: '24px' }}>
               <Col xs={8} xl={8} style={{ marginTop: '24px' }}>
@@ -115,12 +163,11 @@ export const MyProfileModal = ({ onCancel, loading, useremail }) => {
                 <Form.Item name="avatar">
                   <ImgCrop shape="round" rotate>
                     <Upload
-                      action="https://frescobe.herokuapp.com/upload/image/avatar"
                       listType="picture-card"
                       fileList={fileList}
                       onChange={onChange}
                       onPreview={handlePreview}
-                      // customRequest={uploadAvatar}
+                      customRequest={uploadAvatar}
                     >
                       {fileList.length < 1 && '+ Upload'}
                     </Upload>
