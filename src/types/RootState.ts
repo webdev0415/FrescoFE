@@ -14,6 +14,7 @@ import { BoardListState } from 'app/containers/BoardList/types';
 import { VerifyInvitationTypeState } from 'app/containers/VerifyInvitationType/types';
 import { ShareModalState } from 'app/components/ShareModal/types';
 import { CreateTeamModalState } from 'app/components/CreateTeamModal/types';
+import { MyProfileModalState } from 'app/components/MyProfileModal/types';
 // [IMPORT NEW CONTAINERSTATE ABOVE] < Needed for generating containers seamlessly
 
 export interface RootState {
@@ -32,5 +33,6 @@ export interface RootState {
   verifyInvitationType?: VerifyInvitationTypeState;
   shareModal?: ShareModalState;
   createTeamModal?: CreateTeamModalState;
+  myProfileModal?: MyProfileModalState;
   // [INSERT NEW REDUCER KEY ABOVE] < Needed for generating containers seamlessly
 }
