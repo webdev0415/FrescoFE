@@ -5,7 +5,7 @@ node_modules
 stats.json
 .pnp
 .pnp.js
-
+gitmanage
 #IDE Confidurations
 .idea
 .vscode
