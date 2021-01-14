@@ -10,21 +10,33 @@ import {
   Select,
   AutoComplete,
 } from 'antd';
+import { useInjectReducer, useInjectSaga } from 'utils/redux-injectors';
+import { useDispatch, useSelector } from 'react-redux';
+import { actions, reducer, sliceKey } from './slice';
+import { updateProfileSaga } from './saga';
 import { PERMISSION } from 'app/containers/Dashboard';
 import ImgCrop from 'antd-img-crop';
 import './styles.less';
+import { selectToken } from 'app/selectors';
 
 let timer;
 
 const { Option } = Select;
 
 export const MyProfileModal = ({ onCancel, loading, useremail }) => {
+  useInjectReducer({ key: sliceKey, reducer: reducer });
+  useInjectSaga({ key: sliceKey, saga: updateProfileSaga });
+
   const [previewVisible, setPreviewVisible] = React.useState(false);
   const [previewImage, setPreviewImage] = React.useState('');
   const [previewTitle, setPreviewTitle] = React.useState('');
 
   const initList = [];
   const [fileList, setFileList] = React.useState(initList);
+
+  const token = useSelector(selectToken);
+  const dispatch = useDispatch();
+
   const handleOnCancel = () => {
     onCancel();
   };
@@ -50,27 +62,29 @@ export const MyProfileModal = ({ onCancel, loading, useremail }) => {
       file.name || file.url.substring(file.url.lastIndexOf('/') + 1),
     );
   };
-  // const onPreview = async file => {
-  //   let src = file.url;
-  //   if (!src) {
-  //     src = await new Promise(resolve => {
-  //       const reader = new FileReader();
-  //       reader.readAsDataURL(file.originFileObj);
-  //       reader.onload = () => resolve(reader.result);
-  //     });
-  //   }
-  //   const image = new Image();
-  //   image.src = src;
-  //   const imgWindow = window.open(src);
-  //   imgWindow.document.write(image.outerHTML);
-  // };
+
+  const onFinish = values => {
+    dispatch(actions.updateProfileRequest({ data: values, token }));
+  };
+
+  const onFinishFailed = errorInfo => {
+    console.log('Failed:', errorInfo);
+  };
+
+  const uploadAvatar = () => {
+    dispatch(actions.updateProfileRequest({ token }));
+  };
 
   return (
     <Fragment>
       <Modal visible={true} footer={null} onCancel={() => handleOnCancel()}>
         <div style={{ width: '90%', margin: 'auto' }}>
           <p style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>My Profile</p>
-          <Form layout="vertical">
+          <Form
+            layout="vertical"
+            onFinish={onFinish}
+            onFinishFailed={onFinishFailed}
+          >
             <Row style={{ alignItems: 'center', marginBottom: '24px' }}>
               <Col xs={8} xl={8} style={{ marginTop: '24px' }}>
                 <Form.Item
@@ -88,7 +102,7 @@ export const MyProfileModal = ({ onCancel, loading, useremail }) => {
               <Col xs={1} xl={1}></Col>
               <Col xs={8} xl={8} style={{ marginTop: '24px' }}>
                 <Form.Item
-                  name="lasttname"
+                  name="lastname"
                   rules={[
                     { required: true, message: 'Please input your Last Name!' },
                   ]}
@@ -98,17 +112,20 @@ export const MyProfileModal = ({ onCancel, loading, useremail }) => {
               </Col>
               <Col xs={2} xl={2}></Col>
               <Col xs={5} xl={5}>
-                <ImgCrop shape="round" rotate>
-                  <Upload
-                    action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-                    listType="picture-card"
-                    fileList={fileList}
-                    onChange={onChange}
-                    onPreview={handlePreview}
-                  >
-                    {fileList.length < 1 && '+ Upload'}
-                  </Upload>
-                </ImgCrop>
+                <Form.Item name="avatar">
+                  <ImgCrop shape="round" rotate>
+                    <Upload
+                      action="https://frescobe.herokuapp.com/upload/image/avatar"
+                      listType="picture-card"
+                      fileList={fileList}
+                      onChange={onChange}
+                      onPreview={handlePreview}
+                      // customRequest={uploadAvatar}
+                    >
+                      {fileList.length < 1 && '+ Upload'}
+                    </Upload>
+                  </ImgCrop>
+                </Form.Item>
               </Col>
             </Row>
             <Row>
