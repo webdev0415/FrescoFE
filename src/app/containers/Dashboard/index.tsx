@@ -146,7 +146,8 @@ export const Dashboard = memo((props: Props) => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [canvasName, setCanvasName] = useState('');
   const [categories, setCategories] = useState<CanvasCategoryInterface[]>([]);
-  const [workspaces, setWorkspaces] = useState<string[]>(['John Wick']);
+  const [workspaces, setWorkspaces] = useState<any[]>([]);
+  const [selectedWorkspace, setSelectWorkspace] = useState<any>(null);
   const [categoryId, setCategoryId] = useState('');
   const [canvasList, setCanvasList] = useState<CanvasResponseInterface[]>([]);
   const [showAddNewBoard, setAddNewBoard] = useState(false);
@@ -177,7 +178,7 @@ export const Dashboard = memo((props: Props) => {
   useEffect(() => {
     document.title = 'Dashboard';
   }, []);
-  // const user = useSelector(selectUser);
+
   useEffect(() => {
     if (!!dashboard.linkInvitation) {
       setEmail('');
@@ -194,6 +195,10 @@ export const Dashboard = memo((props: Props) => {
     })
       .then(response => {
         setOrganization(response.data);
+        setWorkspaces(oldWorkspacesArray => [
+          ...oldWorkspacesArray,
+          response.data,
+        ]);
       })
       .catch(error => {
         console.error(error.response);
@@ -346,8 +351,16 @@ export const Dashboard = memo((props: Props) => {
     history.push('/auth/login');
   };
 
-  const handleCreateWorkspace = (workspace: string) => {
-    setWorkspaces(oldWorkspacesArray => [...oldWorkspacesArray, workspace]);
+  const handleSelectWorkspace = (workspace: any) => {
+    setSelectWorkspace(workspace);
+    setIsTeamDetailedMenuOpen(true);
+  };
+
+  const handleCreateWorkspace = (workspaceName: any) => {
+    const organization = {
+      organizationName: workspaceName,
+    };
+    setWorkspaces(oldWorkspacesArray => [...oldWorkspacesArray, organization]);
     setIsShowWorkspaceCreatingModal(false);
   };
 
@@ -356,11 +369,11 @@ export const Dashboard = memo((props: Props) => {
   };
 
   const renderWorkspaces = () => {
-    return workspaces.map(item => (
+    return workspaces.map((item, key) => (
       <Avatar
         style={{ marginBottom: 10 }}
-        fullName={item}
-        onClick={() => setIsTeamDetailedMenuOpen(true)}
+        fullName={item.organizationName}
+        onClick={() => handleSelectWorkspace(item)}
       />
     ));
   };
@@ -405,41 +418,43 @@ export const Dashboard = memo((props: Props) => {
               setInvitePeopleToggleMenu(false);
             }}
           >
-            <StyledBoardDetailedToggleMenuContainer>
-              <div
-                className="title divided"
-                onClick={() => setInvitePeopleToggleMenu(true)}
-                style={{
-                  cursor: 'pointer',
-                }}
-              >
-                QuestionPro
-              </div>
-              <List className="divided">
-                <Item onClick={showMyProfileModal}>
-                  <span className="icon">
-                    <Person />
-                  </span>
-                  My Profile
-                </Item>
-                {/*<Item>
-                  <span className="icon">
-                    <NotificationBell />
-                  </span>
-                  Notifications
-                </Item>*/}
-                <Item>
-                  <span className="icon">
-                    <QuestionMark />
-                  </span>
-                  Help
-                </Item>
-              </List>
-              <div className="logout" onClick={() => handleLogOut()}>
-                <Logout />
-                Log out
-              </div>
-            </StyledBoardDetailedToggleMenuContainer>
+            {selectedWorkspace && (
+              <StyledBoardDetailedToggleMenuContainer>
+                <div
+                  className="title divided"
+                  onClick={() => setInvitePeopleToggleMenu(true)}
+                  style={{
+                    cursor: 'pointer',
+                  }}
+                >
+                  {selectedWorkspace.organizationName}
+                </div>
+                <List className="divided">
+                  <Item onClick={showMyProfileModal}>
+                    <span className="icon">
+                      <Person />
+                    </span>
+                    My Profile
+                  </Item>
+                  {/*<Item>
+                    <span className="icon">
+                      <NotificationBell />
+                    </span>
+                    Notifications
+                  </Item>*/}
+                  <Item>
+                    <span className="icon">
+                      <QuestionMark />
+                    </span>
+                    Help
+                  </Item>
+                </List>
+                <div className="logout" onClick={() => handleLogOut()}>
+                  <Logout />
+                  Log out
+                </div>
+              </StyledBoardDetailedToggleMenuContainer>
+            )}
           </ToggleMenu>
           <ToggleMenu
             width={264}
@@ -554,14 +569,16 @@ export const Dashboard = memo((props: Props) => {
           defaultActiveKey="1"
           tabPosition="left"
           className="dashboard"
-          tabBarExtraContent={{
-            right: (
-              <Avatar
-                fullName="John Wick"
-                onClick={() => setIsToggleMenuOpen(!isTeamMenuOpen)}
-              />
-            ),
-          }}
+          tabBarExtraContent={
+            organization && {
+              right: (
+                <Avatar
+                  fullName={organization.organizationName}
+                  onClick={() => setIsToggleMenuOpen(!isTeamMenuOpen)}
+                />
+              ),
+            }
+          }
         >
           <TabPane
             tab={<AppLogo size={56} />}

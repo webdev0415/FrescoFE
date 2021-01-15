@@ -1,15 +1,36 @@
 import React, { Fragment, useState } from 'react';
 import { Modal, Form, Input, Button, Typography } from 'antd';
+import { useSelector, useDispatch } from 'react-redux';
+import { useInjectReducer, useInjectSaga } from 'utils/redux-injectors';
+import { actions, reducer, sliceKey } from './slice';
+import { selectCreateWorkspace } from './selectors';
+import { createWorkspaceSaga } from './saga';
+import { selectToken } from 'app/selectors';
 
 export const CreateWorkspaceModal = ({ onCancel, onCreateWorkspace }) => {
+  useInjectReducer({ key: sliceKey, reducer: reducer });
+  useInjectSaga({ key: sliceKey, saga: createWorkspaceSaga });
+
+  const selectorCreateWorkspace = useSelector(selectCreateWorkspace);
+  const dispatch = useDispatch();
+  const token = useSelector(selectToken);
+
   const { Title, Text } = Typography;
   const [workspaceName, setWorkspaceName] = useState<string>('');
+  const [slug, setSlug] = useState<string>('Workspace: frescopad.com/');
+
+  const handleChangeWorkspaceName = value => {
+    const slug = 'Workspace: frescopad.com/' + value.replace(/ /g, '-');
+    setWorkspaceName(value);
+    setSlug(slug);
+  };
 
   const handleOnCancel = () => {
     onCancel();
   };
 
   const onFinish = values => {
+    dispatch(actions.createWorkspaceRequest({ data: values, token, slug }));
     onCreateWorkspace(values.workspacename);
   };
 
@@ -49,14 +70,16 @@ export const CreateWorkspaceModal = ({ onCancel, onCreateWorkspace }) => {
               <Input
                 placeholder="Workspace Name"
                 value={workspaceName}
-                onChange={({ target: { value } }) => setWorkspaceName(value)}
+                onChange={({ target: { value } }) =>
+                  handleChangeWorkspaceName(value)
+                }
               />
             </Form.Item>
 
             <div
               style={{ textAlign: 'center', marginTop: 128, fontSize: '12px' }}
             >
-              <Text>Workspace URL: frescopad.com/{workspaceName.replace(/ /g, "-")}</Text>
+              <Text>{slug}</Text>
             </div>
 
             <Button
@@ -64,6 +87,7 @@ export const CreateWorkspaceModal = ({ onCancel, onCreateWorkspace }) => {
               htmlType="submit"
               block
               style={{ background: '9646f5', marginTop: 29 }}
+              loading={selectorCreateWorkspace.loading}
             >
               Create Workspace
             </Button>

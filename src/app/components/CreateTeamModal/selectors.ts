@@ -3,10 +3,9 @@ import { createSelector } from '@reduxjs/toolkit';
 import { RootState } from 'types';
 import { initialState } from './slice';
 
-const selectDomain = (state: RootState) =>
-  state.createTeamModal || initialState;
+const selectDomain = (state: RootState) => state.createTeam || initialState;
 
-export const selectCreateTeamModal = createSelector(
+export const selectCreateTeam = createSelector(
   [selectDomain],
-  createTeamModalState => createTeamModalState,
+  createTeamState => createTeamState,
 );

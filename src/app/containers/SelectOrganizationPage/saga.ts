@@ -6,13 +6,14 @@ import { actions } from './slice';
 
 export function* companySelect(action) {
   const { payload } = action;
-  const { history, data, token } = payload;
+  const { history, data, token, slug } = payload;
   try {
     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
     const response = yield axios.post('organization/', {
       name: data.company,
       fName: data.firstName,
       lName: data.lastName,
+      slug: slug,
     });
 
     yield put(actions.selectOrganizationRequestSuccess(response.data));

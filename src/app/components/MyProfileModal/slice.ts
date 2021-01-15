@@ -19,6 +19,7 @@ const myProfileModalSlice = createSlice({
     // TODO: define Payload type and use here
     updateProfileSuccess(state, action: PayloadAction<any>) {
       state.loading = false;
+      state.myProfile = action.payload;
     },
 
     updateProfileError(state, action: PayloadAction<any>) {

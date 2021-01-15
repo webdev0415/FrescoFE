@@ -1,17 +1,26 @@
 import React, { Fragment, useState } from 'react';
+import { useParams } from 'react-router';
 import { Modal, Form, Input, Button } from 'antd';
 import { useInjectReducer, useInjectSaga } from 'redux-injectors';
+import { useSelector, useDispatch } from 'react-redux';
+import { selectCreateTeam } from './selectors';
+import { selectToken } from 'app/selectors';
 import { isEmail } from 'class-validator';
 import { ReactMultiEmail } from 'react-multi-email';
 import 'react-multi-email/style.css';
 import styled from 'styled-components';
 
 import { actions, reducer, sliceKey } from './slice';
-import { createTeamModalSaga } from './saga';
+import { createTeamSaga } from './saga';
 
 export const CreateTeamModal = ({ onCancel, onCreateNewTeam }) => {
   useInjectReducer({ key: sliceKey, reducer: reducer });
-  useInjectSaga({ key: sliceKey, saga: createTeamModalSaga });
+  useInjectSaga({ key: sliceKey, saga: createTeamSaga });
+
+  const selectorCreateTeam = useSelector(selectCreateTeam);
+  const dispatch = useDispatch();
+  const token = useSelector(selectToken);
+  const orgId = useParams();
 
   const [emails, setEmails] = useState<string[]>([]);
 
@@ -20,6 +29,7 @@ export const CreateTeamModal = ({ onCancel, onCreateNewTeam }) => {
   };
 
   const onFinish = values => {
+    dispatch(actions.createTeamRequest({ data: values, token, orgId }));
     onCreateNewTeam(values);
   };
 
@@ -83,7 +93,11 @@ export const CreateTeamModal = ({ onCancel, onCreateNewTeam }) => {
             </Form.Item>
 
             <DivFlexEnd>
-              <Button type="primary" htmlType="submit">
+              <Button
+                type="primary"
+                htmlType="submit"
+                loading={selectorCreateTeam.loading}
+              >
                 Create Team
               </Button>
             </DivFlexEnd>

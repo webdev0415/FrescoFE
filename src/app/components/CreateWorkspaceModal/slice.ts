@@ -7,23 +7,23 @@ export const initialState: ContainerState = {
   loading: false,
 };
 
-const createTeamModalSlice = createSlice({
-  name: 'createTeam',
+const createWorkspaceSlice = createSlice({
+  name: 'createWorkspace',
   initialState,
   reducers: {
-    createTeamRequest(state, action: PayloadAction<any>) {
+    createWorkspaceRequest(state, action: PayloadAction<any>) {
       state.loading = true;
     },
 
     // TODO: define Payload type and use here
-    createTeamSuccess(state, action: PayloadAction<any>) {
+    createWorkspaceRequestSuccess(state, action: PayloadAction<any>) {
       state.loading = false;
     },
 
-    createTeamRequestError(state) {
+    createWorkspaceRequestError(state) {
       state.loading = false;
     },
   },
 });
 
-export const { actions, reducer, name: sliceKey } = createTeamModalSlice;
+export const { actions, reducer, name: sliceKey } = createWorkspaceSlice;
