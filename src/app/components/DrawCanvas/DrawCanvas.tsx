@@ -59,6 +59,7 @@ import { connect } from 'react-redux';
 export enum BoardSocketEventEnum {
   CREATE = 'create',
   COPY = 'copy',
+  PASTE = 'paste',
   MOVE = 'move',
   UPDATE = 'update',
   DELETE = 'delete',
@@ -100,6 +101,9 @@ class DrawCanvas extends PureComponent<Props, State> {
   isItemMoving: boolean = false;
   isDrawing: boolean = false;
   GUIDELINE_OFFSET = 5;
+  isCopied: boolean = false;
+  copiedObject: any = {};
+  currentPosition: any = {};
 
   constructor(props) {
     super(props);
@@ -113,6 +117,7 @@ class DrawCanvas extends PureComponent<Props, State> {
 
   componentDidMount() {
     document.addEventListener('keydown', this.onKeyDown);
+    document.addEventListener('mousemove', this.gettingPosition);
 
     this.redoHistory();
     this.undoHistory();
@@ -137,11 +142,15 @@ class DrawCanvas extends PureComponent<Props, State> {
     this.handleChangeCursor();
   }
 
-  onKeyDown = event => {
-    if (event.key === 'Delete') {
-      const currentObject = this.state.objects.find(
-        shapeObject => shapeObject.isSelected,
-      );
+  gettingPosition = e => {
+    this.currentPosition = e;
+  };
+
+  onKeyDown = e => {
+    const currentObject = this.state.objects.find(
+      shapeObject => shapeObject.isSelected,
+    );
+    if (e.key === 'Delete') {
       if (currentObject) {
         this.deleteObject(
           { id: this.state.id, data: currentObject },
@@ -152,17 +161,27 @@ class DrawCanvas extends PureComponent<Props, State> {
           },
         );
       }
-    } else if (event.ctrlKey && event.key.toLowerCase() === 'y') {
+    } else if (e.ctrlKey && e.key.toLowerCase() === 'y') {
       const redoHistory = document.getElementById(
         'redo-history',
       ) as HTMLDivElement;
       redoHistory.click();
     }
-    if (event.ctrlKey && event.key.toLowerCase() === 'z') {
+    if (e.ctrlKey && e.key.toLowerCase() === 'z') {
       const undoHistory = document.getElementById(
         'undo-history',
       ) as HTMLDivElement;
       undoHistory.click();
+    }
+    if (e.ctrlKey && e.key.toLowerCase() === 'c') {
+      this.isCopied = true;
+      this.copiedObject = currentObject;
+    }
+    if (e.ctrlKey && e.key.toLowerCase() === 'v' && this.isCopied) {
+      this.pasteObject({
+        id: this.copiedObject.id,
+        data: this.copiedObject,
+      });
     }
   };
 
@@ -199,6 +218,9 @@ class DrawCanvas extends PureComponent<Props, State> {
     });
     this.socket.on(BoardSocketEventEnum.COPY, (event: string) => {
       console.log('Socket ' + BoardSocketEventEnum.COPY, event);
+    });
+    this.socket.on(BoardSocketEventEnum.PASTE, (event: string) => {
+      console.log('Socket ' + BoardSocketEventEnum.PASTE, event);
     });
     this.socket.on(BoardSocketEventEnum.DELETE, (event: string) => {
       console.log('Socket ' + BoardSocketEventEnum.DELETE, event);
@@ -272,11 +294,11 @@ class DrawCanvas extends PureComponent<Props, State> {
     }
   }
 
-  copyObject(objectData: ObjectSocketInterface): void {
+  pasteObject(objectData: ObjectSocketInterface): void {
     let _objectData = _.cloneDeep(objectData.data);
     _objectData.id = uuidv4();
-    _objectData.x += 50;
-    _objectData.y += 50;
+    _objectData.x = this.currentPosition.pageX;
+    _objectData.y = this.currentPosition.pageY;
     this.addCanvasShape(_objectData, {
       saveHistory: true,
       emitEvent: true,
@@ -1438,17 +1460,6 @@ class DrawCanvas extends PureComponent<Props, State> {
                 className="canvas-text-toolbar-item action-button action-more"
                 overlay={
                   <Menu>
-                    <Menu.Item
-                      onClick={() => {
-                        this.copyObject({
-                          id: shapeObject.id,
-                          data: shapeObject,
-                        });
-                      }}
-                      key="0"
-                    >
-                      Copy
-                    </Menu.Item>
                     <Menu.Item
                       onClick={() => {
                         this.deleteObject(
