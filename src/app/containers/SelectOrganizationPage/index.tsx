@@ -4,7 +4,7 @@
  *
  */
 
-import React, { memo, useEffect } from 'react';
+import React, { memo, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useSelector, useDispatch } from 'react-redux';
 import { Button, Card, Typography, Form, Row, Input, Col } from 'antd';
@@ -36,10 +36,18 @@ export const SelectOrganizationPage = memo((props: Props) => {
   const history = useHistory();
   const token = useSelector(selectToken);
 
+  const [organizationName, setOrganizationName] = useState<string>('');
+  const [slug, setSlug] = useState<string>('Workspace: frescopad.com/');
+
+  const handleChangeCompanyName = value => {
+    const slug = 'Workspace: frescopad.com/' + value.replace(/ /g, '-');
+    setOrganizationName(value);
+    setSlug(slug);
+  };
+
   const onFinish = values => {
-    // history.push('/');
     dispatch(
-      actions.selectOrganizationRequest({ data: values, token, history }),
+      actions.selectOrganizationRequest({ data: values, token, history, slug }),
     );
   };
 
@@ -103,12 +111,17 @@ export const SelectOrganizationPage = memo((props: Props) => {
               name="company"
               rules={[{ required: true, message: 'Enter organization name!' }]}
             >
-              <Input />
+              <Input
+                value={organizationName}
+                onChange={({ target: { value } }) =>
+                  handleChangeCompanyName(value)
+                }
+              />
             </Form.Item>
             <div
               style={{ textAlign: 'center', marginTop: 32, marginBottom: 32 }}
             >
-              <Text>"Workspace: frescopad.com/questionpro"</Text>
+              <Text>{slug}</Text>
             </div>
             <Button
               type="primary"

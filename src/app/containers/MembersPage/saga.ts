@@ -3,17 +3,16 @@ import { message } from 'antd';
 import axios from 'axios';
 import { actions } from './slice';
 
-export function* listOrganizations(action) {
+export function* getWorkspaceMembers(action) {
   const { payload } = action;
-  const { history, token } = payload;
+  const { orgId, token } = payload;
   try {
     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-    const response = yield axios.get('organization/');
-    yield put(actions.listOrganizationsSuccess(response.data));
+    const response = yield axios.get('organization/' + orgId.id + '/members');
+    yield put(actions.getWorkspaceMembersSuccess(response.data));
   } catch (error) {
-    history.push('/err');
     yield put(
-      actions.listOrganizationsError({
+      actions.getWorkspaceMembersError({
         message: error.message,
         status: error.response.status,
       }),
@@ -22,8 +21,8 @@ export function* listOrganizations(action) {
   }
 }
 
-export function* listOrganizationsSaga() {
+export function* workspaceMembersSaga() {
   yield all([
-    takeLatest(actions.listOrganizationsRequest.type, listOrganizations),
+    takeLatest(actions.getWorkspaceMembersRequest.type, getWorkspaceMembers),
   ]);
 }

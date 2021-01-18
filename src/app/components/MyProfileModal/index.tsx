@@ -1,19 +1,14 @@
 import React, { Fragment, useEffect } from 'react';
-import { Modal, Form, Input, Button, Upload, Row, Col, Select } from 'antd';
+import { Modal, Form, Input, Button, Upload, Row, Col } from 'antd';
 import { useInjectReducer, useInjectSaga } from 'utils/redux-injectors';
 import { useDispatch, useSelector } from 'react-redux';
 import { actions, reducer, sliceKey } from './slice';
 import { updateProfileSaga } from './saga';
-import { PERMISSION } from 'app/containers/Dashboard';
 import ImgCrop from 'antd-img-crop';
 import './styles.less';
 import { selectToken } from 'app/selectors';
 import { selectMyProfileModal } from './selectors';
 import axios from 'axios';
-
-let timer;
-
-const { Option } = Select;
 
 export const MyProfileModal = ({ onCancel, loading, useremail }) => {
   useInjectReducer({ key: sliceKey, reducer: reducer });
@@ -24,7 +19,6 @@ export const MyProfileModal = ({ onCancel, loading, useremail }) => {
   const [previewVisible, setPreviewVisible] = React.useState(false);
   const [previewImage, setPreviewImage] = React.useState('');
   const [previewTitle, setPreviewTitle] = React.useState('');
-  const [avatarUrl, setAvatarUrl] = React.useState('');
 
   const initList: any[] = [];
   const [fileList, setFileList] = React.useState(initList);
@@ -187,7 +181,11 @@ export const MyProfileModal = ({ onCancel, loading, useremail }) => {
               <Col xs={7} xl={7}></Col>
             </Row>
             <Form.Item style={{ textAlign: 'right' }}>
-              <Button type="primary" htmlType="submit" loading={loading}>
+              <Button
+                type="primary"
+                htmlType="submit"
+                loading={myProfileSelector.loading}
+              >
                 Save Changes
               </Button>
             </Form.Item>

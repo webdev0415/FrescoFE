@@ -2,36 +2,23 @@ import { PayloadAction } from '@reduxjs/toolkit';
 import { createSlice } from 'utils/@reduxjs/toolkit';
 import { ContainerState } from './types';
 
-// The initial state of the SelectOrganizationPage container
+// The initial state of the ListOrg container
 export const initialState: ContainerState = {
-  workspaceMembers: [],
+  members: [],
   loading: false,
 };
 
-const createTeamModalSlice = createSlice({
-  name: 'createTeam',
+const workspaceMembersSlice = createSlice({
+  name: 'workspaceMembers',
   initialState,
   reducers: {
-    createTeamRequest(state, action: PayloadAction<any>) {
-      state.loading = true;
-    },
-
-    // TODO: define Payload type and use here
-    createTeamSuccess(state, action: PayloadAction<any>) {
-      state.loading = false;
-    },
-
-    createTeamRequestError(state) {
-      state.loading = false;
-    },
-
     getWorkspaceMembersRequest(state, action: PayloadAction<any>) {
       state.loading = true;
     },
 
     // TODO: define Payload type and use here
     getWorkspaceMembersSuccess(state, action: PayloadAction<any>) {
-      state.workspaceMembers = action.payload;
+      state.members = action.payload;
       state.loading = false;
     },
 
@@ -41,4 +28,4 @@ const createTeamModalSlice = createSlice({
   },
 });
 
-export const { actions, reducer, name: sliceKey } = createTeamModalSlice;
+export const { actions, reducer, name: sliceKey } = workspaceMembersSlice;
