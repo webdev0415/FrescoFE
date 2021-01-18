@@ -58,6 +58,7 @@ import { connect } from 'react-redux';
 
 export enum BoardSocketEventEnum {
   CREATE = 'create',
+  COPY = 'copy',
   MOVE = 'move',
   UPDATE = 'update',
   DELETE = 'delete',
@@ -196,6 +197,9 @@ class DrawCanvas extends PureComponent<Props, State> {
     this.socket.on(BoardSocketEventEnum.UNLOCK, (event: string) => {
       console.log('Socket ' + BoardSocketEventEnum.UNLOCK, event);
     });
+    this.socket.on(BoardSocketEventEnum.COPY, (event: string) => {
+      console.log('Socket ' + BoardSocketEventEnum.COPY, event);
+    });
     this.socket.on(BoardSocketEventEnum.DELETE, (event: string) => {
       console.log('Socket ' + BoardSocketEventEnum.DELETE, event);
       this.deleteObject(JSON.parse(event), { saveHistory: true });
@@ -266,6 +270,17 @@ class DrawCanvas extends PureComponent<Props, State> {
     if (objectData.id !== this.state.id) {
       this.addCanvasShape(objectData.data, { saveHistory: true });
     }
+  }
+
+  copyObject(objectData: ObjectSocketInterface): void {
+    let _objectData = _.cloneDeep(objectData.data);
+    _objectData.id = uuidv4();
+    _objectData.x += 50;
+    _objectData.y += 50;
+    this.addCanvasShape(_objectData, {
+      saveHistory: true,
+      emitEvent: true,
+    });
   }
 
   deleteObject(
@@ -1423,6 +1438,17 @@ class DrawCanvas extends PureComponent<Props, State> {
                 className="canvas-text-toolbar-item action-button action-more"
                 overlay={
                   <Menu>
+                    <Menu.Item
+                      onClick={() => {
+                        this.copyObject({
+                          id: shapeObject.id,
+                          data: shapeObject,
+                        });
+                      }}
+                      key="0"
+                    >
+                      Copy
+                    </Menu.Item>
                     <Menu.Item
                       onClick={() => {
                         this.deleteObject(
