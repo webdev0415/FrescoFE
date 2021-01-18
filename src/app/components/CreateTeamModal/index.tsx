@@ -1,17 +1,17 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { Modal, Form, Input, Button } from 'antd';
 import { useInjectReducer, useInjectSaga } from 'redux-injectors';
 import { useSelector, useDispatch } from 'react-redux';
 import { selectCreateTeam } from './selectors';
 import { selectToken } from 'app/selectors';
-import { isEmail } from 'class-validator';
-import { ReactMultiEmail } from 'react-multi-email';
-import 'react-multi-email/style.css';
 import styled from 'styled-components';
+import { Select } from 'antd';
 
 import { actions, reducer, sliceKey } from './slice';
 import { createTeamSaga } from './saga';
+
+const { Option } = Select;
 
 export const CreateTeamModal = ({ onCancel, onCreateNewTeam }) => {
   useInjectReducer({ key: sliceKey, reducer: reducer });
@@ -22,7 +22,22 @@ export const CreateTeamModal = ({ onCancel, onCreateNewTeam }) => {
   const token = useSelector(selectToken);
   const orgId = useParams();
 
-  const [emails, setEmails] = useState<string[]>([]);
+  useEffect(() => {
+    dispatch(
+      actions.getWorkspaceMembersRequest({
+        token,
+        orgId,
+      }),
+    );
+  }, [dispatch, orgId, token]);
+
+  const renderWorkspaceMembers = () => {
+    return selectorCreateTeam?.workspaceMembers.map(item => (
+      <Option value={item.userId}>
+        {item.firstName} {item.lastName}
+      </Option>
+    ));
+  };
 
   const handleOnCancel = () => {
     onCancel();
@@ -35,6 +50,10 @@ export const CreateTeamModal = ({ onCancel, onCreateNewTeam }) => {
 
   const onFinishFailed = errorInfo => {
     console.log('Failed:', errorInfo);
+  };
+
+  const handleChangeOption = value => {
+    console.log(`selected ${value}`);
   };
 
   return (
@@ -61,35 +80,13 @@ export const CreateTeamModal = ({ onCancel, onCreateNewTeam }) => {
               name="teammembers"
               rules={[{ required: true, message: 'Please add team memebers' }]}
             >
-              <ReactMultiEmail
-                placeholder="Enter a name or email"
-                style={{ fontSize: '16px' }}
-                emails={emails}
-                onChange={(_emails: string[]) => {
-                  setEmails(_emails);
-                }}
-                validateEmail={email => {
-                  return isEmail(email); // return boolean
-                }}
-                getLabel={(
-                  email: string,
-                  index: number,
-                  removeEmail: (index: number) => void,
-                ) => {
-                  return (
-                    <div
-                      data-tag
-                      key={index}
-                      style={{ backgroundColor: '#e4e4e4' }}
-                    >
-                      {email}
-                      <span data-tag-handle onClick={() => removeEmail(index)}>
-                        ×
-                      </span>
-                    </div>
-                  );
-                }}
-              />
+              <Select
+                mode="tags"
+                style={{ width: '100%' }}
+                onChange={handleChangeOption}
+              >
+                {renderWorkspaceMembers()}
+              </Select>
             </Form.Item>
 
             <DivFlexEnd>

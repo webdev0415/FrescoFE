@@ -20,6 +20,27 @@ export function* createTeam(action) {
   }
 }
 
+export function* getWorkspaceMembers(action) {
+  const { payload } = action;
+  const { orgId, token } = payload;
+  try {
+    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    const response = yield axios.get('organization/' + orgId.id + '/members');
+    yield put(actions.getWorkspaceMembersSuccess(response.data));
+  } catch (error) {
+    yield put(
+      actions.getWorkspaceMembersError({
+        message: error.message,
+        status: error.response.status,
+      }),
+    );
+    message.error(error.message);
+  }
+}
+
 export function* createTeamSaga() {
-  yield all([takeLatest(actions.createTeamRequest.type, createTeam)]);
+  yield all([
+    takeLatest(actions.createTeamRequest.type, createTeam),
+    takeLatest(actions.getWorkspaceMembersRequest.type, getWorkspaceMembers),
+  ]);
 }

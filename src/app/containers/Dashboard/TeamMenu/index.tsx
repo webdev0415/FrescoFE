@@ -1,33 +1,64 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import StyledContainer from './StyledContainer';
 import StyledMenuContainer from './StyledMenuContainer';
+import { useParams } from 'react-router-dom';
 import { GroupIcon, ChevronLeft } from '../../../../assets/icons';
 import ToggleMenu from '../../../components/ToggleMenu';
 import { CreateTeamModal } from '../../../components/CreateTeamModal/Loadable';
 import { List, Item } from 'app/components/List';
+import { actions, reducer, sliceKey } from './slice';
+import { teamMenuSaga } from './saga';
+import { selectToken } from 'app/selectors';
+import { selectTeamMenu } from './selectors';
+import { useDispatch, useSelector } from 'react-redux';
+import { useInjectReducer, useInjectSaga } from 'utils/redux-injectors';
 
 interface PropsInterface {
   offsetContainerRef: React.ElementRef<any>;
 }
 const Team = (props: PropsInterface) => {
+  useInjectReducer({ key: sliceKey, reducer: reducer });
+  useInjectSaga({ key: sliceKey, saga: teamMenuSaga });
+
+  const dispatch = useDispatch();
+  const token = useSelector(selectToken);
+  const teamMenuSelector = useSelector(selectTeamMenu);
+  const orgId = useParams<any>();
+
   const { offsetContainerRef } = props;
   const antTabsNavWrapRef = useRef(null);
   const boardsListMenuRef = useRef(null);
-  const boardDetailedMenuRef = useRef(null);
   const [isBoardMenuOpen, setIsBoardMenuOpen] = useState<Boolean>(false);
 
   const [isShowCreateTeamModal, setIsShowCreateTeamModal] = useState<Boolean>(
     false,
   );
-  const [teams, setTeams] = useState<any[]>([]);
+  const [teamMenu, setTeamMenu] = useState<any>([]);
+
+  useEffect(() => {
+    if (token && orgId) {
+      dispatch(
+        actions.getTeamMenuRequest({
+          token,
+          orgId,
+        }),
+      );
+
+      setTeamMenu(teamMenuSelector?.teamMenu);
+    }
+  }, [dispatch, orgId, teamMenuSelector, token]);
 
   const handleCreateNewTeam = (newTeam: any) => {
-    setTeams(oldTeamsArray => [...oldTeamsArray, newTeam]);
+    const createdTeam = {
+      name: newTeam.teamname,
+      orgId: orgId,
+    };
+    setTeamMenu(oldTeamMenuArray => [...oldTeamMenuArray, createdTeam]);
     setIsShowCreateTeamModal(false);
   };
 
   const renderTeams = () => {
-    return teams.map(item => <Item>{item.teamname}</Item>);
+    return teamMenu.map(item => <Item>{item.name}</Item>);
   };
 
   if (offsetContainerRef.current) {

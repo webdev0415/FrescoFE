@@ -21,7 +21,6 @@ import { actions as globalActions } from '../../slice';
 import {
   DashboardIcon,
   PageIcon,
-  NotificationBell,
   QuestionMark,
   Person,
   Billing,
@@ -52,7 +51,6 @@ import { CanvasBoardTemplates } from '../../components/CanvasBoardTemplates';
 import { CanvasCategoryService } from '../../../services/APIService/CanvasCategory.service';
 import { Collaboration } from '../../components/Collaboration';
 import moment from 'moment';
-import clsx from 'clsx';
 import AppLogo from 'app/components/AppIcon';
 import TeamMenu from './TeamMenu';
 import Avatar from 'app/components/Avatar';
