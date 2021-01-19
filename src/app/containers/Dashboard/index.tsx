@@ -169,6 +169,11 @@ export const Dashboard = memo((props: Props) => {
 
   const token = useSelector(selectToken);
   const user = useSelector(selectUser);
+  let userFullName = '';
+  if (user) {
+    userFullName = user.firstName + ' ' + user.lastName;
+  }
+
   useEffect(() => {
     setCanvasName(defaultCanvasName);
   }, [defaultCanvasName]);
@@ -360,6 +365,10 @@ export const Dashboard = memo((props: Props) => {
     };
     setWorkspaces(oldWorkspacesArray => [...oldWorkspacesArray, organization]);
     setIsShowWorkspaceCreatingModal(false);
+  };
+
+  const handleUpdateProfile = (profile: any) => {
+    setIsShowMyProfileModal(false);
   };
 
   const gotoWorkspaceSettingsPage = () => {
@@ -570,10 +579,21 @@ export const Dashboard = memo((props: Props) => {
           tabBarExtraContent={
             organization && {
               right: (
-                <Avatar
-                  fullName={organization.organizationName}
-                  onClick={() => setIsToggleMenuOpen(!isTeamMenuOpen)}
-                />
+                <div onClick={() => setIsToggleMenuOpen(!isTeamMenuOpen)}>
+                  {userFullName && <Avatar fullName={userFullName} />}
+
+                  <Avatar
+                    fullName={organization.organizationName}
+                    style={{
+                      width: 25,
+                      height: 25,
+                      fontSize: 12,
+                      position: 'relative',
+                      bottom: 8,
+                      left: 5,
+                    }}
+                  />
+                </div>
               ),
             }
           }
@@ -863,6 +883,7 @@ export const Dashboard = memo((props: Props) => {
           onCancel={() => setIsShowMyProfileModal(false)}
           loading={dashboard.loading}
           useremail={user && user.email}
+          onUpdateProfile={handleUpdateProfile}
         />
       )}
       {isShowTeamMembersModal && (

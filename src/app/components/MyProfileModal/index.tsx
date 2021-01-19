@@ -10,7 +10,12 @@ import { selectToken } from 'app/selectors';
 import { selectMyProfileModal } from './selectors';
 import axios from 'axios';
 
-export const MyProfileModal = ({ onCancel, loading, useremail }) => {
+export const MyProfileModal = ({
+  onCancel,
+  loading,
+  useremail,
+  onUpdateProfile,
+}) => {
   useInjectReducer({ key: sliceKey, reducer: reducer });
   useInjectSaga({ key: sliceKey, saga: updateProfileSaga });
 
@@ -84,6 +89,7 @@ export const MyProfileModal = ({ onCancel, loading, useremail }) => {
 
   const onFinish = values => {
     dispatch(actions.updateProfileRequest({ data: values, token }));
+    onUpdateProfile(values);
   };
 
   const onFinishFailed = errorInfo => {
