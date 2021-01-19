@@ -13,6 +13,8 @@ describe('main file slice slice', () => {
       token: { accessToken: '123' },
       user: {
         name: 'example',
+        firstName: 'test',
+        lastName: 'user',
         email: 'example@fresco.com',
         role: 'USER',
         id: '1',

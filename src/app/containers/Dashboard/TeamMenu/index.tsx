@@ -43,10 +43,12 @@ const Team = (props: PropsInterface) => {
           orgId,
         }),
       );
-
-      setTeamMenu(teamMenuSelector?.teamMenu);
     }
-  }, [dispatch, orgId, teamMenuSelector, token]);
+  }, [dispatch, orgId, token]);
+
+  useEffect(() => {
+    setTeamMenu(teamMenuSelector?.teamMenu);
+  }, [teamMenuSelector]);
 
   const handleCreateNewTeam = (newTeam: any) => {
     const createdTeam = {

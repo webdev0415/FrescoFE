@@ -2,6 +2,8 @@
 interface UserType {
   id: string;
   name: string;
+  firstName: string;
+  lastName: string;
   email: string;
   // TODO: define enum for roles
   role: string;
