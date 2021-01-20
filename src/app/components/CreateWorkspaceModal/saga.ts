@@ -16,6 +16,7 @@ export function* createWorkspace(action) {
 
     yield put(actions.createWorkspaceRequestSuccess(response.data));
     message.success('Created new workspace successfully.');
+    window.location.reload(false);
   } catch (error) {
     yield put(actions.createWorkspaceRequestError());
     message.error(

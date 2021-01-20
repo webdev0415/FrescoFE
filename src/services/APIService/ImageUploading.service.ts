@@ -62,6 +62,7 @@ export class ImageUploadingService {
 
   /* istanbul ignore next */
   static dataURItoBlob(dataURI: string): Blob {
+    console.log("===========>")
     const byteString = atob(dataURI.split(',')[1]);
     const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
     const ab = new ArrayBuffer(byteString.length);

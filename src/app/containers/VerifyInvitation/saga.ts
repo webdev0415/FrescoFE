@@ -24,7 +24,7 @@ export function* verifyInvitation(action) {
       localStorage.setItem('authInformation', JSON.stringify(res.data));
       Auth.update();
       message.success('Logged in successfully.');
-      history.push('/auth/welcome-page');
+      history.push('/auth/');
     } else {
       history.push('/auth/register-for-invitation', { data: response.data });
     }

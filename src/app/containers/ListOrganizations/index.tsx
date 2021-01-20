@@ -3,7 +3,7 @@ import { Col, Row } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { PlusCircleOutlined } from '@ant-design/icons';
-
+import './listOgranizations.less';
 import { useInjectReducer, useInjectSaga } from 'utils/redux-injectors';
 import { actions, reducer, sliceKey } from './slice';
 import { listOrganizationsSaga } from './saga';
@@ -16,6 +16,7 @@ export const ListOrganizations = () => {
   const [isShowUserModal, setIsShowUserModal] = useState(false);
   useInjectReducer({ key: sliceKey, reducer: reducer });
   useInjectSaga({ key: sliceKey, saga: listOrganizationsSaga });
+  const [loading, setLoading] = useState(true);
 
   const history = useHistory();
   const dispatch = useDispatch();
@@ -33,6 +34,14 @@ export const ListOrganizations = () => {
       );
     }
   }, [dispatch, history, token]);
+
+  useEffect(() => {
+    let lastOrgId = organizations.listOrganizations[0]?.orgId;
+    if (lastOrgId) {
+      history.push(`/organization/${lastOrgId}`);
+      setLoading(false);
+    }
+  }, [history, organizations]);
 
   useEffect(() => {
     const profileIcon = document.getElementById(
@@ -82,7 +91,7 @@ export const ListOrganizations = () => {
           marginTop: '3rem',
         }}
       >
-        <Row>
+        {/* <Row>
           <div>
             <p style={{ color: '#000', fontSize: '2rem', fontWeight: 'bold' }}>
               Organizations
@@ -97,34 +106,14 @@ export const ListOrganizations = () => {
             }}
             onClick={() => gotoCreateOrgs()}
           />
-        </Row>
+        </Row> */}
 
-        <Row>
-          {organizations?.listOrganizations?.map((item, index) => (
-            <Col
-              key={index}
-              xs={6}
-              xl={6}
-              onClick={() => gotoOrgDetail(item.orgId)}
-            >
-              <div
-                style={{
-                  width: '80%',
-                  height: '2rem',
-                  margin: 'auto',
-                  lineHeight: '2rem',
-                  textAlign: 'center',
-                  border: '1px solid #333',
-                  borderRadius: '5px',
-                  cursor: 'pointer',
-                  marginBottom: '2rem',
-                }}
-              >
-                <p style={{ color: '#000' }}>{item.organizationName}</p>
-              </div>
-            </Col>
-          ))}
-        </Row>
+        <div className={`lds-ellipsis-loading`}>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
       </div>
     </Fragment>
   );

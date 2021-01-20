@@ -51,13 +51,15 @@ export const MyProfileModal = ({
         email: myProfile.email,
         aboutme: myProfile.about,
       });
-      const uploadedAvatarFile = {
-        uid: '-1',
-        name: 'xxx.png',
-        status: 'done',
-        url: myProfile.avatar,
-      };
-      setFileList([uploadedAvatarFile]);
+      if (myProfile.avatar) {
+        const uploadedAvatarFile = {
+          uid: '-1',
+          name: 'xxx.png',
+          status: 'done',
+          url: myProfile.avatar,
+        };
+        setFileList([uploadedAvatarFile]);
+      } 
     }
   }, [form, myProfileSelector]);
 
@@ -66,6 +68,7 @@ export const MyProfileModal = ({
   };
   const handlePreviewCancel = () => setPreviewVisible(false);
   const onChange = ({ fileList: newFileList }) => {
+    console.log("newFileList", newFileList)
     setFileList(newFileList);
   };
   const getBase64 = file => {

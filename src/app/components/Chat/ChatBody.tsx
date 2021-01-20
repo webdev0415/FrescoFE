@@ -8,21 +8,21 @@ import chatArrow from 'assets/icons/arrow.png';
 import ScrollNumber from 'antd/lib/badge/ScrollNumber';
 
 const ChatBody = ({
-  messages,
-  user,
-  setChatMessages,
-  boardId,
-  setMessagesOffset,
-  messagesOffset,
-  scroll,
-  socketIoClient,
-  setScroll,
-  open,
-  messagesOnLoad,
-  newMessagesBucket,
-  setChatNotification,
-  loadingMessages,
-}) => {
+                    messages,
+                    user,
+                    setChatMessages,
+                    boardId,
+                    setMessagesOffset,
+                    messagesOffset,
+                    scroll,
+                    socketIoClient,
+                    setScroll,
+                    open,
+                    messagesOnLoad,
+                    newMessagesBucket,
+                    setChatNotification,
+                    loadingMessages,
+                  }) => {
   const messagesGroupDuration = 120;
   let messagesArr = [...(messages?.messages || [])];
   const heightBeforeRender = scroll?.scrollHeight;
@@ -30,10 +30,20 @@ const ChatBody = ({
   messagesArr?.reverse();
   const messagesRef = useRef<null | HTMLElement>(null);
   const [scrollToBottomIcon, setScrollToBottomIcon] = React.useState('');
+  const [loading, setLoading] = React.useState(false);
   const scrollToBottom = () => {
     messagesRef?.current?.scrollIntoView({ behavior: 'smooth' });
   };
   const { id: orgId } = useParams<any>();
+
+  useEffect(() => {
+    console.log(messagesOnLoad);
+    if (messagesOnLoad == true) {
+      setLoading(true);
+    } else {
+      setLoading(false);
+    }
+  }, [messagesOnLoad]);
 
   useEffect(() => {
     socketIoClient.on('connect', event => {
@@ -193,7 +203,7 @@ const ChatBody = ({
       onScroll={handleScroll}
       ref={scroller => setScroll(scroller)}
     >
-      <div className="lds-ellipsis">
+      <div className={`lds-ellipsis ${messagesOnLoad ? 'active' : ''} `}>
         <div></div>
         <div></div>
         <div></div>
@@ -209,12 +219,12 @@ const ChatBody = ({
           group.user.id === user.id ? 'logged-user' : '';
         return (
           <div key={`${index}-${uuidv4()}`}>
-            <div className={`chatBox-body-user ${loggedUserMessageGroup}`}>
-              <img src={chatUser} alt="avatar" />
-              <p className="user-block">
+            <div className={`chatBox-body-user ${messagesOnLoad ? 'onload' : ''} ${loggedUserMessageGroup}`}>
+              <img src={chatUser} alt='avatar' />
+              <p className='user-block'>
                 {' '}
-                <span>{group.user.name || group.user.email}</span>{' '}
-                <span className="chatBox-body-user-time">
+                <span>{group.user.firstName} {group.user.lastName}</span>{' '}
+                <span className='chatBox-body-user-time'>
                   {' '}
                   {moment(group.messages[0].createdAt).format('HH:MM')}{' '}
                 </span>
@@ -228,6 +238,7 @@ const ChatBody = ({
                 setChatMessages={setChatMessages}
                 boardId={boardId}
                 time={message.createdAt}
+                messagesOnLoad={messagesOnLoad}
               />
             ))}
           </div>

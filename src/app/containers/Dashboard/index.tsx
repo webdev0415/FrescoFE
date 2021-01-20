@@ -7,7 +7,12 @@ import React, { memo, useEffect, useRef, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useDispatch, useSelector } from 'react-redux';
 import { Button, Dropdown, Input, Menu, Select, Skeleton, Tabs } from 'antd';
-import { PlusOutlined, SaveOutlined, LoadingOutlined } from '@ant-design/icons';
+import {
+  PlusOutlined,
+  SaveOutlined,
+  LoadingOutlined,
+  AppstoreAddOutlined,
+} from '@ant-design/icons';
 import { Link, Redirect, useHistory } from 'react-router-dom';
 
 import { useInjectReducer, useInjectSaga } from 'utils/redux-injectors';
@@ -156,6 +161,7 @@ export const Dashboard = memo((props: Props) => {
   const [editCanvasItem, setEditCanvasItem] = useState('');
   const [editName, setEditName] = useState('');
   const [hoveredBoard, setHoveredBoard] = useState('');
+  const [organizations, setOrganizations] = useState([]);
   const [loadingUpdateName, setLoadingUpdateName] = useState(false);
   const orgId = props?.match?.params?.id;
 
@@ -198,15 +204,22 @@ export const Dashboard = memo((props: Props) => {
     })
       .then(response => {
         setOrganization(response.data);
-        setWorkspaces(oldWorkspacesArray => [
-          ...oldWorkspacesArray,
-          response.data,
-        ]);
       })
       .catch(error => {
         console.error(error.response);
       });
-  }, [orgId, token]);
+
+    Axios.request({
+      method: 'GET',
+      url: process.env.REACT_APP_BASE_URL + 'organization/',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }).then(response => {
+      setWorkspaces(response.data);
+      console.log(workspaces);
+    });
+  }, []);
 
   const handleSearch = (value: string) => {
     dispatch(
@@ -363,7 +376,7 @@ export const Dashboard = memo((props: Props) => {
     const organization = {
       organizationName: workspaceName,
     };
-    setWorkspaces(oldWorkspacesArray => [...oldWorkspacesArray, organization]);
+    setWorkspaces(oldWorkspacesArray => [...oldWorkspacesArray, organizations]);
     setIsShowWorkspaceCreatingModal(false);
   };
 
@@ -629,220 +642,239 @@ export const Dashboard = memo((props: Props) => {
             key="2"
             tab={<TeamMenu offsetContainerRef={tabsContainerRef} />}
           />
-          <TabPane tab={<DashboardIcon />} key="3">
-            <div className="card-section">
-              <Button
-                hidden={isShowAddNewCanvas}
-                type="primary"
-                icon={<PlusOutlined />}
-                onClick={() => {
-                  setIsShowAddNewCanvas(true);
-                  setCanvasName('');
-                }}
-              >
-                Create Canvas
-              </Button>
-
-              <div
-                hidden={!isShowAddNewCanvas}
-                style={{
-                  display: 'inline-flex',
-                  justifyContent: 'flex-start',
-                  alignItems: 'flex-start',
-                  gap: '20px',
-                }}
-              >
-                <Input
-                  placeholder="Name"
-                  name="name"
-                  onChange={event => setCanvasName(event.currentTarget.value)}
-                  style={{ width: 300, flexShrink: 0 }}
-                />
-                <Select
-                  defaultValue=""
-                  style={{ width: 220, flexShrink: 0 }}
-                  onChange={value => {
-                    setCategoryId(value);
-                  }}
-                  loading={loadingCategoriesList}
-                  allowClear
-                >
-                  <Select.Option value="" disabled>
-                    Category
-                  </Select.Option>
-                  {categories.map(item => (
-                    <Select.Option key={item.id} value={item.id}>
-                      {item.name}
-                    </Select.Option>
-                  ))}
-                </Select>
+          {user && user.role === 'ADMIN' ? (
+            <TabPane tab={<DashboardIcon />} key="3">
+              <div className="card-section">
                 <Button
+                  hidden={isShowAddNewCanvas}
                   type="primary"
                   icon={<PlusOutlined />}
-                  onClick={createCanvas}
-                  disabled={!categoryId || !canvasName}
-                  loading={loadingCreateCanvas}
+                  onClick={() => {
+                    setIsShowAddNewCanvas(true);
+                    setCanvasName('');
+                  }}
                 >
                   Create Canvas
                 </Button>
-              </div>
-              <h3 className="card-section-title">Custom Canvas</h3>
-              <div className="card-grid">
-                {!loadingCanvasList && !canvasList.length && (
-                  <h3
-                    style={{
-                      width: '100%',
-                      color: 'red',
-                      textAlign: 'center',
+
+                <div
+                  hidden={!isShowAddNewCanvas}
+                  style={{
+                    display: 'inline-flex',
+                    justifyContent: 'flex-start',
+                    alignItems: 'flex-start',
+                    gap: '20px',
+                  }}
+                >
+                  <Input
+                    placeholder="Name"
+                    name="name"
+                    onChange={event => setCanvasName(event.currentTarget.value)}
+                    style={{ width: 300, flexShrink: 0 }}
+                  />
+                  <Select
+                    defaultValue=""
+                    style={{ width: 220, flexShrink: 0 }}
+                    onChange={value => {
+                      setCategoryId(value);
                     }}
+                    loading={loadingCategoriesList}
+                    allowClear
                   >
-                    No Canvases
-                  </h3>
-                )}
-                {canvasList.map((data, index) => (
-                  <div
-                    className={`cards-board ${
-                      hoveredBoard === data.id ? 'active' : ''
-                    }`}
-                    key={index}
-                    onMouseEnter={() => {
-                      setHoveredBoard(data.id);
-                    }}
-                    onMouseLeave={() => {
-                      setHoveredBoard('');
-                    }}
+                    <Select.Option value="" disabled>
+                      Category
+                    </Select.Option>
+                    {categories.map(item => (
+                      <Select.Option key={item.id} value={item.id}>
+                        {item.name}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                  <Button
+                    type="primary"
+                    icon={<PlusOutlined />}
+                    onClick={createCanvas}
+                    disabled={!categoryId || !canvasName}
+                    loading={loadingCreateCanvas}
                   >
-                    <Link
-                      to={{
-                        pathname: `/canvas/${data.id}?organization=${orgId}`,
-                        state: { orgId },
+                    Create Canvas
+                  </Button>
+                </div>
+                <h3 className="card-section-title">Custom Canvas</h3>
+                <div className="card-grid">
+                  {!loadingCanvasList && !canvasList.length && (
+                    <h3
+                      style={{
+                        width: '100%',
+                        color: 'red',
+                        textAlign: 'center',
                       }}
                     >
-                      <img
-                        alt="example"
-                        style={{
-                          border: '1px solid #f0f2f5',
-                          backgroundColor: 'white',
+                      No Canvases
+                    </h3>
+                  )}
+                  {canvasList.map((data, index) => (
+                    <div
+                      className={`cards-board ${
+                        hoveredBoard === data.id ? 'active' : ''
+                      }`}
+                      key={index}
+                      onMouseEnter={() => {
+                        setHoveredBoard(data.id);
+                      }}
+                      onMouseLeave={() => {
+                        setHoveredBoard('');
+                      }}
+                    >
+                      <Link
+                        to={{
+                          pathname: `/canvas/${data.id}?organization=${orgId}`,
+                          state: { orgId },
                         }}
-                        src={
-                          data.path ||
-                          'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png'
-                        }
-                      />
-                    </Link>
-                    <div className="card-footer">
-                      <div className="card-action">
-                        <Dropdown
-                          overlay={
-                            <Menu>
-                              <Menu.Item key="0">
-                                <Link
-                                  to={{
-                                    pathname: `/canvas/${data.id}?organization=${orgId}`,
-                                    state: { orgId },
-                                  }}
-                                >
-                                  Edit
-                                </Link>
-                              </Menu.Item>
-                              <Menu.Item
-                                key="1"
-                                onClick={() => handleClickRename(data.id)}
-                              >
-                                Rename
-                              </Menu.Item>
-                              <Menu.Divider />
-                              <Menu.Item
-                                key="3"
-                                onClick={() => handleDeleteCanvas(data.id)}
-                              >
-                                Delete
-                              </Menu.Item>
-                            </Menu>
+                      >
+                        <img
+                          alt="example"
+                          style={{
+                            border: '1px solid #f0f2f5',
+                            backgroundColor: 'white',
+                          }}
+                          src={
+                            data.path ||
+                            'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png'
                           }
-                          trigger={['click']}
-                        >
-                          <div className="action-button">
-                            <span className="material-icons">more_vert</span>
-                          </div>
-                        </Dropdown>
-                      </div>
-                      {editCanvasItem !== data.id && (
-                        <div className="card-title">
-                          {data.name}
-                          {data && data.name && data.name.length >= 34 ? (
-                            <span className="tooltip">{data.name}</span>
-                          ) : (
-                            ''
-                          )}
-                        </div>
-                      )}
-                      {editCanvasItem === data.id && (
-                        <div className="card-title-input">
-                          <Input
-                            addonAfter={
-                              <>
-                                {!loadingUpdateName && (
-                                  <SaveOutlined
-                                    onClick={onSaveName}
-                                    style={{ cursor: 'pointer' }}
-                                  />
-                                )}
-                                {loadingUpdateName && <LoadingOutlined />}
-                              </>
+                        />
+                      </Link>
+                      <div className="card-footer">
+                        <div className="card-action">
+                          <Dropdown
+                            overlay={
+                              <Menu>
+                                <Menu.Item key="0">
+                                  <Link
+                                    to={{
+                                      pathname: `/canvas/${data.id}?organization=${orgId}`,
+                                      state: { orgId },
+                                    }}
+                                  >
+                                    Edit
+                                  </Link>
+                                </Menu.Item>
+                                <Menu.Item
+                                  key="1"
+                                  onClick={() => handleClickRename(data.id)}
+                                >
+                                  Rename
+                                </Menu.Item>
+                                <Menu.Divider />
+                                <Menu.Item
+                                  key="3"
+                                  onClick={() => handleDeleteCanvas(data.id)}
+                                >
+                                  Delete
+                                </Menu.Item>
+                              </Menu>
                             }
-                            defaultValue={data.name}
-                            onChange={handleChangeName}
-                          />
+                            trigger={['click']}
+                          >
+                            <div className="action-button">
+                              <span className="material-icons">more_vert</span>
+                            </div>
+                          </Dropdown>
                         </div>
-                      )}
-                      <div className="card-timestamp">
-                        {data && data.createdAt
-                          ? moment(data.createdAt).format('LLL')
-                          : ''}
-                      </div>
-                      <div className="card-users">
-                        <span className="material-icons">group</span>
-                        <Collaboration users={data.users} />
+                        {editCanvasItem !== data.id && (
+                          <div className="card-title">
+                            {data.name}
+                            {data && data.name && data.name.length >= 34 ? (
+                              <span className="tooltip">{data.name}</span>
+                            ) : (
+                              ''
+                            )}
+                          </div>
+                        )}
+                        {editCanvasItem === data.id && (
+                          <div className="card-title-input">
+                            <Input
+                              addonAfter={
+                                <>
+                                  {!loadingUpdateName && (
+                                    <SaveOutlined
+                                      onClick={onSaveName}
+                                      style={{ cursor: 'pointer' }}
+                                    />
+                                  )}
+                                  {loadingUpdateName && <LoadingOutlined />}
+                                </>
+                              }
+                              defaultValue={data.name}
+                              onChange={handleChangeName}
+                            />
+                          </div>
+                        )}
+                        <div className="card-timestamp">
+                          {data && data.createdAt
+                            ? moment(data.createdAt).format('LLL')
+                            : ''}
+                        </div>
+                        <div className="card-users">
+                          <span className="material-icons">group</span>
+                          <Collaboration users={data.users} />
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
-                {loadingCanvasList &&
-                  Array(5)
-                    .fill(1)
-                    .map((item, index) => (
-                      <div className="cards-board" key={item + index}>
-                        <Skeleton.Image />
+                  ))}
+                  {loadingCanvasList &&
+                    Array(5)
+                      .fill(1)
+                      .map((item, index) => (
+                        <div className="cards-board" key={item + index}>
+                          <Skeleton.Image />
 
-                        <div className="card-footer">
-                          <Skeleton
-                            active
-                            paragraph={{ rows: 0, style: { display: 'none' } }}
-                            title={{ width: '100%', style: { marginTop: 0 } }}
-                            className="card-title"
-                          />
-                          <Skeleton
-                            active
-                            paragraph={{ rows: 0, style: { display: 'none' } }}
-                            title={{ width: '100%', style: { marginTop: 0 } }}
-                            className="card-timestamp"
-                          />
+                          <div className="card-footer">
+                            <Skeleton
+                              active
+                              paragraph={{
+                                rows: 0,
+                                style: { display: 'none' },
+                              }}
+                              title={{ width: '100%', style: { marginTop: 0 } }}
+                              className="card-title"
+                            />
+                            <Skeleton
+                              active
+                              paragraph={{
+                                rows: 0,
+                                style: { display: 'none' },
+                              }}
+                              title={{ width: '100%', style: { marginTop: 0 } }}
+                              className="card-timestamp"
+                            />
 
-                          <Skeleton
-                            active
-                            paragraph={{ rows: 0, style: { display: 'none' } }}
-                            title={{ width: '100%', style: { marginTop: 0 } }}
-                            className="card-users"
-                          />
+                            <Skeleton
+                              active
+                              paragraph={{
+                                rows: 0,
+                                style: { display: 'none' },
+                              }}
+                              title={{ width: '100%', style: { marginTop: 0 } }}
+                              className="card-users"
+                            />
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      ))}
+                </div>
               </div>
-            </div>
-          </TabPane>
+            </TabPane>
+          ) : (
+            ''
+          )}
+
           {user && user.role === 'ADMIN' && (
-            <TabPane tab={<BarChartOutlined />} key="4">
+            <TabPane
+              tab={
+                <AppstoreAddOutlined style={{ fontSize: 25, marginLeft: 10 }} />
+              }
+              key="4"
+            >
               <div className="card-section">
                 <Button
                   type="primary"

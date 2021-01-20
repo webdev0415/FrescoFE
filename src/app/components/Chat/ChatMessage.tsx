@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { MessagesApiService } from 'services/APIService/MessagesApi.service';
 import OutsideClickHandler from 'react-outside-click-handler';
+
 interface IState {
   orgId?: any;
 }
 
-const ChatMessage = ({ message, logedUser, setChatMessages, boardId }: any) => {
+const ChatMessage = ({ message, logedUser, setChatMessages, boardId, messagesOnLoad }: any) => {
   const [msgSettings, setMsgSettings] = useState(false);
   const [msgEditable, setMsgEditable] = useState(false);
   const [msg, setMsg] = useState(message.message);
@@ -60,7 +61,7 @@ const ChatMessage = ({ message, logedUser, setChatMessages, boardId }: any) => {
               <button onClick={editMessage}>Edit</button>
             </li>
             <li>
-              <button onClick={deleteMessage} className="delete">
+              <button onClick={deleteMessage} className='delete'>
                 Delete
               </button>
             </li>
@@ -72,7 +73,7 @@ const ChatMessage = ({ message, logedUser, setChatMessages, boardId }: any) => {
 
   return (
     <OutsideClickHandler onOutsideClick={() => setMsgEditable(false)}>
-      <div className={`chatBox-body-message ${logedUser ? 'my' : ''}`}>
+      <div className={`chatBox-body-message ${logedUser ? 'my' : ''} ${messagesOnLoad ? 'onload' : ''}`}>
         <div
           className={`chatBox-body-message-content ${
             msgEditable ? 'editable' : ''
@@ -82,7 +83,7 @@ const ChatMessage = ({ message, logedUser, setChatMessages, boardId }: any) => {
           <small></small>
           <form onSubmit={submitEdit}>
             <input
-              type="text"
+              type='text'
               value={editableMessage}
               onChange={e => setEditableMessage(e.target.value)}
             />

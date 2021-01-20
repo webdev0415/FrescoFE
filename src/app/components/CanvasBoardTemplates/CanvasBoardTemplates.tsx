@@ -76,9 +76,10 @@ export const CanvasBoardTemplates = memo((props: Props) => {
     });
   }, [props.orgId]);
 
+  console.log('board name', boardName);
   return (
     <div className="create-board-view">
-      <div className="form-view">
+      {/* <div className="form-view">
         <Input
           placeholder="Board Name"
           value={boardName}
@@ -87,7 +88,7 @@ export const CanvasBoardTemplates = memo((props: Props) => {
         <Button type="default" icon={<CloseOutlined />} onClick={props.onClose}>
           Cancel
         </Button>
-      </div>
+      </div> */}
       <Tabs
         className="canvas-board-template"
         defaultActiveKey={activeKey}

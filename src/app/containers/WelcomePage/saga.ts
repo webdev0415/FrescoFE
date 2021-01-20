@@ -20,7 +20,7 @@ export function* signIn(action) {
     yield put(globalActions.setAuthInformation(authInfo));
     localStorage.setItem('authInformation', JSON.stringify(authInfo));
     message.success('Logged in successfully.');
-    history.push('/auth/welcome-page');
+    history.push('/auth/');
     Auth.setToken(token);
 
     // check if have invitation type
