@@ -59,7 +59,7 @@ export const MyProfileModal = ({
           url: myProfile.avatar,
         };
         setFileList([uploadedAvatarFile]);
-      } 
+      }
     }
   }, [form, myProfileSelector]);
 
@@ -68,7 +68,7 @@ export const MyProfileModal = ({
   };
   const handlePreviewCancel = () => setPreviewVisible(false);
   const onChange = ({ fileList: newFileList }) => {
-    console.log("newFileList", newFileList)
+    console.log('newFileList', newFileList);
     setFileList(newFileList);
   };
   const getBase64 = file => {
@@ -111,7 +111,7 @@ export const MyProfileModal = ({
     fmData.append('file', file);
     try {
       const res = await axios.post(
-        'https://frescobe.herokuapp.com/upload/image/avatar',
+        process.env.REACT_APP_BASE_URL + 'upload/image/avatar',
         fmData,
         config,
       );

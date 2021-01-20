@@ -6,7 +6,7 @@
  * contain code that should be seen on all pages. (e.g. navigation bar)
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Switch, Route, useHistory } from 'react-router-dom';
 import { withRouter } from 'react-router';
@@ -38,6 +38,9 @@ import { CreateCanvas } from './containers/CreateCanvas';
 import { GuestRoute } from 'services/GuestRoute';
 import { CreateBoard } from './containers/CreateBoard/Loadable';
 import { VerifyInvitationType } from './containers/VerifyInvitationType';
+import { WorkspaceContext } from 'context/workspace';
+import { WorkspacesContext } from 'context/workspaces';
+import routes from '../routes/routesCode';
 
 function AppComponent(props) {
   useInjectReducer({ key: sliceKey, reducer });
@@ -45,6 +48,8 @@ function AppComponent(props) {
   const history = useHistory();
 
   const dispatch = useDispatch();
+  const [organization, setOrganization] = useState(null);
+  const [organizations, setOrganizations] = useState([]);
 
   useEffect(() => {
     if (localStorage.getItem('authInformation')) {
@@ -85,37 +90,69 @@ function AppComponent(props) {
         <GuestRoute exact path="/auth/check-email" component={CheckEmailView} />
         <GuestRoute exact path="/auth/welcome-page" component={WelcomePage} />
 
-        <PrivateRoute exact path="/organization/:id" component={Dashboard} />
-        <PrivateRoute exact path="/create-canvas" component={CreateCanvas} />
-        {/* <PrivateRoute
-          exact
-          path="/canvas/:orgId/:id"
-          component={CreateCanvas}
-        /> */}
-        <PrivateRoute exact path="/" component={ListOrganizations} />
-        <PrivateRoute
-          exact
-          path="/create-board/:orgId/:id"
-          component={CreateBoard}
-        />
-        <PrivateRoute exact path="/board/:id" component={CreateBoard} />
-        <PrivateRoute exact path="/canvas/:id" component={CreateCanvas} />
-        <Route
-          exact
-          path="/invitation/check/:token"
-          component={VerifyInvitation}
-        />
-        <Route
-          exact
-          path="/invitation-type/verification/:token"
-          component={VerifyInvitationType}
-        />
-        <PrivateRoute
-          exact
-          path="/create-org"
-          component={SelectOrganizationPage}
-        />
-        <GuestRoute exact path="/workspace/:id" component={WorkspaceSettings} />
+        <WorkspacesContext.Provider value={{ organizations, setOrganizations }}>
+          <WorkspaceContext.Provider value={{ organization, setOrganization }}>
+            <PrivateRoute
+              exact
+              path="/organization/:orgId"
+              component={Dashboard}
+            />
+            <PrivateRoute
+              exact
+              path="/create-canvas"
+              component={CreateCanvas}
+            />
+            {/* <PrivateRoute
+              exact
+              path="/canvas/:orgId/:id"
+              component={CreateCanvas}
+            /> */}
+            <PrivateRoute exact path="/" component={ListOrganizations} />
+            <PrivateRoute
+              exact
+              path="/create-board/:orgId/:id"
+              component={CreateBoard}
+            />
+            <PrivateRoute exact path="/board/:id" component={CreateBoard} />
+            <PrivateRoute exact path="/canvas/:id" component={CreateCanvas} />
+            <Route
+              exact
+              path="/invitation/check/:token"
+              component={VerifyInvitation}
+            />
+            <Route
+              exact
+              path="/invitation-type/verification/:token"
+              component={VerifyInvitationType}
+            />
+            <PrivateRoute
+              exact
+              path="/create-org"
+              component={SelectOrganizationPage}
+            />
+            <PrivateRoute
+              exact={routes.workspaceSettings.exact}
+              path={routes.workspaceSettings.path}
+              component={WorkspaceSettings}
+            />
+            <PrivateRoute
+              exact={routes.workspaceSettingsMembers.exact}
+              path={routes.workspaceSettingsMembers.path}
+              component={WorkspaceSettings}
+            />
+            <PrivateRoute
+              exact={routes.workspaceSettingsTeams.exact}
+              path={routes.workspaceSettingsTeams.path}
+              component={WorkspaceSettings}
+            />
+            <PrivateRoute
+              exact={routes.workspaceSettingsBillings.exact}
+              path={routes.workspaceSettingsBillings.path}
+              component={WorkspaceSettings}
+            />
+          </WorkspaceContext.Provider>
+        </WorkspacesContext.Provider>
+
         <PrivateRoute component={NotFoundPage} />
         <GuestRoute component={NotFoundPage} />
       </Switch>

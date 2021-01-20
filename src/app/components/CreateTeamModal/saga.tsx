@@ -10,7 +10,7 @@ export function* createTeam(action) {
     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
     const response = yield axios.post('teams/', {
       name: data.teamname,
-      orgId: orgId.id,
+      orgId: orgId.orgId,
       users: data.teammembers,
     });
     yield put(actions.createTeamSuccess(response.data));
@@ -25,7 +25,9 @@ export function* getWorkspaceMembers(action) {
   const { orgId, token } = payload;
   try {
     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-    const response = yield axios.get('organization/' + orgId.id + '/members');
+    const response = yield axios.get(
+      'organization/' + orgId.orgId + '/members',
+    );
     yield put(actions.getWorkspaceMembersSuccess(response.data));
   } catch (error) {
     yield put(

@@ -8,7 +8,7 @@ export function* teamMenu(action) {
   const { orgId, token } = payload;
   try {
     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-    const response = yield axios.get('teams?orgId=' + orgId.id);
+    const response = yield axios.get('teams?orgId=' + orgId.orgId);
     yield put(actions.getTeamMenuSuccess(response.data));
   } catch (error) {
     yield put(

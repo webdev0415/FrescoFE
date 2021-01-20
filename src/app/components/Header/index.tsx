@@ -2,12 +2,16 @@ import React from 'react';
 import logoImg from '../../../assets/icons/logo.svg';
 import { useHistory } from 'react-router-dom';
 import './Header.less';
+import { useSelector } from 'react-redux';
+import { selectUser } from '../../selectors';
+import Avatar from '../Avatar';
 
 interface HeaderProps {
   isLogIn?: boolean;
 }
 /* istanbul ignore next */
 const Header: React.FC<HeaderProps> = props => {
+  const user = useSelector(selectUser);
   const history = useHistory();
   const currentUrl = history.location.pathname;
   let headerButton;
@@ -37,6 +41,11 @@ const Header: React.FC<HeaderProps> = props => {
       </div>
     );
   }
+
+  const userFullName =
+    user && user.firstName && user.lastName
+      ? `${user.firstName} ${user.lastName}`
+      : null;
 
   return (
     <div
@@ -71,24 +80,7 @@ const Header: React.FC<HeaderProps> = props => {
         </a>
         <div>{headerButton}</div>
         {props.isLogIn && (
-          <div>
-            <div
-              style={{
-                width: '24px',
-                height: '24px',
-                backgroundColor: '#9646F5',
-                borderRadius: '50%',
-                fontSize: '12px',
-                display: 'inline-flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                color: 'white',
-              }}
-              id="profile-icon"
-            >
-              AB
-            </div>
-          </div>
+          <Avatar fullName={userFullName} avatar={user?.avatar} />
         )}
       </div>
     </div>

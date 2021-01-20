@@ -57,7 +57,7 @@ export const WelcomePage = memo((props: Props) => {
   const selectOrganizationPage = useSelector(selectSelectOrganizationPage);
   const [uniqueError, setUniqueError] = useState(false);
 
-  const string_to_slug = str => {
+  const getSlugByName = str => {
     str = str.replace(/^\s+|\s+$/g, ''); // trim
     str = str.toLowerCase();
 
@@ -83,7 +83,7 @@ export const WelcomePage = memo((props: Props) => {
         name: workspaceName,
         fName: '0',
         lName: '0',
-        slug: string_to_slug(workspaceName),
+        slug: getSlugByName(workspaceName),
       })
       .then(response => {
         history.push('/organization/' + response.data.id);
@@ -167,7 +167,7 @@ export const WelcomePage = memo((props: Props) => {
             style={{ textAlign: 'center', marginTop: 128, fontSize: '12px' }}
           >
             <Text>
-              Workspace URL: frescopad.com/{string_to_slug(workspaceName)}
+              Workspace URL: frescopad.com/{getSlugByName(workspaceName)}
             </Text>
           </div>
           <Button

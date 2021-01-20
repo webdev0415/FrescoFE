@@ -3,16 +3,23 @@ import StyledContainer from './StyledContainer';
 
 interface PropsInterface {
   fullName: string;
+  avatar?: string;
 }
 const rgx = new RegExp(/(\p{L}{1})\p{L}+/, 'gu');
 
 const UserAvatar = (props: PropsInterface & any) => {
-  const { fullName, ...rest } = props;
-  console.log("fullName", fullName, "kkk", fullName
-            .split(' ')
-            .map(n => n[0])
-            .join(''))
-  return (
+  const { fullName, avatar, ...rest } = props;
+
+  return !!avatar ? (
+    <StyledContainer {...rest}>
+      <img
+        style={{ borderRadius: '50%' }}
+        src={avatar}
+        width={34}
+        height={34}
+      />
+    </StyledContainer>
+  ) : (
     <StyledContainer {...rest}>
       {fullName?.split(' ').length >= 2
         ? fullName

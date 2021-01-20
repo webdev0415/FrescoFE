@@ -61,6 +61,8 @@ import TeamMenu from './TeamMenu';
 import Avatar from 'app/components/Avatar';
 import Fab from 'app/components/Fab';
 import { List, Item } from 'app/components/List';
+import { useWorkspaceContext } from '../../../context/workspace';
+import { useWorkspacesContext } from '../../../context/workspaces';
 
 const { TabPane } = Tabs;
 export const PERMISSION = {
@@ -128,7 +130,8 @@ export const Dashboard = memo((props: Props) => {
   )}`;
   useInjectReducer({ key: sliceKey, reducer: reducer });
   useInjectSaga({ key: sliceKey, saga: dashboardSaga });
-  const [organization, setOrganization] = useState<any>(null);
+  const { organization } = useWorkspaceContext();
+  const { organizations, setOrganizations } = useWorkspacesContext();
   const [isTeamMenuOpen, setIsToggleMenuOpen] = useState<Boolean>(false);
   const [isTeamDetailedMenuOpen, setIsTeamDetailedMenuOpen] = useState<Boolean>(
     false,
@@ -149,7 +152,6 @@ export const Dashboard = memo((props: Props) => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [canvasName, setCanvasName] = useState('');
   const [categories, setCategories] = useState<CanvasCategoryInterface[]>([]);
-  const [workspaces, setWorkspaces] = useState<any[]>([]);
   const [selectedWorkspace, setSelectWorkspace] = useState<any>(null);
   const [categoryId, setCategoryId] = useState('');
   const [canvasList, setCanvasList] = useState<CanvasResponseInterface[]>([]);
@@ -161,9 +163,8 @@ export const Dashboard = memo((props: Props) => {
   const [editCanvasItem, setEditCanvasItem] = useState('');
   const [editName, setEditName] = useState('');
   const [hoveredBoard, setHoveredBoard] = useState('');
-  const [organizations, setOrganizations] = useState([]);
   const [loadingUpdateName, setLoadingUpdateName] = useState(false);
-  const orgId = props?.match?.params?.id;
+  const orgId = props?.match?.params?.orgId;
 
   const tabsContainerRef = useRef<any>(null);
   const profileToggleMenuRef = useRef<any>(null);
@@ -194,32 +195,6 @@ export const Dashboard = memo((props: Props) => {
       setIsShowInvitationModal(false);
     }
   }, [dashboard]);
-  useEffect(() => {
-    Axios.request({
-      method: 'GET',
-      url: process.env.REACT_APP_BASE_URL + 'organization/' + orgId,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then(response => {
-        setOrganization(response.data);
-      })
-      .catch(error => {
-        console.error(error.response);
-      });
-
-    Axios.request({
-      method: 'GET',
-      url: process.env.REACT_APP_BASE_URL + 'organization/',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }).then(response => {
-      setWorkspaces(response.data);
-      console.log(workspaces);
-    });
-  }, []);
 
   const handleSearch = (value: string) => {
     dispatch(
@@ -376,7 +351,7 @@ export const Dashboard = memo((props: Props) => {
     const organization = {
       organizationName: workspaceName,
     };
-    setWorkspaces(oldWorkspacesArray => [...oldWorkspacesArray, organizations]);
+    setOrganizations(items => [...items, organizations]);
     setIsShowWorkspaceCreatingModal(false);
   };
 
@@ -384,12 +359,12 @@ export const Dashboard = memo((props: Props) => {
     setIsShowMyProfileModal(false);
   };
 
-  const gotoWorkspaceSettingsPage = () => {
-    history.push('/workspace/1');
+  const gotoWorkspaceSettingsPage = (selectedWorkspace: any) => {
+    history.push(`/organization/${selectedWorkspace.orgId}/settings`);
   };
 
   const renderWorkspaces = () => {
-    return workspaces.map((item, key) => (
+    return organizations.map((item, key) => (
       <Avatar
         style={{ marginBottom: 10 }}
         fullName={item.organizationName}
@@ -445,9 +420,23 @@ export const Dashboard = memo((props: Props) => {
                   onClick={() => setInvitePeopleToggleMenu(true)}
                   style={{
                     cursor: 'pointer',
+                    display: 'flex',
+                    justifyContent: 'space-between',
                   }}
                 >
-                  {selectedWorkspace.organizationName}
+                  <div>{selectedWorkspace.organizationName}</div>
+                  <Button
+                    className={'ant-btn-primary ant-btn-sm'}
+                    onClick={e => {
+                      e.stopPropagation();
+                      history.push(`/organization/${selectedWorkspace.orgId}`);
+                    }}
+                  >
+                    Join
+                    {/* <Link to={`/organization/${orgId}`}>
+                      Join
+                    </Link> */}
+                  </Button>
                 </div>
                 <List className="divided">
                   <Item onClick={showMyProfileModal}>
@@ -496,7 +485,9 @@ export const Dashboard = memo((props: Props) => {
                 </Item>
               </List>
               <List className="divided">
-                <Item onClick={gotoWorkspaceSettingsPage}>
+                <Item
+                  onClick={() => gotoWorkspaceSettingsPage(selectedWorkspace)}
+                >
                   <span className="icon">
                     <Workspace />
                   </span>
@@ -593,7 +584,9 @@ export const Dashboard = memo((props: Props) => {
             organization && {
               right: (
                 <div onClick={() => setIsToggleMenuOpen(!isTeamMenuOpen)}>
-                  {userFullName && <Avatar fullName={userFullName} />}
+                  {userFullName && (
+                    <Avatar fullName={userFullName} avatar={user?.avatar} />
+                  )}
 
                   <Avatar
                     fullName={organization.organizationName}

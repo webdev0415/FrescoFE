@@ -41,14 +41,14 @@ export const CanvasBoardTemplates = memo((props: Props) => {
 
   const history = useHistory();
 
-  const handleCreateBoard = (id: string) => {
+  const handleCreateBoard = (id: string, categoryId: string) => {
     setLoadingCreateBoard(id);
     CanvasApiService.getById(id).subscribe(canvas => {
       BoardApiService.create({
         data: canvas.data,
         name: boardName,
         orgId: props.orgId,
-        categoryId: activeKey,
+        categoryId: categoryId,
       }).subscribe(
         board => {
           props.onClose();
@@ -134,7 +134,9 @@ export const CanvasBoardTemplates = memo((props: Props) => {
                             type="primary"
                             role="select-button"
                             loading={loadingCreateBoard === board.id}
-                            onClick={() => handleCreateBoard(board.id)}
+                            onClick={() =>
+                              handleCreateBoard(board.id, category.id)
+                            }
                           >
                             Select
                           </Button>

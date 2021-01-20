@@ -3,6 +3,7 @@ import { Modal, Form, Input, Button, Upload, Row, Col } from 'antd';
 
 import ImgCrop from 'antd-img-crop';
 import './styles.less';
+import { useWorkspaceContext } from '../../../context/workspace';
 
 export const WorkspacePage = () => {
   const [previewVisible, setPreviewVisible] = React.useState(false);
@@ -10,6 +11,7 @@ export const WorkspacePage = () => {
   const [previewTitle, setPreviewTitle] = React.useState('');
   const initList = [];
   const [fileList, setFileList] = React.useState(initList);
+  const { organization } = useWorkspaceContext();
 
   const handlePreview = async file => {
     if (!file.url && !file.preview) {
@@ -55,10 +57,16 @@ export const WorkspacePage = () => {
                   },
                 ]}
               >
-                <Input placeholder="Workspace Name" />
+                <Input
+                  placeholder="Workspace Name"
+                  defaultValue={organization.organizationName}
+                />
               </Form.Item>
               <Form.Item name="workspacedomain">
-                <Input placeholder="Workspace Domain" />
+                <Input
+                  placeholder="Workspace Domain"
+                  defaultValue={organization.organizationSlug}
+                />
               </Form.Item>
             </Col>
             <Col xs={1} xl={1}></Col>
