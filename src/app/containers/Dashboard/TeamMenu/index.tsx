@@ -12,6 +12,7 @@ import { selectToken } from 'app/selectors';
 import { selectTeamMenu } from './selectors';
 import { useDispatch, useSelector } from 'react-redux';
 import { useInjectReducer, useInjectSaga } from 'utils/redux-injectors';
+import { useHistory } from 'react-router-dom';
 
 interface PropsInterface {
   offsetContainerRef: React.ElementRef<any>;
@@ -29,6 +30,7 @@ const Team = (props: PropsInterface) => {
   const antTabsNavWrapRef = useRef(null);
   const boardsListMenuRef = useRef(null);
   const [isBoardMenuOpen, setIsBoardMenuOpen] = useState<Boolean>(false);
+  const history = useHistory();
 
   const [isShowCreateTeamModal, setIsShowCreateTeamModal] = useState<Boolean>(
     false,
@@ -60,7 +62,13 @@ const Team = (props: PropsInterface) => {
   };
 
   const renderTeams = () => {
-    return teamMenu.map(item => <Item>{item.name}</Item>);
+    return teamMenu.map(item => (
+      <Item
+        onClick={() => history.push(`/organization/${orgId.orgId}/${item.id}`)}
+      >
+        {item.name}
+      </Item>
+    ));
   };
 
   if (offsetContainerRef.current) {

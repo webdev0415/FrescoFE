@@ -4,15 +4,17 @@ import StyledContainer from './StyledContainer';
 interface PropsInterface {
   fullName: string;
   avatar?: string;
+  imgClassName?: string;
 }
 const rgx = new RegExp(/(\p{L}{1})\p{L}+/, 'gu');
 
 const UserAvatar = (props: PropsInterface & any) => {
-  const { fullName, avatar, ...rest } = props;
+  const { fullName, avatar, imgClassName, ...rest } = props;
 
   return !!avatar ? (
     <StyledContainer {...rest}>
       <img
+        className={imgClassName}
         style={{ borderRadius: '50%' }}
         src={avatar}
         width={34}

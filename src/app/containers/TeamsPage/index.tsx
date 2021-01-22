@@ -1,7 +1,14 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { Table, Button } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import './styles.less';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectToken } from 'app/selectors';
+import { useParams } from 'react-router-dom';
+import { actions, reducer, sliceKey } from '../Dashboard/TeamMenu/slice';
+import { selectTeamMenu } from '../Dashboard/TeamMenu/selectors';
+import { useWorkspacesContext } from 'context/workspaces';
+import { useWorkspaceContext } from 'context/workspace';
 
 const columns = [
   {
@@ -62,6 +69,8 @@ const data: DataType[] = [
 ];
 
 export const TeamsPage = () => {
+  const [teamMenu, setTeamMenu] = useState<any>([]);
+
   const [selectedRowKeys, setSelectRowKeys] = React.useState<string[]>([]);
   const onSelectChange = selectedRowKeys => {
     setSelectRowKeys(selectedRowKeys);
@@ -71,6 +80,29 @@ export const TeamsPage = () => {
     onChange: onSelectChange,
   };
 
+  const dispatch = useDispatch();
+  const token = useSelector(selectToken);
+  const teamMenuSelector = useSelector(selectTeamMenu);
+  const params: { orgId?: string } = useParams();
+  const { organization } = useWorkspaceContext();
+  const orgId = organization.orgId;
+
+  useEffect(() => {
+    console.log(organization.orgId);
+    if (token && orgId) {
+      dispatch(
+        actions.getTeamMenuRequest({
+          token,
+          orgId,
+        }),
+      );
+    }
+  }, [dispatch, orgId, organization.orgId, token]);
+
+  useEffect(() => {
+    setTeamMenu(teamMenuSelector?.teamMenu);
+    console.log(teamMenu);
+  }, [teamMenu, teamMenuSelector]);
   return (
     <Fragment>
       <p style={{ marginBottom: 50 }}>Manage teams on your workspace</p>

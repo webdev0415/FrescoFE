@@ -22,7 +22,7 @@ const AuthLayout: React.FC<AuthLayoutProps> = props => {
     if (params.orgId) {
       OrganizationApiService.getById(params.orgId).subscribe(
         result => {
-          console.log(result, 'karen organization');
+          console.log(result);
           setOrganization(result);
         },
         error => {

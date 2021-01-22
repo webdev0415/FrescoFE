@@ -12,6 +12,7 @@ export default styled.li<PropsInterface>`
   height: 40px;
   margin-bottom: 16px;
   padding-left: 16px;
+  cursor: pointer;
   .icon {
     padding-right: 10px;
     font-size: 20px;

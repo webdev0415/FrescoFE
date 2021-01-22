@@ -11,6 +11,8 @@ import { BoardApiService } from 'services/APIService/BoardsApi.service';
 import { Collaboration } from '../../components/Collaboration';
 import { LoadingOutlined, SaveOutlined } from '@ant-design/icons';
 import clsx from 'clsx';
+import { FileExclamationOutlined } from '@ant-design/icons';
+import { useParams } from 'react-router-dom';
 
 interface BoardListProps {
   orgId: string;
@@ -24,6 +26,7 @@ export const BoardList = (props: BoardListProps) => {
   const [loading, setLoading] = useState(false);
   const [visibleBoardMenu, setVisibleBoardMenu] = useState('');
   const [hoveredBoard, setHoveredBoard] = useState('');
+  const params = useParams<any>();
 
   const boardList = useSelector(selectBoardList);
   const dispatch = useDispatch();
@@ -35,6 +38,14 @@ export const BoardList = (props: BoardListProps) => {
   React.useEffect(() => {
     getBoards();
   }, [getBoards]);
+
+  React.useEffect(() => {
+    if (params.teamId !== undefined) {
+      dispatch(
+        actions.attemptGetBoards(`${props.orgId}?teamId=${params.teamId}`),
+      );
+    }
+  }, [dispatch, params, props.orgId]);
 
   const handleDeleteBoard = (id: string) => {
     BoardApiService.deleteById(id, props.orgId).subscribe(
@@ -238,9 +249,16 @@ export const BoardList = (props: BoardListProps) => {
                 width: '100%',
                 color: 'red',
                 textAlign: 'center',
+                paddingTop: '25vh',
+                fontSize: 28,
+                opacity: 0.3,
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
               }}
             >
-              No Boards
+              <FileExclamationOutlined />
+              <span>No Boards</span>
             </h3>
           )}
     </div>

@@ -46,7 +46,7 @@ export function* invitation(action) {
     yield put(actions.invitationSuccess(response.data));
     message.success('Invitation successfully.');
   } catch (error) {
-    history.push('/err');
+    // history.push('/err');
     yield put(
       actions.invitationError({
         message: error.message,

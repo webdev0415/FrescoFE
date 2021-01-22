@@ -11,7 +11,7 @@ export function* listOrganizations(action) {
     const response = yield axios.get('organization/');
     yield put(actions.listOrganizationsSuccess(response.data));
   } catch (error) {
-    history.push('/err');
+    // history.push('/err');
     yield put(
       actions.listOrganizationsError({
         message: error.message,

@@ -7,7 +7,7 @@ interface UserType {
   email: string;
   // TODO: define enum for roles
   role: string;
-  avatar: string;
+  avatar?: string;
 }
 
 export interface GlobalState {

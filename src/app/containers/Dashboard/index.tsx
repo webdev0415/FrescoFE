@@ -13,7 +13,7 @@ import {
   LoadingOutlined,
   AppstoreAddOutlined,
 } from '@ant-design/icons';
-import { Link, Redirect, useHistory } from 'react-router-dom';
+import { Link, Redirect, useHistory, useParams } from 'react-router-dom';
 
 import { useInjectReducer, useInjectSaga } from 'utils/redux-injectors';
 import { actions, reducer, sliceKey } from './slice';
@@ -130,7 +130,7 @@ export const Dashboard = memo((props: Props) => {
   )}`;
   useInjectReducer({ key: sliceKey, reducer: reducer });
   useInjectSaga({ key: sliceKey, saga: dashboardSaga });
-  const { organization } = useWorkspaceContext();
+  const { organization, setOrganization } = useWorkspaceContext();
   const { organizations, setOrganizations } = useWorkspacesContext();
   const [isTeamMenuOpen, setIsToggleMenuOpen] = useState<Boolean>(false);
   const [isTeamDetailedMenuOpen, setIsTeamDetailedMenuOpen] = useState<Boolean>(
@@ -173,6 +173,7 @@ export const Dashboard = memo((props: Props) => {
   const dashboard = useSelector(selectDashboard);
   const dispatch = useDispatch();
   const history = useHistory();
+  const params: { orgId: '' } = useParams();
 
   const token = useSelector(selectToken);
   const user = useSelector(selectUser);
@@ -330,7 +331,8 @@ export const Dashboard = memo((props: Props) => {
 
   useEffect(() => {
     getCanvasList();
-  }, [getCanvasList, orgId]);
+    console.log(params?.orgId, 'params');
+  }, [getCanvasList, orgId, params]);
 
   useEffect(() => {
     getCategoriesList();
@@ -343,8 +345,9 @@ export const Dashboard = memo((props: Props) => {
   };
 
   const handleSelectWorkspace = (workspace: any) => {
-    setSelectWorkspace(workspace);
+    setOrganization(workspace);
     setIsTeamDetailedMenuOpen(true);
+    history.push(`/organization/${workspace.orgId}`);
   };
 
   const handleCreateWorkspace = (workspaceName: any) => {
@@ -363,10 +366,22 @@ export const Dashboard = memo((props: Props) => {
     history.push(`/organization/${selectedWorkspace.orgId}/settings`);
   };
 
+  const gotoWorkspaceSettingsTeamsPage = (selectedWorkspace: any) => {
+    history.push(`/organization/${selectedWorkspace.orgId}/settings/teams`);
+  };
+
+  const gotoWorkspaceSettingsBillingsPage = (selectedWorkspace: any) => {
+    history.push(`/organization/${selectedWorkspace.orgId}/settings/billings`);
+  };
+
   const renderWorkspaces = () => {
     return organizations.map((item, key) => (
       <Avatar
-        style={{ marginBottom: 10 }}
+        imgClassName={orgId === item.orgId ? 'active' : ''}
+        style={{
+          marginBottom: 10,
+          border: orgId === item.orgId ? '2px solid #b773ff' : 'none',
+        }}
         fullName={item.organizationName}
         onClick={() => handleSelectWorkspace(item)}
       />
@@ -403,17 +418,17 @@ export const Dashboard = memo((props: Props) => {
           <ToggleMenu
             width={264}
             height={350}
-            isOpen={isTeamDetailedMenuOpen}
+            isOpen={isTeamMenuOpen}
             menuRefObject={teamDetailedMenuRef}
             offsetContainerRef={profileToggleMenuRef}
             ignoredContainers={[invitePeopleToggleMenuRef]}
             equalize="bottom"
-            onOutsideClick={() => {
+            /*onOutsideClick={() => {
               setIsTeamDetailedMenuOpen(false);
               setInvitePeopleToggleMenu(false);
-            }}
+            }}*/
           >
-            {selectedWorkspace && (
+            {organization && (
               <StyledBoardDetailedToggleMenuContainer>
                 <div
                   className="title divided"
@@ -424,19 +439,7 @@ export const Dashboard = memo((props: Props) => {
                     justifyContent: 'space-between',
                   }}
                 >
-                  <div>{selectedWorkspace.organizationName}</div>
-                  <Button
-                    className={'ant-btn-primary ant-btn-sm'}
-                    onClick={e => {
-                      e.stopPropagation();
-                      history.push(`/organization/${selectedWorkspace.orgId}`);
-                    }}
-                  >
-                    Join
-                    {/* <Link to={`/organization/${orgId}`}>
-                      Join
-                    </Link> */}
-                  </Button>
+                  <div>{organization.organizationName}</div>
                 </div>
                 <List className="divided">
                   <Item onClick={showMyProfileModal}>
@@ -485,9 +488,7 @@ export const Dashboard = memo((props: Props) => {
                 </Item>
               </List>
               <List className="divided">
-                <Item
-                  onClick={() => gotoWorkspaceSettingsPage(selectedWorkspace)}
-                >
+                <Item onClick={() => gotoWorkspaceSettingsPage(organization)}>
                   <span className="icon">
                     <Workspace />
                   </span>
@@ -499,24 +500,30 @@ export const Dashboard = memo((props: Props) => {
                   </span>
                   Members
                 </Item>
-                <Item>
+                <Item
+                  onClick={() => gotoWorkspaceSettingsTeamsPage(organization)}
+                >
                   <span className="icon">
                     <Teams />
                   </span>
                   Teams
                 </Item>
-                <Item>
+                <Item
+                  onClick={() =>
+                    gotoWorkspaceSettingsBillingsPage(organization)
+                  }
+                >
                   <span className="icon">
                     <Billing />
                   </span>
                   Billing
                 </Item>
               </List>
-              <List>
+              {/*<List>
                 <Item style={{ paddingTop: '15px' }}>
                   Sign Out of QuestionPro
                 </Item>
-              </List>
+              </List>*/}
             </StyledBoardFeaturesContainer>
           </ToggleMenu>
         </>
