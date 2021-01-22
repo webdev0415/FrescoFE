@@ -15,10 +15,8 @@ const UserAvatar = (props: PropsInterface & any) => {
     <StyledContainer {...rest}>
       <img
         className={imgClassName}
-        style={{ borderRadius: '50%' }}
+        style={{ borderRadius: '50%', width: '100%', height: '100%' }}
         src={avatar}
-        width={34}
-        height={34}
       />
     </StyledContainer>
   ) : (

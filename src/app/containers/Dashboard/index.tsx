@@ -384,6 +384,7 @@ export const Dashboard = memo((props: Props) => {
           marginBottom: 10,
           border: orgId === item.orgId ? '2px solid #b773ff' : 'none',
         }}
+        avatar={item.organizationAvatar}
         fullName={item.organizationName}
         onClick={() => handleSelectWorkspace(item)}
       />
@@ -597,11 +598,19 @@ export const Dashboard = memo((props: Props) => {
               right: (
                 <div onClick={() => setIsToggleMenuOpen(!isTeamMenuOpen)}>
                   {userFullName && (
-                    <Avatar fullName={userFullName} avatar={user?.avatar} />
+                    <Avatar
+                      fullName={userFullName}
+                      avatar={user?.avatar}
+                      style={{
+                        width: 34,
+                        height: 34,
+                      }}
+                    />
                   )}
 
                   <Avatar
                     fullName={organization.organizationName}
+                    avatar={organization.organizationAvatar}
                     style={{
                       width: 25,
                       height: 25,
