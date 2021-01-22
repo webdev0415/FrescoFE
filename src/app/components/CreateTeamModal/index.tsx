@@ -10,17 +10,19 @@ import { Select } from 'antd';
 
 import { actions, reducer, sliceKey } from './slice';
 import { createTeamSaga } from './saga';
+import { useWorkspaceContext } from '../../../context/workspace';
 
 const { Option } = Select;
 
 export const CreateTeamModal = ({ onCancel, onCreateNewTeam }) => {
   useInjectReducer({ key: sliceKey, reducer: reducer });
   useInjectSaga({ key: sliceKey, saga: createTeamSaga });
+  const { organization, setOrganization } = useWorkspaceContext();
 
   const selectorCreateTeam = useSelector(selectCreateTeam);
   const dispatch = useDispatch();
   const token = useSelector(selectToken);
-  const orgId = useParams();
+  const orgId = organization;
 
   useEffect(() => {
     dispatch(

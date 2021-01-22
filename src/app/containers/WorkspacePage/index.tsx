@@ -1,18 +1,45 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useEffect } from 'react';
 import { Modal, Form, Input, Button, Upload, Row, Col } from 'antd';
-
+import { useInjectReducer, useInjectSaga } from 'utils/redux-injectors';
+import { useDispatch, useSelector } from 'react-redux';
+import { actions, reducer, sliceKey } from './slice';
+import { updateWorkspaceSaga } from './saga';
+import { selectToken } from 'app/selectors';
+import axios from 'axios';
 import ImgCrop from 'antd-img-crop';
 import './styles.less';
 import { useWorkspaceContext } from '../../../context/workspace';
 
 export const WorkspacePage = () => {
+  useInjectReducer({ key: sliceKey, reducer: reducer });
+  useInjectSaga({ key: sliceKey, saga: updateWorkspaceSaga });
+  const [form] = Form.useForm();
   const [previewVisible, setPreviewVisible] = React.useState(false);
   const [previewImage, setPreviewImage] = React.useState('');
   const [previewTitle, setPreviewTitle] = React.useState('');
   const initList = [];
-  const [fileList, setFileList] = React.useState(initList);
+  const [fileList, setFileList] = React.useState<any>(initList);
   const { organization } = useWorkspaceContext();
+  const token = useSelector(selectToken);
+  const dispatch = useDispatch();
 
+  useEffect(() => {
+    if (organization) {
+      form.setFieldsValue({
+        workspacename: organization.organizationName,
+        workspacedomain: organization.organizationSlug,
+      });
+      if (organization.organizationAvatar) {
+        const uploadedAvatarFile = {
+          uid: '-1',
+          name: 'xxx.png',
+          status: 'done',
+          url: organization.organizationAvatar,
+        };
+        setFileList([uploadedAvatarFile]);
+      }
+    }
+  }, [form, organization]);
   const handlePreview = async file => {
     if (!file.url && !file.preview) {
       file.preview = await getBase64(file.originFileObj);
@@ -38,11 +65,54 @@ export const WorkspacePage = () => {
       reader.onerror = error => reject(error);
     });
   };
+  const onFinish = values => {
+    dispatch(
+      actions.updateWorkspaceRequest({
+        data: values,
+        token,
+        orgId: organization.orgId,
+      }),
+    );
+  };
 
+  const onFinishFailed = errorInfo => {
+    console.log('Failed:', errorInfo);
+  };
+
+  const uploadImage = async ({ onSuccess, onError, file }) => {
+    const fmData = new FormData();
+    const config = {
+      headers: {
+        'content-type': 'multipart/form-data',
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
+    fmData.append('file', file);
+    try {
+      const res = await axios.post(
+        process.env.REACT_APP_BASE_URL + 'upload/image/avatar',
+        fmData,
+        config,
+      );
+
+      onSuccess('ok');
+      form.setFieldsValue({
+        avatar: res.data.path,
+      });
+    } catch (err) {
+      onError({ err });
+    }
+  };
   return (
     <Fragment>
       <div className="container">
-        <Form layout="vertical">
+        <Form
+          layout="vertical"
+          onFinish={onFinish}
+          onFinishFailed={onFinishFailed}
+          form={form}
+        >
           <Row>
             <Col xs={18} xl={18}>
               <p style={{ marginBottom: 40 }}>
@@ -72,7 +142,7 @@ export const WorkspacePage = () => {
             <Col xs={1} xl={1}></Col>
             <Col xs={5} xl={5}>
               <p>Logo</p>
-              <div style={{ textAlign: 'right' }}>
+              <Form.Item name="avatar" style={{ textAlign: 'right' }}>
                 <ImgCrop shape="round" rotate>
                   <Upload
                     action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
@@ -80,11 +150,12 @@ export const WorkspacePage = () => {
                     fileList={fileList}
                     onChange={onChange}
                     onPreview={handlePreview}
+                    customRequest={uploadImage}
                   >
                     {fileList.length < 1 && '+ Upload'}
                   </Upload>
                 </ImgCrop>
-              </div>
+              </Form.Item>
             </Col>
           </Row>
           <Form.Item style={{ textAlign: 'right' }}>

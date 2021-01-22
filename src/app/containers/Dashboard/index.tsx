@@ -7,6 +7,7 @@ import React, { memo, useEffect, useRef, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useDispatch, useSelector } from 'react-redux';
 import { Button, Dropdown, Input, Menu, Select, Skeleton, Tabs } from 'antd';
+import arrowSvg from '../../../assets/icons/arrow.svg';
 import {
   PlusOutlined,
   SaveOutlined,
@@ -102,6 +103,7 @@ const StyledBoardDetailedToggleMenuContainer = styled.div`
     align-items: center;
     flex: 1;
     padding-left: 20px;
+    padding-right: 20px;
   }
   ul {
     flex: 5;
@@ -424,9 +426,9 @@ export const Dashboard = memo((props: Props) => {
             ignoredContainers={[invitePeopleToggleMenuRef]}
             equalize="bottom"
             /*onOutsideClick={() => {
-              setIsTeamDetailedMenuOpen(false);
-              setInvitePeopleToggleMenu(false);
-            }}*/
+            setIsTeamDetailedMenuOpen(false);
+            setInvitePeopleToggleMenu(false);
+          }}*/
           >
             {organization && (
               <StyledBoardDetailedToggleMenuContainer>
@@ -440,6 +442,9 @@ export const Dashboard = memo((props: Props) => {
                   }}
                 >
                   <div>{organization.organizationName}</div>
+                  <div>
+                    <img src={arrowSvg} />
+                  </div>
                 </div>
                 <List className="divided">
                   <Item onClick={showMyProfileModal}>
@@ -638,7 +643,6 @@ export const Dashboard = memo((props: Props) => {
             )}
           </TabPane>
           <TabPane
-            disabled
             key="2"
             tab={<TeamMenu offsetContainerRef={tabsContainerRef} />}
           />
