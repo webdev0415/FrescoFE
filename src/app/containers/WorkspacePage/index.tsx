@@ -4,6 +4,7 @@ import { useInjectReducer, useInjectSaga } from 'utils/redux-injectors';
 import { useDispatch, useSelector } from 'react-redux';
 import { actions, reducer, sliceKey } from './slice';
 import { updateWorkspaceSaga } from './saga';
+import { selectWorkspacePage } from './selectors';
 import { selectToken } from 'app/selectors';
 import axios from 'axios';
 import ImgCrop from 'antd-img-crop';
@@ -14,13 +15,16 @@ export const WorkspacePage = () => {
   useInjectReducer({ key: sliceKey, reducer: reducer });
   useInjectSaga({ key: sliceKey, saga: updateWorkspaceSaga });
   const [form] = Form.useForm();
+
   const [previewVisible, setPreviewVisible] = React.useState(false);
   const [previewImage, setPreviewImage] = React.useState('');
   const [previewTitle, setPreviewTitle] = React.useState('');
   const initList = [];
   const [fileList, setFileList] = React.useState<any>(initList);
-  const { organization } = useWorkspaceContext();
+  const { organization, setOrganization } = useWorkspaceContext();
+
   const token = useSelector(selectToken);
+  const workspacePageSelector = useSelector(selectWorkspacePage);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -40,6 +44,28 @@ export const WorkspacePage = () => {
       }
     }
   }, [form, organization]);
+  useEffect(() => {
+    if (workspacePageSelector?.workspace) {
+      const workspace = workspacePageSelector?.workspace;
+      const updatedOrganization = {
+        id: organization.id,
+        orgId: organization.orgId,
+        organizationAvatar: workspace.avatar,
+        organizationName: workspace.name,
+        organizationSlug: workspace.slug,
+        permission: organization.permission,
+        userId: organization.userId,
+      };
+      setOrganization(updatedOrganization);
+    }
+  }, [
+    organization.id,
+    organization.orgId,
+    organization.permission,
+    organization.userId,
+    setOrganization,
+    workspacePageSelector,
+  ]);
   const handlePreview = async file => {
     if (!file.url && !file.preview) {
       file.preview = await getBase64(file.originFileObj);

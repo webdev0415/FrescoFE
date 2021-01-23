@@ -597,11 +597,19 @@ export const Dashboard = memo((props: Props) => {
               right: (
                 <div onClick={() => setIsToggleMenuOpen(!isTeamMenuOpen)}>
                   {userFullName && (
-                    <Avatar fullName={userFullName} avatar={user?.avatar} />
+                    <Avatar
+                      fullName={userFullName}
+                      avatar={user?.avatar}
+                      style={{
+                        width: 34,
+                        height: 34,
+                      }}
+                    />
                   )}
 
                   <Avatar
                     fullName={organization.organizationName}
+                    avatar={organization.organizationAvatar}
                     style={{
                       width: 25,
                       height: 25,

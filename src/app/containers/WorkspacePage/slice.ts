@@ -19,6 +19,7 @@ const workspacePageSlice = createSlice({
     // TODO: define Payload type and use here
     updateWorkspaceSuccess(state, action: PayloadAction<any>) {
       state.loading = false;
+      state.workspace = action.payload;
       // state.workspace = action.payload;
     },
 

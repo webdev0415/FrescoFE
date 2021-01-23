@@ -18,7 +18,6 @@ describe('main file slice slice', () => {
         email: 'example@fresco.com',
         role: 'USER',
         id: '1',
-        avatar: '',
       },
     };
 
