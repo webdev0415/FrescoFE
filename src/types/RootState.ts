@@ -17,7 +17,6 @@ import { CreateTeamModalState } from 'app/components/CreateTeamModal/types';
 import { MyProfileModalState } from 'app/components/MyProfileModal/types';
 import { CreateWorkspaceModalState } from 'app/components/CreateWorkspaceModal/types';
 import { TeamMenuState } from 'app/containers/Dashboard/TeamMenu/types';
-import { WorkspaceMembersState } from 'app/containers/MembersPage/types';
 import { WorkspacePageState } from 'app/containers/WorkspacePage/types';
 // [IMPORT NEW CONTAINERSTATE ABOVE] < Needed for generating containers seamlessly
 
@@ -40,7 +39,6 @@ export interface RootState {
   myProfile?: MyProfileModalState;
   createWorkspace?: CreateWorkspaceModalState;
   teamMenu?: TeamMenuState;
-  workspaceMembers?: TeamMenuState;
   workspacepage?: WorkspacePageState;
   // [INSERT NEW REDUCER KEY ABOVE] < Needed for generating containers seamlessly
 }

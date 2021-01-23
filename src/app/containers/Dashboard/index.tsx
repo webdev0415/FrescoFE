@@ -384,6 +384,7 @@ export const Dashboard = memo((props: Props) => {
           marginBottom: 10,
           border: orgId === item.orgId ? '2px solid #b773ff' : 'none',
         }}
+        avatar={item.organizationAvatar}
         fullName={item.organizationName}
         onClick={() => handleSelectWorkspace(item)}
       />

@@ -1,20 +1,41 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useEffect } from 'react';
 import { Table, Button, Divider, Select } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import './styles.less';
+import { WorkspaceMembersApiService } from '../../../services/APIService/WorkspaceMembersApi.service';
+import { useWorkspaceContext } from 'context/workspace';
+import { selectToken } from 'app/selectors';
+import { useSelector } from 'react-redux';
 
 const { Option } = Select;
 
-interface DataType {
-  key: React.Key;
-  name: string;
-  role: string;
-  email: string;
-  lastaccess: string;
-}
-
 export const MembersPage = () => {
+  const [members, setMembers] = React.useState<any[]>([]);
   const [selectedRowKeys, setSelectRowKeys] = React.useState<string[]>([]);
+
+  const token = useSelector(selectToken);
+  const { organization } = useWorkspaceContext();
+  const orgId = organization.orgId;
+
+  useEffect(() => {
+    if (token && orgId) {
+      WorkspaceMembersApiService.getById(orgId).subscribe(
+        result => {
+          const workspaceMembers = result.map(member => {
+            return {
+              ...member,
+              name: member.firstName + ' ' + member.lastName,
+            };
+          });
+          setMembers(workspaceMembers);
+        },
+        error => {
+          console.error(error);
+        },
+      );
+    }
+  }, [orgId, token]);
+
   const onSelectChange = selectedRowKeys => {
     setSelectRowKeys(selectedRowKeys);
   };
@@ -34,7 +55,7 @@ export const MembersPage = () => {
     },
     {
       title: 'Role',
-      dataIndex: 'role',
+      dataIndex: 'permission',
       render: text => (
         <>
           <Select
@@ -56,37 +77,6 @@ export const MembersPage = () => {
     {
       title: 'Last Access',
       dataIndex: 'lastaccess',
-    },
-  ];
-
-  const data: DataType[] = [
-    {
-      key: '1',
-      name: 'John Brown',
-      role: 'admin',
-      email: 'john@gmail.com',
-      lastaccess: '1 hour ago',
-    },
-    {
-      key: '2',
-      name: 'Jim Green',
-      role: 'owner',
-      email: 'jim@gmail.com',
-      lastaccess: '2 hour ago',
-    },
-    {
-      key: '3',
-      name: 'Joe Black',
-      role: 'admin',
-      email: 'joe@gmail.com',
-      lastaccess: '3 hour ago',
-    },
-    {
-      key: '4',
-      name: 'John Doe',
-      role: 'user',
-      email: 'johndoe@gmail.com',
-      lastaccess: '4 hour ago',
     },
   ];
 
@@ -122,7 +112,7 @@ export const MembersPage = () => {
         <Table
           rowSelection={rowSelection}
           columns={columns}
-          dataSource={data}
+          dataSource={members}
         />
       </div>
     </Fragment>
