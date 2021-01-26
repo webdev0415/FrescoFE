@@ -54,6 +54,8 @@ class DrawBoard extends PureComponent<Props, State> {
   startY: number = 0;
   scrollLeft: number = 0;
   scrollTop: number = 0;
+  currentPositionX: number = 0;
+  currentPositionY: number = 0;
 
   componentDidMount() {
     this.getData();
@@ -76,11 +78,23 @@ class DrawBoard extends PureComponent<Props, State> {
       );
       this.setState({ zoomLevel: this.props.zoomLevel });
       const canvasBody = document.querySelector(
-        '.canvas-body-content',
+        '.canvas-body-content canvas',
       ) as HTMLDivElement;
+
+      const canvasWidth = 1900 * this.state.zoomLevel;
+      const canvasHeight = 1200 * this.state.zoomLevel;
+
       if (canvasBody) {
-        canvasBody.style.width = 1900 * this.state.zoomLevel + 'px';
-        canvasBody.style.height = 1200 * this.state.zoomLevel + 'px';
+        canvasBody.style.width = canvasWidth + 'px';
+        canvasBody.style.height = canvasHeight + 'px';
+        canvasBody.style.top =
+          (window.innerHeight / 2 - canvasHeight / 2) *
+            (this.props.zoomLevel - 1) +
+          'px';
+        canvasBody.style.left =
+          (window.innerWidth / 2 - canvasWidth / 2) *
+            (this.props.zoomLevel - 1) +
+          'px';
       }
     }
   }
@@ -284,6 +298,7 @@ class DrawBoard extends PureComponent<Props, State> {
   onWheel = (e: any) => {
     const scaleBy = 1.05;
     const stage = e.target.getStage();
+
     const oldScale = stage.scaleX();
     const mousePointTo = {
       x: stage.getPointerPosition().x / oldScale - stage.x() / oldScale,
@@ -343,7 +358,6 @@ class DrawBoard extends PureComponent<Props, State> {
     canvasBody.style.cursor = 'all-scroll';
   };
   onMouseUp = (evt: Konva.KonvaEventObject<MouseEvent>) => {
-    this.isClicked = false;
     const canvasBody = document.querySelector(
       '.canvas-body-content',
     ) as HTMLDivElement;
