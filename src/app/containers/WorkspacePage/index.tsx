@@ -3,7 +3,7 @@ import { Modal, Form, Input, Button, Upload, Row, Col } from 'antd';
 import { useInjectReducer, useInjectSaga } from 'utils/redux-injectors';
 import { useDispatch, useSelector } from 'react-redux';
 import { actions, reducer, sliceKey } from './slice';
-import { updateWorkspaceSaga } from './saga';
+import { deleteWorkspaceSaga, updateWorkspaceSaga } from './saga';
 import { selectWorkspacePage } from './selectors';
 import { selectToken } from 'app/selectors';
 import axios from 'axios';
@@ -14,6 +14,7 @@ import { useWorkspaceContext } from '../../../context/workspace';
 export const WorkspacePage = () => {
   useInjectReducer({ key: sliceKey, reducer: reducer });
   useInjectSaga({ key: sliceKey, saga: updateWorkspaceSaga });
+  useInjectSaga({ key: sliceKey, saga: deleteWorkspaceSaga });
   const [form] = Form.useForm();
 
   const [previewVisible, setPreviewVisible] = React.useState(false);
@@ -74,6 +75,15 @@ export const WorkspacePage = () => {
     setPreviewVisible(true);
     setPreviewTitle(
       file.name || file.url.substring(file.url.lastIndexOf('/') + 1),
+    );
+  };
+
+  const handleDelete = () => {
+    dispatch(
+      actions.deleteWorkspaceRequest({
+        token,
+        orgId: organization.orgId,
+      }),
     );
   };
 
@@ -207,6 +217,7 @@ export const WorkspacePage = () => {
                   type="text"
                   danger
                   style={{ whiteSpace: 'normal', padding: 0 }}
+                  onClick={handleDelete}
                 >
                   Delete Organization
                 </Button>
