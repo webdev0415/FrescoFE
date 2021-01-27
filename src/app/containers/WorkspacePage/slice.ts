@@ -26,6 +26,16 @@ const workspacePageSlice = createSlice({
     updateWorkspaceError(state, action: PayloadAction<any>) {
       state.loading = false;
     },
+    deleteWorkspaceRequest(state, action: PayloadAction<any>) {
+      state.loading = true;
+    },
+    deleteWorkspaceSuccess(state, action: PayloadAction<any>) {
+      state.loading = false;
+      state.workspace = action.payload;
+    },
+    deleteWorkspaceError(state, action: PayloadAction<any>) {
+      state.loading = false;
+    },
   },
 });
 

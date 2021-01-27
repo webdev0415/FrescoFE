@@ -3,17 +3,20 @@ import { Modal, Form, Input, Button, Upload, Row, Col } from 'antd';
 import { useInjectReducer, useInjectSaga } from 'utils/redux-injectors';
 import { useDispatch, useSelector } from 'react-redux';
 import { actions, reducer, sliceKey } from './slice';
-import { updateWorkspaceSaga } from './saga';
+import { deleteWorkspaceSaga, updateWorkspaceSaga } from './saga';
 import { selectWorkspacePage } from './selectors';
 import { selectToken } from 'app/selectors';
 import axios from 'axios';
 import ImgCrop from 'antd-img-crop';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 import './styles.less';
 import { useWorkspaceContext } from '../../../context/workspace';
 
 export const WorkspacePage = () => {
   useInjectReducer({ key: sliceKey, reducer: reducer });
   useInjectSaga({ key: sliceKey, saga: updateWorkspaceSaga });
+  useInjectSaga({ key: sliceKey, saga: deleteWorkspaceSaga });
+
   const [form] = Form.useForm();
 
   const [previewVisible, setPreviewVisible] = React.useState(false);
@@ -66,6 +69,14 @@ export const WorkspacePage = () => {
     setOrganization,
     workspacePageSelector,
   ]);
+  const handleDelete = () => {
+    dispatch(
+      actions.deleteWorkspaceRequest({
+        token,
+        orgId: organization.orgId,
+      }),
+    );
+  };
   const handlePreview = async file => {
     if (!file.url && !file.preview) {
       file.preview = await getBase64(file.originFileObj);
@@ -76,7 +87,23 @@ export const WorkspacePage = () => {
       file.name || file.url.substring(file.url.lastIndexOf('/') + 1),
     );
   };
-
+  const { confirm } = Modal;
+  const showConfirm = () => {
+    confirm({
+      title: 'Are you sure delete this workspace?',
+      icon: <ExclamationCircleOutlined />,
+      content: 'Some Description',
+      okText: 'Yes',
+      okType: 'danger',
+      cancelText: 'No',
+      onOk() {
+        handleDelete()
+      },
+      onCancel() {
+        console.log('Cancel');
+      },
+    });
+  }
   const handlePreviewCancel = () => setPreviewVisible(false);
 
   const onChange = ({ fileList: newFileList }) => {
@@ -146,10 +173,11 @@ export const WorkspacePage = () => {
               </p>
               <Form.Item
                 name="workspacename"
+                label="Workspace name"
                 rules={[
                   {
                     required: true,
-                    message: 'Please input the workspace name!',
+                    message: 'Please input the workspace Name!',
                   },
                 ]}
               >
@@ -158,7 +186,7 @@ export const WorkspacePage = () => {
                   defaultValue={organization.organizationName}
                 />
               </Form.Item>
-              <Form.Item name="workspacedomain">
+              <Form.Item name="workspacedomain" label="Workspace URL">
                 <Input
                   placeholder="Workspace Domain"
                   defaultValue={organization.organizationSlug}
@@ -191,7 +219,7 @@ export const WorkspacePage = () => {
           </Form.Item>
         </Form>
         <div>
-          <p>Delete Organization</p>
+          <p>Delete Workspace</p>
           <Row>
             <Col xs={17} xl={17}>
               <p style={{ color: '#b8b8b8' }}>
@@ -207,8 +235,9 @@ export const WorkspacePage = () => {
                   type="text"
                   danger
                   style={{ whiteSpace: 'normal', padding: 0 }}
+                  onClick={showConfirm}
                 >
-                  Delete Organization
+                  Delete Workspace
                 </Button>
               </div>
             </Col>

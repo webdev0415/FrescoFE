@@ -44,6 +44,7 @@ class DrawBoard extends PureComponent<Props, State> {
   };
 
   stageRef: Konva.Stage | null = null;
+  layerRef: Konva.Layer | null = null;
   textAreaRef = React.createRef<HTMLTextAreaElement>();
   isItemFocused: boolean = false;
   isItemMoving: boolean = false;
@@ -54,6 +55,10 @@ class DrawBoard extends PureComponent<Props, State> {
   startY: number = 0;
   scrollLeft: number = 0;
   scrollTop: number = 0;
+  currentPositionX: number = 0;
+  currentPositionY: number = 0;
+  request: any;
+  currentScale: any;
 
   componentDidMount() {
     this.getData();
@@ -75,13 +80,44 @@ class DrawBoard extends PureComponent<Props, State> {
         this.props.zoomLevel,
       );
       this.setState({ zoomLevel: this.props.zoomLevel });
+
+      let stage: any = this.stageRef;
+      let newScale = this.props.zoomLevel;
+
+      const oldScale = stage.scaleX();
+      const mousePointTo = {
+        x: stage.getPointerPosition().x / oldScale - stage.x() / oldScale,
+        y: stage.getPointerPosition().y / oldScale - stage.y() / oldScale,
+      };
+
       const canvasBody = document.querySelector(
         '.canvas-body-content',
       ) as HTMLDivElement;
-      if (canvasBody) {
-        canvasBody.style.width = 1900 * this.state.zoomLevel + 'px';
-        canvasBody.style.height = 1200 * this.state.zoomLevel + 'px';
-      }
+
+      var period = 1000;
+      var anim = new Konva.Animation((frame: any) => {
+        var currentScale = frame.time / period;
+
+        const scrollTo = {
+          left: mousePointTo.x * (frame.time / period - 1),
+          top: mousePointTo.y * (frame.time / period -1),
+        }
+        if (canvasBody) {
+          // code...
+          canvasBody.scrollTo({
+            left: scrollTo.left,
+            top: scrollTo.top,
+          });
+        }
+        if (newScale <= currentScale) {
+          anim.stop();
+        }
+      }, this.layerRef)
+      anim.start();
+      // if (canvasBody) {
+      //   canvasBody.style.width = 1900 * this.state.zoomLevel + 'px';
+      //   canvasBody.style.height = 1200 * this.state.zoomLevel + 'px';
+      // }
     }
   }
 
@@ -400,7 +436,7 @@ class DrawBoard extends PureComponent<Props, State> {
           onWheel={this.onWheel}
           key={'Stage'}
         >
-          <Layer key={'Layer'}>
+          <Layer key={'Layer'} ref={ref => (this.layerRef = ref)}>
             {this.state.objects.map(shapeObject => {
               if (
                 shapeObject.type === 'Rect' ||
