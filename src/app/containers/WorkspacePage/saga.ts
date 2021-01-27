@@ -31,7 +31,7 @@ export function* updateWorkspace(action) {
 export function* deleteWorkspace(action) {
   const { payload } = action;
   const { token, orgId } = payload;
-  console.log('TOKEN: ', token);
+
   try {
     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
     const response = yield axios.delete('organization/' + orgId);
