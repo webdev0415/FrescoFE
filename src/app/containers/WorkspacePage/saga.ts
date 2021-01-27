@@ -28,6 +28,30 @@ export function* updateWorkspace(action) {
   }
 }
 
+export function* deleteWorkspace(action) {
+  const { payload } = action;
+  const { token, orgId } = payload;
+  console.log('TOKEN: ', token);
+  try {
+    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    const response = yield axios.delete('organization/' + orgId);
+    yield put(actions.deleteWorkspaceSuccess(response.data));
+    message.success('deleted workspace successfully.');
+  } catch (error) {
+    yield put(
+      actions.deleteWorkspaceError({
+        message: error.message,
+        status: error.response.status,
+      }),
+    );
+    message.error(error.message);
+  }
+}
+
 export function* updateWorkspaceSaga() {
   yield all([takeLatest(actions.updateWorkspaceRequest.type, updateWorkspace)]);
+}
+
+export function* deleteWorkspaceSaga() {
+  yield all([takeLatest(actions.deleteWorkspaceRequest.type, deleteWorkspace)]);
 }

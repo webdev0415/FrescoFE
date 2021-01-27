@@ -15,15 +15,24 @@ const workspacePageSlice = createSlice({
     updateWorkspaceRequest(state, action: PayloadAction<any>) {
       state.loading = true;
     },
-
     // TODO: define Payload type and use here
     updateWorkspaceSuccess(state, action: PayloadAction<any>) {
       state.loading = false;
       state.workspace = action.payload;
       // state.workspace = action.payload;
     },
-
     updateWorkspaceError(state, action: PayloadAction<any>) {
+      state.loading = false;
+    },
+
+    deleteWorkspaceRequest(state, action: PayloadAction<any>) {
+      state.loading = true;
+    },
+    deleteWorkspaceSuccess(state, action: PayloadAction<any>) {
+      state.loading = false;
+      state.workspace = action.payload;
+    },
+    deleteWorkspaceError(state, action: PayloadAction<any>) {
       state.loading = false;
     },
   },
