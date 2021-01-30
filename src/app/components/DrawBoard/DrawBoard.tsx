@@ -74,50 +74,7 @@ class DrawBoard extends PureComponent<Props, State> {
       this.state.zoomLevel === prevState.zoomLevel &&
       this.state.zoomLevel !== this.props.zoomLevel
     ) {
-      console.log(
-        'componentDidUpdate',
-        this.state.zoomLevel,
-        this.props.zoomLevel,
-      );
       this.setState({ zoomLevel: this.props.zoomLevel });
-
-      let stage: any = this.stageRef;
-      let newScale = this.props.zoomLevel;
-
-      const oldScale = stage.scaleX();
-      const mousePointTo = {
-        x: stage.getPointerPosition().x / oldScale - stage.x() / oldScale,
-        y: stage.getPointerPosition().y / oldScale - stage.y() / oldScale,
-      };
-
-      const canvasBody = document.querySelector(
-        '.canvas-body-content',
-      ) as HTMLDivElement;
-
-      var period = 1000;
-      var anim = new Konva.Animation((frame: any) => {
-        var currentScale = frame.time / period;
-
-        const scrollTo = {
-          left: mousePointTo.x * (frame.time / period - 1),
-          top: mousePointTo.y * (frame.time / period -1),
-        }
-        if (canvasBody) {
-          // code...
-          canvasBody.scrollTo({
-            left: scrollTo.left,
-            top: scrollTo.top,
-          });
-        }
-        if (newScale <= currentScale) {
-          anim.stop();
-        }
-      }, this.layerRef)
-      anim.start();
-      // if (canvasBody) {
-      //   canvasBody.style.width = 1900 * this.state.zoomLevel + 'px';
-      //   canvasBody.style.height = 1200 * this.state.zoomLevel + 'px';
-      // }
     }
   }
 
