@@ -4,6 +4,7 @@ export interface BoardRequestInterface {
   categoryId?: string;
   data: string;
   imageId?: string;
+  teamId?: string;
 }
 
 export interface CollaboratorInterface {

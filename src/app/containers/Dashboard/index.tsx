@@ -14,7 +14,13 @@ import {
   LoadingOutlined,
   AppstoreAddOutlined,
 } from '@ant-design/icons';
-import { Link, Redirect, useHistory, useParams } from 'react-router-dom';
+import {
+  Link,
+  Redirect,
+  useHistory,
+  useParams,
+  useLocation,
+} from 'react-router-dom';
 
 import { useInjectReducer, useInjectSaga } from 'utils/redux-injectors';
 import { actions, reducer, sliceKey } from './slice';
@@ -67,12 +73,13 @@ import { useWorkspacesContext } from '../../../context/workspaces';
 
 const { TabPane } = Tabs;
 export const PERMISSION = {
-  EDITOR: 'edit',
+  EDITOR: 'editor',
   VIEW: 'view',
 };
 
 interface Props {
   match?: any;
+  location?: any;
 }
 
 const TeamsToggleMenuStyledContainer = styled.div`
@@ -127,6 +134,8 @@ const StyledBoardFeaturesContainer = styled.div`
 `;
 
 export const Dashboard = memo((props: Props) => {
+  const location = useLocation();
+  const locationParams = new URLSearchParams(location.search);
   const defaultCanvasName = `Untitled Canvas, ${moment().format(
     'DD/mm/yy, hh:mm A',
   )}`;
@@ -341,6 +350,7 @@ export const Dashboard = memo((props: Props) => {
   }, [orgId, showAddNewBoard]);
 
   const handleLogOut = () => {
+    console.log('ssssssssssss');
     dispatch(globalActions.removeAuth());
     localStorage.clear();
     history.push('/auth/login');
@@ -653,8 +663,23 @@ export const Dashboard = memo((props: Props) => {
           </TabPane>
           <TabPane
             key="2"
-            tab={<TeamMenu offsetContainerRef={tabsContainerRef} />}
-          />
+            tab={
+              <TeamMenu
+                offsetContainerClass=".ant-tabs-nav-wrap"
+                offsetContainerRef={tabsContainerRef}
+              />
+            }
+          >
+            {/*{!!locationParams.get('teamId') ? (
+              <div className="card-section">
+                <h3 className="dashboard__tab-title">My Boards</h3>
+                <h4 className="dashboard__tab-title">My Teams</h4>
+                {organization && <BoardList orgId={organization.orgId} />}
+              </div>
+            ) : (
+              <></>
+            )}*/}
+          </TabPane>
           {user && user.role === 'ADMIN' ? (
             <TabPane tab={<DashboardIcon />} key="3">
               <div className="card-section">

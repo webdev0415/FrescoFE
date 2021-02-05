@@ -8,6 +8,22 @@ const routes: any = {
     path: '/organization/:orgId',
     exact: true,
   },
+  dashboardBoards: {
+    path: '/organization/:orgId/boards',
+    exact: true,
+  },
+  dashboardTeam: {
+    path: '/organization/:orgId/team/:teamId',
+    exact: true,
+  },
+  dashboardCanvases: {
+    path: '/organization/:orgId/canvases',
+    exact: true,
+  },
+  dashboardCategories: {
+    path: '/organization/:orgId/categories',
+    exact: true,
+  },
   createCanvas: {
     path: '/create-canvas',
     exact: true,

@@ -67,7 +67,9 @@ export const TeamMembersModal = ({ onCancel, loading }) => {
         onCancel={() => handleOnCloseMembersListModal()}
       >
         <div style={{ width: '90%', margin: 'auto' }}>
-          <p style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>Team Members</p>
+          <p style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>
+            Workspace Members
+          </p>
 
           <List
             loading={loading}

@@ -16,7 +16,6 @@ export const Chat = ({
   messagesOffset,
   socketIoClient,
   newMessagesBucket,
-  setChatNotification,
   loadingMessages,
 }) => {
   const [scroll, setScroll] = React.useState<null | HTMLElement>(null);
@@ -35,7 +34,6 @@ export const Chat = ({
         scroll={scroll}
         open={open}
         setScroll={setScroll}
-        setChatNotification={setChatNotification}
         newMessagesBucket={newMessagesBucket}
         loadingMessages={loadingMessages}
       />

@@ -44,7 +44,6 @@ class DrawBoard extends PureComponent<Props, State> {
   };
 
   stageRef: Konva.Stage | null = null;
-  layerRef: Konva.Layer | null = null;
   textAreaRef = React.createRef<HTMLTextAreaElement>();
   isItemFocused: boolean = false;
   isItemMoving: boolean = false;
@@ -55,10 +54,6 @@ class DrawBoard extends PureComponent<Props, State> {
   startY: number = 0;
   scrollLeft: number = 0;
   scrollTop: number = 0;
-  currentPositionX: number = 0;
-  currentPositionY: number = 0;
-  request: any;
-  currentScale: any;
 
   componentDidMount() {
     this.getData();
@@ -74,7 +69,19 @@ class DrawBoard extends PureComponent<Props, State> {
       this.state.zoomLevel === prevState.zoomLevel &&
       this.state.zoomLevel !== this.props.zoomLevel
     ) {
+      console.log(
+        'componentDidUpdate',
+        this.state.zoomLevel,
+        this.props.zoomLevel,
+      );
       this.setState({ zoomLevel: this.props.zoomLevel });
+      const canvasBody = document.querySelector(
+        '.canvas-body-content',
+      ) as HTMLDivElement;
+      if (canvasBody) {
+        canvasBody.style.width = 1900 * this.state.zoomLevel + 'px';
+        canvasBody.style.height = 1200 * this.state.zoomLevel + 'px';
+      }
     }
   }
 
@@ -393,7 +400,7 @@ class DrawBoard extends PureComponent<Props, State> {
           onWheel={this.onWheel}
           key={'Stage'}
         >
-          <Layer key={'Layer'} ref={ref => (this.layerRef = ref)}>
+          <Layer key={'Layer'}>
             {this.state.objects.map(shapeObject => {
               if (
                 shapeObject.type === 'Rect' ||

@@ -12,4 +12,5 @@ export default styled.div`
   color: #9646f5;
   border-radius: 50%;
   border: 1px solid #cbc8c8;
+  margin: 0 auto;
 `;

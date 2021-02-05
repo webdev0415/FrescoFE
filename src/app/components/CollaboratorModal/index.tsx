@@ -56,7 +56,7 @@ export const CollaboratorModal = ({ closeModal }) => {
             alignItems: 'center',
             width: '100%',
             height: '40px',
-            padding: '0 16px 0 0',
+            padding: '10px 16px 0 0',
           }}
         >
           <div

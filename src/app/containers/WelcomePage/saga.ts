@@ -33,7 +33,7 @@ export function* signIn(action) {
         });
         if (responseInvitation?.data?.typeId) {
           history.push(
-            `/canvas/${responseInvitation?.data?.typeId}/${responseInvitation?.data?.type}`,
+            `/${responseInvitation?.data?.type}/${responseInvitation?.data?.typeId}`,
             {
               orgId: responseInvitation?.data?.orgId,
             },

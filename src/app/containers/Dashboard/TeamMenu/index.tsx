@@ -8,13 +8,13 @@ import { CreateTeamModal } from '../../../components/CreateTeamModal/Loadable';
 import { List, Item } from 'app/components/List';
 import { actions, reducer, sliceKey } from './slice';
 import { teamMenuSaga } from './saga';
-import { selectToken } from 'app/selectors';
 import { selectTeamMenu } from './selectors';
 import { useDispatch, useSelector } from 'react-redux';
 import { useInjectReducer, useInjectSaga } from 'utils/redux-injectors';
 import { useHistory } from 'react-router-dom';
 
 interface PropsInterface {
+  offsetContainerClass: string;
   offsetContainerRef: React.ElementRef<any>;
 }
 const Team = (props: PropsInterface) => {
@@ -22,9 +22,8 @@ const Team = (props: PropsInterface) => {
   useInjectSaga({ key: sliceKey, saga: teamMenuSaga });
 
   const dispatch = useDispatch();
-  const token = useSelector(selectToken);
   const teamMenuSelector = useSelector(selectTeamMenu);
-  const orgId = useParams<any>();
+  const params = useParams<any>();
 
   const { offsetContainerRef } = props;
   const antTabsNavWrapRef = useRef(null);
@@ -38,15 +37,14 @@ const Team = (props: PropsInterface) => {
   const [teamMenu, setTeamMenu] = useState<any>([]);
 
   useEffect(() => {
-    if (token && orgId) {
+    if (params.orgId) {
       dispatch(
         actions.getTeamMenuRequest({
-          token,
-          orgId,
+          orgId: params.orgId,
         }),
       );
     }
-  }, [dispatch, orgId, token]);
+  }, [dispatch, params.orgId]);
 
   useEffect(() => {
     setTeamMenu(teamMenuSelector?.teamMenu);
@@ -55,7 +53,7 @@ const Team = (props: PropsInterface) => {
   const handleCreateNewTeam = (newTeam: any) => {
     const createdTeam = {
       name: newTeam.teamname,
-      orgId: orgId,
+      orgId: params.orgId,
     };
     setTeamMenu(oldTeamMenuArray => [...oldTeamMenuArray, createdTeam]);
     setIsShowCreateTeamModal(false);
@@ -64,7 +62,10 @@ const Team = (props: PropsInterface) => {
   const renderTeams = () => {
     return teamMenu.map(item => (
       <Item
-        onClick={() => history.push(`/organization/${orgId.orgId}/${item.id}`)}
+        onClick={() => {
+          setIsBoardMenuOpen(false);
+          history.push(`/organization/${params.orgId}/team/${item.id}`);
+        }}
       >
         {item.name}
       </Item>
@@ -73,7 +74,7 @@ const Team = (props: PropsInterface) => {
 
   if (offsetContainerRef.current) {
     antTabsNavWrapRef.current = offsetContainerRef.current.querySelector(
-      '.ant-tabs-nav-wrap',
+      props.offsetContainerClass,
     );
     return (
       <>
@@ -86,7 +87,7 @@ const Team = (props: PropsInterface) => {
           offsetContainerRef={antTabsNavWrapRef}
           width={200}
           height={'full'}
-          onOutsideClick={() => setIsBoardMenuOpen(false)}
+          // onOutsideClick={() => setIsBoardMenuOpen(false)}
         >
           <StyledMenuContainer>
             <div className="title" onClick={() => setIsBoardMenuOpen(false)}>
@@ -94,14 +95,13 @@ const Team = (props: PropsInterface) => {
               <span>Teams</span>
             </div>
             <List>
-              <Item disabledItem className="space-between">
+              <Item
+                disabledItem
+                className="space-between"
+                onClick={() => setIsShowCreateTeamModal(true)}
+              >
                 New Team
-                <span
-                  className="icon"
-                  onClick={() => setIsShowCreateTeamModal(true)}
-                >
-                  +
-                </span>
+                <span className="icon">+</span>
               </Item>
               {renderTeams()}
             </List>

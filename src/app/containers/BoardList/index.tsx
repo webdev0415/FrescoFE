@@ -15,6 +15,7 @@ import { FileExclamationOutlined } from '@ant-design/icons';
 import { useParams } from 'react-router-dom';
 
 interface BoardListProps {
+  teamId?: string;
   orgId: string;
 }
 
@@ -26,26 +27,31 @@ export const BoardList = (props: BoardListProps) => {
   const [loading, setLoading] = useState(false);
   const [visibleBoardMenu, setVisibleBoardMenu] = useState('');
   const [hoveredBoard, setHoveredBoard] = useState('');
-  const params = useParams<any>();
 
   const boardList = useSelector(selectBoardList);
   const dispatch = useDispatch();
 
   const getBoards = React.useCallback(() => {
-    dispatch(actions.attemptGetBoards(props.orgId));
-  }, [dispatch, props.orgId]);
+    if (props.teamId) {
+      dispatch(
+        actions.attemptGetBoards({ orgId: props.orgId, teamId: props.teamId }),
+      );
+    } else {
+      dispatch(actions.attemptGetBoards({ orgId: props.orgId }));
+    }
+  }, [dispatch, props.orgId, props.teamId]);
 
   React.useEffect(() => {
     getBoards();
   }, [getBoards]);
 
-  React.useEffect(() => {
-    if (params.teamId !== undefined) {
-      dispatch(
-        actions.attemptGetBoards(`${props.orgId}?teamId=${params.teamId}`),
-      );
-    }
-  }, [dispatch, params, props.orgId]);
+  // React.useEffect(() => {
+  //   if (props.teamId) {
+  //     dispatch(
+  //       actions.attemptGetBoards(`${props.orgId}?teamId=${props.teamId}`),
+  //     );
+  //   }
+  // }, [dispatch, props.teamId]);
 
   const handleDeleteBoard = (id: string) => {
     BoardApiService.deleteById(id, props.orgId).subscribe(

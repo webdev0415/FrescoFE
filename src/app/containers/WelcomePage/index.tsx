@@ -9,7 +9,7 @@ import { Helmet } from 'react-helmet-async';
 import { useSelector, useDispatch } from 'react-redux';
 import { Button, Card, Typography, Spin, Input } from 'antd';
 import styled from 'styled-components/macro';
-import { useHistory } from 'react-router-dom';
+import { useHistory, Redirect } from 'react-router-dom';
 
 import { useInjectReducer, useInjectSaga } from 'utils/redux-injectors';
 import { reducer, sliceKey, actions } from './slice';
@@ -20,6 +20,7 @@ import { selectToken, selectUser } from '../../selectors';
 import { OrganizationsApiService } from 'services/APIService/OrganizationsApi.service';
 import { selectSelectOrganizationPage } from '../SelectOrganizationPage/selectors';
 import axios from 'axios';
+import { useWorkspacesContext } from '../../../context/workspaces';
 
 interface Props {
   location: any;
@@ -35,6 +36,7 @@ const Div = styled.div`
 export const WelcomePage = memo((props: Props) => {
   useInjectReducer({ key: sliceKey, reducer: reducer });
   useInjectSaga({ key: sliceKey, saga: welcomePageSaga });
+  const { organizations } = useWorkspacesContext();
   const authInfo = localStorage.getItem('authInformation')
     ? JSON.parse(localStorage.getItem('authInformation') || '')
     : null;
@@ -52,7 +54,7 @@ export const WelcomePage = memo((props: Props) => {
   const { Title, Text } = Typography;
   const history = useHistory();
   const queryParams = new URLSearchParams(props.location.search);
-  const [userOrg, setUserOrg] = useState(false);
+  const [userOrg, setUserOrg] = useState<any>();
   const [workspaceName, setWorkspaceName] = useState<string>('');
   const selectOrganizationPage = useSelector(selectSelectOrganizationPage);
   const [uniqueError, setUniqueError] = useState(false);
@@ -99,12 +101,11 @@ export const WelcomePage = memo((props: Props) => {
     dispatch(
       actions.signInRequest({ token: queryParams.get('accessToken'), history }),
     );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [dispatch, history, queryParams, token]);
   useEffect(() => {
     OrganizationsApiService.list().subscribe(data => {
       if (data.length > 0) {
-        setUserOrg(data[0].organizationName);
+        setUserOrg(data[0]);
       }
     });
   }, [user]);
@@ -119,7 +120,13 @@ export const WelcomePage = memo((props: Props) => {
     );
   }
 
-  return (
+  return !!userOrg ? (
+    <Redirect
+      to={{
+        pathname: '/organization/' + userOrg?.orgId,
+      }}
+    />
+  ) : (
     <div
       style={{
         width: '532px',

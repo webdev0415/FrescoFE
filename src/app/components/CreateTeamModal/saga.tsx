@@ -2,6 +2,7 @@ import { all, put, takeLatest } from 'redux-saga/effects';
 import { message } from 'antd';
 import axios from 'axios';
 import { actions } from './slice';
+import { parseApiError } from '../../../utils/common';
 
 export function* createTeam(action) {
   const { payload } = action;
@@ -16,7 +17,7 @@ export function* createTeam(action) {
     yield put(actions.createTeamSuccess(response.data));
   } catch (error) {
     yield put(actions.createTeamRequestError());
-    message.error(error.message);
+    message.error(parseApiError(error).message);
   }
 }
 
@@ -36,7 +37,7 @@ export function* getWorkspaceMembers(action) {
         status: error.response.status,
       }),
     );
-    message.error(error.message);
+    message.error(parseApiError(error).message);
   }
 }
 

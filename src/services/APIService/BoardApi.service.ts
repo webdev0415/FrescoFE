@@ -1,8 +1,23 @@
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { BoardInterface, BoardRequestInterface } from './interfaces';
 import { http } from './http-instance';
 
 export class BoardApiService {
+  public static subject: BehaviorSubject<BoardInterface> = new BehaviorSubject<
+    BoardInterface
+  >({
+    id: '',
+    createdUserId: '',
+    name: '',
+    orgId: '',
+    data: '',
+    teamId: '',
+    users: [],
+  });
+  public static state: Observable<
+    BoardInterface
+  > = BoardApiService.subject.asObservable();
+
   static create(data: BoardRequestInterface): Observable<BoardInterface> {
     return new Observable<BoardInterface>(observer => {
       http
@@ -30,6 +45,7 @@ export class BoardApiService {
         })
         .then(response => {
           observer.next(response.data);
+          BoardApiService.subject.next(response.data);
           observer.complete();
         })
         .catch(error => {

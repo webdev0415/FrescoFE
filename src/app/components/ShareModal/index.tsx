@@ -28,6 +28,7 @@ import { CloseIcon, CopyIcon, ShareIcon } from 'assets/icons';
 import { isEmail } from 'class-validator';
 import { ReactMultiEmail } from 'react-multi-email';
 import 'react-multi-email/style.css';
+import { PERMISSION_LABELS } from '../../../utils/constant';
 
 const MAX_EMAIL = 3;
 const { Option } = Select;
@@ -180,7 +181,8 @@ export const ShareModal = ({
           paddingBottom: '10px',
           backgroundColor: 'white',
           zIndex: 1000,
-          paddingLeft: 30,
+          paddingLeft: 10,
+          boxShadow: '0 0 10px 0 rgba(131,134,163,0.50)',
         }}
         id="share-modal"
       >
@@ -191,7 +193,7 @@ export const ShareModal = ({
             alignItems: 'center',
             width: '100%',
             height: '40px',
-            padding: '0 16px 0 0',
+            padding: '10px 16px 0 0',
           }}
         >
           <div
@@ -208,6 +210,13 @@ export const ShareModal = ({
           </div>
           <CloseIcon onClick={closeModal} className="icon-default" />
         </div>
+        <div
+          style={{
+            borderBottom: '1px solid gray',
+            marginTop: '10px',
+            marginBottom: '10px',
+          }}
+        />
         <Tabs
           defaultActiveKey="1"
           className="tab-modal-share"
@@ -221,7 +230,7 @@ export const ShareModal = ({
               }}
             >
               <ReactMultiEmail
-                placeholder="placeholder"
+                placeholder="Email addresses"
                 emails={emails}
                 onChange={(_emails: string[]) => {
                   setEmails(_emails);
@@ -423,7 +432,9 @@ export const ShareModal = ({
                 trigger={['click']}
               >
                 <div style={{ display: 'inline-flex', alignItems: 'center' }}>
-                  <Text>Anyone with the link can {permission}</Text>
+                  <Text>
+                    Anyone with the link can {PERMISSION_LABELS[permission]}
+                  </Text>
                   <CaretDownFilled style={{ padding: 10 }} />
                 </div>
               </Dropdown>

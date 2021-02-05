@@ -14,12 +14,9 @@ export function* verifyInvitationType(action) {
     });
     console.log('response', response);
     if (response?.data?.typeId) {
-      history.push(
-        `/canvas/${response?.data?.typeId}/${response?.data?.type}`,
-        {
-          orgId: response?.data?.orgId,
-        },
-      );
+      history.push(`/${response?.data?.type}/${response?.data?.typeId}`, {
+        orgId: response?.data?.orgId,
+      });
     }
     message.success('Invitation successfully.');
   } catch (error) {

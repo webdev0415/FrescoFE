@@ -1,5 +1,5 @@
-import React, { memo, useEffect, useState } from 'react';
-import { RouteChildrenProps, useLocation } from 'react-router';
+import React, { useEffect, useState } from 'react';
+import { useLocation } from 'react-router';
 import logoImg from 'assets/icons/logo-color.svg';
 import { ChatIcon, GroupIcon, ShareIcon } from 'assets/icons';
 import { v4 as uuidv4 } from 'uuid';
@@ -19,7 +19,7 @@ import { CollaboratorModal } from 'app/components/CollaboratorModal';
 import { PERMISSION } from '../Dashboard';
 import Axios from 'axios';
 import { useSelector } from 'react-redux';
-import { selectToken } from 'app/selectors';
+import { selectToken, selectUser } from 'app/selectors';
 import { invitationType } from 'utils/constant';
 import { Chat } from 'app/components/Chat/Chat';
 import { MessagesApiService } from 'services/APIService/MessagesApi.service';
@@ -29,7 +29,7 @@ import {
   CollaboratorInterface,
   collaboratorsService,
 } from '../../../services/CollaboratorsService';
-import { Helmet } from 'react-helmet-async';
+import { BoardApiService } from '../../../services/APIService/BoardApi.service';
 
 interface IState {
   orgId?: any;
@@ -65,7 +65,6 @@ export const CreateBoard = connect(({ global: { token } }: any) => ({ token }))(
     const orgId = (location.state as IState)?.orgId;
     const token = useSelector(selectToken);
     const boardId = props?.match?.params?.id;
-    const [user, SetUser] = useState([]);
     const [messagesOffset, setMessagesOffset] = useState(0);
     const [newMessageBucket, setNewMessageBucket] = useState(null);
     const messagesLimit = 25;
@@ -73,24 +72,78 @@ export const CreateBoard = connect(({ global: { token } }: any) => ({ token }))(
     const [messagesOnLoad, setMessagesOnLoad] = useState<Boolean>(false);
     const [chatNotification, setChatNotification] = useState(false);
     const [loadingMessages, setLoadingMessages] = useState(false);
+    const [board, setBoard] = useState<any>(null);
+
+    const user = useSelector(selectUser);
 
     useEffect(() => {
       collaboratorsService.state.subscribe(value => {
         setCollaborators(value);
+      });
+      BoardApiService.state.subscribe(value => {
+        setBoard(value);
       });
     }, []);
 
     useEffect(() => {
       const url = new URL(process.env.REACT_APP_BASE_URL as string);
       url.pathname = 'board';
-      setSocketClient(
-        socketIOClient(url.href, {
-          transports: ['websocket'],
-          query: {
-            token: props.token,
-          },
-        }),
-      );
+      const client = socketIOClient(url.href, {
+        transports: ['websocket'],
+        query: {
+          token: props.token,
+        },
+      });
+      setSocketClient(client);
+
+      if (!Array.isArray(user) && user) {
+        client.on('createMessage', data => {
+          if (data.sender.id !== user.id) {
+            //console.log(chatModal, 'chatModal');
+            setChatMessages(messages => {
+              // setNewMessageIcon(true);
+              // setChatNotification(true);
+              if (data.sender.id !== user.id) {
+                return {
+                  ...messages,
+                  messages: [data, ...messages.messages],
+                };
+              }
+              // if (!chatModal) {
+              //   setChatNotification(true);
+              // } else {
+              //
+              // }
+              // return messages;
+            });
+          }
+        });
+
+        client.on('updateMessage', data =>
+          setChatMessages(messages => {
+            return {
+              ...messages,
+              messages: messages.messages.map(message => {
+                if (message.id === data.id) {
+                  return data;
+                }
+                return message;
+              }),
+            };
+          }),
+        );
+
+        client.on('deleteMessage', data =>
+          setChatMessages(messages => {
+            return {
+              ...messages,
+              messages: messages.messages.filter(
+                message => message.id !== data.id,
+              ),
+            };
+          }),
+        );
+      }
     }, [props.token]);
 
     useEffect(() => {
@@ -111,15 +164,6 @@ export const CreateBoard = connect(({ global: { token } }: any) => ({ token }))(
             setShowSubTools('');
           }
         }
-      });
-      Axios.request({
-        method: 'GET',
-        url: process.env.REACT_APP_BASE_URL + 'auth/me',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }).then(response => {
-        SetUser(response.data);
       });
     }, [token]);
 
@@ -142,27 +186,6 @@ export const CreateBoard = connect(({ global: { token } }: any) => ({ token }))(
           setIsShowShareModal(true);
           setChatModal(false);
           setCollaboratorModal(false);
-        });
-      }
-
-      const chatIcon = document.getElementById('chat-icon') as HTMLDivElement;
-      if (chatIcon) {
-        setMessagesOnLoad(true);
-        chatIcon.addEventListener('click', () => {
-          setChatModal(true);
-          setChatNotification(false);
-          setIsShowShareModal(false);
-          setCollaboratorModal(false);
-          if (chatMessages.length < 1) {
-            MessagesApiService.AllMessages(
-              boardId,
-              messagesOffset,
-              messagesLimit,
-            ).subscribe(data => {
-              setMessagesOnLoad(false);
-              setChatMessages(data);
-            });
-          }
         });
       }
     }, [boardId, chatMessages.length, messagesOffset]);
@@ -264,29 +287,29 @@ export const CreateBoard = connect(({ global: { token } }: any) => ({ token }))(
 
     const handleKeyDown = async event => {
       setShowInputTitle(false);
-        const canvasTitleInput = document.getElementById(
-          'canvas-title-input',
-        ) as HTMLInputElement;
-        setTitle(canvasTitleInput.value);
-        const objState = props.location.state as any;
-        await Axios.request({
-          method: 'PUT',
-          url: `${process.env.REACT_APP_BASE_URL}board/${boardId}`,
-          data: {
-            name: canvasTitleInput.value,
-            orgId: objState.orgId,
-          },
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+      const canvasTitleInput = document.getElementById(
+        'canvas-title-input',
+      ) as HTMLInputElement;
+      setTitle(canvasTitleInput.value);
+      const objState = props.location.state as any;
+      await Axios.request({
+        method: 'PUT',
+        url: `${process.env.REACT_APP_BASE_URL}board/${boardId}`,
+        data: {
+          name: canvasTitleInput.value,
+          orgId: objState.orgId,
+        },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-        setImmediate(() => {
-          const canvasTitle = document.getElementById(
-            'canvas-title',
-          ) as HTMLDivElement;
-          canvasTitle.innerText = canvasTitleInput.value || '';
-        });
+      setImmediate(() => {
+        const canvasTitle = document.getElementById(
+          'canvas-title',
+        ) as HTMLDivElement;
+        canvasTitle.innerText = canvasTitleInput.value || '';
+      });
     };
 
     const handleDoubleClick = _event => {
@@ -308,6 +331,29 @@ export const CreateBoard = connect(({ global: { token } }: any) => ({ token }))(
       setIsShowShareModal(false);
     };
 
+    let appUrl = '/organization/' + orgId;
+    if (board !== null && board.teamId) {
+      appUrl = `/organization/${orgId}/team/${board.teamId}`;
+    }
+
+    const openChatModal = () => {
+      if (!chatModal) {
+        setMessagesOnLoad(true);
+        setChatModal(true);
+        setChatNotification(false);
+        setIsShowShareModal(false);
+        setCollaboratorModal(false);
+        MessagesApiService.AllMessages(boardId, 0, messagesLimit).subscribe(
+          data => {
+            setMessagesOnLoad(false);
+            setChatMessages(data);
+          },
+        );
+      } else {
+        setChatModal(false);
+      }
+    };
+
     return (
       <div className="canvas-view">
         <div className="canvas-editor">
@@ -324,7 +370,6 @@ export const CreateBoard = connect(({ global: { token } }: any) => ({ token }))(
               user={user}
               setMessagesOffset={setMessagesOffset}
               newMessagesBucket={newMessageBucket}
-              setChatNotification={setChatNotification}
               loadingMessages={loadingMessages}
             />
           )}
@@ -357,10 +402,7 @@ export const CreateBoard = connect(({ global: { token } }: any) => ({ token }))(
           )}
           <div className="canvas-header">
             <div className="canvas-header-left">
-              <Link
-                to={`/organization/${orgId}`}
-                className="canvas-header-logo"
-              >
+              <Link to={appUrl} className="canvas-header-logo">
                 <img src={logoImg} style={{ color: '#9646f5' }} alt="logo" />
               </Link>
               {!showInputTitle ? (
@@ -379,10 +421,10 @@ export const CreateBoard = connect(({ global: { token } }: any) => ({ token }))(
               )}
               <div className="canvas-header-actions">
                 <div className="canvas-header-action-item" id="undo-history">
-                  <UndoIcon style={{ color: '#9646f5' }}/>
+                  <UndoIcon style={{ color: '#9646f5' }} />
                 </div>
                 <div className="canvas-header-action-item" id="redo-history">
-                  <RedoIcon style={{ color: '#9646f5' }}/>
+                  <RedoIcon style={{ color: '#9646f5' }} />
                 </div>
               </div>
             </div>
@@ -409,6 +451,7 @@ export const CreateBoard = connect(({ global: { token } }: any) => ({ token }))(
                 </Button>
                 <Button
                   id="chat-icon"
+                  onClick={() => openChatModal()}
                   className={clsx('canvas-header-action-item', {
                     active: chatModal,
                   })}

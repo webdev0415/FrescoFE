@@ -15,6 +15,7 @@ const { TabPane } = Tabs;
 
 interface Props {
   orgId: string;
+  teamId?: string;
 
   onClose();
 }
@@ -49,6 +50,7 @@ export const CanvasBoardTemplates = memo((props: Props) => {
         name: boardName,
         orgId: props.orgId,
         categoryId: categoryId,
+        teamId: props.teamId,
       }).subscribe(
         board => {
           props.onClose();

@@ -1,0 +1,87 @@
+.billings-page-container {
+  margin: auto;
+
+  .billings-row {
+    flex-wrap: nowrap;
+
+    .billings-column {
+      min-width: 250px;
+      border: solid 1px #e8e8e8;
+      border-radius: 6px;
+      margin: 10px;
+      box-shadow: 0 0 16px rgba(0, 0, 0, .1);
+      padding: 10px;
+
+      &:first-child, &:last-child {
+        margin-top: 30px;
+      }
+
+      .billings-card {
+
+        &-title {
+          text-align: center;
+          font-weight: bold;
+          font-size: 18px;
+        }
+
+        &-description {
+          text-align: center;
+        }
+
+        &-price {
+          display: flex;
+          justify-content: center;
+          margin-top: 80px;
+          font-weight: bold;
+
+          &-currency {
+            font-size: 22px;
+            line-height: 0;
+          }
+
+          &-coast {
+            font-size: 50px;
+            line-height: 20px;
+          }
+
+          &-month {
+            font-size: 22px;
+          }
+
+        }
+
+        &-button-container {
+          text-align: center;
+          margin-top: 80px;
+          width: 100%;
+          padding: 0 20px;
+
+          button {
+            width: 100%;
+          }
+        }
+
+        &-renew {
+          text-align: center;
+          margin-top: 20px;
+        }
+
+        &-offer-item {
+          padding: 0 20px;
+          margin-top: 50px;
+          display: flex;
+          align-items: center;
+
+          span {
+            margin-right: 10px;
+          }
+
+        }
+      }
+
+      &:hover {
+        box-shadow: 0 2px 15px 0 rgba(0,0,0,.15);
+      }
+    }
+  }
+}

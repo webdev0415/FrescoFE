@@ -16,6 +16,9 @@ const globalSlice = createSlice({
       state.token = action.payload.token.accessToken;
       state.user = action.payload.user;
     },
+    setUserData(state, action) {
+      state.user = action.payload;
+    },
     removeAuth(state) {
       state.token = null;
       state.user = null;

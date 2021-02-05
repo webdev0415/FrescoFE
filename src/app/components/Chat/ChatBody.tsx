@@ -8,21 +8,20 @@ import chatArrow from 'assets/icons/arrow.png';
 import ScrollNumber from 'antd/lib/badge/ScrollNumber';
 
 const ChatBody = ({
-                    messages,
-                    user,
-                    setChatMessages,
-                    boardId,
-                    setMessagesOffset,
-                    messagesOffset,
-                    scroll,
-                    socketIoClient,
-                    setScroll,
-                    open,
-                    messagesOnLoad,
-                    newMessagesBucket,
-                    setChatNotification,
-                    loadingMessages,
-                  }) => {
+  messages,
+  user,
+  setChatMessages,
+  boardId,
+  setMessagesOffset,
+  messagesOffset,
+  scroll,
+  socketIoClient,
+  setScroll,
+  open,
+  messagesOnLoad,
+  newMessagesBucket,
+  loadingMessages,
+}) => {
   const messagesGroupDuration = 120;
   let messagesArr = [...(messages?.messages || [])];
   const heightBeforeRender = scroll?.scrollHeight;
@@ -37,7 +36,6 @@ const ChatBody = ({
   const { id: orgId } = useParams<any>();
 
   useEffect(() => {
-    console.log(messagesOnLoad);
     if (messagesOnLoad == true) {
       setLoading(true);
     } else {
@@ -57,68 +55,13 @@ const ChatBody = ({
     }
   }, [open, scroll]);
 
-  const getNewMessagesIcon = () => {
-    if (scroll) {
-      if (scroll.scrollHeight - scroll.scrollTop > scroll.offsetHeight + 50) {
-        setScrollToBottomIcon('active');
-      }
-    }
-  };
-
-  useEffect(() => {
-    if (!Array.isArray(user)) {
-      socketIoClient.on('createMessage', data => {
-        if (data.sender.id !== user.id) {
-          setChatMessages(messages => {
-            getNewMessagesIcon();
-            if (!open) {
-              setChatNotification(true);
-            }
-            if (data.sender.id !== user.id) {
-              return {
-                ...messages,
-                messages: [data, ...messages.messages],
-              };
-            }
-            return messages;
-          });
-        }
-      });
-
-      socketIoClient.on('updateMessage', data =>
-        setChatMessages(messages => {
-          return {
-            ...messages,
-            messages: messages.messages.map(message => {
-              if (message.id === data.id) {
-                return data;
-              }
-              return message;
-            }),
-          };
-        }),
-      );
-
-      socketIoClient.on('deleteMessage', data =>
-        setChatMessages(messages => {
-          return {
-            ...messages,
-            messages: messages.messages.filter(
-              message => message.id !== data.id,
-            ),
-          };
-        }),
-      );
-    }
-  }, [
-    setChatMessages,
-    socketIoClient,
-    user,
-    scroll,
-    open,
-    getNewMessagesIcon,
-    setChatNotification,
-  ]);
+  // useEffect(() => {
+  //   if (scroll) {
+  //     if (scroll.scrollHeight - scroll.scrollTop > scroll.offsetHeight + 50) {
+  //       setScrollToBottomIcon('active');
+  //     }
+  //   }
+  // }, [newMessageIcon]);
 
   useEffect(scrollToBottom, [messages]);
 
@@ -138,7 +81,6 @@ const ChatBody = ({
       scroll.scrollTop = scroll.scrollHeight + heightBeforeRender;
     }
     setScrollToBottomIcon('');
-    setChatNotification(false);
   };
 
   const handleScroll = ({ target }) => {
@@ -219,12 +161,18 @@ const ChatBody = ({
           group.user.id === user.id ? 'logged-user' : '';
         return (
           <div key={`${index}-${uuidv4()}`}>
-            <div className={`chatBox-body-user ${messagesOnLoad ? 'onload' : ''} ${loggedUserMessageGroup}`}>
-              <img src={chatUser} alt='avatar' />
-              <p className='user-block'>
+            <div
+              className={`chatBox-body-user ${
+                messagesOnLoad ? 'onload' : ''
+              } ${loggedUserMessageGroup}`}
+            >
+              <img src={chatUser} alt="avatar" />
+              <p className="user-block">
                 {' '}
-                <span>{group.user.firstName} {group.user.lastName}</span>{' '}
-                <span className='chatBox-body-user-time'>
+                <span>
+                  {group.user.firstName} {group.user.lastName}
+                </span>{' '}
+                <span className="chatBox-body-user-time">
                   {' '}
                   {moment(group.messages[0].createdAt).format('HH:MM')}{' '}
                 </span>

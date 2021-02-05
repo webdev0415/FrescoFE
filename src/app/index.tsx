@@ -41,6 +41,7 @@ import { VerifyInvitationType } from './containers/VerifyInvitationType';
 import { WorkspaceContext } from 'context/workspace';
 import { WorkspacesContext } from 'context/workspaces';
 import routes from '../routes/routesCode';
+import { DashboardNew } from './containers/DashboardNew/Loadable';
 
 function AppComponent(props) {
   useInjectReducer({ key: sliceKey, reducer });
@@ -94,8 +95,33 @@ function AppComponent(props) {
           <WorkspaceContext.Provider value={{ organization, setOrganization }}>
             <PrivateRoute
               exact
-              path="/organization/:orgId"
+              path="/organization/:orgId/old"
               component={Dashboard}
+            />
+            <PrivateRoute
+              exact={routes.dashboard.exact}
+              path={routes.dashboard.path}
+              component={DashboardNew}
+            />
+            <PrivateRoute
+              exact={routes.dashboardBoards.exact}
+              path={routes.dashboardBoards.path}
+              component={DashboardNew}
+            />
+            <PrivateRoute
+              exact={routes.dashboardTeam.exact}
+              path={routes.dashboardTeam.path}
+              component={DashboardNew}
+            />
+            <PrivateRoute
+              exact={routes.dashboardCanvases.exact}
+              path={routes.dashboardCanvases.path}
+              component={DashboardNew}
+            />
+            <PrivateRoute
+              exact={routes.dashboardCategories.exact}
+              path={routes.dashboardCategories.path}
+              component={DashboardNew}
             />
             <PrivateRoute
               exact

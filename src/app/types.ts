@@ -1,5 +1,5 @@
 /* --- STATE --- */
-interface UserType {
+export interface UserType {
   id: string;
   name: string;
   firstName: string;

@@ -4,6 +4,17 @@ import StyledContainer from './StyledContainer';
 import useOutsideClickHandler from '../../../customHooks/useOnClickOutside';
 
 interface PropsInterface {
+  orgId?: string;
+  isTeamMenuOpen?: any;
+  organizations?: any;
+  setIsToggleMenuOpen?: any;
+  gotoWorkspaceSettingsBillingsPage?: any;
+  gotoWorkspaceSettingsPage?: any;
+  gotoWorkspaceSettingsTeamsPage?: any;
+  handleLogOut?: any;
+  organization?: any;
+  setOrganizations?: any;
+  history?: any;
   offsetContainerRef: React.ElementRef<any>;
   menuRefObject: React.ElementRef<any>;
   isOpen: Boolean;
@@ -21,7 +32,7 @@ interface PositionStateInterface {
   left: Number;
 }
 
-const ToggleMenu = (props: PropsInterface) => {
+const ToggleMenu = (props: any) => {
   const [endPosition, setEndPosition] = useState<PositionStateInterface>({
     top: 0,
     left: 0,

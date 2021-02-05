@@ -3,7 +3,8 @@ import { Modal, Form, Input, Button, Upload, Row, Col } from 'antd';
 import { useInjectReducer, useInjectSaga } from 'utils/redux-injectors';
 import { useDispatch, useSelector } from 'react-redux';
 import { actions, reducer, sliceKey } from './slice';
-import { deleteWorkspaceSaga, updateWorkspaceSaga } from './saga';
+// import { deleteWorkspaceSaga, updateWorkspaceSaga } from './saga';
+import { workspaceSaga } from './saga'
 import { selectWorkspacePage } from './selectors';
 import { selectToken } from 'app/selectors';
 import axios from 'axios';
@@ -14,9 +15,9 @@ import { useWorkspaceContext } from '../../../context/workspace';
 
 export const WorkspacePage = () => {
   useInjectReducer({ key: sliceKey, reducer: reducer });
-  useInjectSaga({ key: sliceKey, saga: updateWorkspaceSaga });
-  useInjectSaga({ key: sliceKey, saga: deleteWorkspaceSaga });
-
+  useInjectSaga({ key: sliceKey, saga: workspaceSaga });
+  // useInjectSaga({ key: sliceKey, saga: updateWorkspaceSaga });
+  
   const [form] = Form.useForm();
 
   const [previewVisible, setPreviewVisible] = React.useState(false);
@@ -69,14 +70,6 @@ export const WorkspacePage = () => {
     setOrganization,
     workspacePageSelector,
   ]);
-  const handleDelete = () => {
-    dispatch(
-      actions.deleteWorkspaceRequest({
-        token,
-        orgId: organization.orgId,
-      }),
-    );
-  };
   const handlePreview = async file => {
     if (!file.url && !file.preview) {
       file.preview = await getBase64(file.originFileObj);
@@ -85,6 +78,16 @@ export const WorkspacePage = () => {
     setPreviewVisible(true);
     setPreviewTitle(
       file.name || file.url.substring(file.url.lastIndexOf('/') + 1),
+    );
+  };
+
+  const handlePreviewCancel = () => setPreviewVisible(false);
+  const handleDelete = () => {
+    dispatch(
+      actions.deleteWorkspaceRequest({
+        token,
+        orgId: organization.orgId,
+      }),
     );
   };
   const { confirm } = Modal;
@@ -104,8 +107,6 @@ export const WorkspacePage = () => {
       },
     });
   }
-  const handlePreviewCancel = () => setPreviewVisible(false);
-
   const onChange = ({ fileList: newFileList }) => {
     setFileList(newFileList);
   };
@@ -173,11 +174,11 @@ export const WorkspacePage = () => {
               </p>
               <Form.Item
                 name="workspacename"
-                label="Workspace name"
+                label="Workspace Name"
                 rules={[
                   {
                     required: true,
-                    message: 'Please input the workspace Name!',
+                    message: 'Please input the workspace name!',
                   },
                 ]}
               >

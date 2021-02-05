@@ -1,19 +1,26 @@
 import React from 'react';
 import logoImg from '../../../assets/icons/logo.svg';
-import { useHistory } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import './Header.less';
 import { useSelector } from 'react-redux';
 import { selectUser } from '../../selectors';
 import Avatar from '../Avatar';
+import { useWorkspaceContext } from '../../../context/workspace';
 
 interface HeaderProps {
   isLogIn?: boolean;
 }
 /* istanbul ignore next */
 const Header: React.FC<HeaderProps> = props => {
+  const { organization } = useWorkspaceContext();
   const user = useSelector(selectUser);
   const history = useHistory();
   const currentUrl = history.location.pathname;
+  const appUrl =
+    organization !== null
+      ? `/organization/${organization.orgId}`
+      : '/auth/welcome-page';
+
   let headerButton;
   if (currentUrl == '/auth/login') {
     headerButton = (
@@ -74,14 +81,14 @@ const Header: React.FC<HeaderProps> = props => {
             textAlign: 'left',
             color: 'white',
           }}
-          href="/"
+          href={appUrl}
         >
           <img src={logoImg} alt="logo" />
         </a>
         <div>{headerButton}</div>
-        {props.isLogIn && (
-          <Avatar fullName={userFullName} avatar={user?.avatar} />
-        )}
+        <div style={{ justifyContent: 'flex-end' }}>
+          {!!user && <Avatar fullName={userFullName} avatar={user?.avatar} />}
+        </div>
       </div>
     </div>
   );

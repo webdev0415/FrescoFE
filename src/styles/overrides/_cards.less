@@ -4,6 +4,89 @@
   width: calc(100vw - 95px);
   padding-top: 20px;
 
+  &-avatars {
+    display: flex;
+    align-items: center;
+    float: right;
+    margin-right: 16px;
+
+    .canvas-collaborators {
+      margin-right: 10px !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      transform: rotateY(180deg);
+
+      .oval {
+        height: 28px !important;
+        width: 28px !important;
+        border-radius: 50% !important;
+        border: 1px solid white !important;
+        background-color: #9646f5;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 12px;
+        color: white;
+        transform: rotateY(-180deg);
+
+        &.count {
+          margin-right: 0 !important;
+          background-color: #9b9b9b;
+        }
+
+        &:not(:last-child) {
+          margin-right: -12px;
+        }
+      }
+
+      img {
+        height: 23px !important;
+        width: 23px !important;
+        border-radius: 50% !important;
+        border: 1px solid white !important;
+
+        &:not(:last-child) {
+          margin-right: -5px !important;
+        }
+      }
+    }
+
+    &-list {
+      display: flex;
+      align-items: center;
+
+      .avatar {
+
+        position: relative;
+        &:first-child {
+          left: 20px !important;
+        }
+
+        &:not(:last-child) {
+          left: 10px;
+        }
+      }
+    }
+
+    .add-user-image {
+      height: 24px;
+      cursor: pointer;
+      margin-left: 10px;
+    }
+
+    .ant-divider {
+      height: 30px;
+      color: #C4C4C4;
+      width: 1px;
+    }
+
+    .users-count {
+      font-size: 16px;
+      margin-left: 5px;
+      color: #9646f5;
+    }
+  }
+
   .card-section-title {
     margin-top: 40px;
     color: #4e4b5c;

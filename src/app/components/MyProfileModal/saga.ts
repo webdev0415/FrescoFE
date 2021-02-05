@@ -2,6 +2,7 @@ import { all, put, takeLatest } from 'redux-saga/effects';
 import { message } from 'antd';
 import axios from 'axios';
 import { actions } from './slice';
+import { actions as globalActions } from '../../slice';
 
 // import { actions as globalActions } from '../../slice';
 
@@ -17,6 +18,7 @@ export function* updateProfile(action) {
       avatar: data.avatar,
     });
     yield put(actions.updateProfileSuccess(response.data));
+    yield put(globalActions.setUserData(response.data));
     message.success('Updated your profile successfully.');
   } catch (error) {
     yield put(

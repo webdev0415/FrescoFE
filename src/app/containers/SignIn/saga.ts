@@ -4,8 +4,8 @@ import axios from 'axios';
 
 import { actions } from './slice';
 import { actions as globalActions } from '../../slice';
-import { actions as verifyInvitationTypeActions } from '../VerifyInvitationType/slice';
 import Auth from 'services/Auth';
+import { parseApiError } from '../../../utils/common';
 
 export function* signIn(action) {
   try {
@@ -17,19 +17,6 @@ export function* signIn(action) {
     localStorage.setItem('authInformation', JSON.stringify(response.data));
     message.success('Logged in successfully.');
 
-
-    axios.defaults.headers.common[
-      'Authorization'
-      ] = `Bearer ${response?.data?.token?.accessToken}`;
-    axios.get('organization').then((response) => {
-      if (response.data.length > 0) {
-        history.push(`/organization/${response.data[0].orgId}`);
-      } else {
-        history.push('/auth/welcome-page');
-      }
-    });
-
-
     Auth.setToken(response?.data?.token?.accessToken);
     Auth.update();
 
@@ -40,29 +27,32 @@ export function* signIn(action) {
       try {
         axios.defaults.headers.common[
           'Authorization'
-          ] = `Bearer ${response?.data?.token?.accessToken}`;
+        ] = `Bearer ${response?.data?.token?.accessToken}`;
         const res = yield axios.post('invitation-type/request', {
           token: JSON.parse(tokenVerifyJson).tokenVerify,
           history,
         });
         console.log('res', res);
         if (res?.data?.typeId) {
-          history.push(`/canvas/${res?.data?.typeId}/${res?.data?.type}`, {
+          history.push(`/${res?.data?.type}/${res?.data?.typeId}`, {
             orgId: res?.data?.orgId,
           });
         }
         message.success('Invitation successfully.');
       } catch (e) {
         history.push('/');
-        message.error(`Invitation : ${e.message}`);
+        message.error(`Invitation : ${parseApiError(e).message}`);
       }
+    } else {
+      history.push('/');
     }
   } catch (error) {
-    if (error.response.status === 401) {
+    const errorResponse = parseApiError(error);
+    if (errorResponse.statusCode === 401) {
       yield put(
         actions.signInError({
-          message: error.message,
-          status: error.response.status,
+          message: errorResponse.message,
+          status: errorResponse.statusCode,
         }),
       );
       Modal.confirm({
@@ -71,8 +61,8 @@ export function* signIn(action) {
     } else if (error.response.status === 404) {
       yield put(
         actions.signInError({
-          message: error.message,
-          status: error.response.status,
+          message: errorResponse.message,
+          status: errorResponse.statusCode,
         }),
       );
       Modal.confirm({
@@ -81,8 +71,8 @@ export function* signIn(action) {
     } else {
       yield put(
         actions.signInError({
-          message: error.message,
-          status: error.response.status,
+          message: errorResponse.message,
+          status: errorResponse.statusCode,
         }),
       );
       message.error(error.message);

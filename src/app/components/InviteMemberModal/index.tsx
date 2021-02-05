@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
 import { Modal, Input, Button, Row, Col, Select, AutoComplete } from 'antd';
-import { PERMISSION } from 'app/containers/Dashboard';
+import { PERMISSION } from 'app/containers/DashboardNew';
 let timer;
 
 const { Option } = Select;
@@ -37,9 +37,9 @@ export const InviteMemberModal = ({
       <Modal visible={true} footer={null} onCancel={() => handleOnCancel()}>
         <div style={{ width: '90%', margin: 'auto' }}>
           <p style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>
-            Invite to team
+            Invite to workspace
           </p>
-          <p>Email addresses</p>
+          <p>Email address</p>
 
           <div>
             <Row>
@@ -79,10 +79,10 @@ export const InviteMemberModal = ({
           </div>
 
           <Button type="primary" loading={loading} onClick={handleInvitation}>
-            Send invitations
+            Send invitation
           </Button>
 
-          <div style={{ margin: '1rem 0' }}>
+          {/*<div style={{ margin: '1rem 0' }}>
             <Row>
               <Col xs={20} xl={20}>
                 <Input disabled={true} />
@@ -98,7 +98,7 @@ export const InviteMemberModal = ({
                 </Button>
               </Col>
             </Row>
-          </div>
+          </div>*/}
         </div>
       </Modal>
     </Fragment>

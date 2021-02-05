@@ -2,6 +2,7 @@ import { all, put, takeLatest } from 'redux-saga/effects';
 import { message } from 'antd';
 import axios from 'axios';
 import { actions } from './slice';
+import { parseApiError } from '../../../utils/common';
 
 export function* listOrganizations(action) {
   const { payload } = action;
@@ -12,13 +13,14 @@ export function* listOrganizations(action) {
     yield put(actions.listOrganizationsSuccess(response.data));
   } catch (error) {
     // history.push('/err');
+    const errorResponse = parseApiError(error);
     yield put(
       actions.listOrganizationsError({
-        message: error.message,
-        status: error.response.status,
+        message: errorResponse.message,
+        status: error.statusCode,
       }),
     );
-    message.error(error.message);
+    message.error(errorResponse.message);
   }
 }
 
