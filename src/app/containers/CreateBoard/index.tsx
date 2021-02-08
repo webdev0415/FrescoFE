@@ -144,7 +144,7 @@ export const CreateBoard = connect(({ global: { token } }: any) => ({ token }))(
           }),
         );
       }
-    }, [props.token]);
+    }, [props.token, user]);
 
     useEffect(() => {
       if (!chatModal) {
@@ -474,7 +474,22 @@ export const CreateBoard = connect(({ global: { token } }: any) => ({ token }))(
               </div>
             </div>
           </div>
-
+          <div>
+            <Link to="/Feedback">
+              <Button
+                style={{
+                  position: 'relative',
+                  marginLeft: '-52px',
+                  marginTop: '300px',
+                  transform: 'rotate(90deg)',
+                  color: '#fff',
+                  backgroundColor: '#9646f5',
+                }}
+              >
+                Share Feedback
+              </Button>
+            </Link>
+          </div>
           <div className="canvas-footer">
             <div className="canvas-footer-actions">
               <div

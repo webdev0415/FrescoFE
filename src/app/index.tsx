@@ -42,6 +42,7 @@ import { WorkspaceContext } from 'context/workspace';
 import { WorkspacesContext } from 'context/workspaces';
 import routes from '../routes/routesCode';
 import { DashboardNew } from './containers/DashboardNew/Loadable';
+import Feedback from './containers/Feedback';
 
 function AppComponent(props) {
   useInjectReducer({ key: sliceKey, reducer });
@@ -151,6 +152,7 @@ function AppComponent(props) {
               path="/invitation-type/verification/:token"
               component={VerifyInvitationType}
             />
+            <Route path="/Feedback" component={Feedback} />
             <PrivateRoute
               exact
               path="/create-org"
