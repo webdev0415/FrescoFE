@@ -7,10 +7,13 @@ const FeedBack = () => {
 
   return (
     <div>
-      <Header style={{ backgroundColor: '#fff' }}>
+      <Header style={{ backgroundColor: '#fff', height: '65px' }}>
         <Row justify="space-between">
           <Col span={4}>
-            <Title level={3} style={{ color: 'blue' }}>
+            <Title
+              level={3}
+              style={{ color: 'blue', fontSize: '38px', paddingLeft: '40px' }}
+            >
               Feedback
             </Title>
           </Col>
@@ -34,80 +37,128 @@ const FeedBack = () => {
                 <Radio.Group buttonStyle="solid" size="large">
                   <Space size="middle">
                     <Radio.Button
-                      style={{ border: '1px solid blue' }}
+                      style={{
+                        border: '1px solid blue',
+                        padding: '0 25px 25px',
+                        color: 'blue',
+                      }}
                       value={0}
                     >
                       0
                     </Radio.Button>
 
                     <Radio.Button
-                      style={{ border: '1px solid blue' }}
+                      style={{
+                        border: '1px solid blue',
+                        padding: '0 25px 25px',
+                        color: 'blue',
+                      }}
                       value={1}
                     >
                       1
                     </Radio.Button>
                     <Radio.Button
-                      style={{ border: '1px solid blue' }}
+                      style={{
+                        border: '1px solid blue',
+                        padding: '0 25px 25px',
+                        color: 'blue',
+                      }}
                       value={2}
                     >
                       2
                     </Radio.Button>
                     <Radio.Button
-                      style={{ border: '1px solid blue' }}
+                      style={{
+                        border: '1px solid blue',
+                        padding: '0 25px 25px',
+                        color: 'blue',
+                      }}
                       value={3}
                     >
                       3
                     </Radio.Button>
                     <Radio.Button
-                      style={{ border: '1px solid blue' }}
+                      style={{
+                        border: '1px solid blue',
+                        padding: '0 25px 25px',
+                        color: 'blue',
+                      }}
                       value={4}
                     >
                       4
                     </Radio.Button>
                     <Radio.Button
-                      style={{ border: '1px solid blue' }}
+                      style={{
+                        border: '1px solid blue',
+                        padding: '0 25px 25px',
+                        color: 'blue',
+                      }}
                       value={5}
                     >
                       5
                     </Radio.Button>
                     <Radio.Button
-                      style={{ border: '1px solid blue' }}
+                      style={{
+                        border: '1px solid blue',
+                        padding: '0 25px 25px',
+                        color: 'blue',
+                      }}
                       value={6}
                     >
                       6
                     </Radio.Button>
                     <Radio.Button
-                      style={{ border: '1px solid blue' }}
+                      style={{
+                        border: '1px solid blue',
+                        padding: '0 25px 25px',
+                        color: 'blue',
+                      }}
                       value={7}
                     >
                       7
                     </Radio.Button>
                     <Radio.Button
-                      style={{ border: '1px solid blue' }}
+                      style={{
+                        border: '1px solid blue',
+                        padding: '0 25px 25px',
+                        color: 'blue',
+                      }}
                       value={8}
                     >
                       8
                     </Radio.Button>
                     <Radio.Button
-                      style={{ border: '1px solid blue' }}
+                      style={{
+                        border: '1px solid blue',
+                        padding: '0 25px 25px',
+                        color: 'blue',
+                      }}
                       value={9}
                     >
                       9
                     </Radio.Button>
                     <Radio.Button
-                      style={{ border: '1px solid blue' }}
+                      style={{
+                        border: '1px solid blue',
+                        padding: '0 25px 25px',
+                        color: 'blue',
+                      }}
                       value={10}
                     >
                       10
                     </Radio.Button>
                   </Space>
                 </Radio.Group>
-                <Row justify="space-between">
+                <Row>
                   <Col span={10}>
-                    <Text style={{ fontSize: '12px' }}>Very unlikely</Text>
+                    <Text style={{ fontSize: '12px', marginLeft: '-220px' }}>
+                      Very unlikely
+                    </Text>
                   </Col>
                   <Col span={10}>
-                    <Text style={{ fontSize: '12px' }}>Very likely</Text>
+                    <Text style={{ fontSize: '12px', marginRight: '-530px' }}>
+                      Very likely
+                    </Text>
                   </Col>
                 </Row>
               </div>
