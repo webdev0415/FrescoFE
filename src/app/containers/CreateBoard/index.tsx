@@ -476,18 +476,7 @@ export const CreateBoard = connect(({ global: { token } }: any) => ({ token }))(
           </div>
           <div>
             <Link to="/Feedback">
-              <Button
-                style={{
-                  position: 'relative',
-                  marginLeft: '-52px',
-                  marginTop: '300px',
-                  transform: 'rotate(90deg)',
-                  color: '#fff',
-                  backgroundColor: '#9646f5',
-                }}
-              >
-                Share Feedback
-              </Button>
+              <Button className="feedback-btn">Share Feedback</Button>
             </Link>
           </div>
           <div className="canvas-footer">

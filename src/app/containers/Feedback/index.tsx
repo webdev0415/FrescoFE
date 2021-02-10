@@ -1,185 +1,117 @@
 import React from 'react';
-import { Radio, Row, Col, Space, Typography, Layout, Card } from 'antd';
+import { Radio, Row, Col, Card } from 'antd';
 
 const FeedBack = () => {
-  const { Text, Title } = Typography;
-  const { Header } = Layout;
+  const radioStyles = {
+    border: '1px solid #9646f5',
+    padding: '1px 20px',
+    color: '#9646f5',
+  };
 
   return (
-    <div>
-      <Header style={{ backgroundColor: '#fff', height: '65px' }}>
-        <Row justify="space-between">
-          <Col span={4}>
-            <Title
-              level={3}
-              style={{ color: 'blue', fontSize: '38px', paddingLeft: '40px' }}
-            >
-              Feedback
-            </Title>
-          </Col>
-          <Col span={4}>icon</Col>
-        </Row>
-      </Header>
-
-      <Row style={{ marginTop: '40px' }}>
-        <Col span={3}></Col>
-        <Col span={18}>
-          <div className="site-card-border-less-wrapper">
-            <Card
-              style={{ paddingTop: '300px', textAlign: 'center' }}
-              bordered={true}
-            >
-              <div style={{ paddingBottom: '64px' }}>
-                <p style={{ fontSize: '16px' }}>
-                  Considering your <i>experience</i> using Fresco, how likely
-                  would you recommend our tool to a friend or colleague?
-                </p>
-                <div>
-                  <Radio.Group buttonStyle="solid" size="large">
-                    <Space size="small">
-                      <Radio.Button
-                        style={{
-                          border: '1px solid #6b91f6',
-                          padding: '0 20px 40px',
-                          color: '#6b91f6',
-                        }}
-                        value={0}
-                      >
-                        0
-                      </Radio.Button>
-
-                      <Radio.Button
-                        style={{
-                          border: '1px solid #6b91f6',
-                          padding: '0 20px 40px',
-                          color: '#6b91f6',
-                        }}
-                        value={1}
-                      >
-                        1
-                      </Radio.Button>
-                      <Radio.Button
-                        style={{
-                          border: '1px solid #6b91f6',
-                          padding: '0 20px 40px',
-                          color: '#6b91f6',
-                        }}
-                        value={2}
-                      >
-                        2
-                      </Radio.Button>
-                      <Radio.Button
-                        style={{
-                          border: '1px solid #6b91f6',
-                          padding: '0 20px 40px',
-                          color: '#6b91f6',
-                        }}
-                        value={3}
-                      >
-                        3
-                      </Radio.Button>
-                      <Radio.Button
-                        style={{
-                          border: '1px solid #6b91f6',
-                          padding: '0 20px 40px',
-                          color: '#6b91f6',
-                        }}
-                        value={4}
-                      >
-                        4
-                      </Radio.Button>
-                      <Radio.Button
-                        style={{
-                          border: '1px solid #6b91f6',
-                          padding: '0 20px 40px',
-                          color: '#6b91f6',
-                        }}
-                        value={5}
-                      >
-                        5
-                      </Radio.Button>
-                      <Radio.Button
-                        style={{
-                          border: '1px solid #6b91f6',
-                          padding: '0 20px 40px',
-                          color: '#6b91f6',
-                        }}
-                        value={6}
-                      >
-                        6
-                      </Radio.Button>
-                      <Radio.Button
-                        style={{
-                          border: '1px solid #6b91f6',
-                          padding: '0 20px 40px',
-                          color: '#6b91f6',
-                        }}
-                        value={7}
-                      >
-                        7
-                      </Radio.Button>
-                      <Radio.Button
-                        style={{
-                          border: '1px solid #6b91f6',
-                          padding: '0 20px 40px',
-                          color: '#6b91f6',
-                        }}
-                        value={8}
-                      >
-                        8
-                      </Radio.Button>
-                      <Radio.Button
-                        style={{
-                          border: '1px solid #6b91f6',
-                          padding: '0 20px 40px',
-                          color: '#6b91f6',
-                        }}
-                        value={9}
-                      >
-                        9
-                      </Radio.Button>
-                      <Radio.Button
-                        style={{
-                          border: '1px solid #6b91f6',
-                          padding: '0 20px 40px',
-                          color: '#6b91f6',
-                        }}
-                        value={10}
-                      >
-                        10
-                      </Radio.Button>
-                    </Space>
-                  </Radio.Group>
-                  <Row>
-                    <Col span={10}>
-                      <Text
-                        style={{
-                          fontSize: '11px',
-                          fontWeight: 'bold',
-                          marginLeft: '-20px',
-                        }}
-                      >
-                        Very Unlikely
-                      </Text>
-                    </Col>
-                    <Col span={10}>
-                      <Text
-                        style={{
-                          fontSize: '11px',
-                          fontWeight: 'bold',
-                          marginRight: '-355px',
-                        }}
-                      >
-                        Very Likely
-                      </Text>
-                    </Col>
-                  </Row>
-                </div>
-              </div>
-            </Card>
-          </div>
+    <div className="feedback-container">
+      <Row justify="space-around" className="feedback-header">
+        <Col>
+          <h3 className="header-title">Feedback</h3>
         </Col>
-        <Col span={3}></Col>
+        <Col className="icon">
+          <p>icon</p>
+        </Col>
+      </Row>
+      <Row justify="center">
+        <Col
+          xl={{ span: 18 }}
+          lg={{ span: 18 }}
+          md={{ span: 22 }}
+          sm={{ span: 24 }}
+          xs={{ span: 2 }}
+          className="feedback-col"
+        >
+          <Card bordered={true} className="feedback-card">
+            <Radio.Group buttonStyle="solid" className="radio-btn-group">
+              <Row gutter={[8, 16]} justify="center" className="feedback-row">
+                <Col
+                  xl={{ span: 22, offset: 1 }}
+                  lg={{ span: 22, offset: 1 }}
+                  md={{ span: 22, offset: 1 }}
+                  sm={{ span: 24 }}
+                  xs={{ span: 24 }}
+                >
+                  <p style={{ fontSize: '18px', textAlign: 'center' }}>
+                    Considering your <i>experience using</i> Fresco, how likely
+                    would you be to recommend our tool to a friend or colleague?
+                  </p>
+                </Col>
+                <Col className="radio-button-col">
+                  <Radio.Button style={radioStyles} value={0}>
+                    0
+                  </Radio.Button>
+                  <p className="feedback-text" style={{ fontSize: '9px' }}>
+                    Very Unlikely
+                  </p>
+                </Col>
+                <Col className="radio-button-col">
+                  <Radio.Button style={radioStyles} value={1}>
+                    1
+                  </Radio.Button>
+                </Col>
+                <Col className="radio-button-col">
+                  <Radio.Button style={radioStyles} value={2}>
+                    2
+                  </Radio.Button>
+                </Col>
+                <Col className="radio-button-col">
+                  <Radio.Button style={radioStyles} value={3}>
+                    3
+                  </Radio.Button>
+                </Col>
+                <Col className="radio-button-col">
+                  <Radio.Button style={radioStyles} value={4}>
+                    4
+                  </Radio.Button>
+                </Col>
+                <Col className="radio-button-col">
+                  <Radio.Button style={radioStyles} value={5}>
+                    5
+                  </Radio.Button>
+                </Col>
+                <Col className="radio-button-col">
+                  <Radio.Button style={radioStyles} value={6}>
+                    6
+                  </Radio.Button>
+                </Col>
+                <Col className="radio-button-col">
+                  <Radio.Button style={radioStyles} value={7}>
+                    7
+                  </Radio.Button>
+                </Col>
+                <Col className="radio-button-col">
+                  <Radio.Button style={radioStyles} value={8}>
+                    8
+                  </Radio.Button>
+                </Col>
+                <Col className="radio-button-col">
+                  <Radio.Button style={radioStyles} value={9}>
+                    9
+                  </Radio.Button>
+                </Col>
+                <Col className="radio-button-col">
+                  <div className="rating">
+                    <Radio.Button style={radioStyles} value={10}>
+                      10
+                    </Radio.Button>
+                    <p
+                      className="feedback-text"
+                      style={{ fontSize: '9px', marginLeft: '10px' }}
+                    >
+                      Very likely
+                    </p>
+                  </div>
+                </Col>
+              </Row>
+            </Radio.Group>
+          </Card>
+        </Col>
       </Row>
     </div>
   );
