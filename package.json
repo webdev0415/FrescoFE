@@ -11,7 +11,7 @@
     "@types/webfontloader": "1.6.32",
     "antd": "4.7.0",
     "antd-img-crop": "3.13.2",
-    "axios": "0.20.0",
+    "axios": "0.21.1",
     "babel-loader": "8.1.0",
     "class-validator": "0.12.2",
     "clsx": "1.1.1",
